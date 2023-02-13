@@ -23,7 +23,6 @@ def ratio_lattice(seq):
     ratio_list = []
     for x in range(1, len(seq)):
         ratio_list.append(sqrt(seq[x])/sqrt(seq[x-1]))
-
     return ratio_list
 
 ratio_list = []
