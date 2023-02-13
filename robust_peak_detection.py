@@ -48,7 +48,7 @@ y = savgol_filter(y, 10, 3, deriv=0)
 # Settings: lag = 30, threshold = 5, influence = 0
 lag = 5
 threshold = 5
-influence = 0.4
+influence = 0.0
 
 # Run algo with settings from above
 result = thresholding_algo(y, lag=lag, threshold=threshold, influence=influence)
