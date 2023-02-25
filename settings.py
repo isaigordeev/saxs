@@ -10,5 +10,5 @@ infinity = 1000
 
 
 filename = "075781_treated_xye"
-analyse_directory = 'analyse/'
+analyse_directory = 'results/'
 extension = '.csv'

@@ -1,5 +1,5 @@
-from peak_classification import *
-# from phase_classification import *
+from processing.peak_classification import *
+# from processing.phase_classification import *
 
 peaks = Peaks(q, I, dI)
 
