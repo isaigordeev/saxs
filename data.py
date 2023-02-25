@@ -1,14 +1,13 @@
 import numpy as np
 import pandas as pd
 import os 
-import datetime
+from settings import *
+# import datetime
 
 
-from initial_conditions import *
-
-now = datetime.datetime.now()
-
+# now = datetime.datetime.now()
 # filename_directory = analyse_directory + filename + str(now.time())[:8]
+
 filename_directory = analyse_directory + filename
 
 if not os.path.exists(filename_directory):
@@ -36,7 +35,5 @@ def filtering_start_noise(q, I, dI):
 
 
 q, I, dI = filtering_start_noise(q, I, dI)
-print(len(q))
 
-# plt.plot(I, 'x')
-# plt.show()
+

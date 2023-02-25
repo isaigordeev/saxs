@@ -1,7 +1,7 @@
 import numpy as np
 from fastdtw import fastdtw
 
-from initial_conditions import prominence
+from settings import prominence
 
 
 class Phase():
