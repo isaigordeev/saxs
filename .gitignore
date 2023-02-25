@@ -1,0 +1,13 @@
+# cache
+__pycache__/
+
+# data
+res/
+
+# IDE
+.vscode/
+.idea/
+
+# macos 
+
+.DS_Store

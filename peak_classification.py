@@ -95,22 +95,26 @@ class Peaks():
 
     def peak_fitting_gauss(self, i):
         if np.size(self.peaks) != 0:
-            period1 = self.peaks[i] - int(sigma_fitting * self.peak_widths[0][i])
-            period2 = self.peaks[i] + int(sigma_fitting * self.peak_widths[0][i])
+            if int(sigma_fitting * self.peak_widths[0][i]) < 5:
+                pass
+            else:
+                period1 = self.peaks[i] - int(sigma_fitting * self.peak_widths[0][i])
+                period2 = self.peaks[i] + int(sigma_fitting * self.peak_widths[0][i])
 
-            gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
+                gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
 
-            popt, pcov = curve_fit(
-                f=gauss,
-                xdata=self.q[period1:period2],
-                ydata=self.difference[period1:period2],
-                bounds=(delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
-                sigma=dI[period1:period2]
-            )
-            return gauss(self.q, popt[0], popt[1]), \
-                period1, period2, i, \
-                self.q[self.peaks[i]], \
-                gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1]
+                popt, pcov = curve_fit(
+                    f=gauss,
+                    xdata=self.q[period1:period2],
+                    ydata=self.difference[period1:period2],
+                    bounds=(delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
+                    sigma=dI[period1:period2]
+                )
+                print(int(sigma_fitting * self.peak_widths[0][i]))
+                return gauss(self.q, popt[0], popt[1]), \
+                    period1, period2, i, \
+                    self.q[self.peaks[i]], \
+                    gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1]
     
 
     def peak_fitting_parabole(self, i):
@@ -146,20 +150,21 @@ class Peaks():
 
 
     def peak_fitting_substraction_gauss(self, i):
-        self.peak_previous = np.append(self.peak_previous, self.peaks[i])
-        self.peaks_analysed = np.append(self.peaks_analysed,
-                                        (self.peak_fitting_gauss(i)[4],
-                                         self.peak_fitting_gauss(i)[5]))
-        self.peaks_analysed_q = np.append(self.peaks_analysed_q,
-                                          self.peak_fitting_gauss(i)[4])
-        self.peaks_analysed_I = np.append(self.peaks_analysed_I,
-                                          self.peak_fitting_gauss(i)[5])
-        self.peaks_analysed_b = np.append(self.peaks_analysed_b,
-                                          self.peak_fitting_gauss(i)[7])
-        self.peak_number += 1
+        if self.peaks[i] is not None:
+            self.peak_previous = np.append(self.peak_previous, self.peaks[i])
+            self.peaks_analysed = np.append(self.peaks_analysed,
+                                            (self.peak_fitting_gauss(i)[4],
+                                            self.peak_fitting_gauss(i)[5]))
+            self.peaks_analysed_q = np.append(self.peaks_analysed_q,
+                                            self.peak_fitting_gauss(i)[4])
+            self.peaks_analysed_I = np.append(self.peaks_analysed_I,
+                                            self.peak_fitting_gauss(i)[5])
+            self.peaks_analysed_b = np.append(self.peaks_analysed_b,
+                                            self.peak_fitting_gauss(i)[7])
+            self.peak_number += 1
                                           
 
-        self.difference -= self.peak_fitting_gauss(i)[0]
+            self.difference -= self.peak_fitting_gauss(i)[0]
 
     def filtering_negative(self):
         for x in range(len(self.difference) - 1):
@@ -185,9 +190,10 @@ class Peaks():
         plt.plot(self.q, self.difference_start, label='filtered_raw_data')
         plt.plot(self.q, self.difference, label='filtered_data')
         plt.plot(self.q[self.peaks], self.difference[self.peaks], "x", label='all_peaks_detected')
-        plt.plot(self.q, self.peak_fitting_gauss(i)[0], label='current_peak')
-        plt.plot(self.q[self.peak_fitting_gauss(i)[1]:self.peak_fitting_gauss(i)[2]],
-                 self.difference[self.peak_fitting_gauss(i)[1]:self.peak_fitting_gauss(i)[2]], label='zone_curr_peak')
+        if self.peak_fitting_gauss(i) is not None:
+            plt.plot(self.q, self.peak_fitting_gauss(i)[0], label='current_peak')
+            plt.plot(self.q[self.peak_fitting_gauss(i)[1]:self.peak_fitting_gauss(i)[2]],
+                    self.difference[self.peak_fitting_gauss(i)[1]:self.peak_fitting_gauss(i)[2]], label='zone_curr_peak')
         plt.plot(self.q, self.zeros, label='zero_level')
         plt.legend()
 
@@ -215,11 +221,13 @@ class Peaks():
             self.peak_verifying()
             if len(self.peaks) == 0:
                 break
-            self.plot_diagramme()
-            number_peak -= 1
-            self.peak_fitting_parabole(0)
-            self.peak_fitting_substraction_gauss(0)
-            self.filtering_negative()
+            if self.peak_fitting_gauss(0) is None: 
+                continue
+            else:
+                number_peak -= 1
+                # self.peak_fitting_parabole(0)
+                self.peak_fitting_substraction_gauss(0)
+                self.filtering_negative()
 
     def fast_Fourier(self):
         Y = np.convolve(self.difference, self.difference)
