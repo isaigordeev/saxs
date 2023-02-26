@@ -1,6 +1,8 @@
 import numpy as np
+import pandas as pd
 
-from data import *
+from settings import *
+import os
 
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -25,15 +27,17 @@ def parabole(x, c, b):
 
 
 class Peaks():
-    def __init__(self, filename, data_directory):
+    def __init__(self, filename, DATA_DIR):
 
-        # data = pd.read_csv(data_directory + filename + extension, sep=',')
-        filename_directory = analyse_directory + filename
+        self.file = filename
+        self.data_dir = DATA_DIR
 
-        if not os.path.exists(filename_directory):
-            os.mkdir(filename_directory)
+        self.file_analyse_dir = ANALYSE_DIR + self.file
 
-        data = pd.read_csv(data_directory + filename, sep=',')
+        if not os.path.exists(self.file_analyse_dir):
+            os.mkdir(self.file_analyse_dir)
+
+        data = pd.read_csv(self.data_dir + self.file + EXTENSION, sep=',')
         data = data.apply(pd.to_numeric, errors='coerce')
         data = data.dropna()
 
@@ -45,8 +49,7 @@ class Peaks():
         self.max_dI = np.median(self.dI)
 
         self.peaks_plots = []
-        print(self.peaks_plots)
-        self.I_backfiltered = []
+        self.I_background_filtered = []
         self.popt = []
         self.pcov = []
         self.max_I = np.max(self.I)
@@ -65,21 +68,23 @@ class Peaks():
         self.peak_number = 0
         self.peaks_analysed_dict = {}
         self.total_fit = []
+        self.peaks_detected = []
         self.start_loss = 0
         self.final_loss = 0
 
     def background_reduction(self):
 
-        # do it better
+        # do it better faster stronger
         i = 0
         for x in self.q:
             i += 1
-            if x > start:
+            if x > START:
                 break
 
         self.q, self.I, self.dI = self.q[i:], self.I[i:], self.dI[i:]
-        self.total_fit = np.zeros(len(self.q))
-        self.peaks_plots = np.zeros((20,len(self.q)))
+        self.zeros = np.zeros(len(self.q))
+        self.total_fit = self.zeros
+        self.peaks_plots = np.zeros((20, len(self.q)))
 
         popt, pcov = curve_fit(
             f=background_hyberbole,
@@ -94,29 +99,38 @@ class Peaks():
         # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
 
     def filtering(self):
-        self.I_backfiltered = self.I - background_coef * self.model
-        self.difference = gaussian_filter(self.I_backfiltered,
-                                          sigma=sigma_filter,
-                                          truncate=truncate,
+        self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
+        self.difference = gaussian_filter(self.I_background_filtered,
+                                          sigma=SIGMA_FILTER,
+                                          truncate=TRUNCATE,
                                           cval=0)
-        self.difference_start = gaussian_filter(self.I_backfiltered,
-                                                sigma=sigma_filter,
-                                                truncate=truncate,
+        self.difference_start = gaussian_filter(self.I_background_filtered,
+                                                sigma=SIGMA_FILTER,
+                                                truncate=TRUNCATE,
                                                 cval=0)
         self.start_loss = np.mean((self.difference_start - self.total_fit) ** 2)
 
-    def plot_background(self):
-        plt.plot(
-            # self.q, self.I,
-            # self.q, self.model,
-            # self.q, self.difference,
-            # self.q, self.difference,
-            self.q, self.zeros,
-            # q, savgol_filter(I, 20 , 3, deriv=0),
-            # q, np.gradient(savgol_filter(I, 20, 3, deriv=0)),
-            linewidth=1
-        )
-        plt.show()
+    def background_plot(self):
+        plt.clf()
+        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data_without_background')
+        plt.plot(self.q, self.model, label = 'background')
+        plt.plot(self.q, BACKGROUND_COEF*self.model, label = 'moderated_background')
+        plt.plot(self.q, self.I, linewidth=0.5, c='b', label = 'raw_data')
+        plt.plot(self.q, self.zeros, label='zero_level')
+        plt.legend()
+        plt.savefig(self.file_analyse_dir + '/0_background_raw_' + self.file + '.pdf')
+
+
+        plt.clf()
+        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data')
+        plt.plot(self.q, self.difference_start, label='filtered_raw_data')
+        plt.plot(self.q, self.zeros, label='zero_level')
+        plt.legend()
+        plt.savefig(self.file_analyse_dir + '/1_background_filtered_' + self.file + '.pdf')
+
+
+
+
 
     def peak_searching(self, height=0, distance=5, prominence=0.1):
         self.peaks, self.peaks_data = find_peaks(self.difference,
@@ -131,8 +145,8 @@ class Peaks():
 
     def peak_fitting_gauss(self, i):
         if np.size(self.peaks) != 0:
-            period1 = self.peaks[i] - int(sigma_fitting * self.peak_widths[0][i])
-            period2 = self.peaks[i] + int(sigma_fitting * self.peak_widths[0][i])
+            period1 = self.peaks[i] - int(SIGMA_FITTING * self.peak_widths[0][i])
+            period2 = self.peaks[i] + int(SIGMA_FITTING * self.peak_widths[0][i])
 
             gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
 
@@ -146,14 +160,14 @@ class Peaks():
             return gauss(self.q, popt[0], popt[1]), \
                 period1, period2, i, \
                 self.q[self.peaks[i]], \
-                gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1]
+                gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i]
 
     def peak_fitting_parabole(self, i):
         if np.size(self.peaks) != 0:
             # width = self.peak_widths[0][i]
             # treshold = width
             width = 30
-            deviation_optimal = infinity
+            deviation_optimal = INFINITY
             width_optimal = width
             parabole = lambda x, c, b: c - (x - self.q[self.peaks[i]]) ** 2 / (b ** 2)
             gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
@@ -174,22 +188,27 @@ class Peaks():
                 gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1]
 
     def peak_fitting_substraction_gauss(self, i):
+        peak = self.peak_fitting_gauss(i)
+
+        # more efficient O(1) – previsioned array
         self.peak_previous = np.append(self.peak_previous, self.peaks[i])
         self.peaks_analysed = np.append(self.peaks_analysed,
-                                        (self.peak_fitting_gauss(i)[4],
-                                         self.peak_fitting_gauss(i)[5]))
+                                        (peak[4],
+                                         peak[5]))
         self.peaks_analysed_q = np.append(self.peaks_analysed_q,
-                                          self.peak_fitting_gauss(i)[4])
+                                          peak[4])
         self.peaks_analysed_I = np.append(self.peaks_analysed_I,
-                                          self.peak_fitting_gauss(i)[5])
+                                          peak[5])
         self.peaks_analysed_b = np.append(self.peaks_analysed_b,
-                                          self.peak_fitting_gauss(i)[7])
-        self.peaks_analysed_dict[self.peak_fitting_gauss(i)[4]] = self.peak_fitting_gauss(i)[4]
-        self.peaks_plots[self.peak_number] = self.peak_fitting_gauss(i)[0]
+                                          peak[7])
+
+        self.peaks_analysed_dict[peak[4]] = peak[5]
+        self.peaks_plots[self.peak_number] = peak[0]
+        self.peaks_detected = np.append(self.peaks_detected, peak[8])
 
         self.peak_number += 1
-        self.total_fit += self.peak_fitting_gauss(i)[0]
-        self.difference -= self.peak_fitting_gauss(i)[0]
+        self.total_fit += peak[0]
+        self.difference -= peak[0]
 
     def filtering_negative(self):
         for x in range(len(self.difference) - 1):
@@ -198,7 +217,7 @@ class Peaks():
 
     def stage_plot(self, i=0):
         plt.clf()
-        plt.plot(self.q, self.I - background_coef * self.model, linewidth=0.5, label='raw_data')
+        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data')
         plt.plot(self.q, self.difference_start, label='filtered_raw_data')
         plt.plot(self.q, self.difference, label='filtered_data')
         plt.plot(self.q[self.peaks], self.difference[self.peaks], "x", label='all_peaks_detected')
@@ -207,31 +226,44 @@ class Peaks():
             plt.plot(self.q[self.peak_fitting_gauss(i)[1]:self.peak_fitting_gauss(i)[2]],
                      self.difference[self.peak_fitting_gauss(i)[1]:self.peak_fitting_gauss(i)[2]], 'o',
                      label='zone_curr_peak')
-        plt.plot(self.q, np.zeros(len(self.q)), label='zero_level')
+        plt.plot(self.q, self.zeros, label='zero_level')
         plt.plot(self.q, self.total_fit, linewidth=2.5, label='total')
         plt.legend()
-
-        plt.savefig(filename_directory + '/' + filename + str(self.peak_number) + '.pdf')
+        plt.savefig(self.file_analyse_dir + '/' + self.file + '_peak:' + str(self.peak_number) + '.pdf')
 
         # plt.show()
 
     def result_plot(self):
         plt.clf()
-        plt.plot(self.q, self.I - background_coef * self.model, linewidth=0.5, label='raw_data')
-        plt.plot(self.q, self.difference_start, label='filtered_raw_data')
-        plt.plot(self.q, self.difference, label='filtered_data')
-        plt.plot(self.q, np.zeros(len(self.q)), label='zero_level')
-        plt.plot(self.q, self.total_fit, linewidth=2.5, label='total')
+        self.peaks_detected = self.peaks_detected.astype(int)
+
+        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data_without_back')
+        plt.plot(self.q, self.difference_start, label='filtered_raw_data_without_back')
+        # plt.plot(self.q, self.difference, label='filtered_data')
+        plt.plot(self.q, self.zeros, label='zero_level')
+        # plt.plot(self.q[self.peaks_detected], self.I_background_filtered[self.peaks_detected], 'x',
+        #          label='peaks_on_raw_without_back')
+        # plt.plot(self.q[self.peaks_detected], self.difference_start[self.peaks_detected], 'x',
+        #          label='peaks_on_filtered_without_back')
+        plt.plot(self.q, self.total_fit, linewidth=2, label='total')
         for x in self.peaks_plots:
             if len(x) > 1:
                 plt.plot(self.q, x)
         plt.legend()
+        plt.savefig(self.file_analyse_dir + '/0_result_' + self.file + '.pdf')
 
-        plt.savefig(filename_directory + '/result_' + filename + str(self.peak_number) + '.pdf')
+        plt.clf()
+        plt.plot(self.q, self.I, label='raw_data')
+        plt.plot(self.q[self.peaks_detected], self.I[self.peaks_detected], 'x', label='peaks_on_raw')
+        plt.plot(self.q, self.zeros, label='zero_level')
+        plt.legend()
 
-    def phase_classification(self, number_peak=infinity):
+
+        plt.savefig(self.file_analyse_dir + '/1_result_raw_' + self.file + '.pdf')
+
+    def phase_classification(self, number_peak=INFINITY):
         while len(self.peaks) > -1 and number_peak > 0:
-            self.peak_searching(height=0, prominence=prominence)
+            self.peak_searching(height=0, prominence=PROMINENCE)
             self.peak_verifying()
             if len(self.peaks) == 0:
                 break
@@ -243,6 +275,7 @@ class Peaks():
                 self.stage_plot(0)
                 self.peak_fitting_substraction_gauss(0)
                 self.filtering_negative()
+        self.stage_plot(0)
 
     def loss(self):
         # print('Covariance raw', np.cov(self.difference_start, self.total_fit)[0][1])
