@@ -1,15 +1,15 @@
 # to be implemented unique for each data + manual adjusting
 
-start = 0.02
-background_coef = 0.8
-sigma_filter = 2.5
-sigma_fitting = 0.3
-truncate = 4
-prominence = 0.2
-infinity = 1000
+START = 0.02
+BACKGROUND_COEF = 0.7
+SIGMA_FILTER = 2.5
+SIGMA_FITTING = 0.3
+TRUNCATE = 4
+PROMINENCE = 0.2
+INFINITY = 100
 
 
-filename = "075775_treated_xye"
-analyse_directory = 'results/'
-data_directory = 'res/'
-extension = '.csv'
+FILENAME = "075775_treated_xye"  # pointwise classification
+EXTENSION = '.csv'
+ANALYSE_DIR = 'results/'
+DATA_DIR = 'data_test/'

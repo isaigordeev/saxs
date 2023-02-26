@@ -4,12 +4,11 @@ from processing.peak_classification import *
 # from processing.phase_classification import *
 
 
-peaks = Peaks(filename, 'data_test/')
+peaks = Peaks(FILENAME, DATA_DIR)
 peaks.background_reduction()
 peaks.filtering()
 peaks.filtering_negative()
 peaks.phase_classification()
-peaks.stage_plot(0)
 peaks.loss()
 # print(peaks.peaks_plots)
 peaks.result_plot()

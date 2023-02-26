@@ -1,7 +1,7 @@
 import numpy as np
 from fastdtw import fastdtw
 
-from settings import prominence
+from settings import PROMINENCE
 
 
 class Phase():
@@ -39,7 +39,7 @@ class Phase():
             self.phases_coeffs = np.append(self.phases_coeffs, self.ratio_data(0, x))
 
     def data_preset(self):
-        treshhold = 1.1 * prominence * np.average(self.peaks_I)
+        treshhold = 1.1 * PROMINENCE * np.average(self.peaks_I)
         errors = []
 
         # print(treshhold)
