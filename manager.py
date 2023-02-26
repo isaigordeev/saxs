@@ -4,13 +4,15 @@ from processing.peak_classification import *
 # from processing.phase_classification import *
 
 
-peaks = Peaks(q, I, dI)
+peaks = Peaks(filename, 'data_test/')
 peaks.background_reduction()
 peaks.filtering()
 peaks.filtering_negative()
 peaks.phase_classification()
-peaks.plot_diagramme(0)
+peaks.stage_plot(0)
 peaks.loss()
+# print(peaks.peaks_plots)
+peaks.result_plot()
 
 # print(peaks.peaks_analysed_q,)
 # print(peaks.peaks_analysed_I,)
