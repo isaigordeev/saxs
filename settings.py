@@ -12,4 +12,7 @@ INFINITY = 100
 FILENAME = "075775_treated_xye"  # pointwise classification
 EXTENSION = '.csv'
 ANALYSE_DIR = 'results/'
+ANALYSE_DIR_SESSIONS = ANALYSE_DIR + 'sessions/'
+ANALYSE_DIR_SESSIONS_RESULTS = ANALYSE_DIR + 'sessions_results/'
 DATA_DIR = 'data_test/'
+
