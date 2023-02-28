@@ -1,7 +1,7 @@
 import pandas as pd
 
 from processing.peak_classification import *
-# from processing.phase_classification import *
+from processing.phase_classification import *
 import os
 import json
 from datetime import date, datetime
@@ -40,6 +40,7 @@ def get_filenames_without_ext(folder_path):
             name, extension = os.path.splitext(filename)
             yield name
 
+
 data = {}
 files_number = 0
 time_start = time.time()
@@ -51,30 +52,19 @@ for filename in get_filenames_without_ext(DATA_DIR):
     peaks.background_plot()
     peaks.filtering_negative()
     peaks.peak_processing()
-    data[peaks.file] = peaks.gathering()
     peaks.result_plot()
+    data[peaks.file] = peaks.gathering()
     files_number += 1
 
-
-
+    phases = Phases(filename, current_session, phases, data[peaks.file])
+    phases.preset_plot()
+    phases.data_preparing()
+    phases.analyzing()
+    phases.alignement()
 
 time_final = time.time()
-print('Taken: ', time_final-time_start)
+print('Taken: ', time_final - time_start)
 
+# with open(current_session_results + current_time + f'{files_number}.json', 'w') as f:
+#     json.dump(data, f, indent=4, separators=(",", ": "))
 
-
-
-
-
-with open(current_session_results + current_time + f'{files_number}.json', 'w') as f:
-    json.dump(data, f, indent=4, separators=(",", ": "))
-
-
-# print(peaks.peaks_analysed_q,)
-# print(peaks.peaks_analysed_I,)
-# plt.clf()
-# plt.plot(peaks.peaks_analysed_q, peaks.peaks_analysed_I, 'x' )
-# plt.show()
-
-# phase = Phase(peaks.peaks_analysed_q, peaks.peaks_analysed_I, dI)
-# phase.analyzing()
