@@ -1,10 +1,17 @@
-import matplotlib.pyplot as plt
-
 from processing.peak_classification import *
 # from processing.phase_classification import *
+from datetime import date, datetime
+import time
+
+today = date.today()
+
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
+
+current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
 
 
-peaks = Peaks(FILENAME, DATA_DIR)
+peaks = Peaks(FILENAME, DATA_DIR, current_session=current_session)
 peaks.background_reduction()
 peaks.filtering()
 peaks.filtering_negative()

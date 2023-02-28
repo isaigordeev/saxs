@@ -11,5 +11,5 @@ res/
 # macos 
 
 .DS_Store
-results/
-data_test/
+#results/
+#data_test/

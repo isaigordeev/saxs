@@ -72,6 +72,8 @@ class Peaks():
         self.start_loss = 0
         self.final_loss = 0
 
+        self.popt_background = []
+
     def background_reduction(self):
 
         # do it better faster stronger
@@ -80,6 +82,7 @@ class Peaks():
             i += 1
             if x > START:
                 break
+
 
         self.q, self.I, self.dI = self.q[i:], self.I[i:], self.dI[i:]
         self.zeros = np.zeros(len(self.q))
@@ -94,7 +97,8 @@ class Peaks():
             sigma=self.dI
         )
 
-        self.model = background_hyberbole(self.q, popt[0], popt[1])
+        self.popt_background = popt
+        self.model = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
         # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
         # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
 
@@ -257,8 +261,6 @@ class Peaks():
         plt.plot(self.q[self.peaks_detected], self.I[self.peaks_detected], 'x', label='peaks_on_raw')
         plt.plot(self.q, self.zeros, label='zero_level')
         plt.legend()
-
-
         plt.savefig(self.file_analyse_dir + '/11_result_raw_' + self.file + '.pdf')
 
     def peak_processing(self, number_peak=INFINITY):
@@ -284,11 +286,13 @@ class Peaks():
         # print('Covariance raw', np.mean((self.I_backfiltered-self.total_fit)**2))
         print('Covariance raw', self.start_loss)
         print('Covariance filtered', self.final_loss)
-        print(self.peak_widths)
         return {
                     'peak_number':self.peak_number,
                     'q':self.peaks_analysed_q.tolist(),
                     'I':self.peaks_analysed_I.tolist(),
+                    'dI':self.dI[self.peaks_detected].tolist(),
+                    'I_raw':self.I[self.peaks_detected].tolist(),
+                    'peaks':self.peaks_detected.tolist(),
                     'start_loss': self.start_loss,
                     'final_loss': self.final_loss,
                     'loss_ratio': self.final_loss / self.start_loss * 100}
