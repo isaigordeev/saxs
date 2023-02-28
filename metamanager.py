@@ -1,8 +1,24 @@
-import matplotlib.pyplot as plt
+import pandas as pd
 
 from processing.peak_classification import *
 # from processing.phase_classification import *
 import os
+import json
+from datetime import date, datetime
+import time
+
+today = date.today()
+
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
+
+current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
+current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + str(today) + '/'
+
+if not os.path.exists(current_session):
+    os.mkdir(current_session)
+if not os.path.exists(current_session_results):
+    os.mkdir(current_session_results)
 
 
 def get_filenames(folder_path):
@@ -24,16 +40,35 @@ def get_filenames_without_ext(folder_path):
             name, extension = os.path.splitext(filename)
             yield name
 
+data = {}
+files_number = 0
+time_start = time.time()
 
 for filename in get_filenames_without_ext(DATA_DIR):
-    peaks = Peaks(filename, DATA_DIR)
+    peaks = Peaks(filename, DATA_DIR, current_session)
     peaks.background_reduction()
     peaks.filtering()
     peaks.background_plot()
     peaks.filtering_negative()
-    peaks.phase_classification()
-    peaks.loss()
+    peaks.peak_processing()
+    data[peaks.file] = peaks.gathering()
     peaks.result_plot()
+    files_number += 1
+
+
+
+
+time_final = time.time()
+print('Taken: ', time_final-time_start)
+
+
+
+
+
+
+with open(current_session_results + current_time + f'{files_number}.json', 'w') as f:
+    json.dump(data, f, indent=4, separators=(",", ": "))
+
 
 # print(peaks.peaks_analysed_q,)
 # print(peaks.peaks_analysed_I,)

@@ -6,6 +6,7 @@ from settings import PROMINENCE
 
 class Phase():
     def __init__(self, peaks_q, peaks_I, dI):
+
         self.la3d = [6, 8, 14, 16, 20, 22, 24, 26]
         self.Pn3m = [2, 3, 4, 6, 8, 9, 10, 11, 12, 14, 16, 17]
         self.Im3m = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26]
@@ -19,6 +20,7 @@ class Phase():
         self.dI = dI
 
         self.phases_coeffs = []
+
         self.la3d_coeffs = self.ratio_data(0, self.la3d)
         self.Pn3m_coeffs = self.ratio_data(0, self.Pn3m)
         self.Im3m_coeffs = self.ratio_data(0, self.Im3m)
@@ -33,6 +35,10 @@ class Phase():
         distance, path = f(coeffs, self.peaks_q,
                            dist=lambda x, y: abs(x - y))
         return distance, path
+
+    def preset_plot(self):
+
+
 
     def init_phases(self):
         for x in self.phases:

@@ -27,12 +27,12 @@ def parabole(x, c, b):
 
 
 class Peaks():
-    def __init__(self, filename, DATA_DIR):
+    def __init__(self, filename, DATA_DIR, current_session):
 
         self.file = filename
         self.data_dir = DATA_DIR
 
-        self.file_analyse_dir = ANALYSE_DIR + self.file
+        self.file_analyse_dir = current_session + self.file
 
         if not os.path.exists(self.file_analyse_dir):
             os.mkdir(self.file_analyse_dir)
@@ -118,7 +118,7 @@ class Peaks():
         plt.plot(self.q, self.I, linewidth=0.5, c='b', label = 'raw_data')
         plt.plot(self.q, self.zeros, label='zero_level')
         plt.legend()
-        plt.savefig(self.file_analyse_dir + '/0_background_raw_' + self.file + '.pdf')
+        plt.savefig(self.file_analyse_dir + '/00_background_raw_' + self.file + '.pdf')
 
 
         plt.clf()
@@ -126,7 +126,7 @@ class Peaks():
         plt.plot(self.q, self.difference_start, label='filtered_raw_data')
         plt.plot(self.q, self.zeros, label='zero_level')
         plt.legend()
-        plt.savefig(self.file_analyse_dir + '/1_background_filtered_' + self.file + '.pdf')
+        plt.savefig(self.file_analyse_dir + '/01_background_filtered_' + self.file + '.pdf')
 
 
 
@@ -250,7 +250,7 @@ class Peaks():
             if len(x) > 1:
                 plt.plot(self.q, x)
         plt.legend()
-        plt.savefig(self.file_analyse_dir + '/0_result_' + self.file + '.pdf')
+        plt.savefig(self.file_analyse_dir + '/10_result_' + self.file + '.pdf')
 
         plt.clf()
         plt.plot(self.q, self.I, label='raw_data')
@@ -259,9 +259,9 @@ class Peaks():
         plt.legend()
 
 
-        plt.savefig(self.file_analyse_dir + '/1_result_raw_' + self.file + '.pdf')
+        plt.savefig(self.file_analyse_dir + '/11_result_raw_' + self.file + '.pdf')
 
-    def phase_classification(self, number_peak=INFINITY):
+    def peak_processing(self, number_peak=INFINITY):
         while len(self.peaks) > -1 and number_peak > 0:
             self.peak_searching(height=0, prominence=PROMINENCE)
             self.peak_verifying()
@@ -277,14 +277,21 @@ class Peaks():
                 self.filtering_negative()
         self.stage_plot(0)
 
-    def loss(self):
+    def gathering(self):
         # print('Covariance raw', np.cov(self.difference_start, self.total_fit)[0][1])
         # print('Covariance filtered', np.cov(self.I_backfiltered, self.total_fit)[0][1])
         self.final_loss = np.mean((self.difference_start - self.total_fit) ** 2)
         # print('Covariance raw', np.mean((self.I_backfiltered-self.total_fit)**2))
         print('Covariance raw', self.start_loss)
         print('Covariance filtered', self.final_loss)
-        return self.final_loss / self.start_loss * 100
+        print(self.peak_widths)
+        return {
+                    'peak_number':self.peak_number,
+                    'q':self.peaks_analysed_q.tolist(),
+                    'I':self.peaks_analysed_I.tolist(),
+                    'start_loss': self.start_loss,
+                    'final_loss': self.final_loss,
+                    'loss_ratio': self.final_loss / self.start_loss * 100}
 
     def fast_Fourier(self):
         Y = np.convolve(self.difference, self.difference)
