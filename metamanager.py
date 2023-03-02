@@ -56,15 +56,17 @@ for filename in get_filenames_without_ext(DATA_DIR):
     data[peaks.file] = peaks.gathering()
     files_number += 1
 
-    phases = Phases(filename, current_session, phases, data[peaks.file])
+    phases = Phases(filename, current_session, defined_phases, class_names, data[peaks.file])
     phases.preset_plot()
     phases.data_preparing()
-    phases.analyzing()
     phases.alignement()
+    data[peaks.file] = phases.gathering()
+
+
 
 time_final = time.time()
 print('Taken: ', time_final - time_start)
 
-# with open(current_session_results + current_time + f'{files_number}.json', 'w') as f:
-#     json.dump(data, f, indent=4, separators=(",", ": "))
+with open(current_session_results + current_time + f'_{files_number}.json', 'w') as f:
+    json.dump(data, f, indent=4, separators=(",", ": "))
 

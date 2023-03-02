@@ -33,9 +33,12 @@ class Peaks():
         self.data_dir = DATA_DIR
 
         self.file_analyse_dir = current_session + self.file
+        self.file_analyse_dir_peaks = current_session + self.file + '/peaks'
 
         if not os.path.exists(self.file_analyse_dir):
             os.mkdir(self.file_analyse_dir)
+        if not os.path.exists(self.file_analyse_dir_peaks):
+            os.mkdir(self.file_analyse_dir_peaks)
 
         data = pd.read_csv(self.data_dir + self.file + EXTENSION, sep=',')
         data = data.apply(pd.to_numeric, errors='coerce')
@@ -233,7 +236,7 @@ class Peaks():
         plt.plot(self.q, self.zeros, label='zero_level')
         plt.plot(self.q, self.total_fit, linewidth=2.5, label='total')
         plt.legend()
-        plt.savefig(self.file_analyse_dir + '/' + self.file + '_peak:' + str(self.peak_number) + '.pdf')
+        plt.savefig(self.file_analyse_dir_peaks + '/' + self.file + '_peak:' + str(self.peak_number) + '.pdf')
 
         # plt.show()
 
@@ -286,13 +289,22 @@ class Peaks():
         # print('Covariance raw', np.mean((self.I_backfiltered-self.total_fit)**2))
         print('Covariance raw', self.start_loss)
         print('Covariance filtered', self.final_loss)
+
+        sorted_indices_q = np.argsort(self.peaks_analysed_q)
+
+        I = self.peaks_analysed_I[sorted_indices_q]
+        q = self.peaks_analysed_q[sorted_indices_q]
+        I_raw = self.I[self.peaks_detected][sorted_indices_q]
+        dI = self.dI[self.peaks_detected][sorted_indices_q]
+        peaks_detected = self.peaks_detected[sorted_indices_q]
+
         return {
                     'peak_number':self.peak_number,
-                    'q':self.peaks_analysed_q.tolist(),
-                    'I':self.peaks_analysed_I.tolist(),
-                    'dI':self.dI[self.peaks_detected].tolist(),
-                    'I_raw':self.I[self.peaks_detected].tolist(),
-                    'peaks':self.peaks_detected.tolist(),
+                    'q':q.tolist(),
+                    'I':I.tolist(),
+                    'dI':dI.tolist(),
+                    'I_raw':I_raw.tolist(),
+                    'peaks':peaks_detected.tolist(),
                     'start_loss': self.start_loss,
                     'final_loss': self.final_loss,
                     'loss_ratio': self.final_loss / self.start_loss * 100}
