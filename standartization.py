@@ -5,7 +5,7 @@ from torch import nn
 import torch
 from scipy.signal import savgol_filter
 
-FILENAME = "075775_treated_xye"  # pointwise classification
+FILENAME = "075909_treated_xye"  # pointwise classification
 EXTENSION = '.csv'
 ANALYSE_DIR = 'results/'
 DATA_DIR = 'res/'
@@ -35,7 +35,7 @@ aI = I.reshape(1, len(I))
 new_I = I.reshape(len(I), 1)
 
 
-plt.plot( I, label = 'non_fil')
+plt.plot( q, I, label = 'non_fil')
 # plt.plot(q, I_filtered, label = 'si')
 # plt.plot(q, norm_I, label = 'standartised')
 plt.legend()
