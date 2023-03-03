@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 # Load the image in grayscale
 img = cv2.imread('test/meshing/075775_treated_xye.png', 0)
 # Apply Gaussian blur to smooth the image
