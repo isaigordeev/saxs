@@ -40,6 +40,6 @@ plt.plot( q, I, label = 'non_fil')
 # plt.plot(q, norm_I, label = 'standartised')
 plt.legend()
 
-# Show the image
+
 plt.savefig('test/standartization/' + FILENAME+'.pdf')
 
