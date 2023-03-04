@@ -1,6 +1,7 @@
 from torch import nn
 import torch
 from setup import data, SEED, train_loader
+from torchinfo import summary
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -62,4 +63,5 @@ with torch.inference_mode():
 
 print(torch.softmax(pred, dim=1))
 
+summary(tiny_model, input_size=[1,3,64,64])
 
