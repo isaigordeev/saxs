@@ -73,7 +73,6 @@ for filename in get_filenames_without_ext(DATA_DIR):
 
 
     # random.seed(1)
-    
     plt.imshow(array_dot)
     plt.savefig(SET_DIR_DOT +  random.choice(class_names) +'/'+ filename + '.png')
     plt.clf()
