@@ -1,8 +1,9 @@
 import torch
 
 from tqdm.auto import tqdm
-from torch import nn 
+from torch import nn
 
+from utils import time_decorator 
 
 device = 'cpu'
 
@@ -61,7 +62,7 @@ def test_step(model: torch.nn.Module,
     return test_loss, test_acc
 
 
-
+@time_decorator
 def train(model:torch.nn.Module,
           train_dataloader: torch.utils.data.DataLoader,
           test_dataloader: torch.utils.data.DataLoader,

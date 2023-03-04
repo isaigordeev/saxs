@@ -1,9 +1,6 @@
 from torch import nn
 import torch
-from setup import data, SEED, train_loader, test_loader
-from torchinfo import summary
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class TinyVGG(nn.Module):
 
