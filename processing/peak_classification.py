@@ -79,15 +79,9 @@ class Peaks():
 
     def background_reduction(self):
 
-        # do it better faster stronger
-        i = 0
-        for x in self.q:
-            i += 1
-            if x > START:
-                break
-
-
+        i = np.argmax(self.q > START)
         self.q, self.I, self.dI = self.q[i:], self.I[i:], self.dI[i:]
+
         self.zeros = np.zeros(len(self.q))
         self.total_fit = self.zeros
         self.peaks_plots = np.zeros((20, len(self.q)))
@@ -238,8 +232,6 @@ class Peaks():
         plt.legend()
         plt.savefig(self.file_analyse_dir_peaks + '/' + self.file + '_peak:' + str(self.peak_number) + '.pdf')
 
-        # plt.show()
-
     def result_plot(self):
         plt.clf()
         self.peaks_detected = self.peaks_detected.astype(int)
@@ -308,15 +300,3 @@ class Peaks():
                     'start_loss': self.start_loss,
                     'final_loss': self.final_loss,
                     'loss_ratio': self.final_loss / self.start_loss * 100}
-
-    def fast_Fourier(self):
-        Y = np.convolve(self.difference, self.difference)
-        # Y = np.fft.fft(self.difference)
-        # Y = np.fft.fft(Y)
-        # plt.plot(self.q , np.abs(Y).real**2+np.abs(Y).imag**2)
-        plt.plot(self.q, Y[len(self.q) // 2:len(Y) - len(self.q) // 2 + 1])
-        # self.difference = Y
-        plt.xlabel("Frequency (k)")
-        plt.ylabel("Amplitude")
-        plt.title("FFT of sigma * exp(-sigma^2 * x^2) * sin(2 * pi * x * mu)")
-        plt.show()
