@@ -5,6 +5,7 @@ __pycache__/
 res/
 
 # IDE
+venv/
 .vscode/
 .idea/
 

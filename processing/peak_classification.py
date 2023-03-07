@@ -61,17 +61,17 @@ class Peaks():
         self.peaks = []
         self.difference_start = []
         self.peaks_data = None
-        self.peak_widths = []
-        self.peak_previous = []
+        self.peak_widths = np.array([])
+        self.peak_previous = np.array([])
         self.zeros = np.zeros(len(self.q))
-        self.peaks_analysed = []
-        self.peaks_analysed_q = []
-        self.peaks_analysed_I = []
-        self.peaks_analysed_b = []
+        self.peaks_analysed = np.array([])
+        self.peaks_analysed_q = np.array([])
+        self.peaks_analysed_I = np.array([])
+        self.peaks_analysed_b = np.array([])
         self.peak_number = 0
         self.peaks_analysed_dict = {}
         self.total_fit = []
-        self.peaks_detected = []
+        self.peaks_detected = np.array([])
         self.start_loss = 0
         self.final_loss = 0
 
@@ -114,13 +114,12 @@ class Peaks():
     def background_plot(self):
         plt.clf()
         plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data_without_background')
-        plt.plot(self.q, self.model, label = 'background')
-        plt.plot(self.q, BACKGROUND_COEF*self.model, label = 'moderated_background')
-        plt.plot(self.q, self.I, linewidth=0.5, c='b', label = 'raw_data')
+        plt.plot(self.q, self.model, label='background')
+        plt.plot(self.q, BACKGROUND_COEF * self.model, label='moderated_background')
+        plt.plot(self.q, self.I, linewidth=0.5, c='b', label='raw_data')
         plt.plot(self.q, self.zeros, label='zero_level')
         plt.legend()
         plt.savefig(self.file_analyse_dir + '/00_background_raw_' + self.file + '.pdf')
-
 
         plt.clf()
         plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data')
@@ -128,10 +127,6 @@ class Peaks():
         plt.plot(self.q, self.zeros, label='zero_level')
         plt.legend()
         plt.savefig(self.file_analyse_dir + '/01_background_filtered_' + self.file + '.pdf')
-
-
-
-
 
     def peak_searching(self, height=0, distance=5, prominence=0.1):
         self.peaks, self.peaks_data = find_peaks(self.difference,
@@ -291,12 +286,12 @@ class Peaks():
         peaks_detected = self.peaks_detected[sorted_indices_q]
 
         return {
-                    'peak_number':self.peak_number,
-                    'q':q.tolist(),
-                    'I':I.tolist(),
-                    'dI':dI.tolist(),
-                    'I_raw':I_raw.tolist(),
-                    'peaks':peaks_detected.tolist(),
-                    'start_loss': self.start_loss,
-                    'final_loss': self.final_loss,
-                    'loss_ratio': self.final_loss / self.start_loss * 100}
+            'peak_number': self.peak_number,
+            'q': q.tolist(),
+            'I': I.tolist(),
+            'dI': dI.tolist(),
+            'I_raw': I_raw.tolist(),
+            'peaks': peaks_detected.tolist(),
+            'start_loss': self.start_loss,
+            'final_loss': self.final_loss,
+            'loss_ratio': self.final_loss / self.start_loss * 100}
