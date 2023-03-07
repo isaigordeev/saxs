@@ -168,6 +168,9 @@ class Phases():
 
     def gathering(self):
         softmin = nn.Softmin(dim=0)
-        self.data['phase'] = self.class_names[np.argmin(self.alignement_dict[len(self.q)])]
+        print(self.sorted_indices_I_start)
+        # self.data['phase'] = self.class_names[np.argmin(self.alignement_dict[len(self.q)])]
+        self.data['phase'] = self.class_names[np.argmin(self.alignement_dict[len(self.q_analyzed)+1])]
         self.data['distribution'] = softmin(torch.tensor(self.alignement_dict[len(self.q)], dtype=torch.float32)).tolist()
+        self.data['peaks_without_suspicious'] = self.sorted_indices_I_start[self.suspicious_peaks:].tolist()
         return self.data
