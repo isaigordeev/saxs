@@ -57,11 +57,11 @@ for filename in get_filenames_without_ext(DATA_DIR):
     peaks.result_plot()
     data[peaks.file] = peaks.gathering()
     files_number += 1
-    print(peaks.peaks_data)
+    # print(peaks.peaks_data)
     if data[peaks.file]['peak_number'] == 0:
         continue
 
-    phases = Phases(filename, current_session, defined_phases, class_names, data[peaks.file])
+    phases = Fastdw(filename, current_session, defined_phases, class_names, data[peaks.file])
     phases.preset_plot()
     phases.data_preparing()
     phases.alignement()

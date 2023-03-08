@@ -31,6 +31,7 @@ def parabole(x, c, b):
 class Peaks():
     def __init__(self, filename, DATA_DIR, current_session):
 
+        self.peak_empty = False
         self.peak_plots = {}
         self.peaks_boundaries = np.array([])
         self.file = filename
@@ -79,6 +80,7 @@ class Peaks():
         self.peaks_detected = np.array([])
         self.start_loss = 0
         self.final_loss = 0
+        self.passed = 0
 
         self.popt_background = []
 
@@ -133,11 +135,11 @@ class Peaks():
         plt.legend()
         plt.savefig(self.file_analyse_dir + '/01_background_filtered_' + self.file + '.pdf')
 
-    def peak_searching(self, height=0, distance=5, prominence=0.1, width=5):
+    def peak_searching(self, height=0, distance=5, prominence=0.1):
         self.peaks, self.peaks_data = find_peaks(self.difference,
                                                  height=height,
                                                  distance=distance,
-                                                 prominence=prominence, width=width)
+                                                 prominence=prominence)
         # if self.peaks.size == 0:
 
     def peak_verifying(self):
@@ -149,45 +151,52 @@ class Peaks():
         if np.size(self.peaks) != 0:
             period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
             period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
-
             gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
 
-            popt, pcov = curve_fit(
-                f=gauss,
-                xdata=self.q[period1:period2],
-                ydata=self.difference[period1:period2],
-                bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
-                sigma=self.dI[period1:period2]
-            )
+            if period1 != period2:
+                popt, pcov = curve_fit(
+                    f=gauss,
+                    xdata=self.q[period1:period2],
+                    ydata=self.difference[period1:period2],
+                    bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
+                    sigma=self.dI[period1:period2]
+                )
 
-            perr = np.sqrt(np.diag(pcov))
+                perr = np.sqrt(np.diag(pcov))
 
-            return gauss(self.q, popt[0], popt[1]), \
-                period1, period2, i, \
-                self.q[self.peaks[i]], \
-                gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
+                return gauss(self.q, popt[0], popt[1]), \
+                    period1, period2, i, \
+                    self.q[self.peaks[i]], \
+                    gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
 
     def peak_fitting_substraction_gauss(self, i):
+        self.peak_empty = False
+
         factor = 1
         peak = self.peak_fitting_gauss(i)
-        while peak[9][1] / peak[7] > 0.11:
-            peak = self.peak_fitting_gauss(i, width_factor=factor)
-            factor *= 0.8
+
+        if peak is None:
+            self.peak_empty = True
+            print('peak error empty')
+            return 0
+
+
+        # while peak[9][1] / peak[7] > 0.2:
+        #     factor *= 0.9
+        #     peak = self.peak_fitting_gauss(i, width_factor=factor)
+        #     if peak is None:
+        #         self.peak_empty = True
+        #         return
 
         self.peak_plots[self.peak_number] = peak[0]
-        # plt.clf()
-        # plt.plot(self.q, peak[0], label = 'fuck')
-        # plt.plot(self.q, self.peak_plots[self.peak_number], label = 'fuck')
-        # plt.plot(self.q, self.difference_start)
-        # plt.plot(self.q, self.difference, label='filtered_data')
-        # plt.plot(self.q[self.peaks], self.difference[self.peaks], "x", label='all_peaks_detected')
-        # plt.legend()
-        # plt.show()
+
 
         print('peak', self.peak_number)
-        print('Errors:', peak[9])
-        print('coef%', peak[6], peak[7])
+        print(self.file)
         print('errors%', peak[9][0] / peak[6], peak[9][1] / peak[7])
+
+
+
 
         # more efficient O(1) – previsioned array
         self.peak_previous = np.append(self.peak_previous, self.peaks[i])
@@ -201,19 +210,14 @@ class Peaks():
         self.peaks_analysed_b = np.append(self.peaks_analysed_b,
                                           peak[7])
 
-        # self.peaks_plots[self.peak_number] = peak[0]
-        # self.peaks_plots = np.append(self.peaks_plots,
-        #                                   (peak[0]))
-
-
-        # print(len(self.peaks_plots[self.peak_number]))
-        print(len(self.peaks_plots))
         self.peaks_analysed_dict[peak[4]] = peak[5]
         self.peaks_detected = np.append(self.peaks_detected, peak[8])
 
-        self.peak_number += 1
         self.total_fit += peak[0]
         self.difference -= peak[0]
+        self.filtering_negative()
+        self.stage_plot()
+        self.peak_number += 1
         # self.peaks_boundaries = np.append(self.peaks_boundaries, (peak[0], peak[1]))
 
     def filtering_negative(self):
@@ -225,7 +229,7 @@ class Peaks():
         plt.clf()
         plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data')
         plt.plot(self.q, self.difference_start, label='filtered_raw_data')
-        plt.plot(self.q, self.difference, label='filtered_data')
+        plt.plot(self.q, self.difference, 'x', label='filtered_data')
         plt.plot(self.q[self.peaks], self.difference_start[self.peaks], "x", label='all_peaks_detected')
         # if self.peak_fitting_gauss(i) is not None:
         #     plt.plot(self.q, self.peak_fitting_gauss(i)[0], linewidth=2.5, label='current_peak')
@@ -233,11 +237,11 @@ class Peaks():
         #              self.difference[self.peak_fitting_gauss(i)[1]:self.peak_fitting_gauss(i)[2]], 'o',
         #              label='zone_curr_peak')
 
-        plt.plot(self.q, self.peak_plots[self.peak_number-1], 'x', linewidth=2.5, label='current_peak')
+        plt.plot(self.q, self.peak_plots[self.peak_number], 'x', linewidth=2.5, label='current_peak')
         plt.plot(self.q, self.zeros, label='zero_level')
         plt.plot(self.q, self.total_fit, linewidth=2.5, label='total')
         plt.legend()
-        plt.savefig(self.file_analyse_dir_peaks + '/' + self.file + '_peak:' + str(self.peak_number-1) + '.pdf')
+        plt.savefig(self.file_analyse_dir_peaks + '/' + self.file + '_peak:' + str(self.peak_number) + '.pdf')
 
     def result_plot(self):
         plt.clf()
@@ -271,7 +275,6 @@ class Peaks():
         # plt.legend()
         # plt.savefig(self.file_analyse_dir + '/11_result_raw_' + self.file + '.pdf')
 
-
     def get_difference_filtered(self):
         data_zipped = np.array(list(zip(self.q, self.difference, self.dI)))
         with open('data_break_peak:' + str(self.peak_number) + '.csv', 'w', newline='') as csvfile:
@@ -288,15 +291,10 @@ class Peaks():
             self.peak_verifying()
             if len(self.peaks) == 0:
                 break
-            if self.peak_fitting_gauss(0) is None:
-                continue
-            else:
-                number_peak -= 1
-                # self.peak_fitting_parabole(0)
-                self.peak_fitting_substraction_gauss(0)
-                self.filtering_negative()
-                self.stage_plot()
-        self.stage_plot()
+            number_peak -= 1
+            self.peak_fitting_substraction_gauss(0)
+            print('peak_number', self.peak_number)
+        # self.stage_plot()
         if get:
             self.get_difference_filtered()
 
@@ -305,8 +303,8 @@ class Peaks():
         # print('Covariance filtered', np.cov(self.I_backfiltered, self.total_fit)[0][1])
         self.final_loss = np.mean((self.difference_start - self.total_fit) ** 2)
         # print('Covariance raw', np.mean((self.I_backfiltered-self.total_fit)**2))
-        print('Loss raw', self.start_loss)
-        print('Loss filtered', self.final_loss)
+        # print('Loss raw', self.start_loss)
+        # print('Loss filtered', self.final_loss)
 
         sorted_indices_q = np.argsort(self.peaks_analysed_q)
 
