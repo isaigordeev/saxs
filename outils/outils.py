@@ -30,6 +30,7 @@ def background_plot(q, I):
     plt.clf()
     plt.plot(q, I, linewidth=0.5, label='raw_data')
     plt.show()
+    # plt.savefig('1')
 
 
 def background_reduction(q, I, dI):
