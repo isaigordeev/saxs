@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 res/
 .idea/
+.vscode/
 
 # C extensions
 *.so

@@ -5,7 +5,7 @@ import torch, data_setup, model_build, engine, utils
 
 torch.manual_seed(SEED)
 
-data, train_loader, test_loader = data_setup.create_batches('/Users/isaigordeev/Desktop/2023/SAS-DL/data/',
+data, train_loader, test_loader = data_setup.create_batches('/Users/isaigordeev/Desktop/2023/SAS-DL/data/dot',
                                                             data_setup.data_transform,
                                                             0.2)
 
