@@ -78,6 +78,23 @@ class TinyVGG(nn.Module):
         x = self.conv_block_1(x)
         x = self.conv_block_2(x)
         return self.classifier(x)
+    
+
+
+
+class SASXpy(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.block1 = nn.Sequential(
+            nn.Linear(),
+            nn.Conv2d(),
+            nn.Linear(),
+        )
+
+
+    def forward(self, x: torch.Tensor):
+
+        return self.block1(x)
 
 
 
