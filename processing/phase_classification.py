@@ -136,9 +136,10 @@ class Phases():
         return self.data
 
 
-class Fastdw():
+class Fastdw(Phases):
     def __init__(self, filename, current_session, phases, class_names, data: dict):
 
+        super().__init__(filename, current_session, phases, class_names, data)
         self.q_normalized_ratio = np.array([])
         self.alignement_dict = {}
         self.phases = phases

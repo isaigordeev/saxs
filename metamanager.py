@@ -22,21 +22,15 @@ if not os.path.exists(current_session_results):
 
 
 def get_filenames(folder_path):
-    """
-    Generator that yields the filenames in the given folder path.
-    """
+
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             yield filename
 
 
 def get_filenames_without_ext(folder_path):
-    """
-    Generator that yields the filenames (without extensions) in the given folder path.
-    """
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
-            # Split the filename into name and extension, and return just the name
             name, extension = os.path.splitext(filename)
             yield name
 
