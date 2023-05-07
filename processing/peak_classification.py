@@ -27,6 +27,34 @@ def gauss(x, c, b):
 def parabole(x, c, b):
     return c - (x - 0.04) ** 2 / (b ** 2)
 
+class Initialization:
+    def __init__(self, filename, DATA_DIR, current_session):
+        self.filename = filename
+        self.DATA_DIR = DATA_DIR
+        self.current_session = current_session
+
+        self.file_analyse_dir = current_session + self.filename
+        self.file_analyse_dir_peaks = current_session + self.filename + '/peaks'
+
+        if not os.path.exists(self.file_analyse_dir):
+            os.mkdir(self.file_analyse_dir)
+        if not os.path.exists(self.file_analyse_dir_peaks):
+            os.mkdir(self.file_analyse_dir_peaks)
+
+
+        data = pd.read_csv(self.DATA_DIR + self.filename + EXTENSION, sep=',')
+        data = data.apply(pd.to_numeric, errors='coerce')
+        data = data.dropna()
+
+        self.q = np.array(data.iloc[:, 0])
+        self.I = np.array(data.iloc[:, 1])
+        self.dI = np.array(data.iloc[:, 2])
+
+        self.delta_q = self.q[len(self.q) - 1] / len(self.q)
+        self.max_dI = np.median(self.dI)
+
+
+
 
 class Peaks():
     def __init__(self, filename, DATA_DIR, current_session):

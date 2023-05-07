@@ -10,21 +10,29 @@ current_time = now.strftime("%H:%M:%S")
 
 current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
 
+class Manager:
+    def __init__(self, current_session:str, DATA_DIR=DATA_DIR):
+        self.DATA_DIR = DATA_DIR
+        self.current_session = current_session
+        self.data = {}
 
-peaks = Peaks(FILENAME, DATA_DIR, current_session=current_session)
-peaks.background_reduction()
-peaks.filtering()
-peaks.filtering_negative()
-peaks.peak_processing()
-peaks.gathering()
-# print(peaks.peaks_plots)
-peaks.result_plot()
+    def SingleProcessing(self, FILENAME):
+        peaks = Peaks(FILENAME, self.DATA_DIR, current_session=self.current_session)
+        peaks.background_reduction()
+        peaks.filtering()
+        peaks.background_plot()
+        peaks.filtering_negative()
+        peaks.peak_processing()
+        peaks.result_plot()
+        self.data = peaks.gathering()
 
-# print(peaks.peaks_analysed_q,)
-# print(peaks.peaks_analysed_I,)
-# plt.clf()
-# plt.plot(peaks.peaks_analysed_q, peaks.peaks_analysed_I, 'x' )
-# plt.show()
+    def print_data(self):
+        print(self.data)
 
-# phase = Phase(peaks.peaks_analysed_q, peaks.peaks_analysed_I, dI)
-# phase.analyzing()
+
+
+
+manager = Manager(current_session)
+manager.SingleProcessing(FILENAME)
+manager.print_data()
+
