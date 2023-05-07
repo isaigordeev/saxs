@@ -1,7 +1,7 @@
 from torch import nn
 from setup import SEED, NUM_EPOCHS, DEVICE, SET_DIR, SAVE_MODEL_DIR
 
-import torch, data_setup, model_build, engine, utils
+import torch, data_setup, model_build, engine, tools
 
 torch.manual_seed(SEED)
 
@@ -28,7 +28,7 @@ tiny_model_results = engine.train(model=tiny_model,
 
 print(tiny_model_results)
 
-utils.save_model(model=model_build.TinyVGG,
+tools.save_model(model=model_build.TinyVGG,
                  target_dir=SAVE_MODEL_DIR,
                  model_name=model_name)
 
