@@ -35,11 +35,15 @@ aI = I.reshape(1, len(I))
 new_I = I.reshape(len(I), 1)
 
 
-plt.plot( q, I, label = 'non_fil')
+i = np.load("d_cubic.npy")
+print(i)
+
+# plt.plot( q, I, label = 'non_fil')
 # plt.plot(q, I_filtered, label = 'si')
-# plt.plot(q, norm_I, label = 'standartised')
+plt.plot(q, norm_I, label = 'standartised')
 plt.legend()
 
 
-plt.savefig('test/standartization/' + FILENAME+'.pdf')
+# plt.savefig('test/standartization/' + FILENAME+'.pdf')
+plt.show()
 
