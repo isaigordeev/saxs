@@ -27,7 +27,7 @@ def gauss(x, c, b):
 def parabole(x, c, b):
     return c - (x - 0.04) ** 2 / (b ** 2)
 
-class Initialization:
+class PeakClassificator:
     def __init__(self, filename, DATA_DIR, current_session):
         self.filename = filename
         self.DATA_DIR = DATA_DIR
@@ -52,6 +52,16 @@ class Initialization:
 
         self.delta_q = self.q[len(self.q) - 1] / len(self.q)
         self.max_dI = np.median(self.dI)
+
+
+    def background_reduction(self):
+        pass
+
+    def filtering(self):
+        pass
+
+    # def
+
 
 
 
@@ -131,11 +141,12 @@ class Peaks():
 
         self.popt_background = popt
         self.model = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
+        self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
+
         # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
         # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
 
     def filtering(self):
-        self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
         self.difference = gaussian_filter(self.I_background_filtered,
                                           sigma=SIGMA_FILTER,
                                           truncate=TRUNCATE,
@@ -351,4 +362,4 @@ class Peaks():
             'peaks': peaks_detected.tolist(),
             'start_loss': self.start_loss,
             'final_loss': self.final_loss,
-            'loss_ratio': self.final_loss / self.start_loss * 100}
+            'loss_ratio': self.final_loss / self.start_loss}

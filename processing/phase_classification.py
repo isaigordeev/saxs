@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 import torch
-from fastdtw import fastdtw
+# from fastdtw import fastdtw
 import matplotlib.pyplot as plt
 from torch import nn
 

@@ -22,7 +22,6 @@ if not os.path.exists(current_session_results):
 
 
 def get_filenames(folder_path):
-
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             yield filename
@@ -61,11 +60,8 @@ for filename in get_filenames_without_ext(DATA_DIR):
     phases.alignement()
     data[peaks.file] = phases.gathering()
 
-
-
 time_final = time.time()
 print('Taken: ', time_final - time_start)
 
 with open(current_session_results + current_time + f'_{files_number}.json', 'w') as f:
     json.dump(data, f, indent=4, separators=(",", ": "))
-
