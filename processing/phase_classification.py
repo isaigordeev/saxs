@@ -1,15 +1,12 @@
 import os
+from datetime import date, datetime
 
-import numpy as np
-import torch
 # from fastdtw import fastdtw
 import matplotlib.pyplot as plt
+import torch
 from torch import nn
 
 from settings import *
-
-from datetime import date, datetime
-import time
 
 today = date.today()
 

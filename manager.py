@@ -1,15 +1,23 @@
-import pandas as pd
-
-from processing.peak_classification import *
-from processing.phase_classification import *
-import os
-import json
-from datetime import date, datetime
 import time
+time_start1 = time.time()
 
-today = date.today()
+import json
+import os
+
+from datetime import datetime
+
+from settings import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR
+
+
+from processing.custom_peak_classification import Peaks
+
+# from processing.phase_classification import
+
+time_start2 = time.time()
 
 now = datetime.now()
+today = now.today().date()
+
 current_time = now.strftime("%H:%M:%S")
 
 current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
@@ -27,6 +35,7 @@ def get_filenames(folder_path):
             yield filename
 
 
+
 def get_filenames_without_ext(folder_path):
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
@@ -36,9 +45,6 @@ def get_filenames_without_ext(folder_path):
 
 data = {}
 files_number = 0
-time_start = time.time()
-
-get_breaked = True
 
 class Manager:
     def __init__(self, current_session: str, DATA_DIR=DATA_DIR):
@@ -54,6 +60,10 @@ class Manager:
         peaks.background_plot()
         peaks.filtering_negative()
         peaks.peak_processing()
+
+        if peaks.peak_number == 0:
+            pass
+
         peaks.result_plot()
         self.data[filename] = peaks.gathering()
         self.files_number += 1
@@ -76,4 +86,7 @@ manager = Manager(current_session)
 manager.repo_processing()
 # manager.atomic_processing('075790_treated_xye')
 manager.write_data()
+time_finish = time.time()
 
+print(time_finish-time_start1)
+print(time_finish-time_start2)
