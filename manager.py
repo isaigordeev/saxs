@@ -65,6 +65,7 @@ class Manager:
             pass
 
         peaks.result_plot()
+        peaks.sum_total_fit()
         self.data[filename] = peaks.gathering()
         self.files_number += 1
         # phase TODO
