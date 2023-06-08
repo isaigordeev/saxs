@@ -8,8 +8,6 @@ from processing.peak_classification import background_hyberbole
 from settings import BACKGROUND_COEF, START, SIGMA_FILTER, TRUNCATE
 
 
-
-
 def read_data(data_dir_file, EXTENSION):
     data = pd.read_csv(data_dir_file + EXTENSION, sep=',')
     data = data.apply(pd.to_numeric, errors='coerce')
