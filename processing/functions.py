@@ -1,6 +1,8 @@
 import time
 from functools import wraps
 
+import numpy as np
+
 
 def background_exponent(x, a, b):
     return b * np.exp(x * a)

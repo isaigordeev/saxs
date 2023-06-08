@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths
 
-from processing.functions import background_hyberbole
+from processing.functions import background_hyberbole, gaussian_sum
 from processing.peak_classification import PeakClassificator
 from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START
 
@@ -66,6 +66,7 @@ class Peaks(PeakClassificator):
         self.popt_background = popt
         self.model = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
         self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
+
 
         # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
         # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
@@ -254,7 +255,37 @@ class Peaks(PeakClassificator):
             self.peak_substraction(0)
             # print('peak_number', self.peak_number)
 
-    # def total_fit(self):
+    def sum_total_fit(self):
+        if(len(self.params) != 0):
+            true_params = [1.0, -2.0, 1.5, 0.5, 0.0, 0.8]  # Amplitude, Mean, Std Dev for 2 Gaussians
+            # Define loss function for optimization
+
+            def loss_function(params):
+                y_pred = gaussian_sum(self.q, *params)
+                return np.sum((y_pred - self.I_background_filtered) ** 2)
+
+            # Initial guess for the parameters
+            initial_guess = [1.0, -1.0, 1.0, 1.0, 0.0, 0.5]
+
+            # Perform the fit using gradient descent
+            result = minimize(loss_function, self.params, method='CG')
+            fitted_params = result.x
+            y_fit = gaussian_sum(self.q, *fitted_params)
+
+            # Plot the results
+            plt.plot(self.q, self.I_background_filtered, 'g--', label='True Gaussian Sum')
+            plt.plot(self.q, y_fit, 'r-', label='Fitted Gaussian Sum')
+            plt.legend()
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.show()
+
+        else:
+            plt.plot(self.q, self.I_background_filtered, 'g--', label='True Gaussian Sum')
+            plt.legend()
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.show()
 
 
 
