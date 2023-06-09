@@ -50,6 +50,9 @@ class PeakClassificator:
     def gathering(self):
         pass
 
+    def sum_total_fit(self):
+        pass
+
 
 
 

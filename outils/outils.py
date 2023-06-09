@@ -4,7 +4,7 @@ import pandas as pd
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit
 
-from processing.peak_classification import background_hyberbole
+from processing.functions import background_hyberbole
 from settings import BACKGROUND_COEF, START, SIGMA_FILTER, TRUNCATE
 
 
@@ -47,23 +47,6 @@ def background_reduction(q, I, dI):
         sigma=dI
     )
 
-def fitting_parabole(q, I):
-    I_max = np.max(I)
-    I_i = np.argmax(I)
-    delta_q = q[-1] / len(q)
-
-    parabole = lambda x, c, b: c - (x - I_max) ** 2 / (b ** 2)
-    width = 20
-    for x in range(width, 1, -1):
-        popt, pcov = curve_fit(
-            f=parabole,
-            xdata=q[I_i - x:I_i + x],
-            ydata=I[I_i - x:I_i + x],
-            # p0 = ( 4, 0.02),
-            bounds=(delta_q ** 4, [2 * 2 * I_max, 1, ]),
-            sigma=dI[I_i - x:I_i + x]
-        )
-        pcov
 
 def filtering(I, model):
     I_background_filtered = I - BACKGROUND_COEF * model

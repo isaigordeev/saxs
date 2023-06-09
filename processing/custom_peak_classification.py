@@ -5,8 +5,8 @@ from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths
 
 from processing.functions import background_hyberbole, gaussian_sum, moving_average
-from processing.peak_classification import PeakClassificator
-from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START
+from processing.abstract_peak_classification import PeakClassificator
+from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE
 
 
 class Peaks(PeakClassificator):
@@ -15,6 +15,7 @@ class Peaks(PeakClassificator):
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
 
         # self.peaks_plots = {}
+        self.best_sigma = None
         self.params = np.array([])
         self.widths = np.array([])
         self.peak_plots = {}
@@ -67,7 +68,6 @@ class Peaks(PeakClassificator):
         self.model = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
         self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
 
-
         # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
         # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
 
@@ -85,20 +85,14 @@ class Peaks(PeakClassificator):
 
     def custom_filtering(self):
         y = self.I_background_filtered
-        window_size = 5
+        window_size = WINDOWSIZE
         smoothed_y = moving_average(y, window_size)
-
-        # plt.plot(self.q, y, label='Original')
-        plt.legend()
-        # plt.show()
-
 
         sigma_values = np.linspace(0.5, 5.0, 10)
 
-        best_sigma = None
+        self.best_sigma = None
         best_metric = np.inf
 
-        # Perform grid search
         for sigma in sigma_values:
             smoothed_difference = gaussian_filter(self.I_background_filtered,
                                                   sigma=sigma,
@@ -110,25 +104,26 @@ class Peaks(PeakClassificator):
                 best_metric = metric
                 best_sigma = sigma
 
-        # Output the best sigma value and the corresponding metric
-        print("Best range: ", best_sigma)
-        print("Best range_Metric: ", best_metric)
+        # print("Best SIGMA: ", best_sigma)
+        # print("Best SIGMA_Metric: ", best_metric)
+
         plt.clf()
         self.difference_start = gaussian_filter(self.I_background_filtered,
-                                                  sigma=best_sigma,
-                                                  truncate=4.0)
+                                                sigma=best_sigma,
+                                                truncate=4.0)
         self.difference = gaussian_filter(self.I_background_filtered,
-                                                  sigma=best_sigma,
-                                                  truncate=4.0)
-        plt.plot(self.q, gaussian_filter(self.I_background_filtered,
-                                                  sigma=best_sigma,
-                                                  truncate=4.0))
-        plt.plot(self.q, self.I_background_filtered, label='gde')
-        plt.plot(self.q, smoothed_y, label='Smoothed')
-        plt.legend()
-        plt.savefig('heap/filter ' + self.filename+'.pdf')
+                                          sigma=best_sigma,
+                                          truncate=4.0)
 
-    
+
+        # plt.plot(self.q, gaussian_filter(self.I_background_filtered,
+        #                                  sigma=best_sigma,
+        #                                  truncate=4.0))
+        # plt.plot(self.q, self.I_background_filtered, label='gde')
+        # plt.plot(self.q, smoothed_y, label='Smoothed')
+        # plt.legend()
+        # plt.savefig('heap/filter ' + self.filename + '.pdf')
+
     def background_plot(self):
         plt.clf()
         plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data_without_background')
@@ -152,17 +147,17 @@ class Peaks(PeakClassificator):
                                                  distance=distance,
                                                  prominence=prominence)
         # if self.peaks.size == 0:
-        print(self.peaks_data)
+        # print(self.peaks_data)
 
     def peak_verifying(self):
         if self.peak_previous in self.peaks:
             self.peaks = np.delete(self.peaks, *np.where(self.peaks == self.peak_previous))
         self.peak_widths = peak_widths(self.difference, self.peaks, rel_height=0.6)
 
-
     def custom_peak_fitting(self, i, width_factor=1):
         if np.size(self.peaks) != 0:
-            delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]), abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
+            delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]),
+                        abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
             # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
             # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
             period1 = self.peaks[i] - delta
@@ -182,10 +177,7 @@ class Peaks(PeakClassificator):
 
             sigma_values = np.linspace(4, start_delta, 10)
 
-            best_sigma = None
             best_metric = np.inf
-
-
 
             # Perform grid search
             for delta in sigma_values:
@@ -208,14 +200,14 @@ class Peaks(PeakClassificator):
 
                     if metric < best_metric:
                         best_metric = metric
-                        best_delta = delta
+                        self.best_delta = delta
 
             # Output the best sigma value and the corresponding metric
-            print("Best Sigma: ", best_delta)
-            print("Best Metric: ", best_metric)
+            # print("Best Sigma: ", self.best_delta)
+            # print("Best Metric: ", best_metric)
 
-            period1 = int(self.peaks[i] - best_delta)
-            period2 = int(self.peaks[i] + best_delta)
+            period1 = int(self.peaks[i] - self.best_delta)
+            period2 = int(self.peaks[i] + self.best_delta)
 
             popt, pcov = curve_fit(
                 f=gauss,
@@ -231,11 +223,11 @@ class Peaks(PeakClassificator):
             self.params = np.append(self.params, self.q[self.peaks[i]])
             self.params = np.append(self.params, popt[1])
 
-            plt.clf()
-            plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
-            plt.plot(self.q, self.I_background_filtered)
-            plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2])
-            plt.savefig('heap/' + str(self.peak_number)+'.png')
+            # plt.clf()
+            # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
+            # plt.plot(self.q, self.I_background_filtered)
+            # plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2])
+            # plt.savefig('heap/' + str(self.peak_number) + '.png')
 
             return gauss(self.q, popt[0], popt[1]), \
                 period1, period2, i, \
@@ -268,11 +260,11 @@ class Peaks(PeakClassificator):
                 self.params = np.append(self.params, self.q[self.peaks[i]])
                 self.params = np.append(self.params, popt[1])
 
-                plt.clf()
-                plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
-                plt.plot(self.q, self.I_background_filtered)
-                plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2])
-                plt.savefig('heap/' + str(self.peak_number) + '.png')
+                # plt.clf()
+                # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
+                # plt.plot(self.q, self.I_background_filtered)
+                # plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2])
+                # plt.savefig('heap/' + str(self.peak_number) + '.png')
 
                 return gauss(self.q, popt[0], popt[1]), \
                     period1, period2, i, \
@@ -311,7 +303,7 @@ class Peaks(PeakClassificator):
         self.peaks_analysed_b = np.append(self.peaks_analysed_b,
                                           peak[7])
         self.widths = np.append(self.peak_widths,
-                                     self.peak_widths[0][i])
+                                self.peak_widths[0][i])
 
         self.peaks_analysed_dict[peak[4]] = peak[5]
         self.peaks_detected = np.append(self.peaks_detected, peak[8])
@@ -378,7 +370,6 @@ class Peaks(PeakClassificator):
         # plt.legend()
         # plt.savefig(self.file_analyse_dir + '/11_result_raw_' + self.file + '.pdf')
 
-    
     def peak_processing(self, number_peak=INFINITY, get=False):
         while len(self.peaks) > -1 and number_peak > 0:
             self.peak_searching(height=0, prominence=PROMINENCE)
@@ -392,33 +383,32 @@ class Peaks(PeakClassificator):
             # print('peak_number', self.peak_number)
 
     def sum_total_fit(self):
-        if(len(self.params) != 0):
+        if (len(self.params) != 0):
             def loss_function(params):
                 y_pred = gaussian_sum(self.q, *params)
                 return np.sum((y_pred - self.I_background_filtered) ** 2)
 
             result = minimize(loss_function, self.params, method='BFGS')
             fitted_params = result.x
+            self.params = fitted_params
             y_fit = gaussian_sum(self.q, *fitted_params)
 
             plt.clf()
-            plt.plot(self.q, self.I_background_filtered, 'g--', label='True Gaussian Sum')
-            plt.plot(self.q, y_fit, 'r-', label='Fitted Gaussian Sum')
+            plt.title(str(sorted(self.peaks_analysed_q)))
+            plt.plot(self.q, self.I_background_filtered, 'g--', label='raw')
+            plt.plot(self.q, y_fit, 'r-', label='found ' +str(self.peak_number))
             plt.legend()
             plt.xlabel('x')
             plt.ylabel('y')
-            plt.savefig('heap/fittotal'+self.filename+ '.png')
+            plt.savefig('heap/fittotal' + self.filename + '.png')
             # plt.show()
 
         else:
-            plt.plot(self.q, self.I_background_filtered, 'g--', label='True Gaussian Sum')
+            plt.plot(self.q, self.I_background_filtered, 'g--', label='not found')
             plt.legend()
             plt.xlabel('x')
             plt.ylabel('y')
-            plt.savefig('heap/fittotal'+self.filename+ '.png')
-
-
-
+            plt.savefig('heap/fittotal' + self.filename + '.png')
 
     def gathering(self):
         # print('Covariance raw', np.cov(self.difference_start, self.total_fit)[0][1])
@@ -435,7 +425,7 @@ class Peaks(PeakClassificator):
         I_raw = self.I[self.peaks_detected][sorted_indices_q]
         dI = self.dI[self.peaks_detected][sorted_indices_q]
         peaks_detected = self.peaks_detected[sorted_indices_q]
-        print(self.params)
+        # print(self.params)
 
         return {
             'peak_number': self.peak_number,
@@ -444,8 +434,10 @@ class Peaks(PeakClassificator):
             'dI': dI.tolist(),
             'I_raw': I_raw.tolist(),
             'peaks': peaks_detected.tolist(),
-            # 'width': widths.tolist(),
+            'params_amplitude': self.params.tolist()[::3],
+            'params_mean': self.params.tolist()[1::3],
+            'params_sigma': self.params.tolist()[2::3],
             'start_loss': self.start_loss,
             'final_loss': self.final_loss,
-            'loss_ratio': self.final_loss / self.start_loss}
-
+            # 'loss_ratio': self.final_loss / self.start_loss
+        }

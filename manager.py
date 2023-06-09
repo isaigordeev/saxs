@@ -1,6 +1,7 @@
 import time
 time_start1 = time.time()
 
+import argparse
 import json
 import os
 
@@ -39,8 +40,9 @@ def get_filenames(folder_path):
 def get_filenames_without_ext(folder_path):
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
-            name, extension = os.path.splitext(filename)
-            yield name
+                name, extension = os.path.splitext(filename)
+                if (name != '.DS_Store'):
+                    yield name
 
 
 data = {}
@@ -69,6 +71,7 @@ class Manager:
         peaks.sum_total_fit()
         self.data[filename] = peaks.gathering()
         self.files_number += 1
+        print('Finished ' + filename + ' ' + str(self.files_number))
         # phase TODO
 
     def repo_processing(self):
