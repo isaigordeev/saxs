@@ -111,16 +111,22 @@ class Peaks(PeakClassificator):
                 best_sigma = sigma
 
         # Output the best sigma value and the corresponding metric
-        print("Best Sigma: ", best_sigma)
-        print("Best Metric: ", best_metric)
-        # plt.clf()
+        print("Best range: ", best_sigma)
+        print("Best range_Metric: ", best_metric)
+        plt.clf()
+        self.difference_start = gaussian_filter(self.I_background_filtered,
+                                                  sigma=best_sigma,
+                                                  truncate=4.0)
+        self.difference = gaussian_filter(self.I_background_filtered,
+                                                  sigma=best_sigma,
+                                                  truncate=4.0)
         plt.plot(self.q, gaussian_filter(self.I_background_filtered,
                                                   sigma=best_sigma,
                                                   truncate=4.0))
         plt.plot(self.q, self.I_background_filtered, label='gde')
         plt.plot(self.q, smoothed_y, label='Smoothed')
         plt.legend()
-        plt.show()
+        plt.savefig('heap/filter ' + self.filename+'.pdf')
 
     
     def background_plot(self):
@@ -395,6 +401,7 @@ class Peaks(PeakClassificator):
             fitted_params = result.x
             y_fit = gaussian_sum(self.q, *fitted_params)
 
+            plt.clf()
             plt.plot(self.q, self.I_background_filtered, 'g--', label='True Gaussian Sum')
             plt.plot(self.q, y_fit, 'r-', label='Fitted Gaussian Sum')
             plt.legend()
@@ -408,7 +415,7 @@ class Peaks(PeakClassificator):
             plt.legend()
             plt.xlabel('x')
             plt.ylabel('y')
-            plt.show()
+            plt.savefig('heap/fittotal'+self.filename+ '.png')
 
 
 

@@ -56,7 +56,7 @@ class Manager:
     def atomic_processing(self, filename):
         peaks = Peaks(filename, self.DATA_DIR, current_session=self.current_session)
         peaks.background_reduction()
-        peaks.filtering()
+        peaks.custom_filtering()
         peaks.background_plot()
         peaks.filtering_negative()
         peaks.peak_processing()
