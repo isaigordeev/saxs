@@ -25,6 +25,11 @@ def gaussian_sum(x, *params):
         amplitude, mean, std_dev = params[i:i+3]
         y += amplitude * np.exp(-((x - mean) / std_dev)**2)
     return y
+
+def moving_average(data, window_size):
+    window = np.ones(window_size) / window_size
+    return np.convolve(data, window, mode='same')
+
 def timer_decorator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
