@@ -3,7 +3,7 @@ import numpy as np
 # to be implemented unique for each data + manual adjusting
 START = 0.02
 BACKGROUND_COEF = 0.7
-SIGMA_FILTER = 2.5
+SIGMA_FILTER = 1.5
 SIGMA_FITTING = 0.3
 TRUNCATE = 4
 PROMINENCE = 0.6

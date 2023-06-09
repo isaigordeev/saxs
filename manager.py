@@ -65,6 +65,7 @@ class Manager:
             pass
 
         peaks.result_plot()
+
         peaks.sum_total_fit()
         self.data[filename] = peaks.gathering()
         self.files_number += 1
@@ -75,6 +76,17 @@ class Manager:
         for filename in filenames:
             self.atomic_processing(filename)
 
+    def custom_repo_processing(self):
+        filenames = get_filenames_without_ext(self.DATA_DIR)
+        for filename in filenames:
+            self.custom_processing(filename)
+
+    def custom_processing(self, filename):
+        peaks = Peaks(filename, self.DATA_DIR, current_session=self.current_session)
+        peaks.background_reduction()
+        peaks.custom_filtering()
+        # peaks.background_plot()
+
     def print_data(self):
         print(self.data)
 
@@ -84,10 +96,14 @@ class Manager:
 
 
 manager = Manager(current_session)
-manager.repo_processing()
-# manager.atomic_processing('075790_treated_xye')
-manager.write_data()
-time_finish = time.time()
+# manager.atomic_processing('075775_treated_xye')
+# manager.custom_repo_processing()
 
+manager.repo_processing()
+# manager.atomic_processing('075775_treated_xye')
+manager.write_data()
+
+
+time_finish = time.time()
 print(time_finish-time_start1)
 print(time_finish-time_start2)
