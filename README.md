@@ -1,6 +1,6 @@
 # SAXS analyse
 
-Gaussian processing for classification SAXS data 
+Gaussian processing and transformer model for classification SAXS data 
 
 TODO
 
@@ -13,4 +13,3 @@ TODO
 - packaging
 
 manager.py
-
