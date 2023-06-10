@@ -10,6 +10,7 @@ data, train_loader, test_loader = data_setup.create_batches('/Users/isaigordeev/
                                                             0.2)
 
 model_name = 'tiny_model' + '.pth'
+
 tiny_model = model_build.TinyVGG(input_shape=3,
                                  hidden_units=10,
                                  output_shape=len(data.classes)).to(DEVICE)

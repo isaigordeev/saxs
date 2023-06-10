@@ -66,7 +66,7 @@ def test_step(model: torch.nn.Module,
     return test_loss, test_acc
 
 
-@time_decorator
+@xtime_decorator
 def train(model:torch.nn.Module,
           train_dataloader: torch.utils.data.DataLoader,
           test_dataloader: torch.utils.data.DataLoader,
