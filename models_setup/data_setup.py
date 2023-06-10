@@ -8,7 +8,7 @@ SET_DIR = Path(SET_DIR)
 SEED = 42
 
 data_transform = transforms.Compose([
-    transforms.Resize(size=(64, 64)),
+    # transforms.Resize(size=(64, 64)), #NOTE resolution?
     transforms.ToTensor(),
 ])
 
