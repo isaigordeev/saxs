@@ -4,8 +4,8 @@ from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths
 
-from processing.functions import background_hyberbole, gaussian_sum, moving_average
-from processing.abstract_peak_classification import PeakClassificator
+from phase_processing.functions import background_hyberbole, gaussian_sum, moving_average
+from phase_processing.abstract_peak_classification import PeakClassificator
 from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
 
@@ -202,8 +202,11 @@ class Peaks(PeakClassificator):
 
                         smoothed_difference = gauss(self.q, popt[0], popt[1])
 
-                        metric = self.resolution*np.mean(np.square(smoothed_difference[period1:period2] - self.difference[period1:period2]))-np.sqrt(delta)/self.resolution
-                        
+                        # metric = self.resolution*np.mean(np.square(smoothed_difference[period1:period2] - self.difference[period1:period2]))-np.sqrt(delta)/self.resolution
+                        metric = np.mean(np.square(
+                            smoothed_difference[period1:period2] - self.difference[period1:period2])) - np.sqrt(
+                            delta)
+
                         if metric < best_metric:
                             best_metric = metric
                             self.best_delta = delta
