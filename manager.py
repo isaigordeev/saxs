@@ -10,9 +10,9 @@ from datetime import datetime
 from settings import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR
 
 
-from processing.custom_peak_classification import Peaks
+from phase_processing.custom_peak_classification import Peaks
 
-# from processing.phase_classification import
+# from phase_processing.phase_classification import
 
 time_start2 = time.time()
 
