@@ -6,7 +6,8 @@ from scipy.signal import find_peaks, peak_widths
 
 from processing.functions import background_hyberbole, gaussian_sum, moving_average
 from processing.abstract_peak_classification import PeakClassificator
-from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE
+from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
+    RESOLUTION_FACTOR
 
 
 class Peaks(PeakClassificator):
@@ -15,6 +16,7 @@ class Peaks(PeakClassificator):
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
 
         # self.peaks_plots = {}
+        self.resolution = 1
         self.best_sigma = None
         self.params = np.array([])
         self.widths = np.array([])
@@ -86,7 +88,7 @@ class Peaks(PeakClassificator):
     def custom_filtering(self):
         y = self.I_background_filtered
         window_size = WINDOWSIZE
-        smoothed_y = moving_average(y, window_size)
+        self.smoothed_I = moving_average(y, window_size)
 
         sigma_values = np.linspace(0.5, 5.0, 10)
 
@@ -98,7 +100,7 @@ class Peaks(PeakClassificator):
                                                   sigma=sigma,
                                                   truncate=4.0)
 
-            metric = np.mean(np.square(smoothed_difference - smoothed_y))
+            metric = np.mean(np.square(smoothed_difference - self.smoothed_I))
 
             if metric < best_metric:
                 best_metric = metric
@@ -145,94 +147,103 @@ class Peaks(PeakClassificator):
         self.peaks, self.peaks_data = find_peaks(self.difference,
                                                  height=height,
                                                  distance=distance,
-                                                 prominence=prominence)
+                                                 # threshold=0.2,
+                                                 plateau_size=1,
+                                                 prominence=(prominence, None))
         # if self.peaks.size == 0:
         # print(self.peaks_data)
 
-    def peak_verifying(self):
-        if self.peak_previous in self.peaks:
-            self.peaks = np.delete(self.peaks, *np.where(self.peaks == self.peak_previous))
-        self.peak_widths = peak_widths(self.difference, self.peaks, rel_height=0.6)
+    def peak_verifying(self, i):
+        if len(self.peaks) > i:
+            if self.peaks[i] in self.peak_previous:
+            #     self.peaks = np.delete(self.peaks, *np.where(self.peaks == self.peak_previous))
+            # self.peak_widths = peak_widths(self.difference, self.peaks, rel_height=0.6)
+                return True
 
     def custom_peak_fitting(self, i, width_factor=1):
-        if np.size(self.peaks) != 0:
-            delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]),
-                        abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
-            # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
-            # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
-            period1 = self.peaks[i] - delta
-            period2 = self.peaks[i] + delta
+        if len(self.peaks) > i:
+            if np.size(self.peaks) != 0:
+                delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]),
+                            abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
+                # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
+                # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
+                period1 = self.peaks[i] - delta
+                period2 = self.peaks[i] + delta
 
-            start_delta = delta
+                start_delta = delta
 
-            gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
+                gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
 
-            y = self.I_background_filtered
-            window_size = 5
-            smoothed_y = moving_average(y, window_size)
+                y = self.I_background_filtered
+                window_size = 5
+                smoothed_y = moving_average(y, window_size)
 
-            # plt.plot(self.q, y, label='Original')
-            plt.legend()
-            # plt.show()
+                # plt.plot(self.q, y, label='Original')
+                plt.legend()
+                # plt.show()
 
-            sigma_values = np.linspace(4, start_delta, 10)
+                sigma_values = np.linspace(4, start_delta, 10)
 
-            best_metric = np.inf
+                best_metric = np.inf
 
-            # Perform grid search
-            for delta in sigma_values:
-                period1 = int(self.peaks[i] - delta)
-                period2 = int(self.peaks[i] + delta)
+                for delta in sigma_values:
+                    period1 = int(self.peaks[i] - delta)
+                    period2 = int(self.peaks[i] + delta)
 
-                if period1 != period2:
+                    if period1 != period2:
 
-                    popt, pcov = curve_fit(
-                        f=gauss,
-                        xdata=self.q[period1:period2],
-                        ydata=self.difference[period1:period2],
-                        bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
-                        sigma=self.dI[period1:period2]
-                    )
+                        popt, pcov = curve_fit(
+                            f=gauss,
+                            xdata=self.q[period1:period2],
+                            ydata=self.difference[period1:period2],
+                            bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
+                            sigma=self.dI[period1:period2]
+                        )
 
-                    smoothed_difference = gauss(self.q, popt[0], popt[1])
+                        smoothed_difference = gauss(self.q, popt[0], popt[1])
 
-                    metric = np.mean(np.square(smoothed_difference[period1:period2] - self.difference[period1:period2]))
+                        metric = self.resolution*np.mean(np.square(smoothed_difference[period1:period2] - self.difference[period1:period2]))-np.sqrt(delta)/self.resolution
+                        
+                        if metric < best_metric:
+                            best_metric = metric
+                            self.best_delta = delta
 
-                    if metric < best_metric:
-                        best_metric = metric
-                        self.best_delta = delta
+                # Output the best sigma value and the corresponding metric
+                print("Best delta: ", self.best_delta)
+                print("Best metric: ", best_metric)
 
-            # Output the best sigma value and the corresponding metric
-            # print("Best Sigma: ", self.best_delta)
-            # print("Best Metric: ", best_metric)
+                # print("Best Metric: ", best_metric)
 
-            period1 = int(self.peaks[i] - self.best_delta)
-            period2 = int(self.peaks[i] + self.best_delta)
+                period1 = int(self.peaks[i] - self.best_delta)
+                period2 = int(self.peaks[i] + self.best_delta)
 
-            popt, pcov = curve_fit(
-                f=gauss,
-                xdata=self.q[period1:period2],
-                ydata=self.difference[period1:period2],
-                bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
-                sigma=self.dI[period1:period2]
-            )
+                popt, pcov = curve_fit(
+                    f=gauss,
+                    xdata=self.q[period1:period2],
+                    ydata=self.difference[period1:period2],
+                    bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
+                    sigma=self.dI[period1:period2]
+                )
 
-            perr = best_metric
+                perr = best_metric
 
-            self.params = np.append(self.params, popt[0])
-            self.params = np.append(self.params, self.q[self.peaks[i]])
-            self.params = np.append(self.params, popt[1])
+                self.params = np.append(self.params, self.q[self.peaks[i]])
+                self.params = np.append(self.params, popt[0])
+                self.params = np.append(self.params, popt[1])
+                self.resolution *= RESOLUTION_FACTOR
+                print(self.resolution)
 
-            # plt.clf()
-            # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
-            # plt.plot(self.q, self.I_background_filtered)
-            # plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2])
-            # plt.savefig('heap/' + str(self.peak_number) + '.png')
+                # plt.clf()
+                # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
+                # plt.plot(self.q, self.I_background_filtered)
+                # plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2])
+                # plt.savefig('heap/' + str(self.peak_number) + '.png')
 
-            return gauss(self.q, popt[0], popt[1]), \
-                period1, period2, i, \
-                self.q[self.peaks[i]], \
-                gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
+                return gauss(self.q, popt[0], popt[1]), \
+                    period1, period2, i, \
+                    self.q[self.peaks[i]], \
+                    gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
+        else: pass
 
     def peak_fitting(self, i, width_factor=1):
         if np.size(self.peaks) != 0:
@@ -259,6 +270,8 @@ class Peaks(PeakClassificator):
                 self.params = np.append(self.params, popt[0])
                 self.params = np.append(self.params, self.q[self.peaks[i]])
                 self.params = np.append(self.params, popt[1])
+
+
 
                 # plt.clf()
                 # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
@@ -292,7 +305,10 @@ class Peaks(PeakClassificator):
         self.peak_plots[self.peak_number] = peak[0]
 
         # more efficient O(1) – previsioned array
-        self.peak_previous = np.append(self.peak_previous, self.peaks[i])
+        valid_zone = np.arange(-5,6,1) #TODO
+        for x in valid_zone:
+            self.peak_previous = np.append(self.peak_previous, self.peaks[i]+x)
+
         self.peaks_analysed = np.append(self.peaks_analysed,
                                         (peak[4],
                                          peak[5]))
@@ -302,8 +318,8 @@ class Peaks(PeakClassificator):
                                           peak[5])
         self.peaks_analysed_b = np.append(self.peaks_analysed_b,
                                           peak[7])
-        self.widths = np.append(self.peak_widths,
-                                self.peak_widths[0][i])
+        # self.widths = np.append(self.peak_widths,
+        #                         self.peak_widths[0][0])
 
         self.peaks_analysed_dict[peak[4]] = peak[5]
         self.peaks_detected = np.append(self.peaks_detected, peak[8])
@@ -371,22 +387,39 @@ class Peaks(PeakClassificator):
         # plt.savefig(self.file_analyse_dir + '/11_result_raw_' + self.file + '.pdf')
 
     def peak_processing(self, number_peak=INFINITY, get=False):
+        current_peak = 0
         while len(self.peaks) > -1 and number_peak > 0:
-            self.peak_searching(height=0, prominence=PROMINENCE)
+            self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
             if len(self.peaks) == 0:
                 break
-            self.peak_verifying()
+            if self.peak_verifying(current_peak):
+                current_peak += 1
+                # pass
             if len(self.peaks) == 0:
                 break
             number_peak -= 1
-            self.peak_substraction(0)
+            self.peak_substraction(current_peak)
             # print('peak_number', self.peak_number)
+
+    def gaussian_sum_non_fit_q(self, x, *params):
+        y = np.zeros_like(x)
+        number = 0
+        for i in range(0, len(params), 3):
+            mean, amplitude, std_dev = params[i:i + 3]
+            y += amplitude * np.exp(-((x - self.peaks_analysed_q[number]) / std_dev) ** 2)
+            number += 1
+        return y
 
     def sum_total_fit(self):
         if (len(self.params) != 0):
+            print(self.params)
             def loss_function(params):
-                y_pred = gaussian_sum(self.q, *params)
-                return np.sum((y_pred - self.I_background_filtered) ** 2)
+                # y_pred = gaussian_sum(self.q, *params)
+                y_pred = self.gaussian_sum_non_fit_q(self.q, *params)
+
+                # return np.sum((y_pred - self.I_background_filtered) ** 2)
+                return np.sum((y_pred - self.smoothed_I) ** 2)
+
 
             result = minimize(loss_function, self.params, method='BFGS')
             fitted_params = result.x
@@ -394,13 +427,13 @@ class Peaks(PeakClassificator):
             y_fit = gaussian_sum(self.q, *fitted_params)
 
             plt.clf()
-            plt.title(str(sorted(self.peaks_analysed_q)))
+            plt.title(str(sorted(self.params.tolist()[1::3])))
             plt.plot(self.q, self.I_background_filtered, 'g--', label='raw')
             plt.plot(self.q, y_fit, 'r-', label='found ' +str(self.peak_number))
             plt.legend()
             plt.xlabel('x')
             plt.ylabel('y')
-            plt.savefig('heap/fittotal' + self.filename + '.png')
+            plt.savefig(self.file_analyse_dir + '/xx_total_fit_' + self.filename + '.pdf')
             # plt.show()
 
         else:
@@ -408,7 +441,7 @@ class Peaks(PeakClassificator):
             plt.legend()
             plt.xlabel('x')
             plt.ylabel('y')
-            plt.savefig('heap/fittotal' + self.filename + '.png')
+            plt.savefig(self.file_analyse_dir + '/xx_not_found_' + self.filename + '.pdf')
 
     def gathering(self):
         # print('Covariance raw', np.cov(self.difference_start, self.total_fit)[0][1])

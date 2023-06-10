@@ -163,6 +163,8 @@ __pycache__/
 
 # data
 res/
+res_txt/
+
 
 # IDE
 venv/
