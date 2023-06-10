@@ -22,7 +22,7 @@ def parabole(x, c, b):
 def gaussian_sum(x, *params):
     y = np.zeros_like(x)
     for i in range(0, len(params), 3):
-        amplitude, mean, std_dev = params[i:i+3]
+        mean, amplitude , std_dev   = params[i:i+3]
         y += amplitude * np.exp(-((x - mean) / std_dev)**2)
     return y
 
