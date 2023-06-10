@@ -43,3 +43,4 @@ for i, j in path1:
     plt.plot([i, j], [z[i], y[j]], color='gray')
 plt.legend()
 plt.show()
+print(array_sum)
