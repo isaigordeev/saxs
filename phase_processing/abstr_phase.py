@@ -97,35 +97,14 @@ class Phases():
         self.I = np.delete(self.I, errors)
         print('Deleted: ', len(errors))
 
-    def data_preparing(self):
-        self.sorted_indices_I = np.argsort(self.I)
-        self.sorted_indices_I_start = self.sorted_indices_I
-        self.q_normalized_ratio = ratio_data(0, np.sqrt(self.q))
+    def data_preparation(self):
+        pass
 
-        for x in self.I:
-            if x < 1.5 * PROMINENCE * np.average(self.I):
-                self.suspicious_peaks += 1
-
-        print('suspects ', self.suspicious_peaks)
-
-        for x in range(len(self.phases_coeffs)):
-            if len(self.q) < len(self.phases_coeffs[x]):
-                self.phases_coeffs[x] = self.phases_coeffs[x][:len(self.q) - 1]
-
-        # print(self.phases_coeffs)
-
-        # print(self.I, self.q, self.sorted_indices_q, self.sorted_indices_I)
-
-    def score_func(self, f, coeffs):
-        distance, path = f(coeffs, self.q_analyzed,
-                           dist=lambda x, y: abs(x - y))
-        return distance, path
+    def loss(self, f, coeffs):
+        pass
 
     def analyze(self):
-        for x in self.phases_coeffs:
-            self.alignement_dict[len(self.q_analyzed)] = np.append(self.alignement_dict[len(self.q_analyzed)],
-                                                          self.score_func(fastdtw, x)[0])
-        print(self.alignement_dict, 'dict')
+        pass
 
     def gathering(self):
         pass

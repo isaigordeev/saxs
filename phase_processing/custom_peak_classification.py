@@ -5,7 +5,7 @@ from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths
 
 from phase_processing.functions import background_hyberbole, gaussian_sum, moving_average
-from phase_processing.abstract_peak_classification import PeakClassificator
+from phase_processing.abstr_peak import PeakClassificator
 from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
 

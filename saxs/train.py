@@ -1,7 +1,7 @@
 from torch import nn
 from setup import SEED, NUM_EPOCHS, DEVICE, SET_DIR, SAVE_MODEL_DIR
 
-import torch, data_setup, model_build, engine, tools
+import torch, data_setup, model, engine, tools
 
 torch.manual_seed(SEED)
 
