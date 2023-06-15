@@ -1,4 +1,4 @@
-from model_build import *
+from model import *
 
 torch.manual_seed(SEED)
 

@@ -5,10 +5,10 @@ Gaussian processing and transformer model for classification SAXS data
 TODO
 
 - fine-tuned peak classification
+    - huge peak regularization
 - phase class
-- feed-forward class
 - direct algo
-- SAS-DL module
+- finish 4 models 
 - cache for DL
 - packaging
 
