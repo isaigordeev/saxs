@@ -89,7 +89,7 @@ class SASXTransformer(nn.Module):
                  img_size: int = 224,
                  in_channels: int = 3,
                  patch_size: int = 16,
-                 num_transformer_layers: int = 12,
+                 num_transformer_layers: int = 2,
                  embedding_dim: int = 768,
                  mlp_size: int = 3072,
                  num_heads: int = 12,
