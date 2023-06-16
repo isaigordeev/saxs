@@ -6,7 +6,7 @@ from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths
 
-from phase_processing.functions import background_hyberbole, gaussian_sum, moving_average
+from phase_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
 from phase_processing.abstr_peak import PeakClassificator
 from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
@@ -40,6 +40,7 @@ class Peaks(PeakClassificator):
         self.peaks_analysed_q = np.array([])
         self.peaks_analysed_I = np.array([])
         self.peaks_analysed_b = np.array([])
+        self.outnumbered_peaks = np.array([])
         self.peak_number = 0
         self.peaks_analysed_dict = {}
         self.total_fit = []
@@ -157,21 +158,10 @@ class Peaks(PeakClassificator):
 
 
 
-    # not the best function
-    def custom_peak_searching(self):
-        indexes = peakutils.indexes(self.I_background_filtered, thres=0.5, min_dist=30)
-
-        print(indexes)
-        print(self.q[indexes], self.I_background_filtered[indexes])
-        plt.clf()
-        plt.figure(figsize=(10, 6))
-        plt.plot(self.q[indexes], self.difference[indexes])
-        plt.plot(self.q, self.I_background_filtered)
-        plt.title('First estimate')
-        plt.show()
-
+    # probably it makes sense just move the centres?
     def custom_total_fit(self):
-        self.peaks_x = peakutils.interpolate(self.q, self.I_background_filtered, ind=self.peaks, func=)
+
+        self.peaks_x = peakutils.interpolate(x=np.arange(len(self.I_background_filtered)), y=self.I_background_filtered, ind=self.peaks)
         print(self.peaks_detected)
         print(self.peaks_x)
 
@@ -182,13 +172,65 @@ class Peaks(PeakClassificator):
             # self.peak_widths = peak_widths(self.difference, self.peaks, rel_height=0.6)
                 return True
 
+    def custom_peak_fitting_with_parabole(self, i):
+        if len(self.peaks) > i:
+            if np.size(self.peaks) != 0:
+                left_base = abs(self.peaks[i] - self.peaks_data['left_bases'][i])
+                right_base = abs(self.peaks[i] - self.peaks_data['right_bases'][i])
+                delta = min(left_base, right_base)/2
+                print(left_base, right_base, 'bases')
+                # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
+                # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
+
+                start_delta = delta
+
+                y = self.I_background_filtered
+                window_size = 5
+                smoothed_y = moving_average(y, window_size)
+
+
+                sigma_values = np.linspace(4, start_delta, 10)
+
+                best_metric = np.inf
+
+
+                period1 = int(self.peaks[i] - delta)
+                period2 = int(self.peaks[i] + delta)
+                print(period1, period2, 'perods')
+
+                current_peak_parabole = lambda x, sigma, ampl: parabole(x, self.q[self.peaks[i]], sigma, ampl )
+
+
+                popt, pcov = curve_fit(
+                    f=current_peak_parabole,
+                    xdata=self.q[period1:period2],
+                    ydata=self.difference[period1:period2],
+                    bounds=([self.delta_q**2, 1], [0.05, 4*self.max_I]),
+                    sigma=self.dI[period1:period2]
+                )
+
+                print(popt)
+
+                current_parabole = current_peak_parabole(self.q, popt[0], popt[1])[period1:period2]
+                plt.clf()
+                plt.plot(self.q[period1:period2], current_parabole)
+                plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2], 'x')
+                plt.plot(self.q, self.I_background_filtered)
+                plt.savefig(('heap/parabole_' + str(self.peak_number) + '.png'))
+
+
+
+                # return gauss(self.q, popt[0], popt[1]), \
+                #     period1, period2, i, \
+                #     self.q[self.peaks[i]], \
+                #     gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
+
     def custom_peak_fitting(self, i, width_factor=1):
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
                 left_base = abs(self.peaks[i] - self.peaks_data['left_bases'][i])
                 right_base = abs(self.peaks[i] - self.peaks_data['right_bases'][i])
                 delta = min(left_base, right_base)
-                print(left_base, right_base, 'bases')
                 # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 period1 = self.peaks[i] - delta
@@ -196,7 +238,7 @@ class Peaks(PeakClassificator):
 
                 start_delta = delta
 
-                gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
+                gauss = lambda x, ampl, sigma: ampl * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (sigma ** 2))
 
                 y = self.I_background_filtered
                 window_size = 5
@@ -237,7 +279,6 @@ class Peaks(PeakClassificator):
                         if not statement:
                             self.resolution -= 0.03
                         # else: self.resolution += 0.03
-                        print(self.resolution,'peak',  self.peak_number)
 
                         if metric < best_metric:
                             best_metric = metric
@@ -245,8 +286,8 @@ class Peaks(PeakClassificator):
 
 
                 # Output the best sigma value and the corresponding metric
-                print("Best delta: ", self.best_delta)
-                print("Best metric: ", best_metric)
+                # print("Best delta: ", self.best_delta)
+                # print("Best metric: ", best_metric)
 
                 # print("Best Metric: ", best_metric)
 
@@ -323,6 +364,7 @@ class Peaks(PeakClassificator):
         self.peak_empty = False
 
         factor = 1
+        self.custom_peak_fitting_with_parabole(i)
         peak = self.custom_peak_fitting(i)
 
         if peak is None:

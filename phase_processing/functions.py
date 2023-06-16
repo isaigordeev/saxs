@@ -16,8 +16,8 @@ def gauss(x, c, b):
     return c * np.exp(-(x - 0.04) ** 2 / b)
 
 
-def parabole(x, c, b):
-    return c - (x - 0.04) ** 2 / (b ** 2)
+def parabole(x, mu, sigma, ampl):
+    return ampl*(1 - (x - mu) ** 2 / (sigma ** 2))
 
 def gaussian_sum(x, *params):
     y = np.zeros_like(x)
