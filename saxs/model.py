@@ -3,7 +3,7 @@ import torch
 import efficientnet_pytorch
 
 
-class TinyVGG(nn.Module):
+class SASXpy_raw(nn.Module):
 
     def __init__(self, input_shape: int, hidden_units: int, output_shape: int) -> None:
         super().__init__()
@@ -148,3 +148,5 @@ class SASXTransformer(nn.Module):
         x = self.classifier(x[:, 0])
 
         return x
+
+
