@@ -22,15 +22,8 @@ modelx = SASXTransformer()
 #         col_width=20,
 #         row_settings=["var_names"])
 
-summary(model_vim, 
+summary(SASXTransformer(),
         input_size=(32, 3, 224,224), 
         col_names=["input_size", "output_size", "num_params", "trainable"],
         col_width=20,
         row_settings=["var_names"])
-
-model_vim.eval()
-
-with torch.inference_mode():
-    pred = model_vim(img)
-
-print(torch.softmax(pred, dim=1))

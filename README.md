@@ -6,9 +6,11 @@ TODO
 
 - fine-tuned peak classification
     - huge peak regularization
+    - or parabole fit??
 - phase class
 - direct algo
 - finish 4 models 
+    - Convolutional or Transormer Model + RNN with peak positions?
 - cache for DL
 - packaging
 
