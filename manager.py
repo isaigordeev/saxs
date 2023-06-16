@@ -68,8 +68,11 @@ class Manager:
 
         peaks.result_plot()
 
-        peaks.sum_total_fit()
+
         self.data[filename] = peaks.gathering()
+        peaks.custom_total_fit()
+        peaks.sum_total_fit()
+
         self.files_number += 1
         print('Finished ' + filename + ' ' + str(self.files_number))
         # phase TODO
