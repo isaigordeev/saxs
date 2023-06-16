@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import peakutils
+from peakutils import indexes
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths
@@ -16,7 +18,7 @@ class Peaks(PeakClassificator):
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
 
         # self.peaks_plots = {}
-        self.resolution = 1
+        self.resolution = 0.5
         self.best_sigma = None
         self.params = np.array([])
         self.widths = np.array([])
@@ -153,6 +155,26 @@ class Peaks(PeakClassificator):
         # if self.peaks.size == 0:
         # print(self.peaks_data)
 
+
+
+    # not the best function
+    def custom_peak_searching(self):
+        indexes = peakutils.indexes(self.I_background_filtered, thres=0.5, min_dist=30)
+
+        print(indexes)
+        print(self.q[indexes], self.I_background_filtered[indexes])
+        plt.clf()
+        plt.figure(figsize=(10, 6))
+        plt.plot(self.q[indexes], self.difference[indexes])
+        plt.plot(self.q, self.I_background_filtered)
+        plt.title('First estimate')
+        plt.show()
+
+    def custom_total_fit(self):
+        self.peaks_x = peakutils.interpolate(self.q, self.I_background_filtered, ind=self.peaks, func=)
+        print(self.peaks_detected)
+        print(self.peaks_x)
+
     def peak_verifying(self, i):
         if len(self.peaks) > i:
             if self.peaks[i] in self.peak_previous:
@@ -163,8 +185,10 @@ class Peaks(PeakClassificator):
     def custom_peak_fitting(self, i, width_factor=1):
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
-                delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]),
-                            abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
+                left_base = abs(self.peaks[i] - self.peaks_data['left_bases'][i])
+                right_base = abs(self.peaks[i] - self.peaks_data['right_bases'][i])
+                delta = min(left_base, right_base)
+                print(left_base, right_base, 'bases')
                 # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 period1 = self.peaks[i] - delta
@@ -178,15 +202,17 @@ class Peaks(PeakClassificator):
                 window_size = 5
                 smoothed_y = moving_average(y, window_size)
 
-                # plt.plot(self.q, y, label='Original')
-                plt.legend()
-                # plt.show()
+                self.resolution = 0.5
 
                 sigma_values = np.linspace(4, start_delta, 10)
 
                 best_metric = np.inf
 
                 for delta in sigma_values:
+                    statement = max(right_base, left_base) > 40 and max(right_base, left_base) / min(right_base, left_base) > 3
+                    if statement:
+                        self.resolution = 1
+
                     period1 = int(self.peaks[i] - delta)
                     period2 = int(self.peaks[i] + delta)
 
@@ -203,13 +229,20 @@ class Peaks(PeakClassificator):
                         smoothed_difference = gauss(self.q, popt[0], popt[1])
 
                         # metric = self.resolution*np.mean(np.square(smoothed_difference[period1:period2] - self.difference[period1:period2]))-np.sqrt(delta)/self.resolution
-                        metric = np.mean(np.square(
-                            smoothed_difference[period1:period2] - self.difference[period1:period2])) - np.sqrt(
-                            delta)
+                        metric = self.resolution*np.mean(np.square(
+                            smoothed_difference[period1:period2] - self.difference[period1:period2])) - (1-self.resolution)*np.sqrt(
+                            delta**2)
+                        # print("Changer res")
+
+                        if not statement:
+                            self.resolution -= 0.03
+                        # else: self.resolution += 0.03
+                        print(self.resolution,'peak',  self.peak_number)
 
                         if metric < best_metric:
                             best_metric = metric
                             self.best_delta = delta
+
 
                 # Output the best sigma value and the corresponding metric
                 print("Best delta: ", self.best_delta)
@@ -234,7 +267,6 @@ class Peaks(PeakClassificator):
                 self.params = np.append(self.params, popt[0])
                 self.params = np.append(self.params, popt[1])
                 self.resolution *= RESOLUTION_FACTOR
-                print(self.resolution)
 
                 # plt.clf()
                 # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
@@ -392,6 +424,7 @@ class Peaks(PeakClassificator):
     def peak_processing(self, number_peak=INFINITY, get=False):
         current_peak = 0
         while len(self.peaks) > -1 and number_peak > 0:
+            # self.custom_peak_searching()
             self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
             if len(self.peaks) == 0:
                 break
@@ -433,9 +466,16 @@ class Peaks(PeakClassificator):
             plt.title(str(sorted(self.params.tolist()[1::3])))
             plt.plot(self.q, self.I_background_filtered, 'g--', label='raw')
             plt.plot(self.q, y_fit, 'r-', label='found ' +str(self.peak_number))
+
+            for x in self.peaks_x:
+                plt.axvline(x, color='red', linestyle='--', label='Vertical Line')
+
             plt.legend()
             plt.xlabel('x')
             plt.ylabel('y')
+
+
+
             plt.savefig(self.file_analyse_dir + '/xx_total_fit_' + self.filename + '.pdf')
             # plt.show()
 
