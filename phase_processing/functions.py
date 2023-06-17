@@ -12,8 +12,8 @@ def background_hyberbole(x, a, b):
     return b * x ** (-a)
 
 
-def gauss(x, c, b):
-    return c * np.exp(-(x - 0.04) ** 2 / b)
+def gauss(x, mu, sigma, ampl):
+    return ampl * np.exp(-(x - mu) ** 2 / (sigma ** 2))
 
 
 def parabole(x, mu, sigma, ampl):
