@@ -11,140 +11,16 @@ from phase_processing.abstr_peak import PeakClassificator
 from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
 
+from phase_processing.custom_peak_classification import Peaks
 
-class Peaks(PeakClassificator):
+
+class PPeaks(Peaks):
     def __init__(self, filename, DATA_DIR, current_session):
 
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
 
-        # self.peaks_plots = {}
-        self.resolution = 0.5
-        self.best_sigma = None
-        self.params = np.array([])
-        self.widths = np.array([])
-        self.peak_plots = {}
-        self.peaks_plots = np.array([])
-        self.I_background_filtered = []
-        self.popt = []
-        self.pcov = []
-        self.max_I = np.max(self.I)
-        self.model = []
-        self.difference = []
-        self.peaks = []
-        self.difference_start = []
-        self.peaks_data = None
-        self.peak_widths = np.array([])
-        self.peak_previous = np.array([])
-        self.zeros = np.zeros(len(self.q))
-        self.peaks_analysed = np.array([])
-        self.peaks_analysed_q = np.array([])
-        self.peaks_analysed_I = np.array([])
-        self.peaks_analysed_b = np.array([])
-        self.outnumbered_peaks = np.array([])
-        self.peak_number = 0
-        self.peaks_analysed_dict = {}
-        self.total_fit = []
-        self.peaks_detected = np.array([])
-        self.start_loss = 0
-        self.final_loss = 0
-        self.passed = 0
-
-        self.gauss = True
-        self.popt_background = []
-
-    def background_reduction(self):
-
-        i = np.argmax(self.q > START)
-        self.q, self.I, self.dI = self.q[i:], self.I[i:], self.dI[i:]
-
-        self.zeros = np.zeros(len(self.q))
-        self.total_fit = self.zeros
-        self.peaks_plots = np.zeros((20, len(self.q)))
-
-        popt, pcov = curve_fit(
-            f=background_hyberbole,
-            xdata=self.q,
-            ydata=self.I,
-            p0=(3, 2),
-            sigma=self.dI
-        )
-
-        self.popt_background = popt
-        self.model = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
-        self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
-
-        # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
-        # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
-
-    def filtering(self):
-        if self.gauss:
-            self.difference = gaussian_filter(self.I_background_filtered,
-                                              sigma=SIGMA_FILTER,
-                                              truncate=TRUNCATE,
-                                              cval=0)
-            self.difference_start = gaussian_filter(self.I_background_filtered,
-                                                    sigma=SIGMA_FILTER,
-                                                    truncate=TRUNCATE,
-                                                    cval=0)
-            self.start_loss = np.mean((self.difference_start - self.total_fit) ** 2)
-
-    def custom_filtering(self):
-        y = self.I_background_filtered
-        window_size = WINDOWSIZE
-        self.smoothed_I = moving_average(y, window_size)
-
-        sigma_values = np.linspace(0.5, 5.0, 10)
-
-        self.best_sigma = None
-        best_metric = np.inf
-
-        for sigma in sigma_values:
-            smoothed_difference = gaussian_filter(self.I_background_filtered,
-                                                  sigma=sigma,
-                                                  truncate=4.0)
-
-            metric = np.mean(np.square(smoothed_difference - self.smoothed_I))
-
-            if metric < best_metric:
-                best_metric = metric
-                best_sigma = sigma
-
-        # print("Best SIGMA: ", best_sigma)
-        # print("Best SIGMA_Metric: ", best_metric)
-
-        plt.clf()
-        self.difference_start = gaussian_filter(self.I_background_filtered,
-                                                sigma=best_sigma,
-                                                truncate=4.0)
-        self.difference = gaussian_filter(self.I_background_filtered,
-                                          sigma=best_sigma,
-                                          truncate=4.0)
-
-
-        # plt.plot(self.q, gaussian_filter(self.I_background_filtered,
-        #                                  sigma=best_sigma,
-        #                                  truncate=4.0))
-        # plt.plot(self.q, self.I_background_filtered, label='gde')
-        # plt.plot(self.q, smoothed_y, label='Smoothed')
-        # plt.legend()
-        # plt.savefig('heap/filter ' + self.filename + '.pdf')
-
-    def background_plot(self):
-        plt.clf()
-        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data_without_background')
-        plt.plot(self.q, self.model, label='background')
-        plt.plot(self.q, BACKGROUND_COEF * self.model, label='moderated_background')
-        plt.plot(self.q, self.I, linewidth=0.5, c='b', label='raw_data')
-        plt.plot(self.q, self.zeros, label='zero_level')
-        plt.legend()
-        plt.savefig(self.file_analyse_dir + '/00_background_raw_' + self.filename + '.pdf')
-
-        plt.clf()
-        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data')
-        plt.plot(self.q, self.difference_start, label='filtered_raw_data')
-        plt.plot(self.q, self.zeros, label='zero_level')
-        plt.legend()
-        plt.savefig(self.file_analyse_dir + '/01_background_filtered_' + self.filename + '.pdf')
+        self.deltas = np.array([])
+        self.mask_factor = 0
 
     def peak_searching(self, height=0, distance=5, prominence=0.1):
         self.peaks, self.peaks_data = find_peaks(self.difference,
@@ -153,9 +29,6 @@ class Peaks(PeakClassificator):
                                                  # threshold=0.2,
                                                  plateau_size=1,
                                                  prominence=(prominence, None))
-        # if self.peaks.size == 0:
-        # print(self.peaks_data)
-
 
 
     # probably it makes sense just move the centres?

@@ -8,7 +8,7 @@ import os
 from datetime import datetime
 
 from settings import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR
-
+from phase_processing.abstr_peak import PeakClassificator
 
 from phase_processing.custom_peak_classification import Peaks
 
@@ -49,14 +49,15 @@ data = {}
 files_number = 0
 
 class Manager:
-    def __init__(self, current_session: str, DATA_DIR=DATA_DIR):
+    def __init__(self, current_session: str, DATA_DIR=DATA_DIR, _class = Peaks):
         self.DATA_DIR = DATA_DIR
         self.current_session = current_session
         self.data = {}
         self.files_number = 0
+        self._class = _class
 
     def atomic_processing(self, filename):
-        peaks = Peaks(filename, self.DATA_DIR, current_session=self.current_session)
+        peaks = self._class(filename, self.DATA_DIR, current_session=self.current_session)
         peaks.background_reduction()
         peaks.custom_filtering()
         peaks.background_plot()
@@ -85,13 +86,15 @@ class Manager:
     def custom_repo_processing(self):
         filenames = get_filenames_without_ext(self.DATA_DIR)
         for filename in filenames:
-            self.custom_processing(filename)
+            self.custom_atomic_processing(filename)
 
-    def custom_processing(self, filename):
+    def custom_atomic_processing(self, filename):
         peaks = Peaks(filename, self.DATA_DIR, current_session=self.current_session)
         peaks.background_reduction()
         peaks.custom_filtering()
-        # peaks.background_plot()
+        peaks.background_plot()
+        peaks.filtering_negative()
+
 
     def print_data(self):
         print(self.data)
@@ -101,15 +104,4 @@ class Manager:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
 
-manager = Manager(current_session)
-# manager.atomic_processing('075775_treated_xye')
-# manager.custom_repo_processing()
 
-manager.repo_processing()
-# manager.atomic_processing('075775_treated_xye')
-manager.write_data()
-
-
-time_finish = time.time()
-print(time_finish-time_start1)
-print(time_finish-time_start2)
