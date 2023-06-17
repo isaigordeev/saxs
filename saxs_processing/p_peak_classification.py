@@ -6,145 +6,21 @@ from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths
 
-from phase_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
-from phase_processing.abstr_peak import PeakClassificator
+from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
+from saxs_processing.abstr_peak import PeakClassificator
 from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
 
+from saxs_processing.custom_peak_classification import Peaks
 
-class Peaks(PeakClassificator):
+
+class PPeaks(Peaks):
     def __init__(self, filename, DATA_DIR, current_session):
 
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
 
-        # self.peaks_plots = {}
-        self.resolution = 0.5
-        self.best_sigma = None
-        self.params = np.array([])
-        self.widths = np.array([])
-        self.peak_plots = {}
-        self.peaks_plots = np.array([])
-        self.I_background_filtered = []
-        self.popt = []
-        self.pcov = []
-        self.max_I = np.max(self.I)
-        self.model = []
-        self.difference = []
-        self.peaks = []
-        self.difference_start = []
-        self.peaks_data = None
-        self.peak_widths = np.array([])
-        self.peak_previous = np.array([])
-        self.zeros = np.zeros(len(self.q))
-        self.peaks_analysed = np.array([])
-        self.peaks_analysed_q = np.array([])
-        self.peaks_analysed_I = np.array([])
-        self.peaks_analysed_b = np.array([])
-        self.outnumbered_peaks = np.array([])
-        self.peak_number = 0
-        self.peaks_analysed_dict = {}
-        self.total_fit = []
-        self.peaks_detected = np.array([])
-        self.start_loss = 0
-        self.final_loss = 0
-        self.passed = 0
-
-        self.gauss = True
-        self.popt_background = []
-
-    def background_reduction(self):
-
-        i = np.argmax(self.q > START)
-        self.q, self.I, self.dI = self.q[i:], self.I[i:], self.dI[i:]
-
-        self.zeros = np.zeros(len(self.q))
-        self.total_fit = self.zeros
-        self.peaks_plots = np.zeros((20, len(self.q)))
-
-        popt, pcov = curve_fit(
-            f=background_hyberbole,
-            xdata=self.q,
-            ydata=self.I,
-            p0=(3, 2),
-            sigma=self.dI
-        )
-
-        self.popt_background = popt
-        self.model = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
-        self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
-
-        # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
-        # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
-
-    def filtering(self):
-        if self.gauss:
-            self.difference = gaussian_filter(self.I_background_filtered,
-                                              sigma=SIGMA_FILTER,
-                                              truncate=TRUNCATE,
-                                              cval=0)
-            self.difference_start = gaussian_filter(self.I_background_filtered,
-                                                    sigma=SIGMA_FILTER,
-                                                    truncate=TRUNCATE,
-                                                    cval=0)
-            self.start_loss = np.mean((self.difference_start - self.total_fit) ** 2)
-
-    def custom_filtering(self):
-        y = self.I_background_filtered
-        window_size = WINDOWSIZE
-        self.smoothed_I = moving_average(y, window_size)
-
-        sigma_values = np.linspace(0.5, 5.0, 10)
-
-        self.best_sigma = None
-        best_metric = np.inf
-
-        for sigma in sigma_values:
-            smoothed_difference = gaussian_filter(self.I_background_filtered,
-                                                  sigma=sigma,
-                                                  truncate=4.0)
-
-            metric = np.mean(np.square(smoothed_difference - self.smoothed_I))
-
-            if metric < best_metric:
-                best_metric = metric
-                best_sigma = sigma
-
-        # print("Best SIGMA: ", best_sigma)
-        # print("Best SIGMA_Metric: ", best_metric)
-
-        plt.clf()
-        self.difference_start = gaussian_filter(self.I_background_filtered,
-                                                sigma=best_sigma,
-                                                truncate=4.0)
-        self.difference = gaussian_filter(self.I_background_filtered,
-                                          sigma=best_sigma,
-                                          truncate=4.0)
-
-
-        # plt.plot(self.q, gaussian_filter(self.I_background_filtered,
-        #                                  sigma=best_sigma,
-        #                                  truncate=4.0))
-        # plt.plot(self.q, self.I_background_filtered, label='gde')
-        # plt.plot(self.q, smoothed_y, label='Smoothed')
-        # plt.legend()
-        # plt.savefig('heap/filter ' + self.filename + '.pdf')
-
-    def background_plot(self):
-        plt.clf()
-        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data_without_background')
-        plt.plot(self.q, self.model, label='background')
-        plt.plot(self.q, BACKGROUND_COEF * self.model, label='moderated_background')
-        plt.plot(self.q, self.I, linewidth=0.5, c='b', label='raw_data')
-        plt.plot(self.q, self.zeros, label='zero_level')
-        plt.legend()
-        plt.savefig(self.file_analyse_dir + '/00_background_raw_' + self.filename + '.pdf')
-
-        plt.clf()
-        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data')
-        plt.plot(self.q, self.difference_start, label='filtered_raw_data')
-        plt.plot(self.q, self.zeros, label='zero_level')
-        plt.legend()
-        plt.savefig(self.file_analyse_dir + '/01_background_filtered_' + self.filename + '.pdf')
+        self.deltas = np.array([])
+        self.mask_factor = 0
 
     def peak_searching(self, height=0, distance=5, prominence=0.1):
         self.peaks, self.peaks_data = find_peaks(self.difference,
@@ -153,9 +29,6 @@ class Peaks(PeakClassificator):
                                                  # threshold=0.2,
                                                  plateau_size=1,
                                                  prominence=(prominence, None))
-        # if self.peaks.size == 0:
-        # print(self.peaks_data)
-
 
 
     # probably it makes sense just move the centres?
@@ -181,7 +54,7 @@ class Peaks(PeakClassificator):
                 start_delta = delta
 
                 delta = 3
-                print(left_base, right_base, 'bases')
+                # print(left_base, right_base, 'bases')
                 # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
 
@@ -190,43 +63,99 @@ class Peaks(PeakClassificator):
                 window_size = 5
                 smoothed_y = moving_average(y, window_size)
 
+                # uniform_indices = np.linspace(0, len(self.I_background_filtered) - 1, 500)
+                # uniform_array = np.interp(uniform_indices, range(len(self.I_background_filtered)), smoothed_y)
+                # plt.clf()
+                # plt.plot(uniform_indices, uniform_array, 'x')
+                # plt.plot(self.q, self.I_background_filtered)
 
-                sigma_values = np.linspace(4, start_delta, 10)
+                # plt.show()
+                # print(uniform_array)
 
+                # sigma_values = np.linspace(3, 20, 5) # NOTE optimine
+
+                sigma_values = [3]
                 best_metric = np.inf
 
 
-                period1 = int(self.peaks[i] - delta)
-                period2 = int(self.peaks[i] + delta)
+                period1_global = int(self.peaks[i] - 20)
+                period2_global = int(self.peaks[i] + 20)
 
-
-                print(period1, period2, 'perods')
-
+                period1_fix = int(self.peaks[i] - 20)
+                period2_fix = int(self.peaks[i] + 20)
                 current_peak_parabole = lambda x, sigma, ampl: parabole(x, self.q[self.peaks[i]], sigma, ampl )
 
+                popt = None
 
-                popt, pcov = curve_fit(
-                    f=current_peak_parabole,
-                    xdata=self.q[period1:period2],
-                    ydata=self.I_background_filtered[period1:period2],
-                    bounds=([self.delta_q**2, 1], [0.05, 4*self.max_I]),
-                    sigma=self.dI[period1:period2]
-                )
+                p_num = 0
+                for delta in sigma_values:
 
-                print(popt)
-                print(pcov)
+                    period1 = int(self.peaks[i] - delta)
+                    period2 = int(self.peaks[i] + delta)
+                    print(period1, period2, delta , 'perods')
+
+                    popt1, pcov1 = curve_fit(
+                        f=current_peak_parabole,
+                        xdata=self.q[period1:period2],
+                        ydata=smoothed_y[period1:period2],
+                        bounds=([self.delta_q**2, 1], [0.05, 4*self.max_I]),
+                        sigma=self.dI[period1:period2]
+                    )
+
+                    # period1_fix = int(self.peaks[i] - popt1[0]/self.delta_q)
+                    # period2_fix = int(self.peaks[i] + popt1[0]/self.delta_q)
+
+                    period1_fix = int(self.peaks[i] - delta)
+                    period2_fix = int(self.peaks[i] + delta)
+
+                    new_delta = popt1[0]/self.delta_q
+                    print(new_delta, 'new delta')
+
+                    smoothed_difference = current_peak_parabole(self.q, popt1[0], popt1[1])
+
+                    # fixed_metric
+                    # metric = np.mean(np.square(
+                    #     smoothed_difference[period1_fix:period2_fix] - smoothed_y[period1_fix:period2_fix]))/(2*new_delta)
+
+                    metric = np.mean(np.square(
+                        smoothed_difference[period1_fix:period2_fix] - self.difference_start[period1_fix:period2_fix]))/(delta)
+
+                    # plt.clf()
+                    # plt.plot(self.q, self.I_background_filtered)
+                    # plt.plot(self.q[period1_global:period2_global], self.difference_start[period1_global:period2_global])
+                    # plt.plot(self.q[period1_global:period2_global], smoothed_difference[period1_global:period2_global])
+                    # plt.savefig(('heap/parabole_cur_' + str(p_num) + '.png'))
+
+                    # p_num += 1
+
+                    print(metric)
+                    if metric < best_metric:
+                        best_metric = metric
+                        start_delta = delta
+                        popt = popt1
+                        pcov = pcov1
+
+
 
                 period2 = int(self.peaks[i] + start_delta)
                 period1 = int(self.peaks[i] - start_delta)
 
+                best_delta = popt[0]/self.delta_q
+
+                period2 = int(self.peaks[i] + best_delta/2)
+                period1 = int(self.peaks[i] - best_delta/2)
+
+                # print(start_delta, 'best delta')
 
                 current_parabole = current_peak_parabole(self.q, popt[0], popt[1])[period1:period2]
                 plt.clf()
-                plt.plot(self.q[period1:period2], current_parabole)
-                plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2], 'x')
                 plt.plot(self.q, self.I_background_filtered)
+                plt.plot(self.q[period1:period2], smoothed_y[period1:period2], 'x')
+                plt.plot(self.q[period1:period2], current_parabole)
+
                 plt.title(f'{popt},{np.sqrt(np.diag(pcov))}')
-                print({popt[0]/self.delta_q})
+                # print({popt[0]/self.delta_q})
+                # plt.savefig(('heap/parabole_' + str(p_num) + '.png'))
                 plt.savefig(('heap/parabole_' + str(self.peak_number) + '.png'))
 
 
