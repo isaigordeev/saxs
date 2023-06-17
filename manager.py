@@ -7,12 +7,12 @@ import os
 
 from datetime import datetime
 
-from settings import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR
-from phase_processing.abstr_peak import PeakClassificator
+from settings import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR, PROMINENCE
+from saxs_processing.abstr_peak import PeakClassificator
 
-from phase_processing.custom_peak_classification import Peaks
+from saxs_processing.custom_peak_classification import Peaks
 
-# from phase_processing.phase_classification import
+# from saxs_processing.phase_classification import
 
 time_start2 = time.time()
 
@@ -89,11 +89,16 @@ class Manager:
             self.custom_atomic_processing(filename)
 
     def custom_atomic_processing(self, filename):
-        peaks = Peaks(filename, self.DATA_DIR, current_session=self.current_session)
+        peaks = self._class(filename, self.DATA_DIR, current_session=self.current_session)
         peaks.background_reduction()
         peaks.custom_filtering()
         peaks.background_plot()
         peaks.filtering_negative()
+        peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)
+        print(peaks.peaks)
+        peaks.state_plot()
+        # for x in range(len(peaks.peaks)):
+        peaks.custom_peak_fitting_with_parabole(0)
 
 
     def print_data(self):
