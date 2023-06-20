@@ -123,7 +123,8 @@ class Custom_Manager(Manager):
         peaks.peak_processing()
         # peaks.custom_peak_fitting(0)
         # peaks.peak_substraction(0)
-        # peaks.state_plot()
+        peaks.state_plot()
+        peaks.result_plot()
 
         # for x in range(len(peaks.peaks)):
         #     peaks.custom_peak_fitting_with_parabole(x)

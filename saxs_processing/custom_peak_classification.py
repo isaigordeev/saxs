@@ -450,7 +450,7 @@ class Peaks(PeakClassificator):
         plt.plot(self.q[self.peaks], self.difference_start[self.peaks], "x", label='all_peaks_detected')
         plt.legend()
 
-        plt.savefig(self.file_analyse_dir_peaks + '/' + self.filename + '_peak:' + str(self.peak_number) + '.pdf')
+        plt.savefig(self.file_analyse_dir_peaks + '/state_plot_' + self.filename + '_peak_num:' + str(self.peak_number) + '.pdf')
 
 
 

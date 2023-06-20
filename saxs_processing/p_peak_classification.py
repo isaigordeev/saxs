@@ -33,19 +33,19 @@ class PPeaks(Peaks):
                                                  plateau_size=1,
                                                  prominence=(prominence, None))
 
-
     # probably it makes sense just move the centres?
     def custom_total_fit(self):
 
-        self.peaks_x = peakutils.interpolate(x=np.arange(len(self.I_background_filtered)), y=self.I_background_filtered, ind=self.peaks)
+        self.peaks_x = peakutils.interpolate(x=np.arange(len(self.I_background_filtered)), y=self.I_background_filtered,
+                                             ind=self.peaks)
         print(self.peaks_detected)
         print(self.peaks_x)
 
     def peak_verifying(self, i):
         if len(self.peaks) > i:
             if self.peaks[i] in self.peak_previous:
-            #     self.peaks = np.delete(self.peaks, *np.where(self.peaks == self.peak_previous))
-            # self.peak_widths = peak_widths(self.difference, self.peaks, rel_height=0.6)
+                #     self.peaks = np.delete(self.peaks, *np.where(self.peaks == self.peak_previous))
+                # self.peak_widths = peak_widths(self.difference, self.peaks, rel_height=0.6)
                 return True
 
     def custom_peak_fitting_with_parabole(self, i):
@@ -53,14 +53,13 @@ class PPeaks(Peaks):
             if np.size(self.peaks) != 0:
                 left_base = abs(self.peaks[i] - self.peaks_data['left_bases'][i])
                 right_base = abs(self.peaks[i] - self.peaks_data['right_bases'][i])
-                delta = min(left_base, right_base)/2
+                delta = min(left_base, right_base) / 2
                 start_delta = delta
 
                 delta = 3
                 # print(left_base, right_base, 'bases')
                 # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
-
 
                 y = self.I_background_filtered
                 window_size = 5
@@ -77,16 +76,15 @@ class PPeaks(Peaks):
 
                 # sigma_values = np.linspace(3, 20, 5) # NOTE optimine
 
-                sigma_values = [3] # 3?
+                sigma_values = [3]  # 3?
                 best_metric = np.inf
-
 
                 period1_global = int(self.peaks[i] - 20)
                 period2_global = int(self.peaks[i] + 20)
 
                 period1_fix = int(self.peaks[i] - 20)
                 period2_fix = int(self.peaks[i] + 20)
-                current_peak_parabole = lambda x, sigma, ampl: parabole(x, self.q[self.peaks[i]], sigma, ampl )
+                current_peak_parabole = lambda x, sigma, ampl: parabole(x, self.q[self.peaks[i]], sigma, ampl)
 
                 popt = None
 
@@ -95,13 +93,13 @@ class PPeaks(Peaks):
 
                     period1 = int(self.peaks[i] - delta)
                     period2 = int(self.peaks[i] + delta)
-                    print(period1, period2, delta , 'perods')
+                    print(period1, period2, delta, 'perods')
 
                     popt1, pcov1 = curve_fit(
                         f=current_peak_parabole,
                         xdata=self.q[period1:period2],
                         ydata=smoothed_y[period1:period2],
-                        bounds=([self.delta_q**2, 1], [0.05, 4*self.max_I]),
+                        bounds=([self.delta_q ** 2, 1], [0.05, 4 * self.max_I]),
                         sigma=self.dI[period1:period2]
                     )
 
@@ -111,7 +109,7 @@ class PPeaks(Peaks):
                     period1_fix = int(self.peaks[i] - delta)
                     period2_fix = int(self.peaks[i] + delta)
 
-                    new_delta = popt1[0]/self.delta_q
+                    new_delta = popt1[0] / self.delta_q
                     print(new_delta, 'new delta')
 
                     smoothed_difference = current_peak_parabole(self.q, popt1[0], popt1[1])
@@ -121,7 +119,8 @@ class PPeaks(Peaks):
                     #     smoothed_difference[period1_fix:period2_fix] - smoothed_y[period1_fix:period2_fix]))/(2*new_delta)
 
                     metric = np.mean(np.square(
-                        smoothed_difference[period1_fix:period2_fix] - self.difference_start[period1_fix:period2_fix]))/(delta)
+                        smoothed_difference[period1_fix:period2_fix] - self.difference_start[
+                                                                       period1_fix:period2_fix])) / (delta)
 
                     # plt.clf()
                     # plt.plot(self.q, self.I_background_filtered)
@@ -138,32 +137,31 @@ class PPeaks(Peaks):
                         popt = popt1
                         pcov = pcov1
 
-
                 period2 = int(self.peaks[i] + start_delta)
                 period1 = int(self.peaks[i] - start_delta)
 
-                best_delta = popt[0]/self.delta_q
+                best_delta = popt[0] / self.delta_q
 
-                period2 = int(self.peaks[i] + best_delta/2)
-                period1 = int(self.peaks[i] - best_delta/2)
+                period2 = int(self.peaks[i] + best_delta / 2)
+                period1 = int(self.peaks[i] - best_delta / 2)
 
                 # print(start_delta, 'best delta')
 
                 current_parabole = current_peak_parabole(self.q, popt[0], popt[1])[period1:period2]
                 plt.clf()
                 plt.plot(self.q, self.I_background_filtered)
-                plt.plot(self.q[period1:period2], smoothed_y[period1:period2], 'x')
-                plt.plot(self.q[period1:period2], current_parabole)
-
+                plt.plot(self.q, smoothed_y, label='smooth gen')
+                plt.plot(self.q[period1:period2], smoothed_y[period1:period2], label='smooth')
+                plt.plot(self.q[period1:period2], current_parabole, 'x')
+                plt.legend()
                 plt.title(f'{popt},{np.sqrt(np.diag(pcov))}')
                 # print({popt[0]/self.delta_q})
                 # plt.savefig(('heap/parabole_' + str(p_num) + '.png'))
                 plt.savefig(('heap/parabole_' + str(self.ppeak_number) + '.png'))
                 self.ppeak_number += 1
-                self.deltas = np.append(self.deltas, popt[0]/self.delta_q)
+                self.deltas = np.append(self.deltas, popt[0] / self.delta_q)
                 self.sigmas = np.append(self.sigmas, popt[0])
                 self.data[self.peaks[i]] = popt
-
 
                 # return gauss(self.q, popt[0], popt[1]), \
                 #     period1, period2, i, \
@@ -172,7 +170,7 @@ class PPeaks(Peaks):
 
     def custom_peak_fitting(self, i, width_factor=1):
         if len(self.peaks) > i:
-            delta = abs(self.data[self.peaks[i]][0]/self.delta_q)/2
+            delta = abs(self.data[self.peaks[i]][0] / self.delta_q) / 2
             # delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]),
             #             abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
             # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
@@ -198,8 +196,6 @@ class PPeaks(Peaks):
                 self.params = np.append(self.params, self.q[self.peaks[i]])
                 self.params = np.append(self.params, popt[1])
 
-
-
                 # plt.clf()
                 # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
                 # plt.plot(self.q, self.I_background_filtered)
@@ -210,7 +206,6 @@ class PPeaks(Peaks):
                     period1, period2, i, \
                     self.q[self.peaks[i]], \
                     gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
-
 
     def peak_fitting(self, i, width_factor=1):
         if len(self.peaks) > i:
@@ -237,8 +232,6 @@ class PPeaks(Peaks):
                 self.params = np.append(self.params, popt[0])
                 self.params = np.append(self.params, self.q[self.peaks[i]])
                 self.params = np.append(self.params, popt[1])
-
-
 
                 # plt.clf()
                 # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
@@ -273,9 +266,9 @@ class PPeaks(Peaks):
         self.peak_plots[self.peak_number] = peak[0]
 
         # more efficient O(1) – previsioned array
-        valid_zone = np.arange(-5,6,1) #TODO
+        valid_zone = np.arange(-5, 6, 1)  # TODO
         for x in valid_zone:
-            self.peak_previous = np.append(self.peak_previous, self.peaks[i]+x)
+            self.peak_previous = np.append(self.peak_previous, self.peaks[i] + x)
 
         self.peaks_analysed = np.append(self.peaks_analysed,
                                         (peak[4],
@@ -355,20 +348,21 @@ class PPeaks(Peaks):
         # plt.savefig(self.file_analyse_dir + '/11_result_raw_' + self.file + '.pdf')
 
     def peak_processing(self, number_peak=INFINITY, get=False):
-        current_peak = 0
-        self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
-        while len(self.peaks) > -1 and number_peak > 0:
-            # self.custom_peak_searching()
-            # self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
-            if len(self.peaks) == 0:
+
+        while True:
+            current_peak = 0
+            self.peak_searching(height=0, prominence=PROMINENCE, distance=6)  # TODO distance
+            if len(self.peaks) != 0:
+                while len(self.peaks) > current_peak and number_peak > 0:
+                    # self.custom_peak_searching()
+                    # self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
+                    # if self.peak_verifying(current_peak):
+                    number_peak -= 1
+                    self.peak_substraction(current_peak)
+                    current_peak += 1
+                self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
+            else:
                 break
-            if self.peak_verifying(current_peak):
-                current_peak += 1
-                # pass
-            if len(self.peaks) == 0:
-                break
-            number_peak -= 1
-            self.peak_substraction(current_peak)
             # print('peak_number', self.peak_number)
 
     def gaussian_sum_non_fit_q(self, x, *params):
@@ -383,13 +377,13 @@ class PPeaks(Peaks):
     def sum_total_fit(self):
         if (len(self.params) != 0):
             print(self.params)
+
             def loss_function(params):
                 # y_pred = gaussian_sum(self.q, *params)
                 y_pred = self.gaussian_sum_non_fit_q(self.q, *params)
 
                 # return np.sum((y_pred - self.I_background_filtered) ** 2)
                 return np.sum((y_pred - self.smoothed_I) ** 2)
-
 
             result = minimize(loss_function, self.params, method='BFGS')
             fitted_params = result.x
@@ -399,7 +393,7 @@ class PPeaks(Peaks):
             plt.clf()
             plt.title(str(sorted(self.params.tolist()[1::3])))
             plt.plot(self.q, self.I_background_filtered, 'g--', label='raw')
-            plt.plot(self.q, y_fit, 'r-', label='found ' +str(self.peak_number))
+            plt.plot(self.q, y_fit, 'r-', label='found ' + str(self.peak_number))
 
             for x in self.peaks_x:
                 plt.axvline(x, color='red', linestyle='--', label='Vertical Line')
@@ -407,8 +401,6 @@ class PPeaks(Peaks):
             plt.legend()
             plt.xlabel('x')
             plt.ylabel('y')
-
-
 
             plt.savefig(self.file_analyse_dir + '/xx_total_fit_' + self.filename + '.pdf')
             # plt.show()
