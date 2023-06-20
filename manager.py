@@ -1,4 +1,7 @@
 import time
+
+from saxs_processing.p_peak_classification import PPeaks
+
 time_start1 = time.time()
 
 import argparse
@@ -49,7 +52,7 @@ data = {}
 files_number = 0
 
 class ApplicationManager:
-    def __init__(self, current_session: str,  _class, DATA_DIR=DATA_DIR) -> None:
+    def __init__(self, current_session: str,  _class: PeakClassificator, DATA_DIR=DATA_DIR) -> None:
         self.DATA_DIR = DATA_DIR
         self.current_session = current_session
         self.data = {}
@@ -63,7 +66,7 @@ class ApplicationManager:
         pass
 
 class Manager(ApplicationManager):
-    def __init__(self, current_session: str,  _class = Peaks, DATA_DIR=DATA_DIR) -> None:
+    def __init__(self, current_session: str,  _class, DATA_DIR=DATA_DIR) -> None:
         super().__init__(current_session, _class, DATA_DIR)
 
     def atomic_processing(self, filename):
@@ -81,8 +84,8 @@ class Manager(ApplicationManager):
 
 
         self.data[filename] = peaks.gathering()
-        peaks.custom_total_fit()
-        peaks.sum_total_fit()
+        # peaks.custom_total_fit()
+        # peaks.sum_total_fit()
 
         self.files_number += 1
         print('Finished ' + filename + ' ' + str(self.files_number))
@@ -103,15 +106,11 @@ class Manager(ApplicationManager):
 
 
 class Custom_Manager(Manager):
-    def __init__(self, current_session: str, DATA_DIR=DATA_DIR, _class=Peaks):
+    def __init__(self, _class, current_session: str, DATA_DIR=DATA_DIR, ):
         super().__init__(current_session, _class, DATA_DIR=DATA_DIR)
 
-    def custom_repo_processing(self):
-        filenames = get_filenames_without_ext(self.DATA_DIR)
-        for filename in filenames:
-            self.custom_atomic_processing(filename)
 
-    def custom_atomic_processing(self, filename):
+    def atomic_processing(self, filename):
         peaks = self._class(filename, self.DATA_DIR, current_session=self.current_session)
         peaks.background_reduction()
         peaks.custom_filtering()
@@ -120,5 +119,13 @@ class Custom_Manager(Manager):
         peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)
         print(peaks.peaks)
         peaks.state_plot()
+        # peaks.custom_peak_fitting_with_parabole(0)
+        peaks.peak_processing()
+        # peaks.custom_peak_fitting(0)
+        # peaks.peak_substraction(0)
+        # peaks.state_plot()
+
         # for x in range(len(peaks.peaks)):
-        peaks.custom_peak_fitting_with_parabole(0)
+        #     peaks.custom_peak_fitting_with_parabole(x)
+        print(peaks.deltas)
+        print(peaks.data)
