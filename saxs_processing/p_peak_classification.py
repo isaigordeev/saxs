@@ -19,7 +19,10 @@ class PPeaks(Peaks):
 
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
 
+        self.ppeak_number = 0
+        self.sigmas = np.array([])
         self.deltas = np.array([])
+        self.data = {}
         self.mask_factor = 0
 
     def peak_searching(self, height=0, distance=5, prominence=0.1):
@@ -74,7 +77,7 @@ class PPeaks(Peaks):
 
                 # sigma_values = np.linspace(3, 20, 5) # NOTE optimine
 
-                sigma_values = [3]
+                sigma_values = [3] # 3?
                 best_metric = np.inf
 
 
@@ -136,7 +139,6 @@ class PPeaks(Peaks):
                         pcov = pcov1
 
 
-
                 period2 = int(self.peaks[i] + start_delta)
                 period1 = int(self.peaks[i] - start_delta)
 
@@ -156,8 +158,11 @@ class PPeaks(Peaks):
                 plt.title(f'{popt},{np.sqrt(np.diag(pcov))}')
                 # print({popt[0]/self.delta_q})
                 # plt.savefig(('heap/parabole_' + str(p_num) + '.png'))
-                plt.savefig(('heap/parabole_' + str(self.peak_number) + '.png'))
-
+                plt.savefig(('heap/parabole_' + str(self.ppeak_number) + '.png'))
+                self.ppeak_number += 1
+                self.deltas = np.append(self.deltas, popt[0]/self.delta_q)
+                self.sigmas = np.append(self.sigmas, popt[0])
+                self.data[self.peaks[i]] = popt
 
 
                 # return gauss(self.q, popt[0], popt[1]), \
@@ -167,87 +172,33 @@ class PPeaks(Peaks):
 
     def custom_peak_fitting(self, i, width_factor=1):
         if len(self.peaks) > i:
-            if np.size(self.peaks) != 0:
-                left_base = abs(self.peaks[i] - self.peaks_data['left_bases'][i])
-                right_base = abs(self.peaks[i] - self.peaks_data['right_bases'][i])
-                delta = min(left_base, right_base)
-                # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
-                # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
-                period1 = self.peaks[i] - delta
-                period2 = self.peaks[i] + delta
+            delta = abs(self.data[self.peaks[i]][0]/self.delta_q)/2
+            # delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]),
+            #             abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
+            # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
+            # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
+            period1 = int(self.peaks[i] - delta)
+            period2 = int(self.peaks[i] + delta)
 
-                start_delta = delta
+            gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
 
-                gauss = lambda x, ampl, sigma: ampl * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (sigma ** 2))
-
-                y = self.I_background_filtered
-                window_size = 5
-                smoothed_y = moving_average(y, window_size)
-
-                self.resolution = 0.5
-
-                sigma_values = np.linspace(4, start_delta, 10)
-
-                best_metric = np.inf
-
-                for delta in sigma_values:
-                    statement = max(right_base, left_base) > 40 and max(right_base, left_base) / min(right_base, left_base) > 3
-                    if statement:
-                        self.resolution = 1
-
-                    period1 = int(self.peaks[i] - delta)
-                    period2 = int(self.peaks[i] + delta)
-
-                    if period1 != period2:
-
-                        popt, pcov = curve_fit(
-                            f=gauss,
-                            xdata=self.q[period1:period2],
-                            ydata=self.difference[period1:period2],
-                            bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
-                            sigma=self.dI[period1:period2]
-                        )
-
-                        smoothed_difference = gauss(self.q, popt[0], popt[1])
-
-                        # metric = self.resolution*np.mean(np.square(smoothed_difference[period1:period2] - self.difference[period1:period2]))-np.sqrt(delta)/self.resolution
-                        metric = self.resolution*np.mean(np.square(
-                            smoothed_difference[period1:period2] - self.difference[period1:period2])) - (1-self.resolution)*np.sqrt(
-                            delta**2)
-                        # print("Changer res")
-
-                        if not statement:
-                            self.resolution -= 0.03
-                        # else: self.resolution += 0.03
-
-                        if metric < best_metric:
-                            best_metric = metric
-                            self.best_delta = delta
-
-
-                # Output the best sigma value and the corresponding metric
-                # print("Best delta: ", self.best_delta)
-                # print("Best metric: ", best_metric)
-
-                # print("Best Metric: ", best_metric)
-
-                period1 = int(self.peaks[i] - self.best_delta)
-                period2 = int(self.peaks[i] + self.best_delta)
-
+            if period1 != period2:
                 popt, pcov = curve_fit(
                     f=gauss,
                     xdata=self.q[period1:period2],
                     ydata=self.difference[period1:period2],
+                    # p0=self.data[self.peaks[i]],
                     bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
                     sigma=self.dI[period1:period2]
                 )
 
-                perr = best_metric
+                perr = np.sqrt(np.diag(pcov))
 
-                self.params = np.append(self.params, self.q[self.peaks[i]])
                 self.params = np.append(self.params, popt[0])
+                self.params = np.append(self.params, self.q[self.peaks[i]])
                 self.params = np.append(self.params, popt[1])
-                self.resolution *= RESOLUTION_FACTOR
+
+
 
                 # plt.clf()
                 # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
@@ -259,10 +210,10 @@ class PPeaks(Peaks):
                     period1, period2, i, \
                     self.q[self.peaks[i]], \
                     gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
-        else: pass
+
 
     def peak_fitting(self, i, width_factor=1):
-        if np.size(self.peaks) != 0:
+        if len(self.peaks) > i:
             delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]),
                         abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
             # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
@@ -405,9 +356,10 @@ class PPeaks(Peaks):
 
     def peak_processing(self, number_peak=INFINITY, get=False):
         current_peak = 0
+        self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
         while len(self.peaks) > -1 and number_peak > 0:
             # self.custom_peak_searching()
-            self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
+            # self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
             if len(self.peaks) == 0:
                 break
             if self.peak_verifying(current_peak):

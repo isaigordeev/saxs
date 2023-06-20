@@ -375,7 +375,7 @@ class Peaks(PeakClassificator):
         self.peak_empty = False
 
         factor = 1
-        self.custom_peak_fitting_with_parabole(i)
+        # self.custom_peak_fitting_with_parabole(i)
         peak = self.custom_peak_fitting(i)
 
         if peak is None:
