@@ -48,13 +48,23 @@ def get_filenames_without_ext(folder_path):
 data = {}
 files_number = 0
 
-class Manager:
-    def __init__(self, current_session: str, DATA_DIR=DATA_DIR, _class = Peaks):
+class ApplicationManager:
+    def __init__(self, current_session: str,  _class, DATA_DIR=DATA_DIR) -> None:
         self.DATA_DIR = DATA_DIR
         self.current_session = current_session
         self.data = {}
         self.files_number = 0
         self._class = _class
+
+    def atomic_processing(self, filename):
+        pass
+
+    def repo_processing(self, filename):
+        pass
+
+class Manager(ApplicationManager):
+    def __init__(self, current_session: str,  _class = Peaks, DATA_DIR=DATA_DIR) -> None:
+        super().__init__(current_session, _class, DATA_DIR)
 
     def atomic_processing(self, filename):
         peaks = self._class(filename, self.DATA_DIR, current_session=self.current_session)
@@ -83,6 +93,19 @@ class Manager:
         for filename in filenames:
             self.atomic_processing(filename)
 
+
+    def print_data(self):
+        print(self.data)
+
+    def write_data(self):
+        with open(current_session_results + current_time + f'_{self.files_number}.json', 'w') as f:
+            json.dump(self.data, f, indent=4, separators=(",", ": "))
+
+
+class Custom_Manager(Manager):
+    def __init__(self, current_session: str, DATA_DIR=DATA_DIR, _class=Peaks):
+        super().__init__(current_session, _class, DATA_DIR=DATA_DIR)
+
     def custom_repo_processing(self):
         filenames = get_filenames_without_ext(self.DATA_DIR)
         for filename in filenames:
@@ -99,14 +122,3 @@ class Manager:
         peaks.state_plot()
         # for x in range(len(peaks.peaks)):
         peaks.custom_peak_fitting_with_parabole(0)
-
-
-    def print_data(self):
-        print(self.data)
-
-    def write_data(self):
-        with open(current_session_results + current_time + f'_{self.files_number}.json', 'w') as f:
-            json.dump(self.data, f, indent=4, separators=(",", ": "))
-
-
-
