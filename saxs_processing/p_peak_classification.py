@@ -31,7 +31,7 @@ class PPeaks(Peaks):
                                                  distance=distance,
                                                  # threshold=0.2,
                                                  plateau_size=1,
-                                                 prominence=(prominence, None))
+                                                 prominence=prominence) # NOTE attention
 
     # probably it makes sense just move the centres?
     def custom_total_fit(self):
@@ -178,14 +178,19 @@ class PPeaks(Peaks):
             period1 = int(self.peaks[i] - delta)
             period2 = int(self.peaks[i] + delta)
 
+            y = self.I_background_filtered
+            window_size = 5
+            smoothed_y = moving_average(y, window_size)
+
             gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
 
             if period1 != period2:
                 popt, pcov = curve_fit(
                     f=gauss,
                     xdata=self.q[period1:period2],
-                    ydata=self.difference[period1:period2],
-                    # p0=self.data[self.peaks[i]],
+                    ydata=smoothed_y[period1:period2], # NOTE strangely works
+                    # ydata=self.difference[period1:period2],
+                    # p0=self.data[self.peaks[i]], # TODO initial conditions and better fitting corresponding to the parabole
                     bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
                     sigma=self.dI[period1:period2]
                 )
@@ -207,42 +212,6 @@ class PPeaks(Peaks):
                     self.q[self.peaks[i]], \
                     gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
 
-    def peak_fitting(self, i, width_factor=1):
-        if len(self.peaks) > i:
-            delta = min(abs(self.peaks[i] - self.peaks_data['left_bases'][i]),
-                        abs(self.peaks[i] - self.peaks_data['right_bases'][i]))
-            # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
-            # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
-            period1 = self.peaks[i] - delta
-            period2 = self.peaks[i] + delta
-
-            gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
-
-            if period1 != period2:
-                popt, pcov = curve_fit(
-                    f=gauss,
-                    xdata=self.q[period1:period2],
-                    ydata=self.difference[period1:period2],
-                    bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
-                    sigma=self.dI[period1:period2]
-                )
-
-                perr = np.sqrt(np.diag(pcov))
-
-                self.params = np.append(self.params, popt[0])
-                self.params = np.append(self.params, self.q[self.peaks[i]])
-                self.params = np.append(self.params, popt[1])
-
-                # plt.clf()
-                # plt.plot(self.q, gauss(self.q, popt[0], popt[1]))
-                # plt.plot(self.q, self.I_background_filtered)
-                # plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2])
-                # plt.savefig('heap/' + str(self.peak_number) + '.png')
-
-                return gauss(self.q, popt[0], popt[1]), \
-                    period1, period2, i, \
-                    self.q[self.peaks[i]], \
-                    gauss(self.q, popt[0], popt[1])[self.peaks[i]], popt[0], popt[1], self.peaks[i], perr
 
     def peak_substraction(self, i):
         self.peak_empty = False
@@ -292,7 +261,7 @@ class PPeaks(Peaks):
         self.peak_number += 1
         # self.peaks_boundaries = np.append(self.peaks_boundaries, (peak[0], peak[1]))
 
-    def filtering_negative(self):
+    def filtering_negative(self): # TODO filtering fitted
         for x in range(len(self.difference) - 1):
             if self.difference[x] < 0:
                 self.difference[x] = 0
@@ -351,7 +320,7 @@ class PPeaks(Peaks):
 
         while True:
             current_peak = 0
-            self.peak_searching(height=0, prominence=PROMINENCE, distance=6)  # TODO distance
+            self.peak_searching(height=[1,50], prominence=PROMINENCE, distance=6)  # TODO good parameters and metric of suspicious peaks
             if len(self.peaks) != 0:
                 while len(self.peaks) > current_peak and number_peak > 0:
                     # self.custom_peak_searching()
@@ -360,7 +329,6 @@ class PPeaks(Peaks):
                     number_peak -= 1
                     self.peak_substraction(current_peak)
                     current_peak += 1
-                self.peak_searching(height=0, prominence=PROMINENCE, distance=6)
             else:
                 break
             # print('peak_number', self.peak_number)

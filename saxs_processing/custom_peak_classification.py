@@ -78,14 +78,21 @@ class Peaks(PeakClassificator):
 
     def filtering(self):
         if self.gauss:
-            self.difference = gaussian_filter(self.I_background_filtered,
-                                              sigma=SIGMA_FILTER,
-                                              truncate=TRUNCATE,
-                                              cval=0)
-            self.difference_start = gaussian_filter(self.I_background_filtered,
-                                                    sigma=SIGMA_FILTER,
-                                                    truncate=TRUNCATE,
-                                                    cval=0)
+            y = self.I_background_filtered
+            window_size = 5
+
+
+            self.difference = moving_average(y, window_size)
+            self.difference_start = moving_average(y, window_size)
+
+            # self.difference = gaussian_filter(self.I_background_filtered,
+            #                                   sigma=SIGMA_FILTER,
+            #                                   truncate=TRUNCATE,
+            #                                   cval=0)
+            # self.difference_start = gaussian_filter(self.I_background_filtered,
+            #                                         sigma=SIGMA_FILTER,
+            #                                         truncate=TRUNCATE,
+            #                                         cval=0)
             self.start_loss = np.mean((self.difference_start - self.total_fit) ** 2)
 
     def custom_filtering(self):

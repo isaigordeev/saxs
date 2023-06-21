@@ -116,7 +116,7 @@ class Custom_Manager(Manager):
         peaks.custom_filtering()
         peaks.background_plot()
         peaks.filtering_negative()
-        peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)
+        # peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)
         print(peaks.peaks)
         peaks.state_plot()
         # peaks.custom_peak_fitting_with_parabole(0)
