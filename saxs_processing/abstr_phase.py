@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch import nn
 
-from settings import *
+from settings_processing import *
 
 today = date.today()
 

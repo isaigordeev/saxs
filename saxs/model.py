@@ -2,6 +2,8 @@ from torch import nn
 import torch
 import efficientnet_pytorch
 
+from saxs.settings import EMBEDDING_DIM, PATCH_SIZE, COLOR_CHANNELS, ATTENTION_BLOCKS, IMAGE_DIM
+
 
 class SASXpy_raw(nn.Module):
 
@@ -60,9 +62,9 @@ class SASXpy(nn.Module):
 class PatchEmbedding(nn.Module):
 
     def __init__(self,
-                 in_channels: int = 3,
-                 patch_size: int = 16,
-                 embedding_dim: int = 768):
+                 in_channels: int = COLOR_CHANNELS,
+                 patch_size: int = PATCH_SIZE,
+                 embedding_dim: int = EMBEDDING_DIM):
         super().__init__()
         self.patch_size = patch_size
 
@@ -86,11 +88,11 @@ class PatchEmbedding(nn.Module):
 
 class SASXTransformer(nn.Module):
     def __init__(self,
-                 img_size: int = 224,
-                 in_channels: int = 3,
-                 patch_size: int = 16,
-                 num_transformer_layers: int = 2,
-                 embedding_dim: int = 768,
+                 img_size: int = IMAGE_DIM,
+                 in_channels: int = COLOR_CHANNELS,
+                 patch_size: int = PATCH_SIZE,
+                 num_transformer_layers: int = ATTENTION_BLOCKS,
+                 embedding_dim: int = EMBEDDING_DIM,
                  mlp_size: int = 3072,
                  num_heads: int = 12,
                  attn_dropout: float = 0,
