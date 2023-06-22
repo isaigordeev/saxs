@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from settings import EXTENSION
+from settings_processing import EXTENSION
 
 
 class PeakClassificator:

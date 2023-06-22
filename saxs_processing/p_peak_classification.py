@@ -8,7 +8,7 @@ from scipy.signal import find_peaks, peak_widths
 
 from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
 from saxs_processing.abstr_peak import PeakClassificator
-from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
+from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
 
 from saxs_processing.custom_peak_classification import Peaks
@@ -150,14 +150,17 @@ class PPeaks(Peaks):
                 current_parabole = current_peak_parabole(self.q, popt[0], popt[1])[period1:period2]
                 plt.clf()
                 plt.plot(self.q, self.I_background_filtered)
-                plt.plot(self.q, smoothed_y, label='smooth gen')
-                plt.plot(self.q[period1:period2], smoothed_y[period1:period2], label='smooth')
-                plt.plot(self.q[period1:period2], current_parabole, 'x')
+                plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2], '.')
+                # plt.plot(self.q, smoothed_y, label='smooth gen')
+                plt.plot(self.q[period1:period2], current_parabole, label='smooth')
+                # plt.plot(self.q[period1:period2], current_parabole, 'x')
                 plt.legend()
                 plt.title(f'{popt},{np.sqrt(np.diag(pcov))}')
                 # print({popt[0]/self.delta_q})
                 # plt.savefig(('heap/parabole_' + str(p_num) + '.png'))
-                plt.savefig(('heap/parabole_' + str(self.ppeak_number) + '.png'))
+                plt.savefig(('heap/parabole_' + str(self.ppeak_number) + '.pdf'))
+
+
                 self.ppeak_number += 1
                 self.deltas = np.append(self.deltas, popt[0] / self.delta_q)
                 self.sigmas = np.append(self.sigmas, popt[0])

@@ -10,7 +10,7 @@ import os
 
 from datetime import datetime
 
-from settings import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR, PROMINENCE
+from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR, PROMINENCE
 from saxs_processing.abstr_peak import PeakClassificator
 
 from saxs_processing.custom_peak_classification import Peaks

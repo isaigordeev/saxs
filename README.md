@@ -15,3 +15,10 @@ TODO
 - packaging
 
 manager.py
+
+____
+
+Algo special 
+
+first peak and the others of the first wave of searching have the priority
+after this priority decreases for Phase classification class 

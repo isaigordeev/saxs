@@ -8,7 +8,7 @@ from scipy.signal import find_peaks, peak_widths
 
 from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
 from saxs_processing.abstr_peak import PeakClassificator
-from settings import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
+from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
 
 
