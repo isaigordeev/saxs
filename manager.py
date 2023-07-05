@@ -111,8 +111,10 @@ class Custom_Manager(Manager):
 
     def atomic_processing(self, filename):
         peaks = self._class(filename, self.DATA_DIR, current_session=self.current_session)
+        peaks.prefiltering()
         peaks.background_reduction()
-        peaks.custom_filtering()
+        peaks.setting_state()
+        # peaks.custom_filtering_()
         peaks.background_plot()
         peaks.filtering_negative()
         # peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)

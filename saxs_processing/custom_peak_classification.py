@@ -4,7 +4,7 @@ import peakutils
 from peakutils import indexes
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
-from scipy.signal import find_peaks, peak_widths
+from scipy.signal import find_peaks, peak_widths, medfilt
 
 from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
 from saxs_processing.abstr_peak import PeakClassificator
@@ -18,6 +18,7 @@ class Peaks(PeakClassificator):
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
 
         # self.peaks_plots = {}
+        self.I_filt = np.array([])
         self.resolution = 0.5
         self.best_sigma = None
         self.params = np.array([])
@@ -52,11 +53,33 @@ class Peaks(PeakClassificator):
         self.gauss = True
         self.popt_background = []
 
+    def prefiltering(self):
+        smoothed_data = medfilt(self.I, 3)
+        difference = np.abs(self.I - smoothed_data)
+        threshold = np.mean(difference) + 0.5 * np.std(difference)
+
+        noisy_indices = np.where(difference > threshold)[0]
+
+        first_part = gaussian_filter(self.I[:max(noisy_indices)], sigma=2)
+        sec_part = medfilt(self.I[max(noisy_indices):], 3)
+        good_smoothed_without_loss = np.concatenate((first_part, sec_part))
+
+        # self.difference = good_smoothed_without_loss
+        # self.difference_start = good_smoothed_without_loss
+        self.I_filt = medfilt(good_smoothed_without_loss, 3)
+        # self.difference_start = medfilt(good_smoothed_without_loss, 3)
+
+        # plt.plot(self.I)
+        # plt.plot(self.difference)
+        # plt.show()
+        # plt.clf()
+
+
     def background_reduction(self):
 
         i = np.argmax(self.q > START)
         self.q, self.I, self.dI = self.q[i:], self.I[i:], self.dI[i:]
-
+        self.I_filt = self.I_filt[i:]
         self.zeros = np.zeros(len(self.q))
         self.total_fit = self.zeros
         self.peaks_plots = np.zeros((20, len(self.q)))
@@ -64,14 +87,14 @@ class Peaks(PeakClassificator):
         popt, pcov = curve_fit(
             f=background_hyberbole,
             xdata=self.q,
-            ydata=self.I,
+            ydata=self.I_filt,
             p0=(3, 2),
             sigma=self.dI
         )
 
         self.popt_background = popt
         self.model = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
-        self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
+        self.I_background_filtered = self.I_filt - BACKGROUND_COEF * self.model
 
         # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
         # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
@@ -96,10 +119,14 @@ class Peaks(PeakClassificator):
 
             self.start_loss = np.mean((self.difference_start - self.total_fit) ** 2)
 
+    def setting_state(self):
+        self.difference = self.I_background_filtered
+        self.difference_start = self.I_background_filtered
+
+
     def custom_filtering(self):
         y = self.I_background_filtered
-        window_size = WINDOWSIZE
-        self.smoothed_I = moving_average(y, window_size)
+        self.smoothed_I = moving_average(y, WINDOWSIZE)
 
         sigma_values = np.linspace(0.5, 5.0, 10)
 
@@ -128,14 +155,31 @@ class Peaks(PeakClassificator):
                                           sigma=best_sigma,
                                           truncate=4.0)
 
+    def custom_filtering_(self):
+        smoothed_data = medfilt(self.I_background_filtered, 3)
+        difference = np.abs(self.I_background_filtered - smoothed_data)
+        threshold = np.mean(difference) + 0.5 * np.std(difference)
 
-        # plt.plot(self.q, gaussian_filter(self.I_background_filtered,
-        #                                  sigma=best_sigma,
-        #                                  truncate=4.0))
-        # plt.plot(self.q, self.I_background_filtered, label='gde')
-        # plt.plot(self.q, smoothed_y, label='Smoothed')
-        # plt.legend()
-        # plt.savefig('heap/filter ' + self.filename + '.pdf')
+        noisy_indices = np.where(difference > threshold)[0]
+
+
+        first_part = gaussian_filter(self.I_background_filtered[:max(noisy_indices)], sigma=2)
+        sec_part = medfilt(self.I_background_filtered[max(noisy_indices):], 3)
+        good_smoothed_without_loss = np.concatenate((first_part, sec_part))
+
+        self.difference = good_smoothed_without_loss
+        self.difference_start = good_smoothed_without_loss
+        # self.difference = medfilt(good_smoothed_without_loss, 3)
+        # self.difference_start = medfilt(good_smoothed_without_loss, 3)
+
+        plt.plot(self.I_background_filtered)
+        plt.plot(self.difference)
+        plt.show()
+        plt.clf()
+
+
+
+
 
     def background_plot(self):
         plt.clf()
