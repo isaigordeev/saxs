@@ -6,7 +6,6 @@ from torch import nn
 from torch.utils.data import DataLoader
 import torch.utils.data
 import torch.utils
-import transformers
 
 from tools import xtime_decorator 
 

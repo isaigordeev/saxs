@@ -39,7 +39,6 @@ def get_filenames(folder_path):
             yield filename
 
 
-
 def get_filenames_without_ext(folder_path):
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
@@ -130,3 +129,5 @@ class Custom_Manager(Manager):
         #     peaks.custom_peak_fitting_with_parabole(x)
         print(peaks.deltas)
         print(peaks.data)
+        print(peaks.peaks_analysed_q)
+

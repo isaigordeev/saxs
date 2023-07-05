@@ -93,6 +93,7 @@ class Peaks(PeakClassificator):
             #                                         sigma=SIGMA_FILTER,
             #                                         truncate=TRUNCATE,
             #                                         cval=0)
+
             self.start_loss = np.mean((self.difference_start - self.total_fit) ** 2)
 
     def custom_filtering(self):

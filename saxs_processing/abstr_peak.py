@@ -5,7 +5,6 @@ import pandas as pd
 
 from settings_processing import EXTENSION
 
-
 class PeakClassificator:
     
     def __init__(self, filename, DATA_DIR, current_session):
