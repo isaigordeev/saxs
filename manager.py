@@ -10,7 +10,7 @@ import os
 
 from datetime import datetime
 
-from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR, PROMINENCE
+from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR, PROMINENCE, ANALYSE_DIR
 from saxs_processing.abstr_peak import PeakClassificator
 
 from saxs_processing.custom_peak_classification import Peaks
@@ -27,10 +27,10 @@ current_time = now.strftime("%H:%M:%S")
 current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
 current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + str(today) + '/'
 
-if not os.path.exists(current_session):
-    os.mkdir(current_session)
-if not os.path.exists(current_session_results):
-    os.mkdir(current_session_results)
+# if not os.path.exists(current_session):
+#     os.mkdir(current_session)
+# if not os.path.exists(current_session_results):
+#     os.mkdir(current_session_results)
 
 
 def get_filenames(folder_path):
@@ -48,12 +48,41 @@ def get_filenames_without_ext(folder_path):
 
 
 class ApplicationManager:
-    def __init__(self, current_session: str,  _class: PeakClassificator, DATA_DIR=DATA_DIR) -> None:
+    def __init__(self, current_session,  _class: PeakClassificator, DATA_DIR=DATA_DIR, custom_directory=None) -> None:
         self.DATA_DIR = DATA_DIR
+
+
         self.current_session = current_session
+        self.current_date_session = str(current_session.today().date()) + '/'
+        self.current_time = current_session.strftime("%H:%M:%S")
+
         self.data = {}
         self.files_number = 0
         self._class = _class
+
+        self.custom_directory = custom_directory
+        self.set_directories()
+
+    def set_directories(self):
+
+        if self.custom_directory is None:
+            analysis_dir_sessions = ANALYSE_DIR_SESSIONS
+            results_dir_sessions = ANALYSE_DIR_SESSIONS_RESULTS
+
+            if not os.path.exists(ANALYSE_DIR):
+                os.mkdir(ANALYSE_DIR)
+            if not os.path.exists(analysis_dir_sessions):
+                os.mkdir(analysis_dir_sessions)
+            if not os.path.exists(results_dir_sessions):
+                os.mkdir(results_dir_sessions)
+            if not os.path.exists(results_dir_sessions + self.current_date_session):
+                os.mkdir(results_dir_sessions + self.current_date_session)
+
+        else:
+            if not os.path.exists(self.custom_directory):
+                os.mkdir(self.custom_directory)
+
+
 
     def atomic_processing(self, filename):
         pass
