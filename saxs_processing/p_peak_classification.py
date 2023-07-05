@@ -41,7 +41,7 @@ class PPeaks(Peaks):
         print(self.peaks_detected)
         print(self.peaks_x)
 
-    def peak_verifying(self, i):
+    def peak_verifying(self, i) -> bool:
         if len(self.peaks) > i:
             if self.peaks[i] in self.peak_previous:
                 #     self.peaks = np.delete(self.peaks, *np.where(self.peaks == self.peak_previous))
@@ -84,6 +84,7 @@ class PPeaks(Peaks):
 
                 period1_fix = int(self.peaks[i] - 20)
                 period2_fix = int(self.peaks[i] + 20)
+
                 current_peak_parabole = lambda x, sigma, ampl: parabole(x, self.q[self.peaks[i]], sigma, ampl)
 
                 popt = None
@@ -191,8 +192,8 @@ class PPeaks(Peaks):
                 popt, pcov = curve_fit(
                     f=gauss,
                     xdata=self.q[period1:period2],
-                    ydata=smoothed_y[period1:period2], # NOTE strangely works
-                    # ydata=self.difference[period1:period2],
+                    # ydata=smoothed_y[period1:period2], # NOTE strangely works
+                    ydata=self.difference[period1:period2],
                     # p0=self.data[self.peaks[i]], # TODO initial conditions and better fitting corresponding to the parabole
                     bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
                     sigma=self.dI[period1:period2]

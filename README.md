@@ -13,6 +13,7 @@ TODO
     - Convolutional or Transormer Model + RNN with peak positions?
 - cache for DL
 - packaging
+– dataset image map creation
 
 manager.py
 
