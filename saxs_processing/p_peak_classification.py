@@ -11,6 +11,7 @@ from scipy.signal import find_peaks, peak_widths
 
 from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
 from saxs_processing.abstr_peak import PeakClassificator
+
 from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, \
     WINDOWSIZE, \
     RESOLUTION_FACTOR, ANALYSE_DIR_SESSIONS_RESULTS, ANALYSE_DIR_SESSIONS
@@ -421,15 +422,3 @@ class PPeaks(Peaks):
             'error': error
             # 'loss_ratio': self.final_loss / self.start_loss
         }
-
-    def write_data(self):
-        now = datetime.now()
-        today = now.today().date()
-
-        current_time = now.strftime("%H:%M:%S")
-
-        current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
-        current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + str(today) + '/'
-
-        with open(current_session_results + current_time + '.json', 'w') as f:
-            json.dump(self.gathering(), f, indent=4, separators=(",", ": "))
