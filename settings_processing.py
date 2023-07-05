@@ -26,6 +26,7 @@ la3d = np.array([6, 8, 14, 16, 20, 22, 24, 26]).astype(float)
 Pn3m = np.array([2, 3, 4, 6, 8, 9, 10, 11, 12, 14, 16, 17]).astype(float)
 Im3m = np.array([2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26]).astype(float)
 
+
 defined_phases = np.array([np.sqrt(la3d),
                            np.sqrt(Pn3m),
                            np.sqrt(Im3m)],

@@ -47,9 +47,6 @@ def get_filenames_without_ext(folder_path):
                     yield name
 
 
-data = {}
-files_number = 0
-
 class ApplicationManager:
     def __init__(self, current_session: str,  _class: PeakClassificator, DATA_DIR=DATA_DIR) -> None:
         self.DATA_DIR = DATA_DIR
@@ -128,7 +125,15 @@ class Custom_Manager(Manager):
 
         # for x in range(len(peaks.peaks)):
         #     peaks.custom_peak_fitting_with_parabole(x)
-        peaks.gathering()
+        self.data[filename] = peaks.gathering()
+        self.files_number += 1
+        # print(peaks.peaks_data)
+
+        if self.data[filename]['peak_number'] == 0:
+            pass
+
+        peaks.write_data()
+
         print(peaks.deltas)
         print(peaks.data)
         print(sorted(peaks.peaks_analysed_q/min(peaks.peaks_analysed_q)))
