@@ -118,7 +118,6 @@ class Custom_Manager(Manager):
         peaks.background_plot()
         peaks.filtering_negative()
         # peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)
-        print(peaks.peaks)
         peaks.state_plot()
         # peaks.custom_peak_fitting_with_parabole(0)
         peaks.peak_processing()
@@ -129,7 +128,8 @@ class Custom_Manager(Manager):
 
         # for x in range(len(peaks.peaks)):
         #     peaks.custom_peak_fitting_with_parabole(x)
+        peaks.gathering()
         print(peaks.deltas)
         print(peaks.data)
-        print(peaks.peaks_analysed_q)
+        print(sorted(peaks.peaks_analysed_q/min(peaks.peaks_analysed_q)))
 

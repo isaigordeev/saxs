@@ -62,8 +62,8 @@ class PPeaks(Peaks):
                 # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
 
                 y = self.I_background_filtered
-                window_size = 5
-                smoothed_y = moving_average(y, window_size)
+                # window_size = 5
+                # smoothed_y = moving_average(y, window_size)
 
                 # uniform_indices = np.linspace(0, len(self.I_background_filtered) - 1, 500)
                 # uniform_array = np.interp(uniform_indices, range(len(self.I_background_filtered)), smoothed_y)
@@ -76,7 +76,7 @@ class PPeaks(Peaks):
 
                 # sigma_values = np.linspace(3, 20, 5) # NOTE optimine
 
-                sigma_values = [3]  # 3?
+                sigma_values = [4]  # 3?
                 best_metric = np.inf
 
                 period1_global = int(self.peaks[i] - 20)
@@ -99,7 +99,7 @@ class PPeaks(Peaks):
                     popt1, pcov1 = curve_fit(
                         f=current_peak_parabole,
                         xdata=self.q[period1:period2],
-                        ydata=smoothed_y[period1:period2],
+                        ydata=self.I_background_filtered[period1:period2],
                         bounds=([self.delta_q ** 2, 1], [0.05, 4 * self.max_I]),
                         sigma=self.dI[period1:period2]
                     )
@@ -194,7 +194,7 @@ class PPeaks(Peaks):
                     xdata=self.q[period1:period2],
                     # ydata=smoothed_y[period1:period2], # NOTE strangely works
                     ydata=self.difference[period1:period2],
-                    # p0=self.data[self.peaks[i]], # TODO initial conditions and better fitting corresponding to the parabole
+                    p0=(self.data[self.peaks[i]][1], self.data[self.peaks[i]][0]), # TODO initial conditions and better fitting corresponding to the parabole
                     bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
                     sigma=self.dI[period1:period2]
                 )
@@ -293,7 +293,7 @@ class PPeaks(Peaks):
         self.peaks_detected = self.peaks_detected.astype(int)
 
         plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data_without_back')
-        plt.plot(self.q, self.difference_start, label='filtered_raw_data_without_back')
+        plt.plot(self.q, self.I_background_filtered, label='filtered_raw_data_without_back')
         # plt.plot(self.q, self.difference, label='filtered_data')
         plt.plot(self.q, self.zeros, label='zero_level')
         # plt.plot(self.q[self.peaks_detected], self.I_background_filtered[self.peaks_detected], 'x',
@@ -324,7 +324,7 @@ class PPeaks(Peaks):
 
         while True:
             current_peak = 0
-            self.peak_searching(height=[1,50], prominence=PROMINENCE, distance=6)  # TODO good parameters and metric of suspicious peaks
+            self.peak_searching(height=[1,50], prominence=PROMINENCE, distance=10)  # TODO good parameters and metric of suspicious peaks
             if len(self.peaks) != 0:
                 while len(self.peaks) > current_peak and number_peak > 0:
                     # self.custom_peak_searching()
@@ -399,7 +399,8 @@ class PPeaks(Peaks):
         I_raw = self.I[self.peaks_detected][sorted_indices_q]
         dI = self.dI[self.peaks_detected][sorted_indices_q]
         peaks_detected = self.peaks_detected[sorted_indices_q]
-        # print(self.params)
+        error = np.sum(self.total_fit - self.I_background_filtered)/np.sum(self.I_background_filtered)
+        print(error, 'Error')
 
         return {
             'peak_number': self.peak_number,
@@ -413,5 +414,6 @@ class PPeaks(Peaks):
             'params_sigma': self.params.tolist()[2::3],
             'start_loss': self.start_loss,
             'final_loss': self.final_loss,
+            'error': error
             # 'loss_ratio': self.final_loss / self.start_loss
         }

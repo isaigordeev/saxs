@@ -79,6 +79,7 @@ class Peaks(PeakClassificator):
 
         i = np.argmax(self.q > START)
         self.q, self.I, self.dI = self.q[i:], self.I[i:], self.dI[i:]
+
         self.I_filt = self.I_filt[i:]
         self.zeros = np.zeros(len(self.q))
         self.total_fit = self.zeros
@@ -176,9 +177,6 @@ class Peaks(PeakClassificator):
         plt.plot(self.difference)
         plt.show()
         plt.clf()
-
-
-
 
 
     def background_plot(self):
