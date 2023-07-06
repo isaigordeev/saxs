@@ -37,10 +37,10 @@ class AbstractPhaseClassificator(ProcessingClassificator):
                  'data',
                  'phases_number',
                  'phases_dict')
-    def __init__(self, data_directory, current_session, phases_directory=PHASES_DIR):
-        super().__init__(data_directory, current_session)
+    def __init__(self, current_session, data_directory, phases_directory=PHASES_DIR):
+        super().__init__(current_session, data_directory)
 
-        self.phases_directory = '../{}'.format(phases_directory)
+        self.phases_directory = '../{}'.format(phases_directory) #relative path
 
         self.phases_coefficients = np.array([])
         self.phases = {}
@@ -48,10 +48,7 @@ class AbstractPhaseClassificator(ProcessingClassificator):
         self.phases_dict = {}
         self.phases_number = 0
 
-
         self.set_phases()
-        self.read_data()
-
 
 
     def set_phases(self):
@@ -67,14 +64,10 @@ class AbstractPhaseClassificator(ProcessingClassificator):
         self.phases_number = len(self.phases.values())
 
         for i, phase in enumerate(self.phases.keys()):
-            self.phases_dict[phase] = i
+            self.phases_dict[i] = phase
 
         print(self.phases_coefficients)
         print(self.phases_dict)
-
-    def read_data(self):
-        with open(self.data_directory, 'r') as file:  # NOTE make it better with string formatting
-            self.data = json.load(file)
 
     def data_preparation(self):
         pass

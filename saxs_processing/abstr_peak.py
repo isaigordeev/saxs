@@ -27,6 +27,8 @@ class AbstractPeakClassificator(ABC):
         self.current_date_session = str(current_session.today().date()) + '/'
         self.current_time = current_session.strftime("%H:%M:%S")
 
+        self.current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + self.current_date_session
+
         self.set_directories()
         self.set_data()
 
@@ -59,14 +61,13 @@ class AbstractPeakClassificator(ABC):
 
     def write_data(self):
 
-        current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + self.current_date_session
 
-        with open(current_session_results + self.current_time + '.json', 'r') as file:
+        with open(self.current_session_results + self.current_time + '.json', 'r') as file:
             directory_data = json.load(file)
 
         directory_data.update({self.filename: self.gathering()})
 
-        with open(current_session_results + self.current_time + '.json', 'w') as f:
+        with open(self.current_session_results + self.current_time + '.json', 'w') as f:
             json.dump(directory_data, f, indent=4, separators=(",", ": "))
 
     def background_reduction(self):

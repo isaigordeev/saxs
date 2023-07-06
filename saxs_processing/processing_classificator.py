@@ -11,7 +11,7 @@ class ProcessingClassificator(ABC):
                  'current_time',
                  )
 
-    def __init__(self, data_directory, current_session, custom_output_directory=None):
+    def __init__(self, current_session, data_directory, custom_output_directory=None):
 
         self.data_directory = data_directory
         self.current_session = current_session
