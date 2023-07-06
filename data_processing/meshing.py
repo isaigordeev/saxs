@@ -1,8 +1,7 @@
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
 
-
-data = np.load("d_cubic2.npy")
+data = np.load("../saxs_data/cubic_q.npy")
 print(data)
 
 # x = 1
@@ -28,7 +27,7 @@ for i in range(1, num_subplots**2+1):
     ax = plt.subplot(num_subplots, num_subplots, i)
     
     # Plot the data on each subplot
-    ax.plot(data[0][i-1], data[1][i-1])
+    ax.plot(data[i-1][0], data[i-1][0])
     # ax.plot(data[i-1][0], data[i-1][1], 'x')
     # ax.set_title('Subplot {}'.format(i+1))
 

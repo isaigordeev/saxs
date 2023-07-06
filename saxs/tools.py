@@ -1,13 +1,14 @@
-from pathlib import Path
-from typing import Dict, List
-from PIL import Image
-from timeit import default_timer as timer
-
 import os
 import random
-import matplotlib.pyplot as plt
+from pathlib import Path
+from timeit import default_timer as timer
+from typing import Dict, List
 
-import torchvision, torch
+import matplotlib.pyplot as plt
+import torch
+import torchvision
+from PIL import Image
+
 
 def save_model(model: torch.nn.Module,
                target_dir: str,

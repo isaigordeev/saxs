@@ -1,11 +1,11 @@
 import json
 import os
+from abc import ABC
 
 import numpy as np
 import pandas as pd
 
 from settings_processing import EXTENSION, ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
-from abc import abstractmethod, ABC
 
 
 class AbstractPeakClassificator(ABC):

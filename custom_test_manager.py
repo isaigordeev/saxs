@@ -1,7 +1,5 @@
 from manager import *
 from saxs_processing.p_peak_classification import PDefaultPeakClassificator
-from datetime import datetime
-
 from saxs_processing.phase_classificator import DefaultPhaseClassificator
 
 now = datetime.now()

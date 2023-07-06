@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import torch
 
 SET_DIR = 'data/'

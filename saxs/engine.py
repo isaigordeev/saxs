@@ -1,13 +1,10 @@
 import torch
-
-
-from tqdm.auto import tqdm
-from torch import nn
-from torch.utils.data import DataLoader
-import torch.utils.data
 import torch.utils
+import torch.utils.data
+from torch import nn
+from tqdm.auto import tqdm
 
-from tools import xtime_decorator 
+from tools import xtime_decorator
 
 device = 'cpu'
 
