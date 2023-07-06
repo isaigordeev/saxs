@@ -8,7 +8,7 @@ from settings_processing import EXTENSION, ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SES
 from abc import abstractmethod, ABC
 
 
-class PeakClassificator(ABC):
+class AbstractPeakClassificator(ABC):
 
     def __init__(self, filename, DATA_DIR, current_session, custom_directory=None):
         self.file_analyse_dir_peaks = None

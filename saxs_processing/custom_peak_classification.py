@@ -7,12 +7,12 @@ from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths, medfilt
 
 from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
-from saxs_processing.abstr_peak import PeakClassificator
+from saxs_processing.abstr_peak import AbstractPeakClassificator
 from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
 
 
-class Peaks(PeakClassificator):
+class DefaultPeakClassificator(AbstractPeakClassificator):
     def __init__(self, filename, DATA_DIR, current_session):
 
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)

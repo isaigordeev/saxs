@@ -21,9 +21,6 @@ class ProcessingClassificator(ABC):
         self.current_data_session = "{}/".format(current_date)
         self.current_time = current_session.strftime("%H:%M:%S")
 
-    @abstractmethod
-    def set_directories(self):
-        pass
 
 
 

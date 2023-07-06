@@ -54,3 +54,9 @@ def filtering(I, model):
                                       sigma=SIGMA_FILTER,
                                       truncate=TRUNCATE,
                                       cval=0)
+
+
+def calculate_absolute_difference(sequence, target):
+    sequence = sequence[:len(target)]
+    absolute_difference = np.sum([1/abs(x-y) for x,y in zip(sequence,target)])
+    return absolute_difference

@@ -10,18 +10,18 @@ from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths
 
 from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
-from saxs_processing.abstr_peak import PeakClassificator
+from saxs_processing.abstr_peak import AbstractPeakClassificator
 
 from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, \
     WINDOWSIZE, \
     RESOLUTION_FACTOR, ANALYSE_DIR_SESSIONS_RESULTS, ANALYSE_DIR_SESSIONS
 
-from saxs_processing.custom_peak_classification import Peaks
+from saxs_processing.custom_peak_classification import DefaultPeakClassificator
 
 
 
 
-class PPeaks(Peaks):
+class PDefaultPeakClassificator(DefaultPeakClassificator):
     def __init__(self, filename, DATA_DIR, current_session):
 
         super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
@@ -390,6 +390,19 @@ class PPeaks(Peaks):
             plt.xlabel('x')
             plt.ylabel('y')
             plt.savefig(self.file_analyse_dir + '/xx_not_found_' + self.filename + '.pdf')
+
+    def postprocessing(self):
+        to_delete = []
+
+        self.peaks_analysed_q = sorted(self.peaks_analysed_q)
+        for i in range(len(self.peaks_analysed_q)-1):
+            print(abs(self.peaks_analysed_q[i] - self.peaks_analysed_q[i + 1]))
+            if abs(self.peaks_analysed_q[i] - self.peaks_analysed_q[i+1]) < 0.002:
+                to_delete.append(i+1)
+
+        print(to_delete)
+        self.peaks_analysed_q = np.delete(self.peaks_analysed_q, to_delete)
+        self.peaks_analysed_I = np.delete(self.peaks_analysed_I, to_delete)
 
     def gathering(self):
         # print('Covariance raw', np.cov(self.difference_start, self.total_fit)[0][1])
