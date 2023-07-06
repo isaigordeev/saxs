@@ -10,7 +10,7 @@ from abc import abstractmethod, ABC
 
 class AbstractPeakClassificator(ABC):
 
-    def __init__(self, filename, DATA_DIR, current_session, custom_directory=None):
+    def __init__(self, filename, data_directory, current_session, custom_directory=None):
         self.file_analyse_dir_peaks = None
         self.file_analyse_dir = None
         self.max_dI = None
@@ -20,7 +20,7 @@ class AbstractPeakClassificator(ABC):
         self.q = None
 
         self.filename = filename
-        self.DATA_DIR = DATA_DIR
+        self.data_directory = data_directory
         self.custom_directory = custom_directory
 
         self.current_session = current_session
@@ -48,7 +48,7 @@ class AbstractPeakClassificator(ABC):
             os.mkdir(self.file_analyse_dir_peaks)
 
     def set_data(self):
-        data = pd.read_csv(self.DATA_DIR + self.filename + EXTENSION, sep=',')
+        data = pd.read_csv(self.data_directory + self.filename + EXTENSION, sep=',')
         data = data.apply(pd.to_numeric, errors='coerce')
         data = data.dropna()
 

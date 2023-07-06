@@ -1,6 +1,8 @@
 import time
 
+from saxs_processing.abstr_phase import AbstractPhaseClassificator
 from saxs_processing.p_peak_classification import PDefaultPeakClassificator
+from saxs_processing.processing_classificator import ProcessingClassificator, AbstractProcessing
 
 time_start1 = time.time()
 
@@ -23,10 +25,10 @@ now = datetime.now()
 
 today = now.today().date()
 
-current_time = now.strftime("%H:%M:%S")
-
-current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
-current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + str(today) + '/'
+# current_time = now.strftime("%H:%M:%S")
+#
+# current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
+# current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + str(today) + '/'
 
 # if not os.path.exists(current_session):
 #     os.mkdir(current_session)
@@ -48,26 +50,27 @@ def get_filenames_without_ext(folder_path):
                     yield name
 
 
-class ApplicationManager:
-    def __init__(self, current_session, _class: AbstractPeakClassificator, DATA_DIR=DATA_DIR, custom_directory=None) -> None:
-        self.DATA_DIR = DATA_DIR
-
-
-        self.current_session = current_session
-        self.current_date_session = str(current_session.today().date()) + '/'
-        self.current_time = current_session.strftime("%H:%M:%S")
+class ApplicationManager(AbstractProcessing):
+    def __init__(self,
+                 current_session,
+                 peak_classificator: AbstractPeakClassificator,
+                 phase_classificator: AbstractPhaseClassificator,
+                 custom_output_directory=None
+                 ) -> None:
+        super().__init__(current_session)
 
         self.data = {}
         self.files_number = 0
-        self._class = _class
+        self.peak_classificator = peak_classificator
+        self.phase_classificator = phase_classificator
+        self.custom_output_directory = custom_output_directory
 
-        self.custom_directory = custom_directory
         self.set_directories()
-        self.write_data()
+        self.write_data() #create json
 
     def set_directories(self):
 
-        if self.custom_directory is None:
+        if self.custom_output_directory is None:
             analysis_dir_sessions = ANALYSE_DIR_SESSIONS
             results_dir_sessions = ANALYSE_DIR_SESSIONS_RESULTS
 
@@ -81,25 +84,53 @@ class ApplicationManager:
                 os.mkdir(results_dir_sessions + self.current_date_session)
 
         else:
-            if not os.path.exists(self.custom_directory):
-                os.mkdir(self.custom_directory)
+            if not os.path.exists(self.custom_output_directory):
+                os.mkdir(self.custom_output_directory)
 
     def write_data(self):
         with open(ANALYSE_DIR_SESSIONS_RESULTS + self.current_date_session + self.current_time + '.json', 'w') as f:
             json.dump(self.data, f)
 
-    def atomic_processing(self, filename):
+    def point_processing(self, sample):
         pass
 
-    def repo_processing(self, filename):
+    def directory_processing(self):
+        self.directory_peak_processing()
+        self.directory_phase_processing()
+
+    def point_peak_processing(self, sample):
         pass
+
+    def point_phase_processing(self, sample):
+        pass
+
+    def directory_peak_processing(self):
+        pass
+    def directory_phase_processing(self):
+        pass
+
+
 
 class Manager(ApplicationManager):
-    def __init__(self, current_session,  _class, DATA_DIR=DATA_DIR) -> None:
-        super().__init__(current_session, _class, DATA_DIR)
+    def __init__(self, current_session,
+                 peak_classificator,
+                 phase_classificator,
+                 peak_data_directory,
+                 phase_data_directory) -> None:
+        super().__init__(current_session=current_session,
+                         peak_classificator=peak_classificator,
+                         phase_classificator=phase_classificator)
 
-    def atomic_processing(self, filename):
-        peaks = self._class(filename, self.DATA_DIR, current_session=self.current_session)
+        self.peak_data_directory = peak_data_directory
+        self.phase_data_directory = phase_data_directory
+
+        self.peak_samples = get_filenames_without_ext(self.peak_data_directory)
+        self.phase_samples = get_filenames_without_ext(self.peak_data_directory)
+
+    def point_peak_processing(self, filename):
+        peaks = self.peak_classificator(current_session=self.current_session,
+                                        filename=filename,
+                                        data_directory=self.peak_data_directory)
         peaks.background_reduction()
         peaks.custom_filtering()
         peaks.background_plot()
@@ -111,7 +142,6 @@ class Manager(ApplicationManager):
 
         peaks.result_plot()
 
-
         self.data[filename] = peaks.gathering()
         # peaks.custom_total_fit()
         # peaks.sum_total_fit()
@@ -120,25 +150,40 @@ class Manager(ApplicationManager):
         print('Finished ' + filename + ' ' + str(self.files_number))
         # phase TODO
 
-    def repo_processing(self):
-        filenames = get_filenames_without_ext(self.DATA_DIR)
-        for filename in filenames:
-            self.atomic_processing(filename)
+    def directory_peak_processing(self):
+        for sample in self.peak_samples:
+            self.point_peak_processing(sample)
 
 
     def print_data(self):
         print(self.data)
 
+    def directory_phase_processing(self):
+        directory_phase_classificator = self.phase_classificator(current_session=self.current_session,
+                                                                 data_directory=self.phase_data_directory)
+
+        directory_phase_classificator.directory_classification(sample_names=self.phase_samples)
+        print('PHASE CLASS')
 
 class Custom_Manager(Manager):
-    def __init__(self, _class, current_session, DATA_DIR=DATA_DIR, ):
-        super().__init__(current_session, _class, DATA_DIR=DATA_DIR)
+    def __init__(self, peak_classificator,
+                 phase_classificator,
+                 current_session,
+                 peak_data_directory,
+                 phase_data_directory):
+        super().__init__(current_session=current_session,
+                         peak_classificator=peak_classificator,
+                         phase_classificator=phase_classificator,
+                         peak_data_directory=peak_data_directory,
+                         phase_data_directory=phase_data_directory)
 
 
-    def atomic_processing(self, filename):
-        peaks = self._class(filename, self.DATA_DIR, current_session=self.current_session)
-        peaks.denoising()
-        # peaks.prefiltering()
+    def point_peak_processing(self, filename):
+        peaks = self.peak_classificator(current_session=self.current_session,
+                                        filename=filename,
+                                        data_directory=self.peak_data_directory)
+        # peaks.denoising()
+        peaks.prefiltering()
         peaks.background_reduction()
         peaks.setting_state()
         # peaks.custom_filtering_()
@@ -164,8 +209,6 @@ class Custom_Manager(Manager):
 
         if self.data[filename]['peak_number'] == 0:
             pass
-
-
 
         print(peaks.deltas)
         print(peaks.data)

@@ -40,7 +40,7 @@ class AbstractPhaseClassificator(ProcessingClassificator):
     def __init__(self, current_session, data_directory, phases_directory=PHASES_DIR):
         super().__init__(current_session, data_directory)
 
-        self.phases_directory = '../{}'.format(phases_directory) #relative path
+        self.phases_directory = '{}'.format(phases_directory) #relative path
 
         self.phases_coefficients = np.array([])
         self.phases = {}
