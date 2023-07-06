@@ -20,6 +20,7 @@ from saxs_processing.custom_peak_classification import DefaultPeakClassificator
 time_start2 = time.time()
 
 now = datetime.now()
+
 today = now.today().date()
 
 current_time = now.strftime("%H:%M:%S")
@@ -136,7 +137,8 @@ class Custom_Manager(Manager):
 
     def atomic_processing(self, filename):
         peaks = self._class(filename, self.DATA_DIR, current_session=self.current_session)
-        peaks.prefiltering()
+        peaks.denoising()
+        # peaks.prefiltering()
         peaks.background_reduction()
         peaks.setting_state()
         # peaks.custom_filtering_()

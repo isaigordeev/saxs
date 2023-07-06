@@ -4,7 +4,7 @@ import peakutils
 from peakutils import indexes
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
-from scipy.signal import find_peaks, peak_widths, medfilt
+from scipy.signal import find_peaks, peak_widths, medfilt, savgol_filter
 
 from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
 from saxs_processing.abstr_peak import AbstractPeakClassificator
@@ -53,14 +53,35 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
         self.gauss = True
         self.popt_background = []
 
-    def prefiltering(self):
-        smoothed_data = medfilt(self.I, 3)
+    def noisy_parts_detection(self):
+        smoothed_data = medfilt(self.I, 3)  # 3?
         difference = np.abs(self.I - smoothed_data)
         threshold = np.mean(difference) + 0.5 * np.std(difference)
-
         noisy_indices = np.where(difference > threshold)[0]
 
-        first_part = gaussian_filter(self.I[:max(noisy_indices)], sigma=2)
+        return noisy_indices
+
+    def denoising(self):
+        noisy_indices = self.noisy_parts_detection()
+        first_part = np.ones(max(noisy_indices))
+        sec_part = medfilt(self.I[max(noisy_indices):], 3)
+
+        good_smoothed_without_loss = np.concatenate((first_part, sec_part))
+        self.I_filt = medfilt(good_smoothed_without_loss, 3)
+
+    def prefiltering(self):
+
+        noisy_indices = self.noisy_parts_detection()
+
+        first_part = medfilt(self.I[:max(noisy_indices)], 3)
+        first_part = savgol_filter(self.I[:max(noisy_indices)], 15, 4, deriv=0)
+
+        # first_part = gaussian_filter(first_part, sigma=10)
+
+        # first_part = gaussian_filter(self.I[:max(noisy_indices)], sigma=10)
+        # first_part = medfilt(first_part, 3)
+        print('FILTERING')
+
         sec_part = medfilt(self.I[max(noisy_indices):], 3)
         good_smoothed_without_loss = np.concatenate((first_part, sec_part))
 
