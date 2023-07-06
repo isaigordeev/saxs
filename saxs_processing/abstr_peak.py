@@ -5,9 +5,10 @@ import numpy as np
 import pandas as pd
 
 from settings_processing import EXTENSION, ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
+from abc import abstractmethod, ABC
 
 
-class PeakClassificator:
+class PeakClassificator(ABC):
 
     def __init__(self, filename, DATA_DIR, current_session, custom_directory=None):
         self.file_analyse_dir_peaks = None
@@ -17,15 +18,17 @@ class PeakClassificator:
         self.dI = None
         self.I = None
         self.q = None
-        self.custom_directory = custom_directory
+
         self.filename = filename
         self.DATA_DIR = DATA_DIR
+        self.custom_directory = custom_directory
+
+        self.current_session = current_session
         self.current_date_session = str(current_session.today().date()) + '/'
         self.current_time = current_session.strftime("%H:%M:%S")
 
         self.set_directories()
         self.set_data()
-
 
 
 
@@ -58,8 +61,13 @@ class PeakClassificator:
 
         current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + self.current_date_session
 
+        with open(current_session_results + self.current_time + '.json', 'r') as file:
+            directory_data = json.load(file)
+
+        directory_data.update({self.filename: self.gathering()})
+
         with open(current_session_results + self.current_time + '.json', 'w') as f:
-            json.dump(self.gathering(), f, indent=4, separators=(",", ": "))
+            json.dump(directory_data, f, indent=4, separators=(",", ": "))
 
     def background_reduction(self):
         pass

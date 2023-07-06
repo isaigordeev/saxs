@@ -19,6 +19,8 @@ from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FIT
 from saxs_processing.custom_peak_classification import Peaks
 
 
+
+
 class PPeaks(Peaks):
     def __init__(self, filename, DATA_DIR, current_session):
 

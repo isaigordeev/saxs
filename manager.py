@@ -62,6 +62,7 @@ class ApplicationManager:
 
         self.custom_directory = custom_directory
         self.set_directories()
+        self.write_data()
 
     def set_directories(self):
 
@@ -82,7 +83,9 @@ class ApplicationManager:
             if not os.path.exists(self.custom_directory):
                 os.mkdir(self.custom_directory)
 
-
+    def write_data(self):
+        with open(ANALYSE_DIR_SESSIONS_RESULTS + self.current_date_session + self.current_time + '.json', 'w') as f:
+            json.dump(self.data, f)
 
     def atomic_processing(self, filename):
         pass
@@ -91,7 +94,7 @@ class ApplicationManager:
         pass
 
 class Manager(ApplicationManager):
-    def __init__(self, current_session: str,  _class, DATA_DIR=DATA_DIR) -> None:
+    def __init__(self, current_session,  _class, DATA_DIR=DATA_DIR) -> None:
         super().__init__(current_session, _class, DATA_DIR)
 
     def atomic_processing(self, filename):
@@ -125,13 +128,9 @@ class Manager(ApplicationManager):
     def print_data(self):
         print(self.data)
 
-    def write_data(self):
-        with open(current_session_results + current_time + f'_{self.files_number}.json', 'w') as f:
-            json.dump(self.data, f, indent=4, separators=(",", ": "))
-
 
 class Custom_Manager(Manager):
-    def __init__(self, _class, current_session: str, DATA_DIR=DATA_DIR, ):
+    def __init__(self, _class, current_session, DATA_DIR=DATA_DIR, ):
         super().__init__(current_session, _class, DATA_DIR=DATA_DIR)
 
 
