@@ -1,13 +1,17 @@
 import json
 import os
 from datetime import date, datetime
+from abc import abstractmethod, ABC
+
 
 # from fastdtw import fastdtw
 import matplotlib.pyplot as plt
 import torch
 from torch import nn
 
+from saxs_processing.processing_classificator import ProcessingClassificator
 from settings_processing import *
+
 
 today = date.today()
 
@@ -25,30 +29,39 @@ def ratio_data(i, data: np.array) -> np.array:
     return (data / data[i])[1:]
 
 
-class Phases():
-    def __init__(self, filename, current_session, phase_dir='phases'):
+class AbstractPhaseClassificator(ProcessingClassificator):
+    __slots__ = ('phases', 'phases_coefficients', 'phases_directory', 'filename_analyse_dir_phases')
+    def __init__(self, data_directory, current_session, phases_directory=PHASES_DIR):
+        super().__init__(data_directory, current_session)
 
-        self.q_normalized_ratio = np.array([])
-        self.alignement_dict = {}
-        self.DIR_PHASES = phase_dir
+        self.phases_directory = '../{}'.format(phases_directory)
+        # self.set_directories()
 
-        with open(self.DIR_PHASES + '.json', 'r') as file:  # NOTE make it better with string formatting
+        self.filename_analyse_dir_phases = ''
+        self.phases_coefficients = ''
+        self.phases = ''
+        self.set_phases()
+
+
+
+    def set_phases(self):
+        with open(self.phases_directory, 'r') as file:  # NOTE make it better with string formatting
             self.phases = json.load(file)
 
-        self.phases_coefficients = [[0] * len(self.phases[x]) for x in range(len(self.phases))]
-
-        self.filename = filename
-        self.filename_analyse_dir = current_session + self.filename
-        self.filename_analyse_dir_phases = current_session + self.filename + '/phases'
-
-        if not os.path.exists(self.filename_analyse_dir_phases):
-            os.mkdir(self.filename_analyse_dir_phases)
+        self.phases_coefficients = [[0] * len(x) for x in self.phases.values()]
 
         for i, phase in enumerate(self.phases.values()):
             phase = np.sqrt(phase)
             self.phases_coefficients[i] = ratio_data(0, phase)
 
         print(self.phases_coefficients)
+
+    def set_directories(self):
+        self.filename_analyse_dir_phases = ANALYSE_DIR_SESSIONS + self.current_data_session + 'phases'
+
+        if not os.path.exists(self.filename_analyse_dir_phases):
+            os.mkdir(self.filename_analyse_dir_phases)
+
     def data_preparation(self):
         pass
 
@@ -60,3 +73,5 @@ class Phases():
 
     def gathering(self):
         pass
+
+# a = AbstractPhaseClassificator(DATA_DIR, now)
