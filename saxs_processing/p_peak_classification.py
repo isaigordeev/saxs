@@ -22,9 +22,9 @@ from saxs_processing.custom_peak_classification import DefaultPeakClassificator
 
 
 class PDefaultPeakClassificator(DefaultPeakClassificator):
-    def __init__(self, filename, DATA_DIR, current_session):
+    def __init__(self, filename, data_directory, current_session):
 
-        super().__init__(filename, DATA_DIR=DATA_DIR, current_session=current_session)
+        super().__init__(filename, data_directory=data_directory, current_session=current_session)
 
         self.ppeak_number = 0
         self.sigmas = np.array([])
@@ -425,15 +425,15 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
         return {
             'peak_number': self.peak_number,
             'q': q.tolist(),
-            'I': I.tolist(),
-            'dI': dI.tolist(),
-            'I_raw': I_raw.tolist(),
-            'peaks': peaks_detected.tolist(),
-            'params_amplitude': self.params.tolist()[::3],
-            'params_mean': self.params.tolist()[1::3],
-            'params_sigma': self.params.tolist()[2::3],
-            'start_loss': self.start_loss,
-            'final_loss': self.final_loss,
-            'error': error
+            # 'I': I.tolist(),
+            # 'dI': dI.tolist(),
+            # 'I_raw': I_raw.tolist(),
+            # 'peaks': peaks_detected.tolist(),
+            # 'params_amplitude': self.params.tolist()[::3],
+            # 'params_mean': self.params.tolist()[1::3],
+            # 'params_sigma': self.params.tolist()[2::3],
+            # 'start_loss': self.start_loss,
+            # 'final_loss': self.final_loss,
+            # 'error': error
             # 'loss_ratio': self.final_loss / self.start_loss
         }

@@ -9,7 +9,7 @@ from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESUL
 
 
 class DefaultPhaseClassificator(AbstractPhaseClassificator):
-    def __init__(self, current_session, data_directory = '../'+ANALYSE_DIR_SESSIONS_RESULTS):
+    def __init__(self, current_session, data_directory):
         super().__init__(current_session, data_directory)
 
         self.filename_analyse_dir_phases = ''
@@ -20,10 +20,11 @@ class DefaultPhaseClassificator(AbstractPhaseClassificator):
         self.distances = np.zeros(self.phases_number)
 
 
-        if self.data_directory == '../'+ANALYSE_DIR_SESSIONS_RESULTS:
-            self.data_directory += (self.current_data_session + self.current_time + '.json')
+        # if self.data_directory == 'Default':
+        self.data_directory += (self.current_date_session + self.current_time + '.json')
 
         self.read_data()
+
 
     def set_directories(self, sample_name):
         self.filename_analyse_dir_phases = '../'+ ANALYSE_DIR_SESSIONS + sample_name + '/phases'
@@ -58,29 +59,39 @@ class DefaultPhaseClassificator(AbstractPhaseClassificator):
         self.absolute_sequence_comparison()
         self.write_data(sample_name)
 
+
+    def directory_classification(self, sample_names, directory=None): #dir?
+        for sample in sample_names:
+            print(sample)
+            self.point_classification(sample)
+
     def write_data(self, sample_name):
         self.data[sample_name]['phase'] = self.phases_dict[np.argmax(self.distances)]
-
+        print(self.phases_dict[np.argmax(self.distances)])
         with open(self.data_directory, 'w') as f:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
-from settings_processing import *
-from datetime import date, datetime
 
 
 
-now = datetime.now()
 
-today = now.today().date()
-print(today)
-current_time = now.strftime("%H:%M:%S")
+# from settings_processing import *
+# from datetime import date, datetime
+#
+#
+#
+# now = datetime.now()
+#
+# today = now.today().date()
+# print(today)
+# current_time = now.strftime("%H:%M:%S")
 
 # works
 # b = DefaultPhaseClassificator('../' + ANALYSE_DIR_SESSIONS_RESULTS + '2023-07-06/' + '04:59:02.json', now)
 # b.classification('075776_treated_xye')
 
-b = DefaultPhaseClassificator(now, '../'+ ANALYSE_DIR_SESSIONS_RESULTS + '2023-07-06/' + '17:13:12.json')
-b.point_classification('075775_treated_xye')
+# b = DefaultPhaseClassificator(now, '../'+ ANALYSE_DIR_SESSIONS_RESULTS + '2023-07-06/' + '17:13:12.json')
+# b.point_classification('075775_treated_xye')
 
 
 
