@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import peakutils
-from peakutils import indexes
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths, medfilt, savgol_filter
@@ -228,13 +226,6 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
         # print(self.peaks_data)
 
 
-
-    # probably it makes sense just move the centres?
-    def custom_total_fit(self):
-
-        self.peaks_x = peakutils.interpolate(x=np.arange(len(self.I_background_filtered)), y=self.I_background_filtered, ind=self.peaks)
-        print(self.peaks_detected)
-        print(self.peaks_x)
 
     def peak_verifying(self, i):
         if len(self.peaks) > i:

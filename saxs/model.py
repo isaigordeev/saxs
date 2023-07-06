@@ -1,6 +1,5 @@
-from torch import nn
 import torch
-import efficientnet_pytorch
+from torch import nn
 
 from saxs.settings import EMBEDDING_DIM, PATCH_SIZE, COLOR_CHANNELS, ATTENTION_BLOCKS, IMAGE_DIM
 

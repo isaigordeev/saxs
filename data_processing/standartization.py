@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd 
-from torch import nn
-import torch
+import pandas as pd
 from scipy.signal import savgol_filter
 
 FILENAME = "075909_treated_xye"  # pointwise classification

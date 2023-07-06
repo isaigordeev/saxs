@@ -1,10 +1,10 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from scipy.ndimage import gaussian_filter
 from scipy.signal import medfilt
 
-from settings_processing import EXTENSION, DATA_DIR
+from settings_processing import EXTENSION
 
 data = pd.read_csv('../' + 'res/' + '075773_treated_xye' + EXTENSION, sep=',')
 

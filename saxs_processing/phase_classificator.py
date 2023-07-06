@@ -5,7 +5,7 @@ import numpy as np
 
 from outils.outils import calculate_absolute_difference
 from saxs_processing.abstr_phase import AbstractPhaseClassificator
-from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
+from settings_processing import ANALYSE_DIR_SESSIONS
 
 
 class DefaultPhaseClassificator(AbstractPhaseClassificator):

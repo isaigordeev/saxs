@@ -1,17 +1,10 @@
 import json
-import os
 from datetime import date, datetime
-from abc import abstractmethod, ABC
-
-
-# from fastdtw import fastdtw
-import matplotlib.pyplot as plt
-import numpy as np
-import torch
-from torch import nn
 
 from saxs_processing.processing_classificator import ProcessingClassificator
 from settings_processing import *
+
+# from fastdtw import fastdtw
 
 
 today = date.today()

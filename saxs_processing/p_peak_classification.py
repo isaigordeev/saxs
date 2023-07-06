@@ -1,24 +1,11 @@
-import json
-from datetime import datetime
-
 import matplotlib.pyplot as plt
 import numpy as np
-import peakutils
-from peakutils import indexes
-from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
-from scipy.signal import find_peaks, peak_widths
-
-from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
-from saxs_processing.abstr_peak import AbstractPeakClassificator
-
-from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, \
-    WINDOWSIZE, \
-    RESOLUTION_FACTOR, ANALYSE_DIR_SESSIONS_RESULTS, ANALYSE_DIR_SESSIONS
+from scipy.signal import find_peaks
 
 from saxs_processing.custom_peak_classification import DefaultPeakClassificator
-
-
+from saxs_processing.functions import gaussian_sum, moving_average, parabole
+from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF
 
 
 class PDefaultPeakClassificator(DefaultPeakClassificator):
@@ -41,12 +28,6 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
                                                  prominence=prominence) # NOTE attention
 
     # probably it makes sense just move the centres?
-    def custom_total_fit(self):
-
-        self.peaks_x = peakutils.interpolate(x=np.arange(len(self.I_background_filtered)), y=self.I_background_filtered,
-                                             ind=self.peaks)
-        print(self.peaks_detected)
-        print(self.peaks_x)
 
     def peak_verifying(self, i) -> bool:
         if len(self.peaks) > i:

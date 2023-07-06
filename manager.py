@@ -1,21 +1,17 @@
 import time
 
 from saxs_processing.abstr_phase import AbstractPhaseClassificator
-from saxs_processing.p_peak_classification import PDefaultPeakClassificator
-from saxs_processing.processing_classificator import ProcessingClassificator, AbstractProcessing
+from saxs_processing.processing_classificator import AbstractProcessing
 
 time_start1 = time.time()
 
-import argparse
 import json
 import os
 
 from datetime import datetime
 
-from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, DATA_DIR, PROMINENCE, ANALYSE_DIR
+from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, ANALYSE_DIR
 from saxs_processing.abstr_peak import AbstractPeakClassificator
-
-from saxs_processing.custom_peak_classification import DefaultPeakClassificator
 
 # from saxs_processing.phase_classification import
 
@@ -187,16 +183,16 @@ class Custom_Manager(Manager):
         peaks.background_reduction()
         peaks.setting_state()
         # peaks.custom_filtering_()
-        peaks.background_plot()
+        # peaks.background_plot() #for main
         peaks.filtering_negative()
         # peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)
-        peaks.state_plot()
+        # peaks.state_plot() #for main
         # peaks.custom_peak_fitting_with_parabole(0)
         peaks.peak_processing()
         # peaks.custom_peak_fitting(0)
         # peaks.peak_substraction(0)
-        peaks.state_plot()
-        peaks.result_plot()
+        # peaks.state_plot()  #for main
+        # peaks.result_plot() #for main
 
         # for x in range(len(peaks.peaks)):
         #     peaks.custom_peak_fitting_with_parabole(x)

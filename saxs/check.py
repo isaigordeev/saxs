@@ -1,13 +1,9 @@
-from model import SASXTransformer
-from torchinfo import summary
-import torch
-
-
 import timm
+from torchinfo import summary
+
+from model import SASXTransformer
 
 model_vim = timm.create_model('vit_base_patch16_224', pretrained=True)
-
-from saxs.model import PatchEmbedding
 
 modelx = SASXTransformer()
 

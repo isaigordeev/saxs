@@ -1,15 +1,9 @@
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd 
-from torch import nn
-import os 
-import torch
-from scipy.signal import savgol_filter
-from PIL import Image
+import os
 import random
 
-
-
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 FILENAME = "075775_treated_xye"  # pointwise classification
 EXTENSION = '.csv'

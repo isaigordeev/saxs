@@ -1,7 +1,8 @@
 from pathlib import Path
-from torchvision import datasets, transforms
-import torch, torch.utils.data
 
+import torch
+import torch.utils.data
+from torchvision import datasets, transforms
 
 SET_DIR = 'data/'
 SET_DIR = Path(SET_DIR)
