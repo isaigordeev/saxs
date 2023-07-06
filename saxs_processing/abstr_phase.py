@@ -6,6 +6,7 @@ from abc import abstractmethod, ABC
 
 # from fastdtw import fastdtw
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
 from torch import nn
 
@@ -30,17 +31,26 @@ def ratio_data(i, data: np.array) -> np.array:
 
 
 class AbstractPhaseClassificator(ProcessingClassificator):
-    __slots__ = ('phases', 'phases_coefficients', 'phases_directory', 'filename_analyse_dir_phases')
+    __slots__ = ('phases',
+                 'phases_coefficients',
+                 'phases_directory',
+                 'data',
+                 'phases_number',
+                 'phases_dict')
     def __init__(self, data_directory, current_session, phases_directory=PHASES_DIR):
         super().__init__(data_directory, current_session)
 
         self.phases_directory = '../{}'.format(phases_directory)
-        # self.set_directories()
 
-        self.filename_analyse_dir_phases = ''
-        self.phases_coefficients = ''
-        self.phases = ''
+        self.phases_coefficients = np.array([])
+        self.phases = {}
+        self.data = {}
+        self.phases_dict = {}
+        self.phases_number = 0
+
+
         self.set_phases()
+        self.read_data()
 
 
 
@@ -54,13 +64,17 @@ class AbstractPhaseClassificator(ProcessingClassificator):
             phase = np.sqrt(phase)
             self.phases_coefficients[i] = ratio_data(0, phase)
 
+        self.phases_number = len(self.phases.values())
+
+        for i, phase in enumerate(self.phases.keys()):
+            self.phases_dict[phase] = i
+
         print(self.phases_coefficients)
+        print(self.phases_dict)
 
-    def set_directories(self):
-        self.filename_analyse_dir_phases = ANALYSE_DIR_SESSIONS + self.current_data_session + 'phases'
-
-        if not os.path.exists(self.filename_analyse_dir_phases):
-            os.mkdir(self.filename_analyse_dir_phases)
+    def read_data(self):
+        with open(self.data_directory, 'r') as file:  # NOTE make it better with string formatting
+            self.data = json.load(file)
 
     def data_preparation(self):
         pass
@@ -74,4 +88,3 @@ class AbstractPhaseClassificator(ProcessingClassificator):
     def gathering(self):
         pass
 
-# a = AbstractPhaseClassificator(DATA_DIR, now)
