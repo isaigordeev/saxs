@@ -70,7 +70,7 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
     def prefiltering(self):
 
         noisy_indices = self.noisy_parts_detection()
-
+        print(noisy_indices)
         first_part = medfilt(self.I[:max(noisy_indices)], 3)
         first_part = savgol_filter(self.I[:max(noisy_indices)], 15, 4, deriv=0)
 
@@ -78,28 +78,24 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
 
         # first_part = gaussian_filter(self.I[:max(noisy_indices)], sigma=10)
         # first_part = medfilt(first_part, 3)
-        print('FILTERING')
+        print('FILTERING {}'.format(self.filename))
 
         sec_part = medfilt(self.I[max(noisy_indices):], 3)
         good_smoothed_without_loss = np.concatenate((first_part, sec_part))
 
-        # self.difference = good_smoothed_without_loss
-        # self.difference_start = good_smoothed_without_loss
+
+        # return medfilt(good_smoothed_without_loss, 3)
+
         self.I_filt = medfilt(good_smoothed_without_loss, 3)
-        # self.difference_start = medfilt(good_smoothed_without_loss, 3)
-
-        # plt.plot(self.I)
-        # plt.plot(self.difference)
-        # plt.show()
-        # plt.clf()
-
 
     def background_reduction(self):
+        # self.I_filt = self.prefiltering()
 
         i = np.argmax(self.q > START)
-        self.q, self.I, self.dI = self.q[i:], self.I[i:], self.dI[i:]
-
+        self.q, self.I = self.q[i:], self.I[i:],
+        # self.dI = self.dI[i:]
         self.I_filt = self.I_filt[i:]
+
         self.zeros = np.zeros(len(self.q))
         self.total_fit = self.zeros
         self.peaks_plots = np.zeros((20, len(self.q)))
@@ -107,6 +103,7 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
         popt, pcov = curve_fit(
             f=background_hyberbole,
             xdata=self.q,
+            # ydata=self.I,
             ydata=self.I_filt,
             p0=(3, 2),
             sigma=self.dI
@@ -114,6 +111,7 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
 
         self.popt_background = popt
         self.model = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
+        # self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
         self.I_background_filtered = self.I_filt - BACKGROUND_COEF * self.model
 
         # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
@@ -219,7 +217,7 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
         self.peaks, self.peaks_data = find_peaks(self.difference,
                                                  height=height,
                                                  distance=distance,
-                                                 # threshold=0.2,
+                                                 threshold=0.2,
                                                  plateau_size=1,
                                                  prominence=(prominence, None))
         # if self.peaks.size == 0:
@@ -482,9 +480,7 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
         # self.peaks_boundaries = np.append(self.peaks_boundaries, (peak[0], peak[1]))
 
     def filtering_negative(self):
-        for x in range(len(self.difference) - 1):
-            if self.difference[x] < 0:
-                self.difference[x] = 0
+        self.difference = np.maximum(self.difference, 0)
 
     def stage_plot(self):
         plt.clf()

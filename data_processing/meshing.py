@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-data = np.load("../saxs_data/cubic_q.npy")
+data = np.load("../saxs_generated_data/cubic_q.npy")
 print(data)
 
 # x = 1

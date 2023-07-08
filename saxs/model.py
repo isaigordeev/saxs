@@ -4,7 +4,7 @@ from torch import nn
 from saxs.settings import EMBEDDING_DIM, PATCH_SIZE, COLOR_CHANNELS, ATTENTION_BLOCKS, IMAGE_DIM
 
 
-class SASXpy_raw(nn.Module):
+class SAXSpy_raw(nn.Module):
 
     def __init__(self, input_shape: int, hidden_units: int, output_shape: int) -> None:
         super().__init__()
@@ -43,7 +43,7 @@ class SASXpy_raw(nn.Module):
         return self.classifier(x)
 
 
-class SASXpy(nn.Module):
+class SAXSpy(nn.Module):
     def __init__(self, input_shape: int, hidden_units: int, output_shape=3) -> None:
         super().__init__()
         self.block1 = nn.Sequential(
@@ -85,7 +85,7 @@ class PatchEmbedding(nn.Module):
         return x_flattened.permute(0, 2, 1)
 
 
-class SASXTransformer(nn.Module):
+class SAXSViT(nn.Module):
     def __init__(self,
                  img_size: int = IMAGE_DIM,
                  in_channels: int = COLOR_CHANNELS,

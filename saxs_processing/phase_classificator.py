@@ -3,13 +3,13 @@ import os
 
 import numpy as np
 
-from outils.outils import calculate_absolute_difference
+from outils.processing_outils import calculate_absolute_difference
 from saxs_processing.abstr_phase import AbstractPhaseClassificator
-from settings_processing import ANALYSE_DIR_SESSIONS
+from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
 
 
 class DefaultPhaseClassificator(AbstractPhaseClassificator):
-    def __init__(self, current_session, data_directory):
+    def __init__(self, current_session, data_directory=None):
         super().__init__(current_session, data_directory)
 
         self.filename_analyse_dir_phases = ''
@@ -20,8 +20,8 @@ class DefaultPhaseClassificator(AbstractPhaseClassificator):
         self.distances = np.zeros(self.phases_number)
 
 
-        # if self.data_directory == 'Default':
-        self.data_directory += (self.current_date_session + self.current_time + '.json')
+        if self.data_directory is ANALYSE_DIR_SESSIONS_RESULTS:
+            self.data_directory += (self.current_date_session + self.current_time + '.json')
 
         self.read_data()
 
@@ -49,37 +49,47 @@ class DefaultPhaseClassificator(AbstractPhaseClassificator):
         for i in range(self.phases_number):
             self.distances[i] = calculate_absolute_difference(self.phases_coefficients[i], self.preprocessed_q)
 
-        print(self.preprocessed_q)
-        print(self.distances)
+        # print(self.preprocessed_q)
+        # print(self.distances)
 
     def point_classification(self, sample_name):
         # self.set_directories(sample_name)
         self.read_sample_data(sample_name)
-        self.q_preprocessing()
-        self.absolute_sequence_comparison()
-        self.write_data(sample_name)
+        if len(self.q) > 1:
+            self.q_preprocessing()
+            self.absolute_sequence_comparison()
+            self.data[sample_name]['phase'] = self.phases_dict[np.argmax(self.distances)]
+            self.write_data(sample_name)
+        elif len(self.q) == 1:
+            self.data[sample_name]['phase'] = 'lam'
+            self.write_data(sample_name)
+        else:
+            self.data[sample_name]['phase'] = 'blanc'
+            self.write_data(sample_name)
 
 
-    def directory_classification(self, sample_names, directory=None): #dir?
-        for sample in sample_names:
-            print(sample)
-            self.point_classification(sample)
+    def directory_classification(self, sample_names=None, directory=None): #dir?
+        if sample_names is not None:
+            for sample in sample_names:
+                # print(sample)
+                self.point_classification(sample)
+        else:
+            for sample in self.data.keys():
+                self.point_classification(sample)
 
     def write_data(self, sample_name):
-        self.data[sample_name]['phase'] = self.phases_dict[np.argmax(self.distances)]
-        print(self.phases_dict[np.argmax(self.distances)])
+        # print(self.phases_dict[np.argmax(self.distances)])
         with open(self.data_directory, 'w') as f:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
 
 
 
-
 # from settings_processing import *
 # from datetime import date, datetime
-#
-#
-#
+# #
+# #
+# #
 # now = datetime.now()
 #
 # today = now.today().date()
@@ -90,8 +100,8 @@ class DefaultPhaseClassificator(AbstractPhaseClassificator):
 # b = DefaultPhaseClassificator('../' + ANALYSE_DIR_SESSIONS_RESULTS + '2023-07-06/' + '04:59:02.json', now)
 # b.classification('075776_treated_xye')
 
-# b = DefaultPhaseClassificator(now, '../'+ ANALYSE_DIR_SESSIONS_RESULTS + '2023-07-06/' + '17:13:12.json')
-# b.point_classification('075775_treated_xye')
+# b = DefaultPhaseClassificator(now, ANALYSE_DIR_SESSIONS_RESULTS + '2023-07-07/' + '01:26:01.json')
+# b.directory_classification()
 
 
 
