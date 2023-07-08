@@ -21,11 +21,14 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
     def peak_searching(self, height=0, distance=5, prominence=0.1):
         self.peaks, self.peaks_data = find_peaks(self.difference,
-                                                 height=height,
-                                                 distance=distance,
+                                                 # height=height, #for sample
+                                                 # distance=distance,
                                                  # threshold=0.2,
-                                                 plateau_size=1,
-                                                 prominence=prominence) # NOTE attention
+                                                 # plateau_size=1, #for sample
+                                                 # prominence=prominence
+                                                  ) # NOTE attention
+        # self.peaks, self.peaks_data = find_peaks(self.difference)
+
 
     # probably it makes sense just move the centres?
 
@@ -39,10 +42,10 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
     def custom_peak_fitting_with_parabole(self, i):
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
-                left_base = abs(self.peaks[i] - self.peaks_data['left_bases'][i])
-                right_base = abs(self.peaks[i] - self.peaks_data['right_bases'][i])
-                delta = min(left_base, right_base) / 2
-                start_delta = delta
+                # left_base = abs(self.peaks[i] - self.peaks_data['left_bases'][i])
+                # right_base = abs(self.peaks[i] - self.peaks_data['right_bases'][i])
+                # delta = min(left_base, right_base) / 2
+                # start_delta = delta
 
                 delta = 3
                 # print(left_base, right_base, 'bases')
@@ -64,7 +67,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
                 # sigma_values = np.linspace(3, 20, 5) # NOTE optimine
 
-                sigma_values = [4]  # 3?
+                sigma_values = [3]  # 3?
                 best_metric = np.inf
 
                 period1_global = int(self.peaks[i] - 20)
@@ -82,14 +85,14 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
                     period1 = int(self.peaks[i] - delta)
                     period2 = int(self.peaks[i] + delta)
-                    print(period1, period2, delta, 'perods')
+                    # print(period1, period2, delta, 'perods')
 
                     popt1, pcov1 = curve_fit(
                         f=current_peak_parabole,
                         xdata=self.q[period1:period2],
                         ydata=self.I_background_filtered[period1:period2],
                         bounds=([self.delta_q ** 2, 1], [0.05, 4 * self.max_I]),
-                        sigma=self.dI[period1:period2]
+                        # sigma=self.dI[period1:period2]
                     )
 
                     # period1_fix = int(self.peaks[i] - popt1[0]/self.delta_q)
@@ -99,7 +102,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
                     period2_fix = int(self.peaks[i] + delta)
 
                     new_delta = popt1[0] / self.delta_q
-                    print(new_delta, 'new delta')
+                    # print(new_delta, 'new delta')
 
                     smoothed_difference = current_peak_parabole(self.q, popt1[0], popt1[1])
 
@@ -119,7 +122,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
                     # p_num += 1
 
-                    print(metric)
+                    # print(metric)
                     if metric < best_metric:
                         best_metric = metric
                         start_delta = delta
@@ -175,7 +178,9 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
             smoothed_y = moving_average(y, window_size)
 
             gauss = lambda x, c, b: c * np.exp(-(x - self.q[self.peaks[i]]) ** 2 / (b ** 2))
-
+            print(self.peaks[i])
+            print(delta)
+            print(self.difference[period1:period2])
             if period1 != period2:
                 popt, pcov = curve_fit(
                     f=gauss,
@@ -184,7 +189,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
                     ydata=self.difference[period1:period2],
                     p0=(self.data[self.peaks[i]][1], self.data[self.peaks[i]][0]), # TODO initial conditions and better fitting corresponding to the parabole
                     bounds=(self.delta_q ** 4, [2 * 2 * self.max_I, 1, ]),
-                    sigma=self.dI[period1:period2]
+                    # sigma=self.dI[period1:period2]
                 )
 
                 perr = np.sqrt(np.diag(pcov))
@@ -253,10 +258,6 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
         self.peak_number += 1
         # self.peaks_boundaries = np.append(self.peaks_boundaries, (peak[0], peak[1]))
 
-    def filtering_negative(self): # TODO filtering fitted
-        for x in range(len(self.difference) - 1):
-            if self.difference[x] < 0:
-                self.difference[x] = 0
 
     def stage_plot(self):
         plt.clf()
@@ -310,7 +311,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
     def peak_processing(self, number_peak=INFINITY, get=False):
 
-        while True:
+        while number_peak > 0:
             current_peak = 0
             self.peak_searching(height=[1,50], prominence=PROMINENCE, distance=10)  # TODO good parameters and metric of suspicious peaks
             if len(self.peaks) != 0:
@@ -377,11 +378,11 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
         self.peaks_analysed_q = sorted(self.peaks_analysed_q)
         for i in range(len(self.peaks_analysed_q)-1):
-            print(abs(self.peaks_analysed_q[i] - self.peaks_analysed_q[i + 1]))
+            # print(abs(self.peaks_analysed_q[i] - self.peaks_analysed_q[i + 1]))
             if abs(self.peaks_analysed_q[i] - self.peaks_analysed_q[i+1]) < 0.002:
                 to_delete.append(i+1)
 
-        print(to_delete)
+        # print(to_delete)
         self.peaks_analysed_q = np.delete(self.peaks_analysed_q, to_delete)
         self.peaks_analysed_I = np.delete(self.peaks_analysed_I, to_delete)
 
@@ -397,12 +398,12 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
         I = self.peaks_analysed_I[sorted_indices_q]
         q = self.peaks_analysed_q[sorted_indices_q]
-        I_raw = self.I[self.peaks_detected][sorted_indices_q]
-        dI = self.dI[self.peaks_detected][sorted_indices_q]
-        peaks_detected = self.peaks_detected[sorted_indices_q]
+        # I_raw = self.I[self.peaks_detected][sorted_indices_q]
+        # dI = self.dI[self.peaks_detected][sorted_indices_q]
+        # peaks_detected = self.peaks_detected[sorted_indices_q]
         error = np.sum(self.total_fit - self.I_background_filtered)/np.sum(self.I_background_filtered)
-        print(error, 'Error')
-
+        # print(error, 'Error')
+        print('WRITING {}'.format(self.filename))
         return {
             'peak_number': self.peak_number,
             'q': q.tolist(),

@@ -54,10 +54,10 @@ class AbstractPeakClassificator(ABC):
 
         self.q = np.array(data.iloc[:, 0])
         self.I = np.array(data.iloc[:, 1])
-        self.dI = np.array(data.iloc[:, 2])
+        # self.dI = np.array(data.iloc[:, 2])
 
         self.delta_q = self.q[len(self.q) - 1] / len(self.q)
-        self.max_dI = np.median(self.dI)
+        # self.max_dI = np.median(self.dI)
 
     def write_data(self):
 

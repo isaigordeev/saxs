@@ -59,8 +59,8 @@ class AbstractPhaseClassificator(ProcessingClassificator):
         for i, phase in enumerate(self.phases.keys()):
             self.phases_dict[i] = phase
 
-        print(self.phases_coefficients)
-        print(self.phases_dict)
+        # print(self.phases_coefficients)
+        # print(self.phases_dict)
 
     def data_preparation(self):
         pass

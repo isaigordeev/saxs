@@ -181,18 +181,19 @@ class Custom_Manager(Manager):
         # peaks.denoising()
         peaks.prefiltering()
         peaks.background_reduction()
+        # peaks.filtering_negative()
         peaks.setting_state()
         # peaks.custom_filtering_()
-        # peaks.background_plot() #for main
         peaks.filtering_negative()
+        peaks.background_plot() #for main
         # peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)
-        # peaks.state_plot() #for main
+        peaks.state_plot() #for main
         # peaks.custom_peak_fitting_with_parabole(0)
         peaks.peak_processing()
         # peaks.custom_peak_fitting(0)
         # peaks.peak_substraction(0)
-        # peaks.state_plot()  #for main
-        # peaks.result_plot() #for main
+        peaks.state_plot()  #for main
+        peaks.result_plot() #for main
 
         # for x in range(len(peaks.peaks)):
         #     peaks.custom_peak_fitting_with_parabole(x)
@@ -206,7 +207,7 @@ class Custom_Manager(Manager):
         if self.data[filename]['peak_number'] == 0:
             pass
 
-        print(peaks.deltas)
-        print(peaks.data)
-        print(sorted(peaks.peaks_analysed_q/min(peaks.peaks_analysed_q)))
+        # print(peaks.deltas)
+        # print(peaks.data)
+        # print(sorted(peaks.peaks_analysed_q/min(peaks.peaks_analysed_q)))
 
