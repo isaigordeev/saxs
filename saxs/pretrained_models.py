@@ -1,8 +1,8 @@
 from torch.nn import Linear
 import torchvision
-from settings import DEVICE, PHASES_NUMBER,EMBEDDING_DIM
+from settings import DEVICE, PHASES_NUMBER, EMBEDDING_DIM
 
-from torchinfo import summary
+from torchinfo import summary #optional
 
 
 pretrained_vit_weights = torchvision.models.ViT_B_16_Weights.DEFAULT
@@ -15,6 +15,8 @@ for layer in pretrained_vit_B_16.parameters():
 
 pretrained_vit_B_16.heads = Linear(in_features=768, out_features=PHASES_NUMBER).to(DEVICE)  # FIRSTLY
 
+transforms = pretrained_vit_weights.transforms()
+print(transforms)
 
 
 # summary(pretrained_vit_B_16,
