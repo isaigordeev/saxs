@@ -1,38 +1,24 @@
-import torch
-from torch import nn
+import saxs_data_setup
+from saxs.model import SAXSViT
+from saxs.settings import TRAIN_DIR, TEST_DIR
+import phase_prediction
 
-import data_setup
-import engine
-import tools
-from setup import SEED, NUM_EPOCHS, DEVICE, SAVE_MODEL_DIR
+saxs = SAXSViT()
 
-torch.manual_seed(SEED)
+train_saxs_batches, test_saxs_batches, saxs_phases = saxs_data_setup.create_data_batches(train_data_dir=TRAIN_DIR,
+                                                                                          test_data_dir=TEST_DIR,
+                                                                                          transforms=saxs.data_transforms,
+                                                                                          batch_size=32,
+                                                                                          num_workers=0
+                                                                                          )
 
-data, train_loader, test_loader = data_setup.create_batches('/Users/isaigordeev/Desktop/2023/SAS-DL/data/dot',
-                                                            data_setup.data_transform,
-                                                            0.2)
+print(train_saxs_batches)
+print(len(train_saxs_batches))
+print(saxs_phases)
 
-model_name = 'tiny_model' + '.pth'
+img, label = next(iter(train_saxs_batches))
 
-tiny_model = model_build.TinyVGG(input_shape=3,
-                                 hidden_units=10,
-                                 output_shape=len(data.classes)).to(DEVICE)
+phase_prediction.prediction(saxs, saxs_phases, 'data/dot/train/Im3m/1.png')
 
-loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(params=tiny_model.parameters(),
-                             lr=0.001)
-
-tiny_model_results = engine.train(model=tiny_model,
-                                  train_dataloader=train_loader,
-                                  test_dataloader=test_loader,
-                                  optimizer=optimizer,
-                                  loss_fn=loss_fn,
-                                  epochs=NUM_EPOCHS
-                                  )
-
-print(tiny_model_results)
-
-tools.save_model(model=model_build.TinyVGG,
-                 target_dir=SAVE_MODEL_DIR,
-                 model_name=model_name)
+# print(saxs(img))
 

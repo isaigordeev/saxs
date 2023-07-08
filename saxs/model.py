@@ -1,7 +1,8 @@
 import torch
+import torchvision
 from torch import nn
 
-from saxs.settings import EMBEDDING_DIM, PATCH_SIZE, COLOR_CHANNELS, ATTENTION_BLOCKS, IMAGE_DIM
+from saxs.settings import EMBEDDING_DIM, PATCH_SIZE, COLOR_CHANNELS, ATTENTION_BLOCKS, IMAGE_DIM, DEVICE, PHASES_NUMBER
 
 
 class SAXSpy_raw(nn.Module):
@@ -85,7 +86,7 @@ class PatchEmbedding(nn.Module):
         return x_flattened.permute(0, 2, 1)
 
 
-class SAXSViT(nn.Module):
+class OriginalViT(nn.Module):
     def __init__(self,
                  img_size: int = IMAGE_DIM,
                  in_channels: int = COLOR_CHANNELS,
@@ -135,7 +136,7 @@ class SAXSViT(nn.Module):
         batch_size = x.shape[0]
 
         class_token = self.class_embedding.expand(batch_size, -1, -1)
-    
+
         x = self.patch_embedding(x)
 
         x = torch.cat((class_token, x), dim=1)
@@ -151,3 +152,30 @@ class SAXSViT(nn.Module):
         return x
 
 
+class SAXSViT(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.pretrained_vit_weights = None
+        self.data_transforms = None
+        self.vit_pretrained = None
+
+        self.get_pretrained_vit()
+
+    def get_pretrained_vit(self):
+        self.pretrained_vit_weights = torchvision.models.ViT_B_16_Weights.DEFAULT
+
+        self.vit_pretrained = torchvision.models.vit_b_16(weights=self.pretrained_vit_weights).to(DEVICE)
+
+        for layer in self.vit_pretrained.parameters():
+            layer.requires_grad = False
+
+        self.vit_pretrained.heads = nn.Linear(in_features=768, out_features=PHASES_NUMBER).to(DEVICE)  # FIRSTLY
+
+        self.data_transforms = self.pretrained_vit_weights.transforms()
+        print(self.data_transforms)
+
+    def forward(self, x):
+        x = self.vit_pretrained(x)
+
+        return x
