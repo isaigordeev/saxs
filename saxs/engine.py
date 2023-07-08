@@ -6,12 +6,12 @@ from tqdm.auto import tqdm
 
 from tools import xtime_decorator
 
-device = 'cpu'
 
 def train_step(model: torch.nn.Module, 
                dataloader: torch.utils.data.DataLoader,
                loss_fn: torch.nn.Module,
-               optimizer: torch.optim.Optimizer):
+               optimizer: torch.optim.Optimizer,
+               device):
     model.train()
 
     train_loss, train_acc = 0, 0
@@ -40,7 +40,8 @@ def train_step(model: torch.nn.Module,
 
 def test_step(model: torch.nn.Module, 
                dataloader: torch.utils.data.DataLoader,
-               loss_fn: torch.nn.Module,):
+               loss_fn: torch.nn.Module,
+               ):
     model.eval()
     test_acc, test_loss = 0, 0
 
@@ -68,8 +69,10 @@ def train(model:torch.nn.Module,
           train_dataloader: torch.utils.data.DataLoader,
           test_dataloader: torch.utils.data.DataLoader,
           optimizer: torch.optim.Optimizer,
+          device,
           loss_fn: torch.nn.Module = nn.CrossEntropyLoss(),
-          epochs: int = 5):
+          epochs: int = 5,
+          ):
     
     results = {'train_loss': [],
                'train_acc': [],
@@ -80,7 +83,8 @@ def train(model:torch.nn.Module,
         train_loss, train_acc = train_step(model=model,
                                           dataloader = train_dataloader,
                                           loss_fn=loss_fn,
-                                          optimizer=optimizer
+                                          optimizer=optimizer,
+                                           device=device
                                           )
         
         test_loss, test_acc = test_step(model=model,
