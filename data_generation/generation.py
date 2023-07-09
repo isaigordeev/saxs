@@ -1,7 +1,7 @@
 import sys
 import os
 
-from data_generation.generation_settings import bijection_name, core_path
+from generation_settings import bijection_name, core_path
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import saxspy
@@ -41,9 +41,10 @@ if phase == 'cubic':
         # params = np.array([[28, 40], [0.2, 0.5], [0.5, 1]])  #good but lattice parameter
         # params = np.array([[10, 40], [0.07, 0.1], [0.1, 0.4]]) #good for Im3m
 
-        params = np.array([[10, 40], [0.07, 0.1], [0.1, 0.4]])
+        # params = np.array([[10, 40], [0.01, 0.1], [0.1, 0.4]])
+        params = np.array([[10, 40], [1, 100], [0.1, 0.4]])
 
-        store_it = cm.generateSynthCubic(params, 2, 2, 2)
+        store_it = cm.generateSynthCubic(params, 2, 22, 1)
 
         save_path = '{}Synthetic_raw/{}_cubic.npy'.format(core_path, cubic_mesophase)
         np.save(save_path, store_it)

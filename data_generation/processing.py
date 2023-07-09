@@ -3,6 +3,8 @@ import random
 import sys
 import os
 
+from generation_settings import core_path, bijection_name
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scipy.interpolate import CubicSpline
 from tqdm import tqdm
@@ -58,7 +60,7 @@ def parallel_process(array, function, n_jobs=4, use_kwargs=False, front_num=3):
 
 
 # global blanks
-blanks = np.load('blanks_raw.npy')
+blanks = np.load('{}blanks_raw.npy'.format(core_path))
 
 
 # Norm functions
@@ -145,8 +147,9 @@ def Process_cubic(data):
 
 if __name__ == '__main__':
 
-    for raw_data in ['Synthetic_raw/Im3m_cubic.npy', 'Synthetic_raw/la3d_cubic.npy',
-                     'Synthetic_raw/Pn3m_cubic.npy']:
+    paths = ['{}Synthetic_raw/{}_cubic.npy'.format(core_path, mesophase) for mesophase in bijection_name.values()]
+
+    for raw_data in paths:
         if os.path.isfile(raw_data):
             if 'Im3m' in raw_data or 'P' in raw_data:
                 # process Im3m
@@ -155,7 +158,7 @@ if __name__ == '__main__':
                 print('Processing Im3m cubic...')
                 processed_p = parallel_process(rawdat, Process_cubic)
                 processed_p = np.array(processed_p)
-                np.save('Synthetic_Processed/Im3m_cubic.npy', processed_p)
+                np.save('{}Synthetic_Processed/Im3m_cubic.npy'.format(core_path), processed_p)
             if 'la3d' in raw_data or 'G' in raw_data:
                 # process la3d
                 rawdata = np.load(raw_data)
@@ -163,7 +166,7 @@ if __name__ == '__main__':
                 print('Processing la3d cubic...')
                 processed_g = parallel_process(rawdat, Process_cubic)
                 processed_g = np.array(processed_g)
-                np.save('Synthetic_Processed/la3d_cubic.npy', processed_g)
+                np.save('{}Synthetic_Processed/la3d_cubic.npy'.format(core_path), processed_g)
             if 'Pn3m' in raw_data or 'D' in raw_data:
                 # process Pn3m
                 rawdata = np.load(raw_data)
@@ -171,5 +174,5 @@ if __name__ == '__main__':
                 print('Processing Pn3m cubic...')
                 processed_d = parallel_process(rawdat, Process_cubic)
                 processed_d = np.array(processed_d)
-                np.save('Synthetic_Processed/Pn3m_cubic.npy', processed_d)
-            np.save('Synthetic_Processed/cubic_q.npy', np.linspace(0.01, 0.43, 200))
+                np.save('{}Synthetic_Processed/Pn3m_cubic.npy'.format(core_path), processed_d)
+            np.save('{}Synthetic_Processed/cubic_q.npy'.format(core_path), np.linspace(0.01, 0.43, 200))
