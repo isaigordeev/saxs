@@ -27,7 +27,6 @@ def load_data(phase, cubic_mesophase=None):
         load_path = '{}Synthetic_Processed/{}.npy'.format(core_path, phase.lower())
         data = np.load(load_path)
 
-    print(data.shape)
     data_3d = data[:,:,:,0]
     data_1d = []
     for i in data_3d:
@@ -41,7 +40,7 @@ def load_data(phase, cubic_mesophase=None):
     # load experimental data
     # exp_data = np.load(f'Experimental_data/{phase.lower()}.npy')
     exp_data = None
-    return data_1d, data_3d, exp_data, q
+    return q, data_1d, data_3d, exp_data
 
 def plot_saxs(pattern,q):
     plt.figure()

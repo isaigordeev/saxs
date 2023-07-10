@@ -348,7 +348,7 @@ class CubicModel():
     def generateSynthCubic(self, params, lattice_params_num=2, lengths_num=2, sigmas_num=2):
         store_it = []
         k_list = self.getScatVec()
-        pbar = tqdm(total=11**4+1)
+        pbar = tqdm(total=lattice_params_num*lengths_num*sigmas_num)
         count = 0
 
         lat_params = np.linspace(params[0,0], params[0,1],lattice_params_num)

@@ -122,7 +122,7 @@ def Process_cubic(data):
     random_blank = random.randint(0, 169)
     blanky = blanks[random_blank]
     q = np.linspace(0, 0.452, 1566)
-    q2 = np.linspace(0.01, 0.43, 200)
+    q2 = np.linspace(0.01, 0.43, 224) #CHANGE DIM
     random_voigt_gaussalpha = random.uniform(0.0001, 0.001)
     random_voigt_lorenzgamma = random.uniform(0.0001, 0.005)
     dw_param = random.uniform(0.005, 0.02)
@@ -147,32 +147,42 @@ def Process_cubic(data):
 
 if __name__ == '__main__':
 
-    paths = ['{}Synthetic_raw/{}_cubic.npy'.format(core_path, mesophase) for mesophase in bijection_name.values()]
+    # paths = ['{}Synthetic_raw/{}_cubic.npy'.format(core_path, mesophase) for mesophase in bijection_name.values()]
+    def get_filenames_without_ext(folder_path):
+        for filename in os.listdir(folder_path):
+            if os.path.isfile(os.path.join(folder_path, filename)):
+                name, extension = os.path.splitext(filename)
+                if (name != '.DS_Store') and (name != 'README'):
+                    yield name
 
-    for raw_data in paths:
-        if os.path.isfile(raw_data):
-            if 'Im3m' in raw_data or 'P' in raw_data:
-                # process Im3m
-                rawdata = np.load(raw_data)
-                rawdat = [i for i in rawdata]
-                print('Processing Im3m cubic...')
-                processed_p = parallel_process(rawdat, Process_cubic)
-                processed_p = np.array(processed_p)
-                np.save('{}Synthetic_Processed/Im3m_cubic.npy'.format(core_path), processed_p)
-            if 'la3d' in raw_data or 'G' in raw_data:
-                # process la3d
-                rawdata = np.load(raw_data)
-                rawdat = [i for i in rawdata]
-                print('Processing la3d cubic...')
-                processed_g = parallel_process(rawdat, Process_cubic)
-                processed_g = np.array(processed_g)
-                np.save('{}Synthetic_Processed/la3d_cubic.npy'.format(core_path), processed_g)
-            if 'Pn3m' in raw_data or 'D' in raw_data:
-                # process Pn3m
-                rawdata = np.load(raw_data)
-                rawdat = [i for i in rawdata]
-                print('Processing Pn3m cubic...')
-                processed_d = parallel_process(rawdat, Process_cubic)
-                processed_d = np.array(processed_d)
-                np.save('{}Synthetic_Processed/Pn3m_cubic.npy'.format(core_path), processed_d)
-            np.save('{}Synthetic_Processed/cubic_q.npy'.format(core_path), np.linspace(0.01, 0.43, 200))
+
+    for raw_data in get_filenames_without_ext('{}Synthetic_raw/'.format(core_path)):
+
+        load_path = '{}Synthetic_raw/{}.npy'.format(core_path, raw_data)
+        print(raw_data)
+        if 'Im3m_cubic' == raw_data or 'P' == raw_data:
+            # process Im3m
+            rawdata = np.load(load_path)
+            rawdat = [i for i in rawdata]
+            print('Processing Im3m cubic...')
+            processed_p = parallel_process(rawdat, Process_cubic)
+            processed_p = np.array(processed_p)
+            np.save('{}Synthetic_Processed/Im3m_cubic.npy'.format(core_path), processed_p)
+        elif 'la3d_cubic' == raw_data or 'G' == raw_data:
+            # process la3d
+            rawdata = np.load(load_path)
+            rawdat = [i for i in rawdata]
+            print('Processing la3d cubic...')
+            processed_g = parallel_process(rawdat, Process_cubic)
+            processed_g = np.array(processed_g)
+            np.save('{}Synthetic_Processed/la3d_cubic.npy'.format(core_path), processed_g)
+        elif 'Pn3m_cubic' == raw_data or 'D' == raw_data:
+            # process Pn3m
+            rawdata = np.load(load_path)
+            rawdat = [i for i in rawdata]
+            print('Processing Pn3m cubic...')
+            processed_d = parallel_process(rawdat, Process_cubic)
+            processed_d = np.array(processed_d)
+            print(processed_d.shape)
+            # np.save('{}Synthetic_Processed/Pn3m_cubic.npy'.format(core_path), processed_d)
+        np.save('{}Synthetic_Processed/cubic_q.npy'.format(core_path), np.linspace(0.01, 0.43, 224))

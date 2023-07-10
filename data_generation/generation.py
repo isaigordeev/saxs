@@ -41,10 +41,15 @@ if phase == 'cubic':
         # params = np.array([[28, 40], [0.2, 0.5], [0.5, 1]])  #good but lattice parameter
         # params = np.array([[10, 40], [0.07, 0.1], [0.1, 0.4]]) #good for Im3m
 
-        # params = np.array([[10, 40], [0.01, 0.1], [0.1, 0.4]])
-        params = np.array([[10, 40], [1, 100], [0.1, 0.4]])
+        # params = np.array([[10, 40], [0.15, 0.20], [0.01, 0.1]]) # good for 10 0.15 0.01 P
+        params10 = np.array([[10, 10], [0.13, 0.17], [0.02, 0.06]])
 
-        store_it = cm.generateSynthCubic(params, 2, 22, 1)
+        params40 = [[value * 4 for value in sublist] for sublist in params10]
+        print(params40)
+        # params = np.array([[10, 40], [0.15, 0.17], [0.04, 0.06]]) # good for 10 0.15 0.04 P
+        params = np.array([[10, 60], [0.8, 2], [0.04, 0.1]])
+
+        store_it = cm.generateSynthCubic(params, 1, 1, 10)
 
         save_path = '{}Synthetic_raw/{}_cubic.npy'.format(core_path, cubic_mesophase)
         np.save(save_path, store_it)
