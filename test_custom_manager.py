@@ -11,5 +11,6 @@ test = Manager(current_session=now,
                peak_classificator=PDefaultPeakClassificator,
                phase_classificator=DefaultPhaseClassificator,
                )
+
 test.directory_peak_processing()
 
