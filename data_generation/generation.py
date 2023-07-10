@@ -24,18 +24,21 @@ cubic_mesophase = args.cubic_mesophase
 
 class Generator:
     def __init__(self, phase,
-                 params=np.array([[10, 60], [0.8, 2], [0.04, 0.1]]),
+                 params=None,
                  lat_num=1,
                  len_num=1,
                  sigma_num=1,
                  cubic_mesophase=None,
                  save_path=os.path.dirname(__file__)):
 
+        if params is None:
+            params = [[10, 60], [0.8, 2], [0.04, 0.1]]
+
         assert phase == 'cubic' or phase == 'lamellar' or phase == 'hexagonal'
 
         self.phase = phase
         self.cubic_mesophase = cubic_mesophase
-        self.params = params
+        self.params = np.array(params)
         self.lat_num = lat_num
         self.length_num = len_num
         self.sigma_num = sigma_num

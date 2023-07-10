@@ -32,7 +32,7 @@ if __name__ == '__main__':
     processing.process()
 
 
-    phase = 'cubic',
+    phase = 'cubic'
     cubic_mesophase = 'la3d'
     q, d1, d3, exp_data = load_data(phase=phase,
                                     cubic_mesophase=cubic_mesophase)

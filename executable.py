@@ -2,8 +2,8 @@ import argparse
 from datetime import datetime
 
 from manager import *
-from saxs_processing.p_peak_classification import PDefaultPeakClassificator
-from saxs_processing.phase_classificator import DefaultPhaseClassificator
+from gaussian_processing.p_peak_classification import PDefaultPeakClassificator
+from gaussian_processing.phase_classificator import DefaultPhaseClassificator
 
 
 def main():

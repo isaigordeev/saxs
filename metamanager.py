@@ -1,7 +1,7 @@
 import json
 import time
 
-from saxs_processing.custom_phase_classification import *
+from gaussian_processing.custom_phase_classification import *
 
 today = date.today()
 

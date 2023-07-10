@@ -16,7 +16,7 @@ import saxspy
 
 
 def load_data(phase, cubic_mesophase=None, load_path=os.path.join(os.path.dirname(__file__), 'Synthetic_Processed/')):
-
+    print(phase)
     assert phase == 'cubic' or phase == 'lamellar' or phase == 'hexagonal'
 
     if cubic_mesophase is not None and phase == 'cubic':

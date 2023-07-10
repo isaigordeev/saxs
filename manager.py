@@ -1,7 +1,7 @@
 import time
 
-from saxs_processing.abstr_phase import AbstractPhaseClassificator
-from saxs_processing.processing_classificator import AbstractProcessing
+from gaussian_processing.abstr_phase import AbstractPhaseClassificator
+from gaussian_processing.processing_classificator import AbstractProcessing
 
 time_start1 = time.time()
 
@@ -11,9 +11,9 @@ import os
 from datetime import datetime
 
 from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, ANALYSE_DIR
-from saxs_processing.abstr_peak import AbstractPeakClassificator
+from gaussian_processing.abstr_peak import AbstractPeakClassificator
 
-# from saxs_processing.phase_classification import
+# from gaussian_processing.phase_classification import
 
 time_start2 = time.time()
 
