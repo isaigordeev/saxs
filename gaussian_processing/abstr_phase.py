@@ -1,8 +1,8 @@
 import json
 from datetime import date, datetime
 
-from saxs_processing.processing_classificator import ProcessingClassificator
-from settings_processing import *
+from .processing_classificator import ProcessingClassificator
+from .settings_processing import *
 
 # from fastdtw import fastdtw
 
