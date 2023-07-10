@@ -26,7 +26,7 @@ class Generator:
     def __init__(self, phase,
                  params=np.array([[10, 60], [0.8, 2], [0.04, 0.1]]),
                  lat_num=1,
-                 let_num=1,
+                 len_num=1,
                  sigma_num=1,
                  cubic_mesophase=None,
                  save_path=os.path.dirname(__file__)):
@@ -37,7 +37,7 @@ class Generator:
         self.cubic_mesophase = cubic_mesophase
         self.params = params
         self.lat_num = lat_num
-        self.length_num = let_num
+        self.length_num = len_num
         self.sigma_num = sigma_num
         self.save_path = os.path.join(save_path, 'Synthetic_raw')
 

@@ -1,3 +1,4 @@
+import os.path
 from cProfile import label
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,15 +15,17 @@ import saxspy
 # import umap
 
 
-def load_data(phase, cubic_mesophase=None):
+def load_data(phase, cubic_mesophase=None, load_path=os.path.join(os.path.dirname(__file__), 'Synthetic_Processed/')):
+
     assert phase == 'cubic' or phase == 'lamellar' or phase == 'hexagonal'
 
     if cubic_mesophase is not None and phase == 'cubic':
         assert cubic_mesophase == 'Im3m' or cubic_mesophase == 'la3d' or cubic_mesophase == 'Pn3m' or \
                cubic_mesophase == 'P' or cubic_mesophase == 'G' or cubic_mesophase == 'D'
 
-        load_path = '{}Synthetic_Processed/{}_cubic_processed.npy'.format(core_path, cubic_mesophase)
-        data = np.load(load_path)
+        load_data_path = os.path.join(load_path, '{}_cubic_processed.npy'.format(cubic_mesophase))
+        print(load_data_path)
+        data = np.load(load_data_path)
     else:
         load_path = '{}Synthetic_Processed/{}_processed.npy'.format(core_path, phase.lower())
         data = np.load(load_path)
@@ -35,7 +38,7 @@ def load_data(phase, cubic_mesophase=None):
         data_1d.append(data)
     data_1d = np.array(data_1d)
 
-    load_path_q = '{}Synthetic_Processed/{}_q.npy'.format(core_path, phase.lower())
+    load_path_q = os.path.join(load_path, '{}_q.npy'.format(phase))
     q = np.load(load_path_q)
     # load experimental data
     # exp_data = np.load(f'Experimental_data/{phase.lower()}.npy')
