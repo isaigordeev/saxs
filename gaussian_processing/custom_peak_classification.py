@@ -4,9 +4,9 @@ from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, peak_widths, medfilt, savgol_filter
 
-from saxs_processing.functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
-from saxs_processing.abstr_peak import AbstractPeakClassificator
-from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
+from .functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
+from .abstr_peak import AbstractPeakClassificator
+from .settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, WINDOWSIZE, \
     RESOLUTION_FACTOR
 
 

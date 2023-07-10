@@ -1,7 +1,7 @@
 import json
 from datetime import date, datetime
 
-from .processing_classificator import ProcessingClassificator
+from .processing_classificator import ApplicationClassificator
 from .settings_processing import *
 
 # from fastdtw import fastdtw
@@ -23,7 +23,7 @@ def ratio_data(i, data: np.array) -> np.array:
     return (data / data[i])[1:]
 
 
-class AbstractPhaseClassificator(ProcessingClassificator):
+class AbstractPhaseClassificator(ApplicationClassificator):
     __slots__ = ('phases',
                  'phases_coefficients',
                  'phases_directory',

@@ -6,7 +6,7 @@ from scipy.signal import savgol_filter
 FILENAME = "075909_treated_xye"  # pointwise classification
 EXTENSION = '.csv'
 ANALYSE_DIR = '../results/'
-DATA_DIR = '../res/'
+DATA_DIR = '../../res/'
 
 
 data = pd.read_csv(DATA_DIR + FILENAME + EXTENSION, sep=',')

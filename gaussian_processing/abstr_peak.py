@@ -23,6 +23,8 @@ class AbstractPeakClassificator(ABC):
         self.data_directory = data_directory
         self.custom_directory = custom_directory
 
+        self.executing_path = os.getcwd()
+
         self.current_session = current_session
         self.current_date_session = str(current_session.today().date()) + '/'
         self.current_time = current_session.strftime("%H:%M:%S")

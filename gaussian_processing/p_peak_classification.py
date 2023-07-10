@@ -3,9 +3,9 @@ import numpy as np
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks
 
-from saxs_processing.custom_peak_classification import DefaultPeakClassificator
-from saxs_processing.functions import gaussian_sum, moving_average, parabole
-from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF
+from .custom_peak_classification import DefaultPeakClassificator
+from .functions import gaussian_sum, moving_average, parabole
+from .settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF
 
 
 class PDefaultPeakClassificator(DefaultPeakClassificator):
