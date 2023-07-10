@@ -1,8 +1,8 @@
 import time
 
-from abstr_phase import AbstractPhaseClassificator
-from application import ApplicationManager
-from processing_classificator import AbstractProcessing
+from .abstr_phase import AbstractPhaseClassificator
+from .abstr_peak import AbstractPeakClassificator
+from .application import ApplicationManager
 
 time_start1 = time.time()
 
@@ -11,10 +11,6 @@ import os
 
 from datetime import datetime
 
-from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, ANALYSE_DIR
-from abstr_peak import AbstractPeakClassificator
-
-# from phase_classification import
 
 time_start2 = time.time()
 
@@ -51,16 +47,19 @@ def get_filenames_without_ext(folder_path):
 
 class Manager(ApplicationManager):
     def __init__(self, current_session,
-                 peak_classificator,
-                 phase_classificator,
-                 peak_data_directory,
-                 phase_data_directory) -> None:
+                 peak_classificator: AbstractPeakClassificator,
+                 phase_classificator: AbstractPhaseClassificator,
+                 peak_data_directory='data/',
+                 phase_data_directory=None) -> None:
         super().__init__(current_session=current_session,
                          peak_classificator=peak_classificator,
                          phase_classificator=phase_classificator)
 
-        self.peak_data_directory = peak_data_directory
-        self.phase_data_directory = phase_data_directory
+        self.peak_data_directory = os.path.join(self.executing_path, peak_data_directory)
+
+        if phase_data_directory is not None:
+            self.phase_data_directory = phase_data_directory
+        else: self.phase_data_directory = self.current_results_dir_sessions
 
         self.peak_samples = get_filenames_without_ext(self.peak_data_directory)
         self.phase_samples = get_filenames_without_ext(self.peak_data_directory)
@@ -72,8 +71,8 @@ class Manager(ApplicationManager):
         peaks.background_reduction()
         peaks.custom_filtering()
         peaks.background_plot()
-        peaks.filtering_negative()
-        peaks.peak_processing()
+        # peaks.filtering_negative()
+        # peaks.peak_processing()
 
         if peaks.peak_number == 0:
             pass

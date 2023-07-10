@@ -9,7 +9,7 @@ FILENAME = "075775_treated_xye"  # pointwise classification
 EXTENSION = '.csv'
 SET_DIR_SUM = '../data/sum/'
 SET_DIR_DOT = '../data/dot/'
-DATA_DIR = '../res/'
+DATA_DIR = '../../res/'
 START = 0.02
 
 class_names = ['la3d', 'Pn3m', 'Im3m']

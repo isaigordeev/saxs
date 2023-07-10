@@ -5,9 +5,6 @@ import csv
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit
 
-from saxs_processing.functions import background_hyberbole
-from settings_processing import BACKGROUND_COEF, START, SIGMA_FILTER, TRUNCATE
-
 def load_generated_data(phase):
     data = np.load(f'../saxs_generated_data/P_{phase.lower()}.npy')
     print(data.shape)
