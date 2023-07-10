@@ -3,8 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-saxs/results/
-
 # C extensions
 *.so
 
@@ -186,7 +184,6 @@ __pycache__/
 res/
 .idea/
 .vscode/
-SAXSpy/
 
 # C extensions
 *.so
