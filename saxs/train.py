@@ -8,12 +8,13 @@ import phase_prediction
 
 saxs = SAXSViT()
 
-train_saxs_batches, test_saxs_batches, saxs_phases = saxs_data_setup.create_data_batches(train_data_dir=TRAIN_DIR,
-                                                                                          test_data_dir=TEST_DIR,
-                                                                                          transforms=saxs.data_transforms,
-                                                                                          batch_size=32,
-                                                                                          num_workers=0
-                                                                                          )
+train_saxs_batches, test_saxs_batches, saxs_phases = \
+    saxs_data_setup.create_data_batches_from_folder(train_data_dir=TRAIN_DIR,
+                                                    test_data_dir=TEST_DIR,
+                                                    transforms=saxs.data_transforms,
+                                                    batch_size=32,
+                                                    num_workers=0
+                                                    )
 
 
 

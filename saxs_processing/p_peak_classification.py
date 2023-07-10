@@ -21,11 +21,11 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
     def peak_searching(self, height=0, distance=5, prominence=0.1):
         self.peaks, self.peaks_data = find_peaks(self.difference,
-                                                 # height=height, #for sample
-                                                 # distance=distance,
+                                                 height=height, #for sample
+                                                 distance=distance,
                                                  # threshold=0.2,
-                                                 # plateau_size=1, #for sample
-                                                 # prominence=prominence
+                                                 plateau_size=1, #for sample
+                                                 prominence=prominence
                                                   ) # NOTE attention
         # self.peaks, self.peaks_data = find_peaks(self.difference)
 
@@ -313,7 +313,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
         while number_peak > 0:
             current_peak = 0
-            self.peak_searching(height=[1,50], prominence=PROMINENCE, distance=10)  # TODO good parameters and metric of suspicious peaks
+            self.peak_searching(height=0, prominence=PROMINENCE, distance=10)  # TODO good parameters and metric of suspicious peaks
             if len(self.peaks) != 0:
                 while len(self.peaks) > current_peak and number_peak > 0:
                     # self.custom_peak_searching()
