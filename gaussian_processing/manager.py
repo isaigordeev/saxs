@@ -1,7 +1,8 @@
 import time
 
-from gaussian_processing.abstr_phase import AbstractPhaseClassificator
-from gaussian_processing.processing_classificator import AbstractProcessing
+from abstr_phase import AbstractPhaseClassificator
+from application import ApplicationManager
+from processing_classificator import AbstractProcessing
 
 time_start1 = time.time()
 
@@ -11,9 +12,9 @@ import os
 from datetime import datetime
 
 from settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS, ANALYSE_DIR
-from gaussian_processing.abstr_peak import AbstractPeakClassificator
+from abstr_peak import AbstractPeakClassificator
 
-# from gaussian_processing.phase_classification import
+# from phase_classification import
 
 time_start2 = time.time()
 
@@ -45,65 +46,6 @@ def get_filenames_without_ext(folder_path):
                 if (name != '.DS_Store'):
                     yield name
 
-
-class ApplicationManager(AbstractProcessing):
-    def __init__(self,
-                 current_session,
-                 peak_classificator: AbstractPeakClassificator,
-                 phase_classificator: AbstractPhaseClassificator,
-                 custom_output_directory=None
-                 ) -> None:
-        super().__init__(current_session)
-
-        self.data = {}
-        self.files_number = 0
-        self.peak_classificator = peak_classificator
-        self.phase_classificator = phase_classificator
-        self.custom_output_directory = custom_output_directory
-
-        self.set_directories()
-        self.write_data() #create json
-
-    def set_directories(self):
-
-        if self.custom_output_directory is None:
-            analysis_dir_sessions = ANALYSE_DIR_SESSIONS
-            results_dir_sessions = ANALYSE_DIR_SESSIONS_RESULTS
-
-            if not os.path.exists(ANALYSE_DIR):
-                os.mkdir(ANALYSE_DIR)
-            if not os.path.exists(analysis_dir_sessions):
-                os.mkdir(analysis_dir_sessions)
-            if not os.path.exists(results_dir_sessions):
-                os.mkdir(results_dir_sessions)
-            if not os.path.exists(results_dir_sessions + self.current_date_session):
-                os.mkdir(results_dir_sessions + self.current_date_session)
-
-        else:
-            if not os.path.exists(self.custom_output_directory):
-                os.mkdir(self.custom_output_directory)
-
-    def write_data(self):
-        with open(ANALYSE_DIR_SESSIONS_RESULTS + self.current_date_session + self.current_time + '.json', 'w') as f:
-            json.dump(self.data, f)
-
-    def point_processing(self, sample):
-        pass
-
-    def directory_processing(self):
-        self.directory_peak_processing()
-        self.directory_phase_processing()
-
-    def point_peak_processing(self, sample):
-        pass
-
-    def point_phase_processing(self, sample):
-        pass
-
-    def directory_peak_processing(self):
-        pass
-    def directory_phase_processing(self):
-        pass
 
 
 
