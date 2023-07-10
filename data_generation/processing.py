@@ -160,6 +160,8 @@ if __name__ == '__main__':
 
         load_path = '{}Synthetic_raw/{}.npy'.format(core_path, raw_data)
         print(raw_data)
+
+
         if 'Im3m_cubic' == raw_data or 'P' == raw_data:
             # process Im3m
             rawdata = np.load(load_path)
@@ -167,7 +169,7 @@ if __name__ == '__main__':
             print('Processing Im3m cubic...')
             processed_p = parallel_process(rawdat, Process_cubic)
             processed_p = np.array(processed_p)
-            np.save('{}Synthetic_Processed/Im3m_cubic.npy'.format(core_path), processed_p)
+            np.save('{}Synthetic_Processed/Im3m_cubic_processed.npy'.format(core_path), processed_p)
         elif 'la3d_cubic' == raw_data or 'G' == raw_data:
             # process la3d
             rawdata = np.load(load_path)
@@ -175,7 +177,7 @@ if __name__ == '__main__':
             print('Processing la3d cubic...')
             processed_g = parallel_process(rawdat, Process_cubic)
             processed_g = np.array(processed_g)
-            np.save('{}Synthetic_Processed/la3d_cubic.npy'.format(core_path), processed_g)
+            np.save('{}Synthetic_Processed/la3d_cubic_processed.npy'.format(core_path), processed_g)
         elif 'Pn3m_cubic' == raw_data or 'D' == raw_data:
             # process Pn3m
             rawdata = np.load(load_path)
@@ -184,5 +186,5 @@ if __name__ == '__main__':
             processed_d = parallel_process(rawdat, Process_cubic)
             processed_d = np.array(processed_d)
             print(processed_d.shape)
-            # np.save('{}Synthetic_Processed/Pn3m_cubic.npy'.format(core_path), processed_d)
+            np.save('{}Synthetic_Processed/Pn3m_cubic_processed.npy'.format(core_path), processed_d)
         np.save('{}Synthetic_Processed/cubic_q.npy'.format(core_path), np.linspace(0.01, 0.43, 224))

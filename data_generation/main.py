@@ -3,8 +3,8 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Phase visualization')
 
-parser.add_argument('-phase', help='phase_to_visualize')
-parser.add_argument('--cubic_mesophase', '--mph', help='cubic_mesophase')
+parser.add_argument('-phase', '-p',  help='phase_to_visualize')
+parser.add_argument('--cubic_mesophase', '--ph', help='cubic_mesophase')
 
 args = parser.parse_args()
 
@@ -18,10 +18,11 @@ if __name__ == '__main__':
     # plot_saxs_umap(d1,exp_data)
     # plot_saxs_tsne(d1,exp_data)
     # plot_saxs_pca(d1,exp_data)
-
+    print(d1.shape)
     print(d3.shape)
     # print(d3[])
-    for x in range(len(d1)):
-        plot_saxs(d1[x],q)
+    # for x in range(len(d1)):
+    #     plot_saxs(d1[x],q)
         # print(x)
+    plot_saxs(d1[0], q)
     plot_saxs_featuremap(d3[0],q)

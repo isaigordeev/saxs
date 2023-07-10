@@ -12,7 +12,6 @@ from settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FIT
 
 class DefaultPeakClassificator(AbstractPeakClassificator):
     def __init__(self, filename, data_directory, current_session):
-
         super().__init__(filename, data_directory=data_directory, current_session=current_session)
 
         # self.peaks_plots = {}

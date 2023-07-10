@@ -21,10 +21,10 @@ def load_data(phase, cubic_mesophase=None):
         assert cubic_mesophase == 'Im3m' or cubic_mesophase == 'la3d' or cubic_mesophase == 'Pn3m' or \
                cubic_mesophase == 'P' or cubic_mesophase == 'G' or cubic_mesophase == 'D'
 
-        load_path = '{}Synthetic_Processed/{}_cubic.npy'.format(core_path, cubic_mesophase)
+        load_path = '{}Synthetic_Processed/{}_cubic_processed.npy'.format(core_path, cubic_mesophase)
         data = np.load(load_path)
     else:
-        load_path = '{}Synthetic_Processed/{}.npy'.format(core_path, phase.lower())
+        load_path = '{}Synthetic_Processed/{}_processed.npy'.format(core_path, phase.lower())
         data = np.load(load_path)
 
     data_3d = data[:,:,:,0]
