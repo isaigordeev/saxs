@@ -9,9 +9,9 @@ from .settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF
 
 
 class PDefaultPeakClassificator(DefaultPeakClassificator):
-    def __init__(self, filename, data_directory, current_session):
+    def __init__(self, current_session, data_directory, filename):
 
-        super().__init__(filename, data_directory=data_directory, current_session=current_session)
+        super().__init__(current_session, data_directory, filename)
 
         self.ppeak_number = 0
         self.sigmas = np.array([])

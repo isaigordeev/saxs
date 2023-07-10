@@ -5,12 +5,15 @@ from abc import ABC
 import numpy as np
 import pandas as pd
 
+from .processing_classificator import ApplicationClassificator
 from .settings_processing import EXTENSION, ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
 
 
-class AbstractPeakClassificator(ABC):
+class AbstractPeakClassificator(ApplicationClassificator):
 
-    def __init__(self, filename, data_directory, current_session, custom_directory=None):
+    def __init__(self, current_session, data_directory, filename, custom_directory=None):
+        super().__init__(current_session, data_directory)
+
         self.file_analyse_dir_peaks = None
         self.file_analyse_dir = None
         self.max_dI = None
@@ -23,26 +26,20 @@ class AbstractPeakClassificator(ABC):
         self.data_directory = data_directory
         self.custom_directory = custom_directory
 
-        self.executing_path = os.getcwd()
-
-        self.current_session = current_session
-        self.current_date_session = str(current_session.today().date()) + '/'
-        self.current_time = current_session.strftime("%H:%M:%S")
-
-        self.current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + self.current_date_session
-
-        self.set_directories()
+        self.set_peak_directories()
         self.set_data()
 
-
-
-    def set_directories(self):
+    def set_peak_directories(self):
         if self.custom_directory is None:
-            self.file_analyse_dir = ANALYSE_DIR_SESSIONS + self.filename
-            self.file_analyse_dir_peaks = ANALYSE_DIR_SESSIONS + self.filename + '/peaks'
+            print(self.analysis_dir)
+            self.file_analyse_dir = os.path.join(self.analysis_dir, self.filename)
+            self.file_analyse_dir_peaks = os.path.join(self.file_analyse_dir, 'peaks')
         else:
             self.file_analyse_dir = self.custom_directory + self.filename
-            self.file_analyse_dir_peaks = self.custom_directory + self.filename + '/peaks'
+            self.file_analyse_dir_peaks = self.custom_directory + self.filename + 'peaks'
+
+        print(self.file_analyse_dir)
+        print(self.file_analyse_dir_peaks)
 
         if not os.path.exists(self.file_analyse_dir):
             os.mkdir(self.file_analyse_dir)
@@ -50,7 +47,7 @@ class AbstractPeakClassificator(ABC):
             os.mkdir(self.file_analyse_dir_peaks)
 
     def set_data(self):
-        data = pd.read_csv(self.data_directory + self.filename + EXTENSION, sep=',')
+        data = pd.read_csv('{}{}{}'.format(self.data_directory, self.filename, EXTENSION), sep=',')
         data = data.apply(pd.to_numeric, errors='coerce')
         data = data.dropna()
 
@@ -63,8 +60,7 @@ class AbstractPeakClassificator(ABC):
 
     def write_data(self):
 
-
-        with open(self.current_session_results + self.current_time + '.json', 'r') as file:
+        with open('{}.json'.format(self.current_session_results), 'r') as file:
             directory_data = json.load(file)
 
         directory_data.update({self.filename: self.gathering()})

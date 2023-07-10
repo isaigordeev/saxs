@@ -16,26 +16,21 @@ class ApplicationManager(Application):
                  ) -> None:
         super().__init__(current_session, custom_output_directory)
 
+
         self.data = {}
         self.files_number = 0
         self.peak_classificator = peak_classificator
         self.phase_classificator = phase_classificator
         self.custom_output_directory = custom_output_directory
 
+        # self.set_directories()
         self.write_data()  # create json
 
     def write_data(self):
-        write_json_path = os.path.join(self.current_results_dir_sessions, '{}.json'.format(self.current_time))
+        write_json_path = os.path.join(self.current_results_dir_session, '{}.json'.format(self.current_time))
 
         with open(write_json_path, 'w') as f:
             json.dump(self.data, f)
-
-    def point_processing(self, sample):
-        pass
-
-    def directory_processing(self):
-        self.directory_peak_processing()
-        self.directory_phase_processing()
 
     def point_peak_processing(self, sample):
         pass
@@ -48,3 +43,10 @@ class ApplicationManager(Application):
 
     def directory_phase_processing(self):
         pass
+    def point_processing(self, sample):
+        pass
+
+    def directory_processing(self):
+        self.directory_peak_processing()
+        self.directory_phase_processing()
+

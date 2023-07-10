@@ -59,7 +59,7 @@ class Manager(ApplicationManager):
 
         if phase_data_directory is not None:
             self.phase_data_directory = phase_data_directory
-        else: self.phase_data_directory = self.current_results_dir_sessions
+        else: self.phase_data_directory = self.current_results_dir_session
 
         self.peak_samples = get_filenames_without_ext(self.peak_data_directory)
         self.phase_samples = get_filenames_without_ext(self.peak_data_directory)
