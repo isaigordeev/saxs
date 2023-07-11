@@ -50,3 +50,6 @@ class ApplicationManager(Application):
         self.directory_peak_processing()
         self.directory_phase_processing()
 
+
+    def custom_process(self):
+        pass
