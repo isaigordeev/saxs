@@ -52,7 +52,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
                 # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
 
-                y = self.I_background_filtered
+                y = self.I_cut_background_reduced
                 # window_size = 5
                 # smoothed_y = moving_average(y, window_size)
 
@@ -90,7 +90,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
                     popt1, pcov1 = curve_fit(
                         f=current_peak_parabole,
                         xdata=self.q[period1:period2],
-                        ydata=self.I_background_filtered[period1:period2],
+                        ydata=self.I_cut_background_reduced[period1:period2],
                         bounds=([self.delta_q ** 2, 1], [0.05, 4 * self.max_I]),
                         # sigma=self.dI[period1:period2]
                     )
@@ -141,8 +141,8 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
                 current_parabole = current_peak_parabole(self.q, popt[0], popt[1])[period1:period2]
                 plt.clf()
-                plt.plot(self.q, self.I_background_filtered)
-                plt.plot(self.q[period1:period2], self.I_background_filtered[period1:period2], '.')
+                plt.plot(self.q, self.I_cut_background_reduced)
+                plt.plot(self.q[period1:period2], self.I_cut_background_reduced[period1:period2], '.')
                 # plt.plot(self.q, smoothed_y, label='smooth gen')
                 plt.plot(self.q[period1:period2], current_parabole, label='smooth')
                 # plt.plot(self.q[period1:period2], current_parabole, 'x')
@@ -173,7 +173,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
             period1 = int(self.peaks[i] - delta)
             period2 = int(self.peaks[i] + delta)
 
-            y = self.I_background_filtered
+            y = self.I_cut_background_reduced
             window_size = 5
             smoothed_y = moving_average(y, window_size)
 
@@ -261,7 +261,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
     def stage_plot(self):
         plt.clf()
-        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data')
+        plt.plot(self.q, self.I - BACKGROUND_COEF * self.background, linewidth=0.5, label='raw_data')
         plt.plot(self.q, self.difference_start, label='filtered_raw_data')
         plt.plot(self.q, self.difference, 'x', label='filtered_data')
         plt.plot(self.q[self.peaks], self.difference_start[self.peaks], "x", label='all_peaks_detected')
@@ -281,8 +281,8 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
         plt.clf()
         self.peaks_detected = self.peaks_detected.astype(int)
 
-        plt.plot(self.q, self.I - BACKGROUND_COEF * self.model, linewidth=0.5, label='raw_data_without_back')
-        plt.plot(self.q, self.I_background_filtered, label='filtered_raw_data_without_back')
+        plt.plot(self.q, self.I - BACKGROUND_COEF * self.background, linewidth=0.5, label='raw_data_without_back')
+        plt.plot(self.q, self.I_cut_background_reduced, label='filtered_raw_data_without_back')
         # plt.plot(self.q, self.difference, label='filtered_data')
         plt.plot(self.q, self.zeros, label='zero_level')
         # plt.plot(self.q[self.peaks_detected], self.I_background_filtered[self.peaks_detected], 'x',
@@ -353,7 +353,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
 
             plt.clf()
             plt.title(str(sorted(self.params.tolist()[1::3])))
-            plt.plot(self.q, self.I_background_filtered, 'g--', label='raw')
+            plt.plot(self.q, self.I_cut_background_reduced, 'g--', label='raw')
             plt.plot(self.q, y_fit, 'r-', label='found ' + str(self.peak_number))
 
             for x in self.peaks_x:
@@ -367,7 +367,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
             # plt.show()
 
         else:
-            plt.plot(self.q, self.I_background_filtered, 'g--', label='not found')
+            plt.plot(self.q, self.I_cut_background_reduced, 'g--', label='not found')
             plt.legend()
             plt.xlabel('x')
             plt.ylabel('y')
@@ -401,7 +401,7 @@ class PDefaultPeakClassificator(DefaultPeakClassificator):
         # I_raw = self.I[self.peaks_detected][sorted_indices_q]
         # dI = self.dI[self.peaks_detected][sorted_indices_q]
         # peaks_detected = self.peaks_detected[sorted_indices_q]
-        error = np.sum(self.total_fit - self.I_background_filtered)/np.sum(self.I_background_filtered)
+        error = np.sum(self.total_fit - self.I_cut_background_reduced) / np.sum(self.I_cut_background_reduced)
         # print(error, 'Error')
         print('WRITING {}'.format(self.filename))
         return {

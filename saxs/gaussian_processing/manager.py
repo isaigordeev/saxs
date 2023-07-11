@@ -102,6 +102,19 @@ class Manager(ApplicationManager):
         directory_phase_classificator.directory_classification(sample_names=self.phase_samples)
         print('PHASE CLASS')
 
+
+    def custom_directory_process(self):
+        for sample in self.peak_samples:
+            self.custom_process(sample)
+
+    def custom_process(self, filename):
+        peaks = self.peak_classificator(current_session=self.current_session,
+                                        filename=filename,
+                                        data_directory=self.peak_data_directory)
+        peaks.filtering()
+        peaks.denoising()
+        peaks.custom_filtering_()
+
 class Custom_Manager(Manager):
     def __init__(self, peak_classificator,
                  phase_classificator,

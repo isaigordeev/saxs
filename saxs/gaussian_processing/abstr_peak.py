@@ -16,10 +16,10 @@ class AbstractPeakClassificator(ApplicationClassificator):
 
         self.file_analyse_dir_peaks = None
         self.file_analyse_dir = None
-        self.max_dI = None
         self.delta_q = None
+        self.max_dI = None
         self.dI = None
-        self.I = None
+        self.I_raw = None
         self.q = None
 
         self.filename = filename
@@ -52,7 +52,7 @@ class AbstractPeakClassificator(ApplicationClassificator):
         data = data.dropna()
 
         self.q = np.array(data.iloc[:, 0])
-        self.I = np.array(data.iloc[:, 1])
+        self.I_raw = np.array(data.iloc[:, 1])
         # self.dI = np.array(data.iloc[:, 2])
 
         self.delta_q = self.q[len(self.q) - 1] / len(self.q)
