@@ -1,9 +1,5 @@
-
-
-from .model import SAXSViT
-
 from torchinfo import summary #optional
-
+from saxs.model.model import SAXSViT
 
 mod = SAXSViT()
 
@@ -14,8 +10,3 @@ summary(mod,
         col_width=20,
         row_settings=["var_names"]
         )
-
-
-
-
-

@@ -58,10 +58,42 @@ def create_data_batches_from_folder(train_data_dir,
 
     return train_batch, test_batch, phases_names
 
+def create_data_batches_from_dataset_files(train_data_dir,
+                                    test_data_dir,
+                                    transforms: transforms.Compose,
+                                    batch_size,
+                                    num_workers: int = NUM_CPU_CORES
+                                    ):
+
+    # train_data = #TODO
+    # test_data =
+
+    phases_names = train_data.classes
+
+    train_batch = DataLoader(
+        train_data,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
+        pin_memory=True
+    )
+
+    test_batch = DataLoader(
+        test_data,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
+        pin_memory=True
+    )
+
+    return train_batch, test_batch, phases_names
+
 
 class SAXSData(Dataset):
     def __init__(self):
         self.data = [...]
+
+        self.find_classes(self.root)
 
     def __getitem__(self, index):
         item = self.data[index]
@@ -71,3 +103,10 @@ class SAXSData(Dataset):
     def __len__(self):
         # Return the size of the dataset
         return len(self.data)
+
+    def find_classes(self, directory):
+        dataset_names = os.listdir(directory)
+        classes = [filename[:4] for filename in dataset_names]
+
+        class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
+        return classes, class_to_idx
