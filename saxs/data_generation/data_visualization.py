@@ -7,11 +7,10 @@ from sklearn.manifold import TSNE
 import pickle
 import random
 
-from generation_settings import core_path
-from saxspy import debyeWaller as dwf
+from .generation_settings import core_path
+from .saxspy import debyeWaller as dwf
 from scipy.interpolate import CubicSpline
 from tqdm import tqdm
-import saxspy
 # import umap
 
 

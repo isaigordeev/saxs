@@ -2,7 +2,7 @@ import torch
 import torchvision
 from torch import nn
 
-from saxs.settings import EMBEDDING_DIM, PATCH_SIZE, COLOR_CHANNELS, ATTENTION_BLOCKS, IMAGE_DIM, DEVICE, PHASES_NUMBER
+from .model_settings import EMBEDDING_DIM, PATCH_SIZE, COLOR_CHANNELS, ATTENTION_BLOCKS, IMAGE_DIM, DEVICE, PHASES_NUMBER
 
 
 class SAXSpy_raw(nn.Module):

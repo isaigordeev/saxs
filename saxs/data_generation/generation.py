@@ -1,14 +1,18 @@
 import sys
 import os
-
-from generation_settings import bijection_name, core_path
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import saxspy
-import matplotlib.pyplot as plt
 import numpy as np
 # Instantiate the synthetic model: 'P', 'G', or 'D'
 import argparse
+
+
+from .generation_settings import bijection_name, core_path
+from .saxspy import CubicModel
+
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import matplotlib.pyplot as plt
+
 
 
 
@@ -55,7 +59,7 @@ class Generator:
                     cubic_mesophase = bijection_name[self.cubic_mesophase]
 
                 print(f"running cubic {self.cubic_mesophase} model...")
-                cm = saxspy.CubicModel(self.cubic_mesophase)
+                cm = CubicModel(self.cubic_mesophase)
 
                 #----------------------- generate synthetic data -----------------------#
                 # ranges of: lattice parameter, length of lipid, lipid head sigma
