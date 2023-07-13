@@ -1,11 +1,14 @@
+import json
 from pathlib import Path
 
+import numpy as np
 import torch
 import torch.utils.data
 import os
 
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Dataset
+from saxs import DEFAULT_PHASES_PATH
 
 NUM_CPU_CORES = os.cpu_count()
 
@@ -19,13 +22,11 @@ data_transform = transforms.Compose([
 ])
 
 
-def get_train_val(dataset, val_ratio):
+def get_train_val(dataset,train_ratio):
     ntotal = len(dataset)
-    ntrain = int((1 - val_ratio) * ntotal)
+    ntrain = int(train_ratio * ntotal)
     torch.manual_seed(SEED)
     return torch.utils.data.random_split(dataset, [ntrain, ntotal - ntrain])
-
-
 
 
 def create_data_batches_from_folder(train_data_dir,
@@ -34,7 +35,6 @@ def create_data_batches_from_folder(train_data_dir,
                                     batch_size,
                                     num_workers: int = NUM_CPU_CORES
                                     ):
-
     train_data = datasets.ImageFolder(train_data_dir, transform=transforms)
     test_data = datasets.ImageFolder(test_data_dir, transform=transforms)
 
@@ -58,15 +58,15 @@ def create_data_batches_from_folder(train_data_dir,
 
     return train_batch, test_batch, phases_names
 
-def create_data_batches_from_dataset_files(train_data_dir,
-                                    test_data_dir,
-                                    transforms: transforms.Compose,
-                                    batch_size,
-                                    num_workers: int = NUM_CPU_CORES
-                                    ):
 
-    # train_data = #TODO
-    # test_data =
+def create_data_batches_from_dataset_files(path,
+                                           batch_size,
+                                           transforms: transforms.Compose=None,
+                                           num_workers: int = 0
+                                           ):
+
+    dataset = SAXSData(path=path, transforms=transforms)
+    train_data, test_data = get_train_val(dataset, 0.8)
 
     phases_names = train_data.classes
 
@@ -90,23 +90,42 @@ def create_data_batches_from_dataset_files(train_data_dir,
 
 
 class SAXSData(Dataset):
-    def __init__(self):
-        self.data = [...]
+    def __init__(self, path=None, transforms=None):
+        self.samples = []
+        self.path = path
+        self.transforms = transforms
+        self.classes, self.classes_dict = self.find_classes()
 
-        self.find_classes(self.root)
+        self.data = np.load(self.path)
+        
+        self.make_dataset()
+
+    def make_dataset(self):
+        for phase in self.classes:
+            index = self.classes_dict[phase]
+            self.samples.append((self.data[phase], index))
 
     def __getitem__(self, index):
-        item = self.data[index]
-        # transformed_im = ...  # TRANSFORM
-        # return transformed_im
+        sample, target = self.data[index]
+        if self.transforms is not None:
+            sample = self.transforms(sample)
+        return sample, target
 
     def __len__(self):
         # Return the size of the dataset
-        return len(self.data)
+        return len(self.samples)
 
-    def find_classes(self, directory):
+    def find_classes_old(self, directory):
         dataset_names = os.listdir(directory)
         classes = [filename[:4] for filename in dataset_names]
 
+        class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
+        return classes, class_to_idx
+
+    def find_classes(self, path=DEFAULT_PHASES_PATH):
+        with open(path, 'r') as file:  # NOTE make it better with string formatting
+            phases = json.load(file)
+
+        classes = phases.keys()
         class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
         return classes, class_to_idx
