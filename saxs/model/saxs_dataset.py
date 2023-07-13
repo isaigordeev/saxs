@@ -6,6 +6,7 @@ import torch
 import torch.utils.data
 import os
 
+from PIL import Image
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Dataset
 from saxs import DEFAULT_PHASES_PATH
@@ -22,7 +23,7 @@ data_transform = transforms.Compose([
 ])
 
 
-def get_train_val(dataset,train_ratio):
+def get_train_val(dataset, train_ratio):
     ntotal = len(dataset)
     ntrain = int(train_ratio * ntotal)
     torch.manual_seed(SEED)
@@ -61,14 +62,14 @@ def create_data_batches_from_folder(train_data_dir,
 
 def create_data_batches_from_dataset_files(path,
                                            batch_size,
-                                           transforms: transforms.Compose=None,
+                                           transforms: transforms.Compose = None,
                                            num_workers: int = 0
                                            ):
-
     dataset = SAXSData(path=path, transforms=transforms)
     train_data, test_data = get_train_val(dataset, 0.8)
 
-    phases_names = train_data.classes
+    # print(train_data)
+    phases_names = train_data.dataset.classes
 
     train_batch = DataLoader(
         train_data,
@@ -97,18 +98,23 @@ class SAXSData(Dataset):
         self.classes, self.classes_dict = self.find_classes()
 
         self.data = np.load(self.path)
-        
+
         self.make_dataset()
 
     def make_dataset(self):
         for phase in self.classes:
             index = self.classes_dict[phase]
-            self.samples.append((self.data[phase], index))
+            for sample in self.data[phase]:
+                self.samples.append((sample, index))
 
     def __getitem__(self, index):
-        sample, target = self.data[index]
+        sample, target = self.samples[index]
+        sample = Image.fromarray(np.uint8(sample * 255)).convert('RGB')
+        # sample = torch.tensor(sample)
         if self.transforms is not None:
             sample = self.transforms(sample)
+        else:
+            sample = transforms.ToTensor()(sample)
         return sample, target
 
     def __len__(self):

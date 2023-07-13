@@ -2,7 +2,7 @@ import torch
 import torchvision.transforms.v2
 from PIL import Image
 
-from saxs.settings import DEVICE, DEFAULT_TRANSFORMS
+from .model_settings import DEVICE, DEFAULT_TRANSFORMS
 
 
 def prediction(model,

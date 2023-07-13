@@ -4,7 +4,7 @@ import torch.utils.data
 from torch import nn
 from tqdm.auto import tqdm
 
-from tools import xtime_decorator
+from .tools import xtime_decorator
 
 
 def train_step(model: torch.nn.Module, 
