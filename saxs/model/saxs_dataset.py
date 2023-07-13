@@ -65,6 +65,7 @@ def create_data_batches_from_dataset_files(path,
                                            transforms: transforms.Compose = None,
                                            num_workers: int = 0
                                            ):
+
     dataset = SAXSData(path=path, transforms=transforms)
     train_data, test_data = get_train_val(dataset, 0.8)
 
@@ -109,13 +110,13 @@ class SAXSData(Dataset):
 
     def __getitem__(self, index):
         sample, target = self.samples[index]
-        sample = Image.fromarray(np.uint8(sample * 255)).convert('RGB')
+        sample = Image.fromarray(np.uint8(sample/np.max(sample) * 255))
         # sample = torch.tensor(sample)
         if self.transforms is not None:
             sample = self.transforms(sample)
         else:
             sample = transforms.ToTensor()(sample)
-        return sample, target
+        return sample, torch.nn.functional.one_hot(torch.tensor(target), num_classes=len(self.classes))
 
     def __len__(self):
         # Return the size of the dataset
@@ -132,6 +133,6 @@ class SAXSData(Dataset):
         with open(path, 'r') as file:  # NOTE make it better with string formatting
             phases = json.load(file)
 
-        classes = phases.keys()
+        classes = list(phases.keys())
         class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
         return classes, class_to_idx
