@@ -1,5 +1,6 @@
 import os
 
+import matplotlib.pyplot as plt
 import torch
 from torchvision.transforms import transforms
 
@@ -8,30 +9,8 @@ from saxs import PACKAGE_PATH
 import saxs.model.phase_prediction as phase_prediction
 from saxs.model import engine
 from saxs.model.model import SAXSViT
-from saxs.model.model_settings import TRAIN_DIR, TEST_DIR, DEVICE
+from saxs.model.model_settings import DEVICE
 
-from PIL import Image
-
-# Example image file path
-image_path = 'saxs/data/dot/train/Im3m/075773_treated_xye.png'
-
-# Define the desired transformations
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),        # Resize the image to a specific size
-    transforms.RandomCrop((224, 224)),    # Randomly crop the image
-    transforms.ToTensor(),                 # Convert the image to a PyTorch tensor
-    transforms.Normalize((0.5, 0.5, 0.5),  # Normalize the image pixel values
-                         (0.5, 0.5, 0.5))
-])
-
-# Load and transform the image
-image = Image.open(image_path).convert('RGB')
-to = transforms.ToTensor()
-im = to(image)
-print(im.shape)
-print(image.size)
-transformed_image = transform(image)
-print(transformed_image.shape, 'da')
 
 
 
@@ -45,30 +24,32 @@ train_saxs_batches, test_saxs_batches, saxs_phases = \
                                                     num_workers=0
                                                     )
 
-print('finish')
-a ,b = next(iter(train_saxs_batches))
-print(a)
-print(b)
 
-# for x in train_saxs_batches:
-#     # print(x['input'])
-#     # print(*x['target'])
-#     print(x)
-
-
-
-# optimizer = torch.optim.Adam(params=model.parameters(),
-#                              lr=1e-3)
-# loss_fn = torch.nn.CrossEntropyLoss()
-
-# pretrained_vit_results = engine.train(model=model,
-#                                       train_dataloader=train_saxs_batches,
-#                                       test_dataloader=test_saxs_batches,
-#                                       optimizer=optimizer,
-#                                       loss_fn=loss_fn,
-#                                       epochs=1,
-#                                       device=DEVICE)
+# print(list(train_saxs_batches)[0][1])
 #
+# print(model(list(train_saxs_batches)[0][0]))
 #
-#
-# phase_prediction.prediction(model, saxs_phases, 'data/dot/train/Im3m/075773_treated_xye.png')
+# print('finished')
+
+optimizer = torch.optim.Adam(params=model.parameters(),
+                             lr=1e-3)
+loss_fn = torch.nn.CrossEntropyLoss()
+
+pretrained_vit_results = engine.train(model=model,
+                                      train_dataloader=train_saxs_batches,
+                                      test_dataloader=test_saxs_batches,
+                                      optimizer=optimizer,
+                                      loss_fn=loss_fn,
+                                      epochs=1,
+                                      device=DEVICE)
+
+
+
+phase_prediction.prediction(model,
+                            'res/075773_treated_xye.csv',
+                            saxs_phases,
+                            model.data_transforms,
+                            230,
+                            )
+
+torch.save(model.state_dict(), 'model0.pth')
