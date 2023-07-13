@@ -13,31 +13,41 @@ from saxs.model.model_settings import TRAIN_DIR, TEST_DIR, DEVICE
 
 from PIL import Image
 
+from torchinfo import summary
+
 # Example image file path
-image_path = 'saxs/data/dot/train/Im3m/075773_treated_xye.png'
+# image_path = 'saxs/data/dot/train/Im3m/075773_treated_xye.png'
 
-# Define the desired transformations
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),        # Resize the image to a specific size
-    transforms.RandomCrop((224, 224)),    # Randomly crop the image
-    transforms.ToTensor(),                 # Convert the image to a PyTorch tensor
-    transforms.Normalize((0.5, 0.5, 0.5),  # Normalize the image pixel values
-                         (0.5, 0.5, 0.5))
-])
 
-# Load and transform the image
-image = Image.open(image_path).convert('RGB')
-to = transforms.ToTensor()
-im = to(image)
-print(im.shape)
-print(image.size)
-transformed_image = transform(image)
-print(transformed_image.shape, 'da')
+# transform = transforms.Compose([
+#     transforms.Resize((256, 256)),        # Resize the image to a specific size
+#     transforms.RandomCrop((224, 224)),    # Randomly crop the image
+#     transforms.ToTensor(),                 # Convert the image to a PyTorch tensor
+#     transforms.Normalize((0.5, 0.5, 0.5),  # Normalize the image pixel values
+#                          (0.5, 0.5, 0.5))
+# ])
+
+# # Load and transform the image
+# image = Image.open(image_path).convert('RGB')
+# to = transforms.ToTensor()
+# im = to(image)
+# print(im.shape)
+# print(image.size)
+# transformed_image = transform(image)
+# print(transformed_image.shape, 'da')
 
 
 
 
 model = SAXSViT()
+
+summary(
+    model,
+    input_size=(1,3, 224,224),
+    col_names=["input_size", "output_size", "num_params", "trainable"],
+    col_width=20,
+    row_settings=["var_names"]
+)
 
 # train_saxs_batches, test_saxs_batches, saxs_phases = \
 #     data_setup.create_data_batches_from_dataset_files(path=os.path.join(PACKAGE_PATH, 'cache/small_joined_phases.npz'),
@@ -56,7 +66,7 @@ model = SAXSViT()
 # plt.legend()
 # plt.show()
 
-from saxs.model.phase_prediction import prediction
+# from saxs.model.phase_prediction import prediction
 
 # prediction(None, 'res/075775_treated_xye.csv', None, None, 230)
 

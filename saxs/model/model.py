@@ -153,14 +153,38 @@ class OriginalViT(nn.Module):
 
 
 class SAXSViT(nn.Module):
-    def __init__(self):
+    def __init__(self, pretrained=False):
         super().__init__()
 
-        self.pretrained_vit_weights = None
         self.data_transforms = None
-        self.vit_pretrained = None
 
-        self.get_pretrained_vit()
+
+
+        if pretrained:
+            self.pretrained_vit_weights = torchvision.models.ViT_B_16_Weights.DEFAULT
+        else: 
+            self.pretrained_vit_weights = None
+
+        self.vit_pretrained = torchvision.models.vit_b_16(self.pretrained_vit_weights).to(DEVICE)
+             
+
+        for layer in self.vit_pretrained.parameters():
+            layer.requires_grad = False
+
+        # self.vit_pretrained.heads = nn.Sequential(nn.Linear(in_features=768, out_features=PHASES_NUMBER).to(DEVICE))
+
+        self.vit_pretrained.heads = nn.Sequential(
+          nn.Linear(in_features=768, out_features=768).to(DEVICE),
+          nn.Tanh(),
+          nn.Linear(in_features=768, out_features=PHASES_NUMBER).to(DEVICE),
+        ) 
+        
+
+
+        # self.get_pretrained_vit()
+
+        # self.classifier = nn.Linear(in_features=768, out_features=PHASES_NUMBER).to(DEVICE) 
+
 
     def get_pretrained_vit(self):
         self.pretrained_vit_weights = torchvision.models.ViT_B_16_Weights.DEFAULT
@@ -177,5 +201,6 @@ class SAXSViT(nn.Module):
 
     def forward(self, x):
         x = self.vit_pretrained(x)
+        # x = self.classifier(x)
         return x
 
