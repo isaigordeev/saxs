@@ -44,7 +44,7 @@ def load_data(phase, cubic_mesophase=None, load_path=os.path.join(os.path.dirnam
     exp_data = None
     return q, data_1d, data_3d, exp_data
 
-def plot_saxs(pattern,q):
+def plot_saxs(q, pattern):
     plt.figure()
     plt.plot(q,pattern)
     plt.xlabel('q')

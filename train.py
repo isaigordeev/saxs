@@ -1,6 +1,6 @@
 import torch
 
-import saxs.model.saxs_data_setup as data_setup
+import saxs.model.saxs_dataset as data_setup
 import saxs.model.phase_prediction as phase_prediction
 from saxs.model import engine
 from saxs.model.model import SAXSViT
