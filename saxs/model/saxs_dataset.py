@@ -116,7 +116,7 @@ class SAXSData(Dataset):
             sample = self.transforms(sample)
         else:
             sample = transforms.ToTensor()(sample)
-        return sample, torch.nn.functional.one_hot(torch.tensor(target), num_classes=len(self.classes))
+        return sample, torch.nn.functional.one_hot(torch.tensor(target), num_classes=len(self.classes)).float()
 
     def __len__(self):
         # Return the size of the dataset
