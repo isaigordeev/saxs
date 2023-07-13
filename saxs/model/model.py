@@ -177,5 +177,5 @@ class SAXSViT(nn.Module):
 
     def forward(self, x):
         x = self.vit_pretrained(x)
-
         return x
+
