@@ -5,6 +5,7 @@ from torch import nn
 from .model_settings import EMBEDDING_DIM, PATCH_SIZE, COLOR_CHANNELS, ATTENTION_BLOCKS, IMAGE_DIM, DEVICE, PHASES_NUMBER
 
 
+
 class SAXSpy_raw(nn.Module):
 
     def __init__(self, input_shape: int, hidden_units: int, output_shape: int) -> None:
@@ -117,10 +118,10 @@ class OriginalViT(nn.Module):
                                               patch_size=patch_size,
                                               embedding_dim=embedding_dim)
 
-        self.transformer_encoder = nn.Sequential(*[nn.TransformerEncoderLayer(d_model=768,
-                                                                              nhead=12,
-                                                                              dim_feedforward=3072,
-                                                                              dropout=0.1,
+        self.transformer_encoder = nn.Sequential(*[nn.TransformerEncoderLayer(d_model=IMAGE_DIM*COLOR_CHANNELS,
+                                                                              nhead=num_heads,
+                                                                              dim_feedforward=mlp_size,
+                                                                              dropout=attn_dropout,
                                                                               activation="gelu",
                                                                               batch_first=True,
                                                                               norm_first=True) for _ in
@@ -152,6 +153,18 @@ class OriginalViT(nn.Module):
         return x
 
 
+class SAXViT10(OriginalViT):
+    def __init__(self, img_size, in_channels, patch_size, num_transformer_layers, embedding_dim, mlp_size, num_heads,
+                 attn_dropout, mlp_dropout, embedding_dropout, num_classes):
+
+        super().__init__(img_size, in_channels, patch_size, num_transformer_layers, embedding_dim, mlp_size, num_heads,
+                         attn_dropout, mlp_dropout, embedding_dropout, num_classes)
+
+
+
+
+
+
 class SAXSViT(nn.Module):
     def __init__(self, pretrained=False):
         super().__init__()
@@ -174,9 +187,9 @@ class SAXSViT(nn.Module):
         # self.vit_pretrained.heads = nn.Sequential(nn.Linear(in_features=768, out_features=PHASES_NUMBER).to(DEVICE))
 
         self.vit_pretrained.heads = nn.Sequential(
-          nn.Linear(in_features=768, out_features=768).to(DEVICE),
+          nn.Linear(in_features=768, out_features=256).to(DEVICE),
           nn.Tanh(),
-          nn.Linear(in_features=768, out_features=PHASES_NUMBER).to(DEVICE),
+          nn.Linear(in_features=256, out_features=PHASES_NUMBER).to(DEVICE),
         ) 
         
 
