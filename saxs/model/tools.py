@@ -7,6 +7,9 @@ from typing import Dict, List
 import matplotlib.pyplot as plt
 import torch
 import torchvision
+import yaml
+
+
 from PIL import Image
 
 
@@ -27,6 +30,17 @@ def save_model(model: torch.nn.Module,
     torch.save(obj=model.state_dict,
              f=model_save_path)
 
+def read_config(path):
+
+
+    with open(path, 'r') as file:
+        config = yaml.safe_load(file)
+
+    param1 = config['training']['epoch']
+
+
+
+    return (param1, )
 
 def xtime_decorator(func):
     def wrapper(*args, **kwargs):
