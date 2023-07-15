@@ -12,5 +12,5 @@ test = Manager(current_session=now,
                phase_classificator=DefaultPhaseClassificator,
                )
 
-test.custom_directory_process()
+test.custom_directory_processing()
 
