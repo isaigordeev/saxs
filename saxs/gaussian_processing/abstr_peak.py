@@ -10,33 +10,38 @@ from .settings_processing import EXTENSION, ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SE
 
 
 class AbstractPeakClassificator(ApplicationClassificator):
+    # __data = {}
+    # def __new__(cls, *args, **kwargs):
+    #     _peak_class_dir_instance = super().__new__(cls)
+    #     return _peak_class_dir_instance
 
-    def __init__(self, current_session, data_directory, filename, custom_directory=None):
-        super().__init__(current_session, data_directory)
+    # @classmethod
+    # def write_data(cls):
+    #
+    #     with open('{}.json'.format(cls.current_results_dir_session), 'r') as file:
+    #         directory_data = json.load(file)
+    #
+    #     with open(cls.current_results_dir_session + cls.current_time + '.json', 'w') as f:
+    #         json.dump(directory_data, f, indent=4, separators=(",", ": "))
+
+    def __init__(self, data_directory):
+        super().__init__(data_directory)
+
 
         self.file_analyse_dir_peaks = None
         self.file_analyse_dir = None
-        self.delta_q = None
-        self.max_dI = None
-        self.dI = None
         self.I_raw = None
+        self.dI = None
         self.q = None
 
-        self.filename = filename
-        self.data_directory = data_directory
-        self.custom_directory = custom_directory
+        self.delta_q = None
+        self.max_dI = None
 
-        self.set_peak_directories()
-        self.set_data()
 
-    def set_peak_directories(self):
-        if self.custom_directory is None:
-            print(self.analysis_dir)
-            self.file_analyse_dir = os.path.join(self.analysis_dir, self.filename)
-            self.file_analyse_dir_peaks = os.path.join(self.file_analyse_dir, 'peaks')
-        else:
-            self.file_analyse_dir = self.custom_directory + self.filename
-            self.file_analyse_dir_peaks = self.custom_directory + self.filename + 'peaks'
+    def set_file_peak_directories(self, filename):
+        print(self._analysis_dir)
+        self.file_analyse_dir = os.path.join(self._analysis_dir, filename)
+        self.file_analyse_dir_peaks = os.path.join(self.file_analyse_dir, 'peaks')
 
         print(self.file_analyse_dir)
         print(self.file_analyse_dir_peaks)
@@ -46,8 +51,8 @@ class AbstractPeakClassificator(ApplicationClassificator):
         if not os.path.exists(self.file_analyse_dir_peaks):
             os.mkdir(self.file_analyse_dir_peaks)
 
-    def set_data(self):
-        data = pd.read_csv('{}{}{}'.format(self.data_directory, self.filename, EXTENSION), sep=',')
+    def set_file_data(self, filename):
+        data = pd.read_csv('{}{}{}'.format(self.data_directory, filename, EXTENSION), sep=',')
         data = data.apply(pd.to_numeric, errors='coerce')
         data = data.dropna()
 
@@ -56,17 +61,20 @@ class AbstractPeakClassificator(ApplicationClassificator):
         # self.dI = np.array(data.iloc[:, 2])
 
         self.delta_q = self.q[len(self.q) - 1] / len(self.q)
-        # self.max_dI = np.median(self.dI)
+        self.max_dI = np.max(self.dI)
 
-    def write_data(self):
+    def write_file_data(self):
 
-        with open('{}.json'.format(self.current_session_results), 'r') as file:
+        with open('{}.json'.format(self._current_results_dir_session), 'r') as file:
             directory_data = json.load(file)
 
         directory_data.update({self.filename: self.gathering()})
 
-        with open(self.current_session_results + self.current_time + '.json', 'w') as f:
+        with open(self._current_results_dir_session + self.current_time + '.json', 'w') as f:
             json.dump(directory_data, f, indent=4, separators=(",", ": "))
+
+    def directory_classification(self, sample_names=None):
+        pass
 
     def background_reduction(self):
         pass

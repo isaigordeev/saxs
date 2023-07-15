@@ -11,6 +11,8 @@ from .settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FI
     RESOLUTION_FACTOR
 
 
+
+
 class DefaultPeakClassificator(AbstractPeakClassificator):
     def __init__(self, current_session, data_directory, filename):
         super().__init__(current_session, data_directory, filename)

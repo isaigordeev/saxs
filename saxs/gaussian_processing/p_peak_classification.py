@@ -3,7 +3,7 @@ import numpy as np
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks
 
-from .custom_peak_classification import DefaultPeakClassificator
+from .peak_classificator import DefaultPeakClassificator
 from .functions import gaussian_sum, moving_average, parabole
 from .settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF
 
