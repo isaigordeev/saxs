@@ -9,6 +9,8 @@ from saxs.gaussian_processing.settings_processing import START
 
 
 class ProminenceKernel(DefaultPeakKernel):
+    str_type = 'prominence_kernel'
+    short_str_type = 'prom_kern'
 
     def __init__(self, data_dir,
                  is_preprocessing=True,
@@ -22,6 +24,8 @@ class ProminenceKernel(DefaultPeakKernel):
                          )
 
         self.peaks = None
+
+
 
     def preprocessing(self):
         self.default_preprocessing()
@@ -136,6 +140,8 @@ class ProminenceKernel(DefaultPeakKernel):
         # return medfilt(good_smoothed_without_loss, 3)
 
         self.I_filt = medfilt(good_smoothed_without_loss, 3)
+
+
 
     def gathering(self) -> dict:
         return {

@@ -7,6 +7,8 @@ from saxs.gaussian_processing.settings_processing import BACKGROUND_COEF, START
 
 
 class DefaultPeakKernel(AbstractPeakKernel):
+    str_type = 'default_kernel'
+    short_str_type = 'def_kern'
 
     def __init__(self, data_dir,
                  is_preprocessing=True,
@@ -24,6 +26,8 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
         self.noisy_relevant_cut_point = 0
         self.noisy_irrelevant_cut_point = 0
+
+
 
 
     def background_reduction(self):
@@ -51,6 +55,8 @@ class DefaultPeakKernel(AbstractPeakKernel):
         self.current_I_state = self.current_I_state - BACKGROUND_COEF * self.background
 
         self.I_background_filtered = self.current_I_state
+
+
 
     def default_preprocessing(self):
         self.cutting_irrelevant_noisy()
