@@ -1,4 +1,5 @@
 import numpy as np
+from matplotlib import pyplot as plt
 from scipy.signal import find_peaks
 
 from saxs.gaussian_processing.peak.abstract_kernel import AbstractPeakKernel
@@ -8,10 +9,22 @@ from saxs.gaussian_processing.settings_processing import START
 
 class ProminenceKernel(DefaultPeakKernel):
 
-    def __init__(self, data_dir, preprocessing=False, filtering=False):
-        super().__init__(data_dir)
-        self.cut_point = None
+    def __init__(self, data_dir,
+                 is_preprocessing=True,
+                 is_background_reduction=True,
+                 is_filtering=True,
+                 ):
+        super().__init__(data_dir,
+                         is_preprocessing,
+                         is_background_reduction,
+                         is_filtering,
+                         )
 
+        self.sample_processing()
+
+    def preprocessing(self):
+        self.default_preprocessing()
+        self.detecting_relevant_noisy()
 
     def detecting_relevant_noisy(self):
         peaks, props = find_peaks(self.current_I_state, height=1, prominence=1)
@@ -19,13 +32,12 @@ class ProminenceKernel(DefaultPeakKernel):
         print(props["right_bases"])
         print(peaks)
         print(props["right_bases"][0])
+        self.state_plot()
+        plt.show()
         # plt.plot(self.q, self.I_background_reduced)
         # plt.plot(self.q[_["right_bases"][0]], self.I_background_reduced[_["left_bases"][0]], 'ro')
 
-
-
-
-    def filtering(self):
+    def filtering0(self):
         self.I_background_reduced = np.concatenate((np.zeros(self.cut_point), self.I_cut_background_reduced))
 
         # y = self.I_cut_background_reduced
