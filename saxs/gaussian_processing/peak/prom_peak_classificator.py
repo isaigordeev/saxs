@@ -1,7 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy.signal import find_peaks
+from scipy.signal import find_peaks, medfilt
 
+from saxs.gaussian_processing.functions import moving_average
 from saxs.gaussian_processing.peak.abstract_kernel import AbstractPeakKernel
 from saxs.gaussian_processing.peak.default_kernel import DefaultPeakKernel
 from saxs.gaussian_processing.settings_processing import START
@@ -20,20 +21,34 @@ class ProminenceKernel(DefaultPeakKernel):
                          is_filtering,
                          )
 
-        self.sample_processing()
+        self.peaks = None
 
     def preprocessing(self):
         self.default_preprocessing()
         self.detecting_relevant_noisy()
+        self.prefiltering_decomposition()
+
+
+        # print(len(self.current_q_state))
+        # print(len(self.current_I_state))
+        # print(len(self.dI))
 
     def detecting_relevant_noisy(self):
-        peaks, props = find_peaks(self.current_I_state, height=1, prominence=1)
+
+        self.peaks, props = find_peaks(self.current_I_state, height=1, prominence=1)
         print(props["left_bases"])
         print(props["right_bases"])
-        print(peaks)
+        print(self.peaks)
         print(props["right_bases"][0])
-        self.state_plot()
-        plt.show()
+
+        self.noisy_relevant_cut_point = props["right_bases"][0]
+
+        # plt.plot(self.current_q_state[self.peaks], self.current_I_state[self.peaks], 'rx', label='peaks')
+        # plt.plot(self.current_q_state[props["left_bases"]], self.current_I_state[props["left_bases"]], 'gx', label='peaks')
+        # plt.plot(self.current_q_state[props["right_bases"]], self.current_I_state[props["right_bases"]], 'bx', label='peaks')
+
+
+        # plt.show()
         # plt.plot(self.q, self.I_background_reduced)
         # plt.plot(self.q[_["right_bases"][0]], self.I_background_reduced[_["left_bases"][0]], 'ro')
 
@@ -58,7 +73,7 @@ class ProminenceKernel(DefaultPeakKernel):
 
         # plt.plot(self.I_cut_background_reduced)
         # plt.plot(self.I_cut)
-        peaks, _ = find_peaks(self.difference, height=1, prominence=0.5)
+        self.peaks, _ = find_peaks(self.difference, height=1, prominence=0.5)
 
         plt.plot(self.q, self.difference)
         plt.plot(self.q[peaks], self.difference[peaks], 'x')
@@ -75,23 +90,22 @@ class ProminenceKernel(DefaultPeakKernel):
         plt.plot(self.q[peaks], self.I_background_reduced[peaks], 'x')
         plt.show()
 
-    def noisy_parts_detection(self):
-        peaks, properties = find_peaks(self.I_background_reduced, height=1, prominence=1)
-        return properties['right_bases'][0]
 
-    def denoising(self):
-        noisy_indice = self.noisy_parts_detection()
+    def prefiltering_decomposition(self):
 
         # noisy_part = np.ones(noisy_indice)
-        noisy_part = moving_average(self.I_background_reduced[:noisy_indice], 10)
+        self.noisy_part = moving_average(self.current_I_state[:self.noisy_relevant_cut_point], 10)
 
         # noiseless_part = medfilt(self.I_background_reduced[noisy_indice:], 3)
-        noiseless_part = self.I_background_reduced[noisy_indice:]
+        self.noiseless_part = self.current_I_state[self.noisy_relevant_cut_point:]
 
-        self.I_denoised = medfilt(np.concatenate((noisy_part, noiseless_part)), 3)
+        self.current_I_state = medfilt(np.concatenate((self.noisy_part, self.noiseless_part)), 3)
+
+        self.peaks, props = find_peaks(self.current_I_state, height=1, prominence=0.5)
+        self.current_state_plot()
+        self.peaks_plots()
+
         # self.I_filt = medfilt(good_smoothed_without_loss, 3)
-
-
         # _, __ = find_peaks(self.I_denoised, height=1, prominence=1)
         # plt.plot(self.q, self.I_denoised)
         # plt.plot(self.q, self.I_background_reduced)
@@ -122,6 +136,23 @@ class ProminenceKernel(DefaultPeakKernel):
         # return medfilt(good_smoothed_without_loss, 3)
 
         self.I_filt = medfilt(good_smoothed_without_loss, 3)
+
+    def gathering(self) -> dict:
+        return {
+            'peak_number': len(self.peaks),
+            'q': self.current_q_state[self.peaks].tolist(),
+            'I': self.current_q_state[self.peaks].tolist(),
+            # 'dI': dI.tolist(),
+            # 'I_raw': I_raw.tolist(),
+            # 'peaks': peaks_detected.tolist(),
+            # 'params_amplitude': self.params.tolist()[::3],
+            # 'params_mean': self.params.tolist()[1::3],
+            # 'params_sigma': self.params.tolist()[2::3],
+            # 'start_loss': self.start_loss,
+            # 'final_loss': self.final_loss,
+            # 'error': error
+            # 'loss_ratio': self.final_loss / self.start_loss
+        }
 
 
 

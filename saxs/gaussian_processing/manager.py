@@ -125,12 +125,12 @@ class Custom_Manager(Manager):
         peaks.filtering_negative()
         peaks.background_plot()  # for main
         # peaks.peak_searching(height=0, prominence=PROMINENCE, distance=6)
-        peaks.state_plot()  # for main
+        peaks.current_state_plot()  # for main
         # peaks.custom_peak_fitting_with_parabole(0)
         peaks.peak_processing()
         # peaks.custom_peak_fitting(0)
         # peaks.peak_substraction(0)
-        peaks.state_plot()  # for main
+        peaks.current_state_plot()  # for main
         peaks.result_plot()  # for main
 
         # for x in range(len(peaks.peaks)):
