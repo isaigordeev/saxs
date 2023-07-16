@@ -27,8 +27,18 @@ class AbstractPeakKernel:
                  'total_fit',
                  'I_background_filtered',
                  'max_I',
-                 'peaks'
+                 'peaks',
+                 'str_type',
+                 'short_str_type'
                  )
+
+    @classmethod
+    def class_short_info(cls):
+        return cls.short_str_type
+
+    @classmethod
+    def class_info(cls):
+        return cls.str_type
 
     def __init__(self, data_dir,
                  is_preprocessing=True,
@@ -58,10 +68,18 @@ class AbstractPeakKernel:
         self.popt_background = None
         self.pcov_background = None
 
+        self.str_type = 'abstract_kernel'
+        self.short_str_type = 'abs_kern'
+
+
 
     def __call__(self, *args, **kwargs):
         self.sample_processing()
         return self.gathering()
+
+    def __str__(self):
+        print(self.short_str_type)
+        return ''.join(self.short_str_type)
 
 
 

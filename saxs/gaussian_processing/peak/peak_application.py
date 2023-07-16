@@ -5,14 +5,17 @@ from abc import ABC
 import numpy as np
 import pandas as pd
 
+from saxs.gaussian_processing.peak.abstract_kernel import AbstractPeakKernel
 from saxs.gaussian_processing.processing_classificator import ApplicationClassificator
 from saxs.gaussian_processing.processing_outils import get_filenames, get_filenames_without_ext
 from saxs.gaussian_processing.settings_processing import EXTENSION, ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
 
 
+
+
 class PeakApplication(ApplicationClassificator):
 
-    def __init__(self, data_directory, kernel=None):
+    def __init__(self, data_directory, kernel: AbstractPeakKernel=None):
         super().__init__(data_directory)
 
         self.kernel = kernel
@@ -40,8 +43,7 @@ class PeakApplication(ApplicationClassificator):
 
         # with open('{}.json'.format(self._current_results_dir_session), 'r') as f:
         #     directory_data = json.load(f)
-
-        with open('{}.json'.format(self._current_results_dir_session), 'w') as f:
+        with open('{}{}_{}.json'.format(self._current_results_dir_session, self.current_time, self.kernel.class_info()), 'w') as f:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
     def directory_classification(self):
