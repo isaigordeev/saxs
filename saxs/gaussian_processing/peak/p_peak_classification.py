@@ -3,12 +3,12 @@ import numpy as np
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks
 
-from .peak_classificator import DefaultPeakClassificator
-from .functions import gaussian_sum, moving_average, parabole
-from .settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF
+from .peak_classificator import DefaultPeakApplication
+from saxs.gaussian_processing.functions import gaussian_sum, moving_average, parabole
+from saxs.gaussian_processing.settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF
 
 
-class PDefaultPeakClassificator(DefaultPeakClassificator):
+class PDefaultPeakClassificator(DefaultPeakApplication):
     def __init__(self, current_session, data_directory, filename):
 
         super().__init__(current_session, data_directory, filename)

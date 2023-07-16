@@ -1,9 +1,24 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import csv
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit
+
+def get_filenames(folder_path):
+    for filename in os.listdir(folder_path):
+        if os.path.isfile(os.path.join(folder_path, filename)):
+            yield filename
+
+def get_filenames_without_ext(folder_path):
+    for filename in os.listdir(folder_path):
+        if os.path.isfile(os.path.join(folder_path, filename)):
+            name, extension = os.path.splitext(filename)
+            if (name != '.DS_Store'):
+                yield name
+
 
 def load_generated_data(phase):
     data = np.load(f'../saxs_generated_data/P_{phase.lower()}.npy')
@@ -35,14 +50,22 @@ def write_generated_data_to_csv(q, I, filename):
 
 
 
-def read_data(data_dir_file, EXTENSION):
-    data = pd.read_csv(data_dir_file + EXTENSION, sep=',')
+def read_data(data_dir_file):
+    data = pd.read_csv(data_dir_file, sep=',')
     data = data.apply(pd.to_numeric, errors='coerce')
     data = data.dropna()
-    q = np.array(data.iloc[:, 0])
-    I = np.array(data.iloc[:, 1])
-    dI = np.array(data.iloc[:, 2])
-    return q, I, dI
+
+    if data.shape[1] >= 3:
+        q = np.array(data.iloc[:, 0])
+        I = np.array(data.iloc[:, 1])
+        dI = np.array(data.iloc[:, 2])
+        return q, I, dI
+    elif data.shape[1] == 2:
+        q = np.array(data.iloc[:, 0])
+        I = np.array(data.iloc[:, 1])
+        return q, I,
+    else:
+        raise AttributeError("Input is insufficient")
 
 def read_I(data_dir_file, EXTENSION):
     data = pd.read_csv(data_dir_file + EXTENSION, sep=',')
