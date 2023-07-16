@@ -1,12 +1,11 @@
 import time
 
-from .abstr_phase import AbstractPhaseClassificator
-from .abstr_peak import AbstractPeakClassificator
+from saxs.gaussian_processing.phase.abstr_phase import AbstractPhaseClassificator
+from saxs.gaussian_processing.peak.peak_application import PeakApplication
 from .application import ApplicationManager
 
 time_start1 = time.time()
 
-import json
 import os
 
 from datetime import datetime
@@ -29,27 +28,16 @@ today = now.today().date()
 #     os.mkdir(current_session_results)
 
 
-def get_filenames(folder_path):
-    for filename in os.listdir(folder_path):
-        if os.path.isfile(os.path.join(folder_path, filename)):
-            yield filename
 
-
-def get_filenames_without_ext(folder_path):
-    for filename in os.listdir(folder_path):
-        if os.path.isfile(os.path.join(folder_path, filename)):
-            name, extension = os.path.splitext(filename)
-            if (name != '.DS_Store'):
-                yield name
 
 
 class Manager(ApplicationManager):
     def __init__(self,
                  peak_data_directory='data/',
                  phase_data_directory=None,
-                 peak_classificator: AbstractPeakClassificator=None,
+                 peak_classificator: PeakApplication=None,
                  phase_classificator: AbstractPhaseClassificator=None,
-                 current_session=None,) -> None:
+                 current_session=None, ) -> None:
 
         super().__init__(current_session=current_session,
                          peak_classificator=peak_classificator,
@@ -62,8 +50,8 @@ class Manager(ApplicationManager):
         else:
             self.phase_data_directory = self._current_results_dir_session
 
-        self.peak_samples = get_filenames_without_ext(self.peak_data_directory)
-        self.phase_samples = get_filenames_without_ext(self.peak_data_directory) #TODO better where peaks = 0/1
+        # self.peak_samples = get_filenames_without_ext(self.peak_data_directory)
+        # self.phase_samples = get_filenames_without_ext(self.peak_data_directory) #TODO better where peaks = 0/1
 
     def point_peak_processing(self, filename):
         peaks = self.peak_classificator(current_session=self.current_session,
@@ -89,21 +77,19 @@ class Manager(ApplicationManager):
         # phase TODO
 
     def directory_peak_processing(self):
-        directory_peak_classificator = self.peak_classificator(current_session=self.current_session,
-                                                               data_directory=self.peak_data_directory)
+        directory_peak_classificator = self.peak_classificator(data_directory=self.peak_data_directory)
         print('DIRECTORY {} PEAK CLASSIFICATION'.format(directory_peak_classificator.data_directory))
 
-        directory_peak_classificator.directory_classification(sample_names=self.phase_samples)
+        directory_peak_classificator.directory_classification()
 
     def print_data(self):
         print(self.data)
 
     def directory_phase_processing(self):
-        directory_phase_classificator = self.phase_classificator(current_session=self.current_session,
-                                                                 data_directory=self.phase_data_directory)
+        directory_phase_classificator = self.phase_classificator(data_directory=self.phase_data_directory)
         print('DIRECTORY {} PHASE CLASSIFICATION'.format(directory_phase_classificator.data_directory))
 
-        directory_phase_classificator.directory_classification(sample_names=self.phase_samples)
+        directory_phase_classificator.directory_classification()
 
     def custom_process(self, filename):
         peaks = self.peak_classificator(current_session=self.current_session,

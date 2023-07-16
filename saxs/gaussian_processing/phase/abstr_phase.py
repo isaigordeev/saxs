@@ -1,8 +1,8 @@
 import json
 from datetime import date, datetime
 
-from .processing_classificator import ApplicationClassificator
-from .settings_processing import *
+from saxs.gaussian_processing.processing_classificator import ApplicationClassificator
+from saxs.gaussian_processing.settings_processing import *
 
 # from fastdtw import fastdtw
 

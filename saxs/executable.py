@@ -1,8 +1,8 @@
 import argparse
 
 from saxs.gaussian_processing.manager import *
-from gaussian_processing.p_peak_classification import PDefaultPeakClassificator
-from gaussian_processing.phase_classificator import DefaultPhaseClassificator
+from saxs.gaussian_processing.peak.p_peak_classification import PDefaultPeakClassificator
+from saxs.gaussian_processing.phase.phase_classificator import DefaultPhaseClassificator
 
 
 

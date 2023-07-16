@@ -1,17 +1,15 @@
 import json
 import os
-from typing import Callable
 
-from .processing_classificator import AbstractApplication, Application
-from .abstr_peak import AbstractPeakClassificator
-from .abstr_phase import AbstractPhaseClassificator
-from .settings_processing import ANALYSE_DIR_SESSIONS_RESULTS, ANALYSE_DIR_SESSIONS, ANALYSE_DIR
+from .processing_classificator import Application
+from saxs.gaussian_processing.peak.peak_application import PeakApplication
+from saxs.gaussian_processing.phase.abstr_phase import AbstractPhaseClassificator
 
 
 class ApplicationManager(Application):
     def __init__(self,
                  current_session=None,
-                 peak_classificator: AbstractPeakClassificator = None,
+                 peak_classificator: PeakApplication = None,
                  phase_classificator: AbstractPhaseClassificator= None,
                  custom_output_directory=None
                  ) -> None:

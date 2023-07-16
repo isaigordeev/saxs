@@ -5,8 +5,8 @@ import numpy as np
 
 from saxs.gaussian_processing.processing_outils import calculate_absolute_difference
 
-from .abstr_phase import AbstractPhaseClassificator
-from .settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
+from saxs.gaussian_processing.phase.abstr_phase import AbstractPhaseClassificator
+from saxs.gaussian_processing.settings_processing import ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
 
 class DefaultPhaseClassificator(AbstractPhaseClassificator):
     def __init__(self, current_session, data_directory=None):

@@ -24,43 +24,48 @@ class AbstractApplication(ABC):
             self.current_session = AbstractApplication.current_root_session
 
         current_date = str(self.current_session.today().date())
-
         self.current_date_session = "{}/".format(current_date)
-        self.current_time = current_session.strftime("%H:%M:%S")
+        self.current_time = self.current_session.strftime("%H:%M:%S")
 
 
 class Application(AbstractApplication):
-    _analysis_dir = os.path.join(AbstractApplication.executing_path, ANALYSE_DIR)
-    _analysis_dir_sessions = os.path.join(_analysis_dir, ANALYSE_DIR_SESSIONS)
-    _results_dir_sessions = os.path.join(_analysis_dir, ANALYSE_DIR_SESSIONS_RESULTS)
-    _current_results_dir_session = os.path.join(_results_dir_sessions,
-                                                AbstractApplication.current_date_session)
+    _results_dir = None
+    _result_plots_dir = None
+    _total_results_dir_ = None
+    _current_results_dir_session = None
+
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls)
+
+        return instance
 
     def __init__(self, current_session=None, custom_output_directory=None):
         super().__init__(current_session)
 
         self.custom_output_directory = custom_output_directory
-
         self.set_output_directories()
 
     def set_output_directories(self):
 
         if self.custom_output_directory is not None:
-            Application._analysis_dir = os.path.join(self.custom_output_directory, ANALYSE_DIR)
-            Application._analysis_dir_sessions = os.path.join(Application._analysis_dir, ANALYSE_DIR_SESSIONS)
-            Application._results_dir_sessions = os.path.join(Application._analysis_dir, ANALYSE_DIR_SESSIONS_RESULTS)
-            Application._current_results_dir_session = os.path.join(Application._results_dir_sessions,
-                                                                    Application.current_date_session)
+            Application._results_dir = os.path.join(self.custom_output_directory, ANALYSE_DIR)
+        else:
+            Application._results_dir = os.path.join(self.executing_path, ANALYSE_DIR)
 
-        if Application._analysis_dir is None:
+        if Application._results_dir is None:
             raise NotADirectoryError("Root output directory error")
 
-        if not os.path.exists(Application._analysis_dir):
-            os.mkdir(Application._analysis_dir)
-        if not os.path.exists(Application._analysis_dir_sessions):
-            os.mkdir(Application._analysis_dir_sessions)
-        if not os.path.exists(Application._results_dir_sessions):
-            os.mkdir(Application._results_dir_sessions)
+        Application._result_plots_dir = os.path.join(Application._results_dir, ANALYSE_DIR_SESSIONS)
+        Application._total_results_dir_ = os.path.join(Application._results_dir, ANALYSE_DIR_SESSIONS_RESULTS)
+        Application._current_results_dir_session = os.path.join(Application._total_results_dir_,
+                                                                super().current_date_session)
+
+        if not os.path.exists(Application._results_dir):
+            os.mkdir(Application._results_dir)
+        if not os.path.exists(Application._result_plots_dir):
+            os.mkdir(Application._result_plots_dir)
+        if not os.path.exists(Application._total_results_dir_):
+            os.mkdir(Application._total_results_dir_)
         if not os.path.exists(Application._current_results_dir_session):
             os.mkdir(Application._current_results_dir_session)
 
@@ -72,5 +77,7 @@ class ApplicationClassificator(Application):
     def __init__(self, data_directory):
         assert data_directory is not None
         super().__init__(None, None)
-        self.data_directory = data_directory
 
+        self.data = {}
+        self.data_directory = data_directory
+        self.kernel = None

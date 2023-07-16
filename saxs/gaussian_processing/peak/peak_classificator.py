@@ -2,18 +2,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
-from scipy.signal import find_peaks, peak_widths, medfilt, savgol_filter
+from scipy.signal import find_peaks, medfilt, savgol_filter
 
-from .functions import background_hyberbole, gaussian_sum, moving_average, gauss, parabole
-from .abstr_peak import AbstractPeakClassificator
-from .settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, SIGMA_FITTING, SIGMA_FILTER, TRUNCATE, START, \
+from saxs.gaussian_processing.functions import background_hyberbole, gaussian_sum, moving_average, parabole
+from saxs.gaussian_processing.peak.peak_application import PeakApplication
+from saxs.gaussian_processing.settings_processing import INFINITY, PROMINENCE, BACKGROUND_COEF, START, \
     WINDOWSIZE, \
     RESOLUTION_FACTOR
 
 
 
 
-class DefaultPeakClassificator(AbstractPeakClassificator):
+class DefaultPeakApplication(PeakApplication):
     def __init__(self, current_session, data_directory, filename):
         super().__init__(current_session, data_directory, filename)
 
@@ -68,7 +68,7 @@ class DefaultPeakClassificator(AbstractPeakClassificator):
         self.difference_start = self.I_cut_background_reduced
 
     def cutting_noisy_by_default(self):
-        self.cut_point = np.argmax(self.q > START)
+        self.cut_point = np.argmax(self.raw > START)
         self.q_cut, self.I_cut = self.q[self.cut_point:], self.I_raw[self.cut_point:],
         # self.dI = self.dI[i:]
 
