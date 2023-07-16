@@ -11,6 +11,8 @@ from saxs.gaussian_processing.settings_processing import BACKGROUND_COEF
 class AbstractPeakKernel:
     __slots__ = ('I_raw',
                  'q_raw',
+                 'I_cut',
+                 'q_cut',
                  'dI',
                  'data_dir',
                  'current_I_state',
@@ -24,13 +26,16 @@ class AbstractPeakKernel:
                  'zero_level',
                  'total_fit',
                  'I_background_filtered',
-                 'max_I')
+                 'max_I',
+                 )
 
     def __init__(self, data_dir,
                  is_preprocessing=True,
                  is_background_reduction=True,
                  is_filtering=True,
                  ):
+
+        self.data_dir = data_dir
         self.q_raw, self.I_raw, self.dI = read_data(self.data_dir)
 
 
@@ -53,13 +58,17 @@ class AbstractPeakKernel:
         self.pcov_background = None
 
 
+
     def state_plot(self):
-        plt.clf()
+        # plt.clf()
         plt.plot(self.current_q_state, self.current_I_state, label='current_state')
 
     def raw_plot(self):
-        plt.clf()
+        # plt.clf()
         plt.plot(self.q_raw, self.I_raw, label='very initial_state')
+
+    def background_plot(self):
+        plt.plot(self.current_q_state, self.I_background_filtered)
 
     def preprocessing(self):
         # self.I_filt = self.I_filt[i:]

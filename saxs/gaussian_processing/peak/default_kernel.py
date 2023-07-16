@@ -8,9 +8,19 @@ from saxs.gaussian_processing.settings_processing import BACKGROUND_COEF, START
 
 class DefaultPeakKernel(AbstractPeakKernel):
 
-    def __init__(self, data_dir):
-        super().__init__(data_dir)
+    def __init__(self, data_dir,
+                 is_preprocessing=True,
+                 is_background_reduction=True,
+                 is_filtering=True,
+                 ):
+        super().__init__(data_dir,
+                         is_preprocessing,
+                         is_background_reduction,
+                         is_filtering,
+                         )
 
+        self.q_cut = None
+        self.I_cut = None
         self.noisy_relevant_cut_point = 0
         self.noisy_irrelevant_cut_point = 0
 
@@ -36,7 +46,7 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
         self.background = background_hyberbole(self.current_q_state, self.popt_background[0], self.popt_background[1])
 
-        self.current_I_state = self.I_raw - BACKGROUND_COEF * self.background
+        self.current_I_state = self.current_I_state - BACKGROUND_COEF * self.background
 
         self.I_background_filtered = self.current_I_state
 
@@ -48,9 +58,12 @@ class DefaultPeakKernel(AbstractPeakKernel):
         self.current_q_state, self.current_I_state = self.q_raw[self.noisy_irrelevant_cut_point:], \
             self.I_raw[self.noisy_irrelevant_cut_point:],
 
+        if self.dI is not None:
+            self.dI = self.dI[self.noisy_irrelevant_cut_point:]
+
+
+        self.q_cut, self.I_cut = self.current_q_state, self.current_I_state
         self.max_I = np.max(self.current_I_state)
-
-
 
     # def default_filtering(self):
     #     self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
