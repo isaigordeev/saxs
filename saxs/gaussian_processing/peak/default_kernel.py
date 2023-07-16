@@ -21,8 +21,10 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
         self.q_cut = None
         self.I_cut = None
+
         self.noisy_relevant_cut_point = 0
         self.noisy_irrelevant_cut_point = 0
+
 
     def background_reduction(self):
         self.default_background_reduction()
@@ -60,6 +62,8 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
         if self.dI is not None:
             self.dI = self.dI[self.noisy_irrelevant_cut_point:]
+            print(len(self.dI), 'len dI')
+
 
 
         self.q_cut, self.I_cut = self.current_q_state, self.current_I_state

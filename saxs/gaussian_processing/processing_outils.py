@@ -10,14 +10,15 @@ from scipy.optimize import curve_fit
 def get_filenames(folder_path):
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
-            yield filename
+            if (filename != '.DS_Store'):
+                yield filename
 
 def get_filenames_without_ext(folder_path):
     for filename in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             name, extension = os.path.splitext(filename)
             if (name != '.DS_Store'):
-                yield name
+                yield name, extension
 
 
 def load_generated_data(phase):
@@ -51,6 +52,7 @@ def write_generated_data_to_csv(q, I, filename):
 
 
 def read_data(data_dir_file):
+    print(data_dir_file)
     data = pd.read_csv(data_dir_file, sep=',')
     data = data.apply(pd.to_numeric, errors='coerce')
     data = data.dropna()

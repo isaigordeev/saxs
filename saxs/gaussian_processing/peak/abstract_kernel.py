@@ -27,6 +27,7 @@ class AbstractPeakKernel:
                  'total_fit',
                  'I_background_filtered',
                  'max_I',
+                 'peaks'
                  )
 
     def __init__(self, data_dir,
@@ -58,17 +59,36 @@ class AbstractPeakKernel:
         self.pcov_background = None
 
 
+    def __call__(self, *args, **kwargs):
+        self.sample_processing()
+        return self.gathering()
 
-    def state_plot(self):
+
+
+    def current_state_plot(self):
         # plt.clf()
         plt.plot(self.current_q_state, self.current_I_state, label='current_state')
 
     def raw_plot(self):
         # plt.clf()
         plt.plot(self.q_raw, self.I_raw, label='very initial_state')
+        plt.legend()
+
+
+    def peaks_plots(self):
+        plt.plot(self.current_q_state[self.peaks], self.current_I_state[self.peaks], 'rx', label='peaks')
+        plt.legend()
+
+
+    def extended_peaks_plots(self):
+        plt.plot(self.current_q_state[self.peaks], self.current_I_state[self.peaks], 'rx', label='peaks')
+        plt.legend()
 
     def background_plot(self):
-        plt.plot(self.current_q_state, self.I_background_filtered)
+        plt.plot(self.current_q_state, self.I_background_filtered, label='background')
+        # plt.plot(self.current_q_state, self.I_raw[len(self.I_raw)-len(self.current_q_state):], label='background')
+        plt.legend()
+
 
     def preprocessing(self):
         # self.I_filt = self.I_filt[i:]
@@ -84,14 +104,22 @@ class AbstractPeakKernel:
     def filtering(self):
         pass
 
+    def gathering(self) -> dict:
+        pass
 
     def sample_processing(self):
         if self.is_preprocessing:
             self.preprocessing()
         if self.is_background_reduction:
             self.background_reduction()
+            self.background_plot()
+            plt.show()
         if self.is_filtering:
             self.filtering()
+
+
+
+
 
 
 

@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from saxs.gaussian_processing.processing_classificator import ApplicationClassificator
+from saxs.gaussian_processing.processing_outils import get_filenames, get_filenames_without_ext
 from saxs.gaussian_processing.settings_processing import EXTENSION, ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
 
 
@@ -17,11 +18,12 @@ class PeakApplication(ApplicationClassificator):
         self.kernel = kernel
         self.file_analyse_dir_peaks = None
         self.file_analyse_dir = None
-        self.samples = None
+        self.samples = get_filenames_without_ext(self.data_directory)
 
-    def set_file_peak_directories(self, filename):  # TODO MAKE STATIC
+
+    def set_output_peak_directories(self, filename):  # TODO MAKE STATIC
         print(self._results_dir)
-        self.file_analyse_dir = os.path.join(self._results_dir, filename)
+        self.file_analyse_dir = os.path.join(self._result_plots_dir, filename)
         self.file_analyse_dir_peaks = os.path.join(self.file_analyse_dir, 'peaks')
 
         print(self.file_analyse_dir)
@@ -34,7 +36,7 @@ class PeakApplication(ApplicationClassificator):
 
 
 
-    def write_file_data(self):  # TODO MAKE STATIC
+    def write_peaks_data(self):  # TODO MAKE STATIC
 
         # with open('{}.json'.format(self._current_results_dir_session), 'r') as f:
         #     directory_data = json.load(f)
@@ -43,8 +45,12 @@ class PeakApplication(ApplicationClassificator):
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
     def directory_classification(self):
-        for sample in self.samples:
-            self.data[sample] = self.kernel(sample)
+        for sample_name, sample_ext in self.samples:
+            sample = '{}{}'.format(sample_name, sample_ext)
+            self.set_output_peak_directories(sample)
+            self.data[sample] = self.kernel(os.path.join(self.data_directory, sample))()
+
+        self.write_peaks_data()
 
     def background_reduction(self):
         pass

@@ -55,7 +55,9 @@ class Application(AbstractApplication):
         if Application._results_dir is None:
             raise NotADirectoryError("Root output directory error")
 
+
         Application._result_plots_dir = os.path.join(Application._results_dir, ANALYSE_DIR_SESSIONS)
+        # print(Application._result_plots_dir)
         Application._total_results_dir_ = os.path.join(Application._results_dir, ANALYSE_DIR_SESSIONS_RESULTS)
         Application._current_results_dir_session = os.path.join(Application._total_results_dir_,
                                                                 super().current_date_session)

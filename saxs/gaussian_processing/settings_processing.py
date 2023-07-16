@@ -13,7 +13,7 @@ RESOLUTION_FACTOR = 1.4
 
 FILENAME = "075966_treated_xye"  # pointwise classification
 EXTENSION = '.csv'
-ANALYSE_DIR = 'total_results'
+ANALYSE_DIR = 'results'
 ANALYSE_DIR_SESSIONS = 'plots/'
 ANALYSE_DIR_SESSIONS_RESULTS = 'session_results/'
 PHASES_DIR = 'phases.json'
