@@ -23,7 +23,7 @@ def ratio_data(i, data: np.array) -> np.array:
     return (data / data[i])[1:]
 
 
-class AbstractPhaseClassificator(ApplicationClassificator):
+class PhaseApplication(ApplicationClassificator):
     __slots__ = ('phases',
                  'phases_coefficients',
                  'phases_directory',

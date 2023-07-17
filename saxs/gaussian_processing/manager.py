@@ -1,6 +1,7 @@
 import time
+from typing import Any
 
-from saxs.gaussian_processing.phase.abstr_phase import AbstractPhaseClassificator
+from saxs.gaussian_processing.phase.abstr_phase import PhaseApplication
 from saxs.gaussian_processing.peak.peak_application import PeakApplication
 from .application import ApplicationManager
 
@@ -35,49 +36,45 @@ class Manager(ApplicationManager):
     def __init__(self,
                  peak_data_directory='data/',
                  phase_data_directory=None,
-                 peak_classificator: PeakApplication=None,
-                 phase_classificator: AbstractPhaseClassificator=None,
-                 current_session=None, ) -> None:
+                 peak_kernel: PeakApplication=None,
+                 phase_kernel: PhaseApplication=None,
+                 current_session=None) -> None:
 
         super().__init__(current_session=current_session,
-                         peak_classificator=peak_classificator,
-                         phase_classificator=phase_classificator)
+                         peak_kernel=peak_kernel,
+                         phase_kernel=phase_kernel)
 
         self.peak_data_directory = os.path.join(self.executing_path, peak_data_directory)
+
+        self.is_peak_data_directory = os.path.isdir(peak_data_directory)
+        self.is_phase_data_directory = os.path.isdir(phase_data_directory)
+
 
         if phase_data_directory is not None:
             self.phase_data_directory = phase_data_directory
         else:
             self.phase_data_directory = self._current_results_dir_session
 
-        # self.peak_samples = get_filenames_without_ext(self.peak_data_directory)
-        # self.phase_samples = get_filenames_without_ext(self.peak_data_directory) #TODO better where peaks = 0/1
 
-    def point_peak_processing(self, filename):
-        peaks = self.peak_classificator(current_session=self.current_session,
-                                        filename=filename,
-                                        data_directory=self.peak_data_directory)
-        peaks.background_reduction()
-        peaks.custom_filtering()
-        peaks.background_plot()
-        # peaks.filtering_negative()
-        # peaks.peak_processing()
 
-        if peaks.peak_number == 0:
-            pass
 
-        peaks.result_plot()
+    def __call__(self, *args: Any, **kwds: Any) -> Any:
 
-        self.data[filename] = peaks.gathering()
-        # peaks.custom_total_fit()
-        # peaks.sum_total_fit()
+        if self.peak_classification:
+            if self.is_peak_data_directory:
+                self.directory_peak_processing()
+            else: self.point_peak_processing()
+        if self.phase_classification:
+            self.directory_phase_processing()
 
-        self.files_number += 1
-        print('Finished ' + filename + ' ' + str(self.files_number))
-        # phase TODO
+        return super().__call__(*args, **kwds)
+
+    def point_peak_processing(self):
+        directory_peak_classificator = self.peak_kernel(data_directory=self.peak_data_directory)
+        print('POINT {} PEAK CLASSIFICATION'.format(directory_peak_classificator.data_directory))
 
     def directory_peak_processing(self):
-        directory_peak_classificator = self.peak_classificator(data_directory=self.peak_data_directory)
+        directory_peak_classificator = self.peak_kernel(data_directory=self.peak_data_directory)
         print('DIRECTORY {} PEAK CLASSIFICATION'.format(directory_peak_classificator.data_directory))
 
         directory_peak_classificator.directory_classification()
@@ -86,7 +83,7 @@ class Manager(ApplicationManager):
         print(self.data)
 
     def directory_phase_processing(self):
-        directory_phase_classificator = self.phase_classificator(data_directory=self.phase_data_directory)
+        directory_phase_classificator = self.phase_kernel(data_directory=self.phase_data_directory)
         print('DIRECTORY {} PHASE CLASSIFICATION'.format(directory_phase_classificator.data_directory))
 
         directory_phase_classificator.directory_classification()
@@ -116,6 +113,8 @@ class Custom_Manager(Manager):
         peaks = self.peak_classificator(current_session=self.current_session,
                                         filename=filename,
                                         data_directory=self.peak_data_directory)
+        
+
         # peaks.denoising()
         peaks.prefiltering()
         peaks.background_reduction()
