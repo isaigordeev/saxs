@@ -6,7 +6,7 @@ from saxs.gaussian_processing.peak.prom_peak_classificator import ProminenceKern
 now = datetime.now()
 
 
-# a = ProminenceKernel('/Users/isaigordeev/Desktop/2023/saxs/data/075773_treated_xye.csv')
+# a = ProminenceKernel('/Users/isaigordeev/Desktop/2023/saxs/data/075775_treated_xye.csv')
 
 a = PeakApplication('/Users/isaigordeev/Desktop/2023/saxs/data/', ProminenceKernel)
 a.directory_classification()

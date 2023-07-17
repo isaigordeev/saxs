@@ -1,16 +1,17 @@
 import json
 import os
+from typing import Any
 
 from .processing_classificator import Application
 from saxs.gaussian_processing.peak.peak_application import PeakApplication
-from saxs.gaussian_processing.phase.abstr_phase import AbstractPhaseClassificator
+from saxs.gaussian_processing.phase.abstr_phase import PhaseApplication
 
 
 class ApplicationManager(Application):
     def __init__(self,
                  current_session=None,
-                 peak_classificator: PeakApplication = None,
-                 phase_classificator: AbstractPhaseClassificator= None,
+                 peak_kernel: PeakApplication = None,
+                 phase_kernel: PhaseApplication= None,
                  custom_output_directory=None
                  ) -> None:
         super().__init__(current_session, custom_output_directory)
@@ -18,16 +19,19 @@ class ApplicationManager(Application):
 
         self.data = {}
         self.files_number = 0
-        self.peak_classificator = peak_classificator
-        self.phase_classificator = phase_classificator
+        self.peak_kernel = peak_kernel
+        self.phase_kernel = phase_kernel
         self.custom_output_directory = custom_output_directory
+
+        self.peak_classification = True if self.peak_kernel is not None else False
+        self.phase_classification = True if self.phase_kernel is not None else False
 
         # self.set_directories()
         self.write_data()  # create json
 
+
     def write_data(self):
         write_json_path = os.path.join(self._current_results_dir_session, '{}.json'.format(self.current_time))
-
         with open(write_json_path, 'w') as f:
             json.dump(self.data, f)
 
@@ -42,8 +46,10 @@ class ApplicationManager(Application):
 
     def directory_phase_processing(self):
         pass
+
     def point_processing(self, sample):
         pass
+
 
     def directory_processing(self):
         self.directory_peak_processing()

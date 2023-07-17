@@ -2,7 +2,7 @@ import argparse
 
 from saxs.gaussian_processing.manager import *
 from saxs.gaussian_processing.peak.p_peak_classification import PDefaultPeakClassificator
-from saxs.gaussian_processing.phase.phase_classificator import DefaultPhaseClassificator
+from saxs.gaussian_processing.phase.phase_classificator import DefaultPhaseApplication
 
 
 
@@ -20,7 +20,7 @@ def main():
 
     test = Custom_Manager(current_session=now,
                           peak_classificator=PDefaultPeakClassificator,
-                          phase_classificator=DefaultPhaseClassificator,
+                          phase_classificator=DefaultPhaseApplication,
                           peak_data_directory=dir,
                           phase_data_directory=ANALYSE_DIR_SESSIONS_RESULTS,
                           )
