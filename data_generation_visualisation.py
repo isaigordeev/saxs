@@ -18,22 +18,32 @@ if __name__ == '__main__':
 
 
     q, d1, d3, exp_data = load_data(phase=config_data['phase'],
-                                    cubic_mesophase=config_data['cubic_mesophase'])
+                                    cubic_mesophase=config_data['cubic_mesophase'],
+                                    )
 
     q_0, I_0, dI = read_data('/Users/isaigordeev/Desktop/2023/saxs/res/075775_treated_xye.csv')
-    data = np.load('/Users/isaigordeev/Desktop/2023/saxs/saxs/data_generation/Synthetic_raw/{}_cubic_raw.npy'.format(config_data['cubic_mesophase']))
+    data = np.load('/Users/isaigordeev/Desktop/generated/{}_cubic_raw.npy'.format(config_data['cubic_mesophase']))
+    data_good_q = np.load('/Users/isaigordeev/Desktop/2023/saxs/saxs/data_generation/Synthetic_raw/{}_cubic_raw.npy'.format(config_data['cubic_mesophase']))
+
+
+    # plot_saxs_featuremap((np.outer(I_0, I_0)/np.max(np.outer(I_0, I_0)))[200:,200:], q_0[200:])
+    # plot_saxs_featuremap((d3[10]/np.max(d3[10]))[50:,50:],q[50:])
 
     for n in range(len(d1)):
-        # plot_saxs(q, d1[n])
+        # plot_saxs(q , d1[n])
+        plt.plot(q, d1[n]/np.max(d1[n]))
 
-        x = data[n][1][1:]
-        x = x / np.max(x)
-        plt.plot(data[n][0][1:], x, 'o')
-        plt.plot(q_0, I_0/np.max(I_0), 'ro')
-        plt.plot(q, d1[n]/np.max(d1[n]),)
+        plt.plot(q_0, I_0/np.max(I_0), 'red')
 
         plt.show()
 
+    # plt.show()
+    # x = data[n+500][1][1:]
+        # x = x / np.max(x)
+        # plt.plot(data_good_q[n][0][1:], x, 'o')
+        # plt.plot(q_0, I_0, 'ro')
+        # plt.plot(q_0, I_0/np.max(I_0), 'ro')
+        # plt.plot(q, d1[n]/np.max(d1[n]))
 
     # plot_saxs(q, d1[0])
 
