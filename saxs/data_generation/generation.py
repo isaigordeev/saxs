@@ -33,7 +33,7 @@ class Generator:
                  len_num=1,
                  sigma_num=1,
                  cubic_mesophase=None,
-                 save_path=os.path.dirname(__file__)):
+                 save_path=None):
 
         if params is None:
             params = [[10, 60], [0.8, 2], [0.04, 0.1]]
@@ -46,7 +46,12 @@ class Generator:
         self.lat_num = lat_num
         self.length_num = len_num
         self.sigma_num = sigma_num
-        self.save_path = os.path.join(save_path, 'Synthetic_raw')
+        if save_path is None:
+            self.save_path = os.path.join(os.path.dirname(__file__), 'Synthetic_raw')
+        else:
+            self.save_path = os.path.join(save_path, 'Synthetic_raw')
+            if not os.path.exists(self.save_path):
+                os.mkdir(self.save_path)
 
 
     def generation(self):

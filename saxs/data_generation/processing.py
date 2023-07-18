@@ -121,9 +121,9 @@ def Process_cubic(data):
     random_blank = random.randint(0, 169)
     blanky = blanks[random_blank]
     q = np.linspace(0, 0.452, 1566)
-    q2 = np.linspace(0.01, 0.43, 224)  # CHANGE DIM
+    q2 = np.linspace(0.001, 0.2, 500)  # CHANGE DIM
     random_voigt_gaussalpha = random.uniform(0.0001, 0.001)
-    random_voigt_lorenzgamma = random.uniform(0.0001, 0.005)
+    random_voigt_lorenzgamma = random.uniform(0.0001, 0.003)
     dw_param = random.uniform(0.005, 0.02)
     zero_array = np.zeros(1566)
     for i in range(len(data[0, :])):
@@ -136,7 +136,10 @@ def Process_cubic(data):
             zero_array += temp
 
     zero_array = log(zero_array + 1)
-    I = minmax(zero_array + log(blanky))
+    # I = minmax(zero_array + np.exp(-blanky))
+    # I = minmax(zero_array + log(blanky))
+    # I = minmax(zero_array + 1/blanky)
+    I = minmax(zero_array+ blanky)
     cubics = CubicSpline(q, I, bc_type='natural')
     I = cubics(q2)
     I_mat = gen_product_matrix(I)
@@ -196,11 +199,12 @@ class Processing:
 
                     save_path = os.path.join(self.save_path_folder, processed_data_name_extensioned)
                     print(save_path)
-                    np.savez_compressed(save_path, processed_cubic)
+                    # np.savez_compressed(save_path, processed_cubic)
+                    np.save(save_path, processed_cubic)
                 if 'lamellar' in raw_data_name:
                     pass
                 if 'hexagonal' in raw_data_name:
                     pass
 
                 save_path = os.path.join(self.save_path_folder, 'cubic_q.npy')
-                np.save(save_path, np.linspace(0.01, 0.43, 224))
+                np.save(save_path, np.linspace(0.001, 0.2, 500))

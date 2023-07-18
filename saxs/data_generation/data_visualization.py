@@ -14,9 +14,12 @@ from tqdm import tqdm
 # import umap
 
 
-def load_data(phase, cubic_mesophase=None, load_path=os.path.join(os.path.dirname(__file__), 'Synthetic_Processed/')):
+def load_data(phase, cubic_mesophase=None, load_path=None):
     print(phase)
     assert phase == 'cubic' or phase == 'lamellar' or phase == 'hexagonal'
+
+    if load_path is None:
+        load_path = os.path.join(os.path.dirname(__file__), 'Synthetic_Processed/')
 
     if cubic_mesophase is not None and phase == 'cubic':
         assert cubic_mesophase == 'Im3m' or cubic_mesophase == 'la3d' or cubic_mesophase == 'Pn3m' or \

@@ -106,6 +106,7 @@ class ProminenceKernel(DefaultPeakKernel):
         self.current_I_state = medfilt(np.concatenate((self.noisy_part, self.noiseless_part)), 3)
 
         self.peaks, props = find_peaks(self.current_I_state, height=1, prominence=0.3)
+        print(self.current_q_state[self.peaks])
         self.current_state_plot()
         self.peaks_plots()
 
