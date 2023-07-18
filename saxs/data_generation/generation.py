@@ -15,17 +15,6 @@ import matplotlib.pyplot as plt
 
 
 
-
-parser = argparse.ArgumentParser(description='Phase for generation')
-
-parser.add_argument('-phase', help='Phase for generation')
-parser.add_argument('--cubic_mesophase', '--mph', help='cubic_mesophase if cubic phase entered')
-
-args = parser.parse_args()
-
-phase = args.phase
-cubic_mesophase = args.cubic_mesophase
-
 class Generator:
     def __init__(self, phase,
                  params=None,
@@ -36,7 +25,7 @@ class Generator:
                  save_path=None):
 
         if params is None:
-            params = [[10, 60], [0.8, 2], [0.04, 0.1]]
+            params = [[35, 60], [0.8, 2], [0.04, 0.1]]
 
         assert phase == 'cubic' or phase == 'lamellar' or phase == 'hexagonal'
 

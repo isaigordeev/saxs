@@ -3,7 +3,7 @@ import random
 import sys
 import os
 
-
+from matplotlib import pyplot as plt
 from scipy.interpolate import CubicSpline
 from tqdm import tqdm
 from scipy.special import wofz
@@ -91,7 +91,8 @@ def voigtSignal(x, alpha, gamma, shift):
 
     sigma = alpha / np.sqrt(2 * np.log(2))
 
-    return np.real(wofz((x - shift + 1j * gamma) / sigma / np.sqrt(2))) / sigma / np.sqrt(2 * np.pi)
+    return np.real(wofz((x - shift + 1j * gamma) / sigma / np.sqrt(2))) / sigma
+    # return np.real(wofz((x - shift + 1j * gamma) / sigma / np.sqrt(2))) / sigma / np.sqrt(2 * np.pi)
 
 
 def gaussianSignal(x, sigma, shift):
@@ -101,12 +102,12 @@ def gaussianSignal(x, sigma, shift):
     return np.exp((-1 / sigma) * ((x - shift)) ** 2)
 
 
-def debyeWaller(q, decay_parameter):
+def debyeWaller(q, decay_parameter, shift=0):
     """
     Return debeye waller factor which is just a gaussian decay of parameter decay_parameter
     Wikipedia - describe the attenuation of x-ray scattering or coherent neutron scattering caused by thermal motion.
     """
-    return gaussianSignal(q, decay_parameter, 0)
+    return gaussianSignal(q, decay_parameter, shift)
 
 
 dwf = debyeWaller
@@ -122,26 +123,40 @@ def Process_cubic(data):
     blanky = blanks[random_blank]
     q = np.linspace(0, 0.452, 1566)
     q2 = np.linspace(0.001, 0.2, 500)  # CHANGE DIM
-    random_voigt_gaussalpha = random.uniform(0.0001, 0.001)
+    random_voigt_gaussalpha = random.uniform(0.0001, 0.002)
     random_voigt_lorenzgamma = random.uniform(0.0001, 0.003)
-    dw_param = random.uniform(0.005, 0.02)
+    dw_param = random.uniform(0.1, 0.2)
+    # dw_param = random.uniform(0.05, 0.1)
     zero_array = np.zeros(1566)
     for i in range(len(data[0, :])):
         if not data[0, i] == 0:
-            temp = data[1, i] * dwf(data[0, i], dw_param) * voigtSignal(q, random_voigt_gaussalpha,
+            temp = random.randint(100, 300)*data[1, i] * dwf(data[0, i], dw_param) * voigtSignal(q, random_voigt_gaussalpha,
                                                                         random_voigt_lorenzgamma, data[0, i])
             zero_array += temp
+
+            # temp = data[1, i] * dwf(q, 1, data[0, i])
+            # zero_array += temp
         else:
             temp = data[1, i] * voigtSignal(q, random_voigt_gaussalpha, random_voigt_lorenzgamma, data[0, i])
             zero_array += temp
 
-    zero_array = log(zero_array + 1)
+    # zero_array = log(zero_array+1)
+    # zero_array+=1
+
     # I = minmax(zero_array + np.exp(-blanky))
     # I = minmax(zero_array + log(blanky))
     # I = minmax(zero_array + 1/blanky)
-    I = minmax(zero_array+ blanky)
+    I = minmax(zero_array + blanky)
+    # plt.plot(I)
+    # plt.plot(zero_array)
+    #
+    # plt.show()
+
+
     cubics = CubicSpline(q, I, bc_type='natural')
     I = cubics(q2)
+    # plt.plot(np.exp(I))
+    # plt.show()
     I_mat = gen_product_matrix(I)
     I_data = np.array(I_mat)
     return I_data
@@ -151,6 +166,7 @@ class Processing:
         self.custom_folder = custom_dataraw_folder
         filepath = os.path.dirname(__file__)
         self.blanks = np.load(os.path.join(filepath, 'blanks_raw.npy'))
+        self.num = 20
 
         if custom_dataraw_folder is None:
             self.save_path_folder = os.path.join(filepath, 'Synthetic_Processed')
@@ -160,6 +176,7 @@ class Processing:
             # print(self.blanks)
             print(self.load_path_folder)
         else:
+            # self.load_path_folder = self.custom_folder
             self.load_path_folder = os.path.join(os.getcwd(), self.custom_folder)
             self.save_path_folder = os.path.join(self.load_path_folder, 'Synthetic_Processed')
 
@@ -189,7 +206,7 @@ class Processing:
 
                 if 'cubic' in raw_data_name:
                     rawdata = np.load(load_path)
-                    rawdat = [i for i in rawdata]
+                    rawdat = [i for i in rawdata[:self.num]]
                     print('Processing {} cubic...'.format(raw_data_name))
                     processed_cubic = parallel_process(rawdat, Process_cubic)
                     processed_cubic = np.array(processed_cubic, dtype=np.float32)
