@@ -49,6 +49,7 @@ class AbstractPeakKernel:
         self.data_dir = data_dir
         self.q_raw, self.I_raw, self.dI = read_data(self.data_dir)
 
+        # print(self.q_raw)
 
         self.max_I = None
         self.I_background_filtered = None
@@ -82,7 +83,6 @@ class AbstractPeakKernel:
         return ''.join(self.short_str_type)
 
 
-
     def current_state_plot(self):
         # plt.clf()
         plt.plot(self.current_q_state, self.current_I_state, label='current_state')
@@ -91,7 +91,6 @@ class AbstractPeakKernel:
         # plt.clf()
         plt.plot(self.q_raw, self.I_raw, label='very initial_state')
         plt.legend()
-
 
     def peaks_plots(self):
         plt.plot(self.current_q_state[self.peaks], self.current_I_state[self.peaks], 'rx', label='peaks')

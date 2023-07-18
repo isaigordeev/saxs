@@ -52,22 +52,42 @@ def write_generated_data_to_csv(q, I, filename):
 
 
 def read_data(data_dir_file):
-    print(data_dir_file)
-    data = pd.read_csv(data_dir_file, sep=',')
-    data = data.apply(pd.to_numeric, errors='coerce')
-    data = data.dropna()
+    # print(data_dir_file)
+    data_name_dir, extension = os.path.splitext(data_dir_file)
 
-    if data.shape[1] >= 3:
-        q = np.array(data.iloc[:, 0])
-        I = np.array(data.iloc[:, 1])
-        dI = np.array(data.iloc[:, 2])
-        return q, I, dI
-    elif data.shape[1] == 2:
-        q = np.array(data.iloc[:, 0])
-        I = np.array(data.iloc[:, 1])
-        return q, I,
-    else:
-        raise AttributeError("Input is insufficient")
+    if extension == '.csv':
+        data = pd.read_csv(data_dir_file, sep=',')
+        data = data.apply(pd.to_numeric, errors='coerce')
+        data = data.dropna()
+        if data.shape[1] >= 3:
+            q = np.array(data.iloc[:, 0])
+            I = np.array(data.iloc[:, 1])
+            dI = np.array(data.iloc[:, 2])
+            return q, I, dI
+        elif data.shape[1] == 2:
+            q = np.array(data.iloc[:, 0])
+            I = np.array(data.iloc[:, 1])
+            return q, I,
+        else:
+            raise AttributeError("Input is insufficient")
+    elif extension == '.npy':
+        data = np.load(data_dir_file)
+        data_3d = data[:, :, :, 0]
+        data_1d = []
+        for i in data_3d:
+            # get matrix diagonal
+            data = np.sqrt(np.diag(i))
+            data_1d.append(data)
+        I = np.array(data_1d)
+
+        phase = 'cubic'
+        q = np.linspace(0.001, 0.2, 500)
+
+        exp_data = None
+        return q, 10*I[0], I[0]*0.001
+
+
+
 
 def read_I(data_dir_file, EXTENSION):
     data = pd.read_csv(data_dir_file + EXTENSION, sep=',')
