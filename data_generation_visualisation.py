@@ -1,3 +1,5 @@
+import random
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -21,6 +23,10 @@ if __name__ == '__main__':
                                     cubic_mesophase=config_data['cubic_mesophase'],
                                     )
 
+    q_, d1_, d3_, exp_data_ = load_data(phase=config_data['phase'],
+                                        cubic_mesophase=config_data['cubic_mesophase'],
+                                        load_path='/Users/isaigordeev/Desktop/generated/Synthetic_Processed/')
+
     q_0, I_0, dI = read_data('/Users/isaigordeev/Desktop/2023/saxs/res/075775_treated_xye.csv')
     data = np.load('/Users/isaigordeev/Desktop/generated/{}_cubic_raw.npy'.format(config_data['cubic_mesophase']))
     data_good_q = np.load('/Users/isaigordeev/Desktop/2023/saxs/saxs/data_generation/Synthetic_raw/{}_cubic_raw.npy'.format(config_data['cubic_mesophase']))
@@ -29,9 +35,9 @@ if __name__ == '__main__':
     # plot_saxs_featuremap((np.outer(I_0, I_0)/np.max(np.outer(I_0, I_0)))[200:,200:], q_0[200:])
     # plot_saxs_featuremap((d3[10]/np.max(d3[10]))[50:,50:],q[50:])
 
-    for n in range(len(d1)):
+    for n in random.sample(range(len(d1_)), 10):
         # plot_saxs(q , d1[n])
-        plt.plot(q, d1[n]/np.max(d1[n]))
+        plt.plot(q_, d1_[n]/np.max(d1_[n]))
 
         plt.plot(q_0, I_0/np.max(I_0), 'red')
 

@@ -125,8 +125,8 @@ def Process_cubic(data):
     q2 = np.linspace(0.001, 0.2, 500)  # CHANGE DIM
     random_voigt_gaussalpha = random.uniform(0.0001, 0.002)
     random_voigt_lorenzgamma = random.uniform(0.0001, 0.003)
-    dw_param = random.uniform(0.1, 0.2)
-    # dw_param = random.uniform(0.05, 0.1)
+    # dw_param = random.uniform(0.1, 0.2)
+    dw_param = random.uniform(0.05, 0.2)
     zero_array = np.zeros(1566)
     for i in range(len(data[0, :])):
         if not data[0, i] == 0:
@@ -162,11 +162,12 @@ def Process_cubic(data):
     return I_data
 
 class Processing:
-    def __init__(self, custom_dataraw_folder=None):
+    def __init__(self, custom_dataraw_folder=None, number_to_process=None, start_to_process=None):
         self.custom_folder = custom_dataraw_folder
         filepath = os.path.dirname(__file__)
         self.blanks = np.load(os.path.join(filepath, 'blanks_raw.npy'))
-        self.num = 20
+        self.num = number_to_process
+        self.start = start_to_process
 
         if custom_dataraw_folder is None:
             self.save_path_folder = os.path.join(filepath, 'Synthetic_Processed')
@@ -206,7 +207,9 @@ class Processing:
 
                 if 'cubic' in raw_data_name:
                     rawdata = np.load(load_path)
-                    rawdat = [i for i in rawdata[:self.num]]
+                    if self.num is not None:
+                        rawdat = [i for i in rawdata[self.start:self.start+self.num]]
+                    else: rawdat = [i for i in rawdata]
                     print('Processing {} cubic...'.format(raw_data_name))
                     processed_cubic = parallel_process(rawdat, Process_cubic)
                     processed_cubic = np.array(processed_cubic, dtype=np.float32)
@@ -216,8 +219,8 @@ class Processing:
 
                     save_path = os.path.join(self.save_path_folder, processed_data_name_extensioned)
                     print(save_path)
-                    # np.savez_compressed(save_path, processed_cubic)
-                    np.save(save_path, processed_cubic)
+                    np.savez_compressed(save_path, processed_cubic)
+                    # np.save(save_path, processed_cubic)
                 if 'lamellar' in raw_data_name:
                     pass
                 if 'hexagonal' in raw_data_name:

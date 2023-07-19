@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy.signal import find_peaks
 
 from saxs.gaussian_processing.functions import background_hyberbole
 from saxs.gaussian_processing.peak.abstract_kernel import AbstractPeakKernel
@@ -60,6 +61,7 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
     def default_preprocessing(self):
         self.cutting_irrelevant_noisy()
+
 
     def cutting_irrelevant_noisy(self):
         self.noisy_irrelevant_cut_point = np.argmax(self.q_raw > START)

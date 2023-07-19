@@ -25,7 +25,7 @@ def load_data(phase, cubic_mesophase=None, load_path=None):
         assert cubic_mesophase == 'Im3m' or cubic_mesophase == 'la3d' or cubic_mesophase == 'Pn3m' or \
                cubic_mesophase == 'P' or cubic_mesophase == 'G' or cubic_mesophase == 'D'
 
-        load_data_path = os.path.join(load_path, '{}_cubic_processed.npy'.format(cubic_mesophase))
+        load_data_path = os.path.join(load_path, '{}_cubic_processed_1500.npy'.format(cubic_mesophase))
         print(load_data_path)
         data = np.load(load_data_path)
     else:
