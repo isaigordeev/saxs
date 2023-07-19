@@ -28,11 +28,13 @@ class ProminenceKernel(DefaultPeakKernel):
     def preprocessing(self):
         self.default_preprocessing()
         self.detecting_relevant_noisy()
-        self.prefiltering_decomposition()
 
         # print(len(self.current_q_state))
         # print(len(self.current_I_state))
         # print(len(self.dI))
+
+    def filtering(self):
+        self.filtering_decomposition()
 
     def detecting_relevant_noisy(self):
         self.peaks, props = find_peaks(self.current_I_state, height=1, prominence=1)
@@ -49,7 +51,7 @@ class ProminenceKernel(DefaultPeakKernel):
         # plt.plot(self.q, self.I_background_reduced)
         # plt.plot(self.q[_["right_bases"][0]], self.I_background_reduced[_["left_bases"][0]], 'ro')
 
-    def prefiltering_decomposition(self):
+    def filtering_decomposition(self):
         # noisy_part = np.ones(noisy_indice)
         self.detecting_relevant_noisy()
 

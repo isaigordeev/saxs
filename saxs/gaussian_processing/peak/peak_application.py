@@ -19,23 +19,23 @@ class PeakApplication(ApplicationClassificator):
         super().__init__(data_directory)
 
         self.kernel = kernel
-        self.file_analyse_dir_peaks = None
-        self.file_analyse_dir = None
+        self.file_analysis_dir_peaks = None
+        self.file_analysis_dir = None
         self.samples = get_filenames_without_ext(self.data_directory)
 
 
     def set_output_peak_directories(self, filename):  # TODO MAKE STATIC
         print(self._results_dir)
-        self.file_analyse_dir = os.path.join(self._result_plots_dir, filename)
-        self.file_analyse_dir_peaks = os.path.join(self.file_analyse_dir, 'peaks')
+        self.file_analysis_dir = os.path.join(self._result_plots_dir, filename)
+        self.file_analysis_dir_peaks = os.path.join(self.file_analysis_dir, 'peaks')
 
-        print(self.file_analyse_dir)
-        print(self.file_analyse_dir_peaks)
+        print(self.file_analysis_dir)
+        print(self.file_analysis_dir_peaks)
 
-        if not os.path.exists(self.file_analyse_dir):
-            os.mkdir(self.file_analyse_dir)
-        if not os.path.exists(self.file_analyse_dir_peaks):
-            os.mkdir(self.file_analyse_dir_peaks)
+        if not os.path.exists(self.file_analysis_dir):
+            os.mkdir(self.file_analysis_dir)
+        if not os.path.exists(self.file_analysis_dir_peaks):
+            os.mkdir(self.file_analysis_dir_peaks)
 
 
 
@@ -50,7 +50,7 @@ class PeakApplication(ApplicationClassificator):
         for sample_name, sample_ext in self.samples:
             sample = '{}{}'.format(sample_name, sample_ext)
             self.set_output_peak_directories(sample)
-            self.data[sample] = self.kernel(os.path.join(self.data_directory, sample))()
+            self.data[sample] = self.kernel(os.path.join(self.data_directory, sample), self.file_analysis_dir)()
 
         self.write_peaks_data()
 
