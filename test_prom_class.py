@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from saxs.gaussian_processing.peak.peak_application import PeakApplication
-from saxs.gaussian_processing.peak.prom_peak_classificator import ProminenceKernel
+from saxs.gaussian_processing.peak.prominence_kernel import ProminenceKernel
 
 now = datetime.now()
 
