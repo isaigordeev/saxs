@@ -1,3 +1,5 @@
+import numpy as np
+
 from prominence_kernel import ProminenceKernel
 
 
@@ -12,3 +14,8 @@ class ParabolePeakKernel(ProminenceKernel):
                          is_background_reduction,
                          is_filtering,
                          )
+
+    def negative_reduction(self):
+        self.difference = np.maximum(self.current_I_state, 0)
+
+

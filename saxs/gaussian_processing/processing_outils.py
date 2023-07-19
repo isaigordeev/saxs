@@ -67,24 +67,25 @@ def read_data(data_dir_file):
         elif data.shape[1] == 2:
             q = np.array(data.iloc[:, 0])
             I = np.array(data.iloc[:, 1])
-            return q, I,
+            return q, I, None
         else:
             raise AttributeError("Input is insufficient")
-    elif extension == '.npy':
+    elif extension == '.npy':  #synthetic data
+        assert "processed" in data_dir_file
         data = np.load(data_dir_file)
         data_3d = data[:, :, :, 0]
-        data_1d = []
+        I = []
         for i in data_3d:
             # get matrix diagonal
             data = np.sqrt(np.diag(i))
-            data_1d.append(data)
-        I = np.array(data_1d)
+            I.append(data)
+        I = np.array(I)
 
         phase = 'cubic'
         q = np.linspace(0.001, 0.2, 500)
 
         exp_data = None
-        return q, 10*I[0], I[0]*0.001
+        return q, I[0], None
 
 
 
