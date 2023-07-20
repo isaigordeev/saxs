@@ -98,15 +98,35 @@ class SAXSData(Dataset):
         self.transforms = transforms
         self.classes, self.classes_dict = self.find_classes()
 
+        self.data = None
+
+        self.make_dataset_from_npy()
+
+    def make_dataset_from_npz(self):
+        assert os.path.isfile(self.path)
+
         self.data = np.load(self.path)
-
-        self.make_dataset()
-
-    def make_dataset(self):
         for phase in self.classes:
             index = self.classes_dict[phase]
             for sample in self.data[phase]:
                 self.samples.append((sample, index))
+
+    def make_dataset_from_npy(self):
+        assert os.path.isdir(self.path)
+
+        files = os.listdir(self.path)
+
+        for phase in self.classes:
+            index = self.classes_dict[phase]
+            for file in files:
+                if phase in file:
+                    self.data = np.load(os.path.join(self.path, file))
+
+                    for sample in self.data:
+                        self.samples.append((sample, index))
+                    break
+
+        print(len(self.samples), ": LEN OF SAMPLES")
 
     def __getitem__(self, index):
         sample, target = self.samples[index]

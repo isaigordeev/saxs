@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import torch
 from torchvision.transforms import transforms
 
-import saxs.model.saxs_dataset as data_setup
+import saxs.saxs_model.saxs_dataset as data_setup
 from saxs import PACKAGE_PATH
-import saxs.model.phase_prediction as phase_prediction
-from saxs.model import engine
-from saxs.model.model import SAXSViT
-from saxs.model.model_settings import TRAIN_DIR, TEST_DIR, DEVICE
+import saxs.saxs_model.phase_prediction as phase_prediction
+from saxs.saxs_model import engine
+from saxs.saxs_model.model import SAXSViT
+from saxs.saxs_model.model_settings import TRAIN_DIR, TEST_DIR, DEVICE
 
 from PIL import Image
 
@@ -51,7 +51,7 @@ summary(
 
 # train_saxs_batches, test_saxs_batches, saxs_phases = \
 #     data_setup.create_data_batches_from_dataset_files(path=os.path.join(PACKAGE_PATH, 'cache/small_joined_phases.npz'),
-#                                                     transforms=model.data_transforms,
+#                                                     transforms=saxs_model.data_transforms,
 #                                                     batch_size=32,
 #                                                     num_workers=0
 #                                                     )
@@ -66,7 +66,7 @@ summary(
 # plt.legend()
 # plt.show()
 
-# from saxs.model.phase_prediction import prediction
+# from saxs.saxs_model.phase_prediction import prediction
 
 # prediction(None, 'res/075775_treated_xye.csv', None, None, 230)
 
@@ -83,11 +83,11 @@ summary(
 
 
 
-# optimizer = torch.optim.Adam(params=model.parameters(),
+# optimizer = torch.optim.Adam(params=saxs_model.parameters(),
 #                              lr=1e-3)
 # loss_fn = torch.nn.CrossEntropyLoss()
 
-# pretrained_vit_results = engine.train(model=model,
+# pretrained_vit_results = engine.train(saxs_model=saxs_model,
 #                                       train_dataloader=train_saxs_batches,
 #                                       test_dataloader=test_saxs_batches,
 #                                       optimizer=optimizer,
@@ -97,4 +97,4 @@ summary(
 #
 #
 #
-# phase_prediction.prediction(model, saxs_phases, 'data/dot/train/Im3m/075773_treated_xye.png')
+# phase_prediction.prediction(saxs_model, saxs_phases, 'data/dot/train/Im3m/075773_treated_xye.png')

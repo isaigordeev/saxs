@@ -1,6 +1,6 @@
 from torchinfo import summary #optional
-from saxs.model.model import SAXSViT
-from saxs.model.saxs_dataset import SAXSData
+from saxs.saxs_model.model import SAXSViT
+from saxs.saxs_model.saxs_dataset import SAXSData
 
 
 

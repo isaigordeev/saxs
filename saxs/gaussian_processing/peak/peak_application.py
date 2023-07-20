@@ -11,18 +11,15 @@ from saxs.gaussian_processing.processing_outils import get_filenames, get_filena
 from saxs.gaussian_processing.settings_processing import EXTENSION, ANALYSE_DIR_SESSIONS, ANALYSE_DIR_SESSIONS_RESULTS
 
 
-
-
 class PeakApplication(ApplicationClassificator):
 
-    def __init__(self, data_directory, kernel: AbstractPeakKernel=None):
+    def __init__(self, data_directory, kernel: AbstractPeakKernel = None):
         super().__init__(data_directory)
 
         self.kernel = kernel
         self.file_analysis_dir_peaks = None
         self.file_analysis_dir = None
         self.samples = get_filenames_without_ext(self.data_directory)
-
 
     def set_output_peak_directories(self, filename):  # TODO MAKE STATIC
         print(self._results_dir)
@@ -37,13 +34,12 @@ class PeakApplication(ApplicationClassificator):
         if not os.path.exists(self.file_analysis_dir_peaks):
             os.mkdir(self.file_analysis_dir_peaks)
 
-
-
     def write_peaks_data(self):  # TODO MAKE STATIC
 
         # with open('{}.json'.format(self._current_results_dir_session), 'r') as f:
         #     directory_data = json.load(f)
-        with open('{}{}_{}.json'.format(self._current_results_dir_session, self.current_time, self.kernel.class_info()), 'w') as f:
+        with open('{}{}_{}.json'.format(self._current_results_dir_session, self.current_time, self.kernel.class_info()),
+                  'w') as f:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
     def directory_classification(self):

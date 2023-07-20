@@ -90,7 +90,7 @@ class DefaultPeakApplication(PeakApplication):
         self.pcov_background = pcov
 
         self.background = background_hyberbole(self.q_cut, self.popt_background[0], self.popt_background[1])
-        # self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
+        # self.I_background_filtered = self.I - BACKGROUND_COEF * self.saxs_model
         self.I_cut_background_reduced = self.I_cut - BACKGROUND_COEF * self.background
 
 
@@ -203,11 +203,11 @@ class DefaultPeakApplication(PeakApplication):
 
         self.popt_background = popt
         self.background = background_hyberbole(self.q, self.popt_background[0], self.popt_background[1])
-        # self.I_background_filtered = self.I - BACKGROUND_COEF * self.model
+        # self.I_background_filtered = self.I - BACKGROUND_COEF * self.saxs_model
         self.I_cut_background_reduced = self.I_filt - BACKGROUND_COEF * self.background
 
-        # self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
-        # self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
+        # self.difference = savgol_filter(I - background_coef * self.saxs_model, 15, 4, deriv=0)
+        # self.start_difference = savgol_filter(I - background_coef * self.saxs_model, 15, 4, deriv=0)
 
 
     def custom_filtering(self):
