@@ -70,7 +70,7 @@ class LamellarModel():
 
     def lamellarCell(self, q, sigma_bilayer, sigma_tail,  bilayer):
         """
-        generate reciprocal cell of lamellar model
+        generate reciprocal cell of lamellar saxs_model
             q - reciprocal space scattering
             sigma_bilayer - head group thickness
             sigma_tail - tail thickness
@@ -231,7 +231,7 @@ def schwarz_d(X,Y,Z):
 
 class CubicModel():
     """
-    Cubic model class
+    Cubic saxs_model class
     ------------
     This takes 'P', 'D', 'G' to designate which phase to work with.
     """
@@ -277,7 +277,7 @@ class CubicModel():
 
     def garsteckiIntensity(self, verts, faces, k_list, lat_param):
         """
-        simple model (J. Chem. Phys. Vol 113, No. 9, Garstecki 2000)
+        simple saxs_model (J. Chem. Phys. Vol 113, No. 9, Garstecki 2000)
             verts - surface vertices
             faces - surface faces
             k_list - list of miller indices
@@ -310,7 +310,7 @@ class CubicModel():
 
     def getIntensity(self, verts, faces, k_list, lat_param, L, sigma):
         """
-        Modified model:
+        Modified saxs_model:
             verts - surface vertices
             faces - surface faces
             k_list - list of miller indices

@@ -24,7 +24,7 @@ Note: The default parameters for synthetic data generation are the ones that gav
 There are 3 synthetic data generation scripts in `Generation_scripts`. Each script uses our saxspy module to allow you to generate entire datasets of SAXS patterns for a particular lipid phase. The cubic phase script, `Generate_Cubic.py` can be modified to generate patterns for Primitive, Gyroid or Diamond surface cubic phases. This can be done by varying the phase variable 
 
 ```python
-# Instantiate the synthetic model: 'P', 'G', or 'D'
+# Instantiate the synthetic saxs_model: 'P', 'G', or 'D'
 phase = 'G'
 ```
 Each scripts generates the data based on the params variable - a list of parameter ranges.

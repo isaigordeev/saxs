@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import saxspy
 import matplotlib.pyplot as plt
 import numpy as np
-# Instantiate the synthetic model: 'P', 'G', or 'D'
+# Instantiate the synthetic saxs_model: 'P', 'G', or 'D'
 import argparse
 
 bijection_name = {'P': 'Im3m',

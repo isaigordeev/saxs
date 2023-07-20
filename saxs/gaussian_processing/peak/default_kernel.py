@@ -28,9 +28,6 @@ class DefaultPeakKernel(AbstractPeakKernel):
         self.noisy_relevant_cut_point = 0
         self.noisy_irrelevant_cut_point = 0
 
-
-
-
     def background_reduction(self):
         self.default_background_reduction()
 
@@ -57,11 +54,8 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
         self.I_background_filtered = self.current_I_state
 
-
-
     def default_preprocessing(self):
         self.cutting_irrelevant_noisy()
-
 
     def cutting_irrelevant_noisy(self):
         self.noisy_irrelevant_cut_point = np.argmax(self.q_raw > START)
@@ -72,11 +66,9 @@ class DefaultPeakKernel(AbstractPeakKernel):
             self.dI = self.dI[self.noisy_irrelevant_cut_point:]
             print(len(self.dI), 'len dI')
 
-
-
         self.q_cut, self.I_cut = self.current_q_state, self.current_I_state
         self.max_I = np.max(self.current_I_state)
 
     # def default_filtering(self):
-    #     self.difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
-    #     self.start_difference = savgol_filter(I - background_coef * self.model, 15, 4, deriv=0)
+    #     self.difference = savgol_filter(I - background_coef * self.saxs_model, 15, 4, deriv=0)
+    #     self.start_difference = savgol_filter(I - background_coef * self.saxs_model, 15, 4, deriv=0)

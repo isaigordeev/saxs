@@ -1,7 +1,7 @@
 import sys
 import os
 import numpy as np
-# Instantiate the synthetic model: 'P', 'G', or 'D'
+# Instantiate the synthetic saxs_model: 'P', 'G', or 'D'
 import argparse
 
 

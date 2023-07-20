@@ -212,15 +212,15 @@ class Processing:
                     else: rawdat = [i for i in rawdata]
                     print('Processing {} cubic...'.format(raw_data_name))
                     processed_cubic = parallel_process(rawdat, Process_cubic)
-                    processed_cubic = np.array(processed_cubic, dtype=np.float32)
+                    processed_cubic = np.array(processed_cubic, dtype=np.float16)
 
                     processed_data_name_extensioned = '{}_cubic_processed.npy'.format(raw_data_name_extensioned[:4])
                     print(processed_data_name_extensioned)
 
                     save_path = os.path.join(self.save_path_folder, processed_data_name_extensioned)
                     print(save_path)
-                    np.savez_compressed(save_path, processed_cubic)
-                    # np.save(save_path, processed_cubic)
+                    # np.savez_compressed(save_path, processed_cubic)
+                    np.save(save_path, processed_cubic)
                 if 'lamellar' in raw_data_name:
                     pass
                 if 'hexagonal' in raw_data_name:

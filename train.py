@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import torch
 from torchvision.transforms import transforms
 
-import saxs.model.saxs_dataset as data_setup
+import saxs.saxs_model.saxs_dataset as data_setup
 from saxs import PACKAGE_PATH
-import saxs.model.phase_prediction as phase_prediction
-from saxs.model import engine
-from saxs.model.model import SAXSViT
-from saxs.model.model_settings import DEVICE
+import saxs.saxs_model.phase_prediction as phase_prediction
+from saxs.saxs_model import engine
+from saxs.saxs_model.model import SAXSViT
+from saxs.saxs_model.model_settings import DEVICE
 
 
 
@@ -27,7 +27,7 @@ train_saxs_batches, test_saxs_batches, saxs_phases = \
 
 # print(list(train_saxs_batches)[0][1])
 #
-# print(model(list(train_saxs_batches)[0][0]))
+# print(saxs_model(list(train_saxs_batches)[0][0]))
 #
 # print('finished')
 
@@ -52,4 +52,4 @@ phase_prediction.prediction(model,
                             230,
                             )
 
-# torch.save(model.state_dict(), 'model0.pth')
+# torch.save(saxs_model.state_dict(), 'model0.pth')

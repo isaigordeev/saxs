@@ -1,6 +1,6 @@
 import os
 
-from . import data_processing, gaussian_processing, model
+from . import data_processing, gaussian_processing, saxs_model
 
 PACKAGE_PATH = os.path.dirname(__file__)
 print(PACKAGE_PATH)
