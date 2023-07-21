@@ -60,32 +60,39 @@ def prediction_from_csv(model,
 
 
 def prediction_from_npy(model,
-               class_names,
-               phase_image_path,
-               transforms: torchvision.transforms = None,
-               image_size=None,
+               path_npy,
+               transforms=None,
+               cut_start=None,
+               image_size=224,
                device=DEVICE):
 
 
-    img = Image.open(phase_image_path).convert('RGB')
+    with open(DEFAULT_PHASES_PATH, 'r') as file:  # NOTE make it better with string formatting
+        phases = json.load(file)
 
-    if transforms is None:
-        transforms = DEFAULT_TRANSFORMS
+    class_names = list(phases.keys())
+    class_to_idx = {cls_name: i for i, cls_name in enumerate(class_names)}
 
+
+    data = np.load(path_npy)
+
+    I = data[0]
+    I = np.float32(I)
+
+    img = array_transform_for_batches(I)
     model.to(device)
     model.eval()
 
-    # print(transforms(img).shape)
-
     with torch.inference_mode():
-        transformed_phase_img = transforms(img).unsqueeze(dim=0)
-        transformed_phase_img = transformed_phase_img.to(DEVICE)
+
+        transformed_phase_img = img.unsqueeze(dim=0).to(device)
+
 
         predicted_phase_tensor = model(transformed_phase_img)
 
-    predicted_phase_probs = torch.softmax(predicted_phase_tensor, dim=1)
+        predicted_phase_probs = torch.softmax(predicted_phase_tensor, dim=1)
 
-    predicted_phase_label = torch.argmax(predicted_phase_probs, dim=1)
+        predicted_phase_label = torch.argmax(predicted_phase_probs, dim=1)
 
     print(class_names[predicted_phase_label])
 
