@@ -1,3 +1,5 @@
+import json
+
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -6,36 +8,41 @@ import pandas as pd
 from PIL import Image
 
 from .model_settings import DEVICE, DEFAULT_TRANSFORMS
+from .tools import array_transform_for_batches
+from .. import DEFAULT_PHASES_PATH
 
-def prediction(model,
+
+def prediction_from_csv(model,
                path_csv,
-               class_names,
-               transforms,
+               transforms=None,
                cut_start=None,
                image_size=224,
                device=DEVICE):
+
+
+    with open(DEFAULT_PHASES_PATH, 'r') as file:  # NOTE make it better with string formatting
+        phases = json.load(file)
+
+    class_names = list(phases.keys())
+    class_to_idx = {cls_name: i for i, cls_name in enumerate(class_names)}
+
 
     data = pd.read_csv(path_csv, sep=',')
     data.apply(pd.to_numeric, errors='coerce')
     data.dropna()
 
+
     I = data.iloc[:, 1]
-    if cut_start is not None:
-        I = I[cut_start:cut_start+image_size]
+    I = np.float32(I)
 
-    dot_I = np.outer(I, I)
-    dot_I_unsq = np.expand_dims(dot_I, axis=0)
-
-    image = np.concatenate([dot_I_unsq, dot_I_unsq, dot_I_unsq], axis=0)
-
-    img = Image.fromarray(np.swapaxes(np.uint8(image/np.max(image)*255), 0, 2))
-
+    img = array_transform_for_batches(I)
     model.to(device)
     model.eval()
 
     with torch.inference_mode():
-        transformed_phase_img = transforms(img).unsqueeze(dim=0)
-        transformed_phase_img = transformed_phase_img.to(device)
+
+        transformed_phase_img = img.unsqueeze(dim=0).to(device)
+
 
         predicted_phase_tensor = model(transformed_phase_img)
 
@@ -49,12 +56,10 @@ def prediction(model,
 
 
 
-
-
     # img = Image.fromarray()
 
 
-def prediction_image(model,
+def prediction_from_npy(model,
                class_names,
                phase_image_path,
                transforms: torchvision.transforms = None,
