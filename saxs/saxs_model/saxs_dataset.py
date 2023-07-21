@@ -137,7 +137,7 @@ class SAXSData(Dataset):
         #     sample = self.transforms(sample)
         # else:
         #     sample = transforms.ToTensor()(sample)
-
+        sample = torch.tensor(sample, dtype=torch.float32)
         return sample, torch.nn.functional.one_hot(torch.tensor(target), num_classes=len(self.classes)).float()
 
     def __len__(self):
