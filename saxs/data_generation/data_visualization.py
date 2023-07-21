@@ -25,27 +25,37 @@ def load_data(phase, cubic_mesophase=None, load_path=None):
         assert cubic_mesophase == 'Im3m' or cubic_mesophase == 'la3d' or cubic_mesophase == 'Pn3m' or \
                cubic_mesophase == 'P' or cubic_mesophase == 'G' or cubic_mesophase == 'D'
 
-        load_data_path = os.path.join(load_path, '{}_cubic_processed_1500.npy'.format(cubic_mesophase))
+        load_data_path = os.path.join(load_path, '{}_cubic_processed.npy'.format(cubic_mesophase))
         print(load_data_path)
         data = np.load(load_data_path)
     else:
         load_path = '{}Synthetic_Processed/{}_processed.npy'.format(core_path, phase.lower())
         data = np.load(load_path)
 
-    data_3d = data[:,:,:,0]
-    data_1d = []
-    for i in data_3d:
-        # get matrix diagonal
-        data = np.sqrt(np.diag(i))
-        data_1d.append(data)
-    data_1d = np.array(data_1d)
+    print(data.shape)
+    if len(data.shape) > 2:
+        data_3d = data[:,:,:,0]
+        data_1d = []
+        for i in data_3d:
+            # get matrix diagonal
+            data = np.sqrt(np.diag(i))
+            data_1d.append(data)
+        data_1d = np.array(data_1d)
 
-    load_path_q = os.path.join(load_path, '{}_q.npy'.format(phase))
-    q = np.load(load_path_q)
-    # load experimental data
-    # exp_data = np.load(f'Experimental_data/{phase.lower()}.npy')
-    exp_data = None
-    return q, data_1d, data_3d, exp_data
+        load_path_q = os.path.join(load_path, '{}_q.npy'.format(phase))
+        q = np.load(load_path_q)
+        # load experimental data
+        # exp_data = np.load(f'Experimental_data/{phase.lower()}.npy')
+        exp_data = None
+        print("DA")
+
+        return q, data_1d, data_3d, exp_data
+    else:
+        load_path_q = os.path.join(load_path, '{}_q.npy'.format(phase))
+        q = np.load(load_path_q)
+
+        return q, data
+
 
 def plot_saxs(q, pattern):
     plt.figure()

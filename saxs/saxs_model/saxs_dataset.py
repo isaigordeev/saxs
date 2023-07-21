@@ -10,6 +10,7 @@ from PIL import Image
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Dataset
 from saxs import DEFAULT_PHASES_PATH
+from saxs.saxs_model.tools import array_transform_for_batches
 
 NUM_CPU_CORES = os.cpu_count()
 
@@ -65,7 +66,6 @@ def create_data_batches_from_dataset_files(path,
                                            transforms: transforms.Compose = None,
                                            num_workers: int = 0
                                            ):
-
     dataset = SAXSData(path=path, transforms=transforms)
     train_data, test_data = get_train_val(dataset, 0.8)
 
@@ -122,7 +122,7 @@ class SAXSData(Dataset):
                 if phase in file:
                     self.data = np.load(os.path.join(self.path, file))
 
-                    for sample in self.data:
+                    for sample in self.data[:10]:
                         self.samples.append((sample, index))
                     break
 
@@ -130,12 +130,14 @@ class SAXSData(Dataset):
 
     def __getitem__(self, index):
         sample, target = self.samples[index]
-        sample = Image.fromarray(np.uint8(sample/np.max(sample) * 255))
-        # sample = torch.tensor(sample)
-        if self.transforms is not None:
-            sample = self.transforms(sample)
-        else:
-            sample = transforms.ToTensor()(sample)
+
+        sample = array_transform_for_batches(sample)
+
+        # if self.transforms is not None:
+        #     sample = self.transforms(sample)
+        # else:
+        #     sample = transforms.ToTensor()(sample)
+
         return sample, torch.nn.functional.one_hot(torch.tensor(target), num_classes=len(self.classes)).float()
 
     def __len__(self):

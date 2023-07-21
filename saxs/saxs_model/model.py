@@ -44,6 +44,8 @@ class PatchEmbedding(nn.Module):
 
     def forward(self, x):
         image_resolution = x.shape[-1]
+        print(image_resolution)
+        print(self.patch_size)
         assert image_resolution % self.patch_size == 0, f"Input image size must be divisble by patch size, image shape: {image_resolution}, patch size: {patch_size}"
 
         x_patched = self.patcher(x)
@@ -67,7 +69,7 @@ class OriginalViT(nn.Module):
         super().__init__()
 
         assert img_size % patch_size == 0, f"Image size must be divisible by patch size, image size: {img_size}, patch size: {patch_size}."
-
+        print(embedding_dim)
         self.num_patches = (img_size * img_size) // patch_size ** 2
 
         self.class_embedding = nn.Parameter(data=torch.randn(1, 1, embedding_dim),
@@ -82,7 +84,7 @@ class OriginalViT(nn.Module):
                                               patch_size=patch_size,
                                               embedding_dim=embedding_dim)
 
-        self.transformer_encoder = nn.Sequential(*[nn.TransformerEncoderLayer(d_model=IMAGE_DIM*COLOR_CHANNELS,
+        self.transformer_encoder = nn.Sequential(*[nn.TransformerEncoderLayer(d_model=embedding_dim,
                                                                               nhead=num_heads,
                                                                               dim_feedforward=mlp_size,
                                                                               dropout=attn_dropout,
@@ -117,7 +119,7 @@ class OriginalViT(nn.Module):
         return x
 
 
-class SAXViT10(OriginalViT):
+class SAXSViT10(OriginalViT):
     def __init__(self, img_size, in_channels, patch_size, num_transformer_layers, embedding_dim, mlp_size, num_heads,
                  attn_dropout, mlp_dropout, embedding_dropout, num_classes):
 

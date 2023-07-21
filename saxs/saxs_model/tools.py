@@ -5,6 +5,7 @@ from timeit import default_timer as timer
 from typing import Dict, List
 
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torchvision
 import yaml
@@ -77,7 +78,7 @@ def plot_loss_curves(results: Dict[str, List[float]]):
     plt.plot(epochs, test_accuracy, label='test_accuracy')
     plt.title('Accuracy')
     plt.xlabel('Epochs')
-    plt.legend();
+    plt.legend()
     plt.show() #change to saving
 
 
@@ -85,52 +86,24 @@ def data_walk(dir_path):
     for dirpath, dirnames, filenames in os.walk(dir_path):
         print(f'paths: {len(dirnames)}, file:" {len(filenames)} in {dirpath}')
 
+def array_transform_for_batches(sample, IMDIM=498):
+    
+    if len(sample) != IMDIM:
 
+        if len(sample) > IMDIM:
+            print("SAMPLE IS GREAT")
+            sample = sample[:IMDIM]
+        elif len(sample) < IMDIM:
+            print("SAMPLE IS NOT GREAT")
+            sample = np.concatenate((sample, np.zeros(IMDIM - len(sample))))
 
-def display_random_images(data: torchvision.datasets.ImageFolder, n):
-    image_path_list = list(data.glob("*/*/*.png"))
-    images = random.sample(range(len(image_path_list)), n)
-    plt.clf()
-    for i, x in enumerate(images):
-        path, _ = data.samples[x]
-        path = Path(path).parent.stem
-        plt.subplot(1, n, i+1)
-        plt.imshow(data[x][0].permute(1,2,0))
-        plt.title(str(data[x][1]) + path)
-    plt.savefig('random_images.png')
+        mean = np.mean(sample)
+        var = np.std(sample)
+        sample -= mean
+        sample /= (var ** 0.5)
+        sample /= np.max(sample)
 
-def plot_transformed_image(image_paths, transform, n=3, seed=42):
-    random.seed(seed)
-    random_image_paths = random.sample(image_paths, k = n)
-    print(len(random_image_paths))
-    i = 0
-    for image_path in random_image_paths:
-        with Image.open(image_path) as f:
-            fig, ax = plt.subplots(1,2)
-            ax[0].imshow(f)
-            ax[0].set_title(f'Origi {f.size}')
-
-
-            transformed = transform(f)
-            transformed = torch.narrow(transformed, 0,0,3).permute(1,2,0)
-            ax[1].imshow(transformed)
-            ax[1].set_title(f'Origi {transformed.shape}')
-
-
-            fig.suptitle(f'{image_path.parent.stem}')
-        plt.savefig(f'image number {i}.png')
-        i += 1
-        plt.clf()
-
-def display_random_image(data_dir: Path, n):
-    image_path_list = list(data_dir.glob("*/*/*.png"))
-
-    random_image_path = random.choice(image_path_list)
-    image_class = random_image_path.parent.stem
-    img = Image.open(random_image_path)
-    # img.show()
-
-    print(f"Random image path: {random_image_path}")
-    print(f"Image class: {image_class}")
-    print(f"Image height: {img.height}") 
-    print(f"Image width: {img.width}")
+    # sample = np.uint8(sample * 255)
+    sample = np.repeat(np.expand_dims(np.outer(sample, sample), -1), 3, axis=-1)
+    sample = torch.tensor(sample)
+    return torch.transpose(sample, 0, 2)

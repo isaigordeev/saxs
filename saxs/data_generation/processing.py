@@ -157,9 +157,18 @@ def Process_cubic(data):
     I = cubics(q2)
     # plt.plot(np.exp(I))
     # plt.show()
-    I_mat = gen_product_matrix(I)
-    I_data = np.array(I_mat)
-    return I_data
+    # I_mat = gen_product_matrix(I)
+
+
+    #standartization
+    I = I[:498] #for embeddings
+    mean = np.mean(I)
+    var = np.std(I)
+    I -= mean
+    I /= (var ** 0.5)
+    I /= np.max(I)
+    # I /= np.max(I)
+    return I
 
 class Processing:
     def __init__(self, custom_dataraw_folder=None, number_to_process=None, start_to_process=None):
@@ -218,7 +227,7 @@ class Processing:
                     print(processed_data_name_extensioned)
 
                     save_path = os.path.join(self.save_path_folder, processed_data_name_extensioned)
-                    print(save_path)
+                    print(save_path, "{} SAVING".format(raw_data_name))
                     # np.savez_compressed(save_path, processed_cubic)
                     np.save(save_path, processed_cubic)
                 if 'lamellar' in raw_data_name:
