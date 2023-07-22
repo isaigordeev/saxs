@@ -44,7 +44,7 @@ def load_data(phase, cubic_mesophase=None, load_path=None):
 
         load_path_q = os.path.join(load_path, '{}_q.npy'.format(phase))
         q = np.load(load_path_q)
-        # load experimental data
+        # load experimental test_processing_data
         # exp_data = np.load(f'Experimental_data/{phase.lower()}.npy')
         exp_data = None
         print("DA")
@@ -72,7 +72,7 @@ def plot_saxs_featuremap(data,q):
     # change x and y labels to q
     plt.xticks(np.arange(0,data.shape[0],50), ["{:.2f}".format(i) for i in q[::50]])
     plt.yticks(np.arange(0,data.shape[0],50), ["{:.2f}".format(i) for i in q[::50]])
-    plt.title('Feature map of SAXS data')
+    plt.title('Feature map of SAXS test_processing_data')
     plt.show()
 
 def plot_saxs_tsne(data_synth,data_exp):
@@ -83,7 +83,7 @@ def plot_saxs_tsne(data_synth,data_exp):
     plt.scatter(data_embedded[len(data_synth):,0],data_embedded[len(data_synth):,1], c='b', label='Experimental')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
-    plt.title('tSNE plot of SAXS data')
+    plt.title('tSNE plot of SAXS test_processing_data')
     plt.legend()
     plt.show()
 
@@ -95,7 +95,7 @@ def plot_saxs_pca(data_synth,data_exp):
     plt.scatter(data_embedded[len(data_synth):,0],data_embedded[len(data_synth):,1], c='b', label='Experimental')
     plt.xlabel('PC1')
     plt.ylabel('PC2')
-    plt.title('PCA plot of SAXS data')
+    plt.title('PCA plot of SAXS test_processing_data')
     plt.legend()
     plt.show()
 
@@ -107,7 +107,7 @@ def plot_saxs_umap(data_synth,data_exp):
     plt.scatter(data_embedded[len(data_synth):,0],data_embedded[len(data_synth):,1], c='b', label='Experimental')
     plt.xlabel('UMAP1')
     plt.ylabel('UMAP2')
-    plt.title('UMAP plot of SAXS data')
+    plt.title('UMAP plot of SAXS test_processing_data')
     plt.legend()
     plt.show()
 

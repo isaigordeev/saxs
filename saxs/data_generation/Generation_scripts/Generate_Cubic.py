@@ -35,7 +35,7 @@ if phase == 'cubic':
         print(f"running cubic {cubic_mesophase} model...")
         cm = saxspy.CubicModel(cubic_mesophase)
 
-        # ----------------------- generate synthetic data -----------------------#
+        # ----------------------- generate synthetic test_processing_data -----------------------#
         # ranges of: lattice parameter, length of lipid, lipid head sigma
 
         # params = np.array([[28, 40], [0.2, 0.5], [0.5, 1]])  #good but lattice parameter

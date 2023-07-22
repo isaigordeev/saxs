@@ -34,7 +34,7 @@ today = now.today().date()
 
 class Manager(ApplicationManager):
     def __init__(self,
-                 peak_data_directory='data/',
+                 peak_data_directory='test_processing_data/',
                  phase_data_directory=None,
                  peak_kernel: PeakApplication=None,
                  phase_kernel: PhaseApplication=None,
@@ -145,5 +145,5 @@ class Custom_Manager(Manager):
             pass
 
         # print(peaks.deltas)
-        # print(peaks.data)
+        # print(peaks.test_processing_data)
         # print(sorted(peaks.peaks_analysed_q/min(peaks.peaks_analysed_q)))

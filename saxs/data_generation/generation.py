@@ -55,7 +55,7 @@ class Generator:
                 print(f"running cubic {self.cubic_mesophase} model...")
                 cm = CubicModel(self.cubic_mesophase)
 
-                #----------------------- generate synthetic data -----------------------#
+                #----------------------- generate synthetic test_processing_data -----------------------#
                 # ranges of: lattice parameter, length of lipid, lipid head sigma
 
                 # params = np.array([[28, 40], [0.2, 0.5], [0.5, 1]])  #good but lattice parameter

@@ -1,6 +1,6 @@
 import numpy as np
 
-# to be implemented unique for each data + manual adjusting
+# to be implemented unique for each test_processing_data + manual adjusting
 START = 0.02
 BACKGROUND_COEF = 0.7 #normal 0.7
 SIGMA_FILTER = 1.5

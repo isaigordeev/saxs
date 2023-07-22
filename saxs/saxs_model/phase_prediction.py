@@ -7,7 +7,7 @@ import torchvision.transforms.v2
 import pandas as pd
 from PIL import Image
 
-from .model_settings import DEVICE, DEFAULT_TRANSFORMS
+from .setup import DEVICE
 from .tools import array_transform_for_batches
 from .. import DEFAULT_PHASES_PATH
 

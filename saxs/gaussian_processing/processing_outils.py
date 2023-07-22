@@ -32,7 +32,7 @@ def load_generated_data(phase):
         data_1d.append(data)
     data_1d = np.array(data_1d)
     q = np.load(f'../saxs_generated_data/{phase.lower()}_q.npy')
-    # load experimental data
+    # load experimental test_processing_data
     # exp_data = np.load(f'Experimental_data/{phase.lower()}.npy')
     exp_data = None
     return data_1d, data_3d, exp_data, q
@@ -70,7 +70,7 @@ def read_data(data_dir_file):
             return q, I, None
         else:
             raise AttributeError("Input is insufficient")
-    elif extension == '.npy':  #synthetic data
+    elif extension == '.npy':  #synthetic test_processing_data
         assert "processed" in data_dir_file
         data = np.load(data_dir_file)
         data_3d = data[:, :, :, 0]

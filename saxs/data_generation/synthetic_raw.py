@@ -17,9 +17,9 @@ data = np.load('Synthetic_raw/Im3m_cubic_raw.npy')
 # print(x.shape)
 
 
-# print(data)
+# print(test_processing_data)
 # print(d1.shape)
-# print(data[0][1][1])
+# print(test_processing_data[0][1][1])
 for n in range(len(data))[:1]:
     x = data[n][1][1:]
     x = x / np.max(x)

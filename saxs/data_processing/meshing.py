@@ -5,7 +5,7 @@ data = np.load("../saxs_generated_data/cubic_q.npy")
 print(data)
 
 # x = 1
-# plt.plot( data[x][0], data[x][1], label = 'non_fil')
+# plt.plot( test_processing_data[x][0], test_processing_data[x][1], label = 'non_fil')
 # plt.legend()
 # plt.show()
 
@@ -26,9 +26,9 @@ for i in range(1, num_subplots**2+1):
     # Create each subplot
     ax = plt.subplot(num_subplots, num_subplots, i)
     
-    # Plot the data on each subplot
+    # Plot the test_processing_data on each subplot
     ax.plot(data[i-1][0], data[i-1][0])
-    # ax.plot(data[i-1][0], data[i-1][1], 'x')
+    # ax.plot(test_processing_data[i-1][0], test_processing_data[i-1][1], 'x')
     # ax.set_title('Subplot {}'.format(i+1))
 
 plt.tight_layout()

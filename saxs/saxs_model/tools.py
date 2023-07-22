@@ -13,6 +13,8 @@ import yaml
 
 from PIL import Image
 
+from saxs.saxs_model.model_settings import IMAGE_DIM
+
 
 def save_model(model: torch.nn.Module,
                target_dir: str,
@@ -86,24 +88,32 @@ def data_walk(dir_path):
     for dirpath, dirnames, filenames in os.walk(dir_path):
         print(f'paths: {len(dirnames)}, file:" {len(filenames)} in {dirpath}')
 
-def array_transform_for_batches(sample, IMDIM=498):
+
+def standartization(sample):
+    mean = np.mean(sample)
+    var = np.std(sample)
+    sample -= mean
+    sample /= (var ** 0.5)
+    sample /= np.max(sample)
+
+    return sample
+
+
+def array_transform_for_batches(sample, IMAGE_DIM=IMAGE_DIM):
     
-    if len(sample) != IMDIM:
+    if len(sample) != IMAGE_DIM:
 
-        if len(sample) > IMDIM:
+        if len(sample) > IMAGE_DIM:
             print("SAMPLE IS GREAT")
-            sample = sample[:IMDIM]
-        elif len(sample) < IMDIM:
+            sample = sample[:IMAGE_DIM]
+        elif len(sample) < IMAGE_DIM:
             print("SAMPLE IS NOT GREAT")
-            sample = np.concatenate((sample, np.zeros(IMDIM - len(sample))))
+            sample = np.concatenate((sample, np.zeros(IMAGE_DIM - len(sample))))
 
-        mean = np.mean(sample)
-        var = np.std(sample)
-        sample -= mean
-        sample /= (var ** 0.5)
-        sample /= np.max(sample)
+        sample = standartization(sample)
 
-    # sample = np.uint8(sample * 255)
+    # sample = np.uint8(sample * 255) #pixelization
+
     sample = np.repeat(np.expand_dims(np.outer(sample, sample), -1), 3, axis=-1)
     sample = torch.tensor(sample)
     return torch.transpose(sample, 0, 2)

@@ -9,6 +9,12 @@ from tqdm import tqdm
 from scipy.special import wofz
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
+from saxs.saxs_model.tools import standartization
+from saxs.saxs_model.model_settings import IMAGE_DIM
+
+
+
+
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def parallel_process(array, function, n_jobs=4, use_kwargs=False, front_num=3):
@@ -116,7 +122,7 @@ dwf = debyeWaller
 blanks = np.load(os.path.join(os.path.dirname(__file__), 'blanks_raw.npy'))
 
 
-# Function for generating DWF / Voigts / Lorenztians and Interpolating data in q2 range
+# Function for generating DWF / Voigts / Lorenztians and Interpolating test_processing_data in q2 range
 
 def Process_cubic(data):
     random_blank = random.randint(0, 169)
@@ -134,7 +140,7 @@ def Process_cubic(data):
                                                                         random_voigt_lorenzgamma, data[0, i])
             zero_array += temp
 
-            # temp = data[1, i] * dwf(q, 1, data[0, i])
+            # temp = test_processing_data[1, i] * dwf(q, 1, test_processing_data[0, i])
             # zero_array += temp
         else:
             temp = data[1, i] * voigtSignal(q, random_voigt_gaussalpha, random_voigt_lorenzgamma, data[0, i])
@@ -161,12 +167,10 @@ def Process_cubic(data):
 
 
     #standartization
-    I = I[:498] #for embeddings
-    mean = np.mean(I)
-    var = np.std(I)
-    I -= mean
-    I /= (var ** 0.5)
-    I /= np.max(I)
+
+    I = I[:IMAGE_DIM] #for embeddings
+
+    I = standartization(I)
     # I /= np.max(I)
     return I
 

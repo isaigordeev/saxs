@@ -99,7 +99,7 @@ def debyeWaller(q, decay_parameter):
     return gaussianSignal(q, decay_parameter, 0)
 
 dwf = debyeWaller
-#Function for generating DWF / Voigts / Lorenztians and Interpolating data in q2 range
+#Function for generating DWF / Voigts / Lorenztians and Interpolating test_processing_data in q2 range
 def Process_cubic(data):
     random_blank = random.randint(0,169)
     blanky=blanks[random_blank]

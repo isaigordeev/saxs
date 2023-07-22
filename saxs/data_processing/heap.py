@@ -1,11 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-# data = np.load("../saxs_generated_data/G_cubic_raw_27.npy")
-# print(data.shape)
+# test_processing_data = np.load("../saxs_generated_data/G_cubic_raw_27.npy")
+# print(test_processing_data.shape)
 #
 # for x in range(27):
-#     plt.plot(data[x][0][1:], data[x][1][1:], 'ro')
+#     plt.plot(test_processing_data[x][0][1:], test_processing_data[x][1][1:], 'ro')
 #     plt.show()
 
 data1 = np.load("../saxs_generated_data/G_cubic.npy")
