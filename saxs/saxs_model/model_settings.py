@@ -5,14 +5,14 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 COLOR_CHANNELS = 3
-IMAGE_DIM = 498  #len of q,I,dI
+IMAGE_DIM = 448  #len of q,I,dI
 EMBEDDING_DIM = 3*IMAGE_DIM
 HEADS = 12
 ATTENTION_BLOCKS = 3
 PATCH_SIZE = 166
 PHASES_NUMBER = 3
 
-DEFAULT_TRANSFORMS = transforms.Compose(
+DEFAULT_IMAGE_CLASS_TRANSFORMS = transforms.Compose(
             [
                 transforms.Resize((224, 224)),
                 transforms.ToTensor(),
@@ -22,6 +22,6 @@ DEFAULT_TRANSFORMS = transforms.Compose(
             ]
         )
 
-TRAIN_DIR = 'data/dot/train'
-TEST_DIR = 'data/dot/test'
+TRAIN_DIR = 'test_processing_data/dot/train'
+TEST_DIR = 'test_processing_data/dot/test'
 

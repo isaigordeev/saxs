@@ -54,7 +54,7 @@ if __name__ == '__main__':
         plt.show()
 
     # plt.show()
-    # x = data[n+500][1][1:]
+    # x = test_processing_data[n+500][1][1:]
         # x = x / np.max(x)
         # plt.plot(data_good_q[n][0][1:], x, 'o')
         # plt.plot(q_0, I_0, 'ro')

@@ -44,8 +44,6 @@ class PatchEmbedding(nn.Module):
 
     def forward(self, x):
         image_resolution = x.shape[-1]
-        print(image_resolution)
-        print(self.patch_size)
         assert image_resolution % self.patch_size == 0, f"Input image size must be divisble by patch size, image shape: {image_resolution}, patch size: {patch_size}"
 
         x_patched = self.patcher(x)
@@ -95,6 +93,9 @@ class OriginalViT(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.LayerNorm(normalized_shape=embedding_dim),
+            nn.Linear(in_features=embedding_dim,
+                      out_features=embedding_dim),
+            nn.GELU(),
             nn.Linear(in_features=embedding_dim,
                       out_features=num_classes)
         )

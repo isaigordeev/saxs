@@ -14,7 +14,7 @@ from saxs.saxs_model.tools import array_transform_for_batches
 
 NUM_CPU_CORES = os.cpu_count()
 
-SET_DIR = 'data/'
+SET_DIR = 'test_processing_data/'
 SET_DIR = Path(SET_DIR)
 SEED = 42
 
@@ -122,7 +122,7 @@ class SAXSData(Dataset):
                 if phase in file:
                     self.data = np.load(os.path.join(self.path, file))
 
-                    for sample in self.data[:10]:
+                    for sample in self.data:
                         self.samples.append((sample, index))
                     break
 

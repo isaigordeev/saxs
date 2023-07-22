@@ -2,7 +2,7 @@ from pathlib import Path
 
 import torch
 
-SET_DIR = 'data/'
+SET_DIR = 'test_processing_data/'
 SET_DIR = Path(SET_DIR)
 
 SEED = 42
