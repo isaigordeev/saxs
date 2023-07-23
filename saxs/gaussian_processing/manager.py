@@ -17,21 +17,6 @@ now = datetime.now()
 
 today = now.today().date()
 
-
-# current_time = now.strftime("%H:%M:%S")
-#
-# current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
-# current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + str(today) + '/'
-
-# if not os.path.exists(current_session):
-#     os.mkdir(current_session)
-# if not os.path.exists(current_session_results):
-#     os.mkdir(current_session_results)
-
-
-
-
-
 class Manager(ApplicationManager):
     def __init__(self,
                  peak_data_directory='test_processing_data/',

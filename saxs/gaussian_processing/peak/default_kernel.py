@@ -11,15 +11,18 @@ class DefaultPeakKernel(AbstractPeakKernel):
     str_type = 'default_kernel'
     short_str_type = 'def_kern'
 
-    def __init__(self, data_dir,
+    def __init__(self, data_dir, file_analysis_dir,
                  is_preprocessing=True,
                  is_background_reduction=True,
                  is_filtering=True,
+                 is_peak_processing=True,
                  ):
         super().__init__(data_dir,
+                         file_analysis_dir,
                          is_preprocessing,
                          is_background_reduction,
                          is_filtering,
+                         is_peak_processing
                          )
 
         self.q_cut = None

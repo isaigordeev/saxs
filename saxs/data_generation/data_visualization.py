@@ -11,6 +11,8 @@ from .generation_settings import core_path
 from .saxspy import debyeWaller as dwf
 from scipy.interpolate import CubicSpline
 from tqdm import tqdm
+
+
 # import umap
 
 
@@ -34,7 +36,7 @@ def load_data(phase, cubic_mesophase=None, load_path=None):
 
     print(data.shape)
     if len(data.shape) > 2:
-        data_3d = data[:,:,:,0]
+        data_3d = data[:, :, :, 0]
         data_1d = []
         for i in data_3d:
             # get matrix diagonal
@@ -59,62 +61,58 @@ def load_data(phase, cubic_mesophase=None, load_path=None):
 
 def plot_saxs(q, pattern):
     plt.figure()
-    plt.plot(q,pattern)
+    plt.plot(q, pattern)
     plt.xlabel('q')
     plt.ylabel('Intensity')
     plt.show()
 
-def plot_saxs_featuremap(data,q):
+
+def plot_saxs_featuremap(data, q):
     plt.figure()
-    plt.imshow(data,cmap='hot')
+    plt.imshow(data, cmap='hot')
     plt.xlabel('q')
     plt.ylabel('q')
     # change x and y labels to q
-    plt.xticks(np.arange(0,data.shape[0],50), ["{:.2f}".format(i) for i in q[::50]])
-    plt.yticks(np.arange(0,data.shape[0],50), ["{:.2f}".format(i) for i in q[::50]])
+    plt.xticks(np.arange(0, data.shape[0], 50), ["{:.2f}".format(i) for i in q[::50]])
+    plt.yticks(np.arange(0, data.shape[0], 50), ["{:.2f}".format(i) for i in q[::50]])
     plt.title('Feature map of SAXS test_processing_data')
     plt.show()
 
-def plot_saxs_tsne(data_synth,data_exp):
-    data = np.concatenate((data_synth,data_exp),axis=0)
+
+def plot_saxs_tsne(data_synth, data_exp):
+    data = np.concatenate((data_synth, data_exp), axis=0)
     data_embedded = TSNE(n_components=2).fit_transform(data)
     plt.figure()
-    plt.scatter(data_embedded[:len(data_synth),0],data_embedded[:len(data_synth),1], c='r', label='Synthetic')
-    plt.scatter(data_embedded[len(data_synth):,0],data_embedded[len(data_synth):,1], c='b', label='Experimental')
+    plt.scatter(data_embedded[:len(data_synth), 0], data_embedded[:len(data_synth), 1], c='r', label='Synthetic')
+    plt.scatter(data_embedded[len(data_synth):, 0], data_embedded[len(data_synth):, 1], c='b', label='Experimental')
     plt.xlabel('t-SNE 1')
     plt.ylabel('t-SNE 2')
     plt.title('tSNE plot of SAXS test_processing_data')
     plt.legend()
     plt.show()
 
-def plot_saxs_pca(data_synth,data_exp):
-    data = np.concatenate((data_synth,data_exp),axis=0)
+
+def plot_saxs_pca(data_synth, data_exp):
+    data = np.concatenate((data_synth, data_exp), axis=0)
     data_embedded = PCA(n_components=2).fit_transform(data)
     plt.figure()
-    plt.scatter(data_embedded[:len(data_synth),0],data_embedded[:len(data_synth),1], c='r', label='Synthetic')
-    plt.scatter(data_embedded[len(data_synth):,0],data_embedded[len(data_synth):,1], c='b', label='Experimental')
+    plt.scatter(data_embedded[:len(data_synth), 0], data_embedded[:len(data_synth), 1], c='r', label='Synthetic')
+    plt.scatter(data_embedded[len(data_synth):, 0], data_embedded[len(data_synth):, 1], c='b', label='Experimental')
     plt.xlabel('PC1')
     plt.ylabel('PC2')
     plt.title('PCA plot of SAXS test_processing_data')
     plt.legend()
     plt.show()
 
-def plot_saxs_umap(data_synth,data_exp):
-    data = np.concatenate((data_synth,data_exp),axis=0)
+
+def plot_saxs_umap(data_synth, data_exp):
+    data = np.concatenate((data_synth, data_exp), axis=0)
     data_embedded = umap.UMAP().fit_transform(data)
     plt.figure()
-    plt.scatter(data_embedded[:len(data_synth),0],data_embedded[:len(data_synth),1], c='r', label='Synthetic')
-    plt.scatter(data_embedded[len(data_synth):,0],data_embedded[len(data_synth):,1], c='b', label='Experimental')
+    plt.scatter(data_embedded[:len(data_synth), 0], data_embedded[:len(data_synth), 1], c='r', label='Synthetic')
+    plt.scatter(data_embedded[len(data_synth):, 0], data_embedded[len(data_synth):, 1], c='b', label='Experimental')
     plt.xlabel('UMAP1')
     plt.ylabel('UMAP2')
     plt.title('UMAP plot of SAXS test_processing_data')
     plt.legend()
     plt.show()
-
-
-
-
-    
-    
-    
-

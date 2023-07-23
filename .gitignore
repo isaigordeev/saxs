@@ -1,5 +1,6 @@
 res/
 res_txt/
 test_processing_data/
+.idea/
 
 *.DS_Store
