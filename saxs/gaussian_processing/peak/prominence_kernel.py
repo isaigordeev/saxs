@@ -1,3 +1,5 @@
+import csv
+
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.signal import find_peaks, medfilt
@@ -12,15 +14,18 @@ class ProminenceKernel(DefaultPeakKernel):
     str_type = 'prominence_kernel'
     short_str_type = 'prom_kern'
 
-    def __init__(self, data_dir,
+    def __init__(self, data_dir, file_analysis_dir,
                  is_preprocessing=True,
                  is_background_reduction=True,
                  is_filtering=True,
+                 is_peak_processing=True,
                  ):
         super().__init__(data_dir,
+                         file_analysis_dir,
                          is_preprocessing,
                          is_background_reduction,
                          is_filtering,
+                         is_peak_processing
                          )
 
         self.peaks = None
@@ -80,11 +85,20 @@ class ProminenceKernel(DefaultPeakKernel):
         # self.current_state_plot()
         # self.peaks_plots()
 
+    def custom_sample_processing(self):
+        with open('without_back_res/{}'.format(self.filename), mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(np.stack((self.current_q_state, self.current_I_state), axis=1))
+
     def gathering(self) -> dict:
+        peak_number = len(self.peaks) if self.peaks else -1
+
+
         return {
-            'peak_number': len(self.peaks),
-            'q': self.current_q_state[self.peaks].tolist(),
-            'I': self.current_q_state[self.peaks].tolist(),
+            'peak_number': peak_number,
+            # 'q': self.current_q_state[self.peaks].tolist(),
+            # 'I': self.current_q_state[self.peaks].tolist(),
+
             # 'dI': dI.tolist(),
             # 'I_raw': I_raw.tolist(),
             # 'peaks': peaks_detected.tolist(),

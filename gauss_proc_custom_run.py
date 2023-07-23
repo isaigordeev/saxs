@@ -8,7 +8,7 @@ now = datetime.now()
 
 # a = ProminenceKernel('/Users/isaigordeev/Desktop/2023/saxs/test_processing_data/075775_treated_xye.csv')
 
-a = PeakApplication('/Users/isaigordeev/Desktop/2023/saxs/test_processing_data/', ProminenceKernel)
+a = PeakApplication('/Users/isaigordeev/Desktop/2023/saxs/res/', ProminenceKernel)
 a.directory_classification()
 
 # test = Manager(peak_classificator=ProminencePeakClassificator,

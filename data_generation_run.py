@@ -21,5 +21,7 @@ if __name__ == '__main__':
     #
     # generator.generation()
     # processing = Processing()
+
+
     processing = Processing('/Users/isaigordeev/Desktop/generated/', 4000, 0)
     processing.process()

@@ -34,7 +34,11 @@ class AbstractPeakKernel:
                  'short_str_type',
                  'file_analysis_dir',
                  'file_analysis_dir_peaks',
-                 'noisy_irrelevant_cut_point'
+                 'noisy_irrelevant_cut_point',
+                 'is_peak_processing',
+                 'data_dir',
+                 'data_path',
+                 'filename',
                  )
 
     @classmethod
@@ -50,9 +54,12 @@ class AbstractPeakKernel:
                  is_preprocessing=True,
                  is_background_reduction=True,
                  is_filtering=True,
+                 is_peak_processing=True,
                  ):
 
+        self.is_peak_processing = is_peak_processing
         self.data_dir = data_dir
+        self.data_path, self.filename = os.path.split(data_dir)
         self.file_analysis_dir = file_analysis_dir
         self.file_analysis_dir_peaks = os.path.join(self.file_analysis_dir, 'peaks')
         self.q_raw, self.I_raw, self.dI = read_data(self.data_dir)
@@ -85,16 +92,18 @@ class AbstractPeakKernel:
 
         self.raw_plot()
 
-
-
-
     def __call__(self, *args, **kwargs):
         self.sample_processing()
+        self.custom_sample_processing()
         return self.gathering()
 
     def __str__(self):
         print(self.short_str_type)
         return ''.join(self.short_str_type)
+
+
+    def custom_sample_processing(self):
+        pass
 
 
     def current_state_plot(self):
@@ -199,9 +208,10 @@ class AbstractPeakKernel:
             self.filtering()
             self.filtering_plot()
 
-        self.search_peaks()
-        self.peaks_plots()
-        self.final_plot()
+        if self.is_peak_processing:
+            self.search_peaks()
+            self.peaks_plots()
+            self.final_plot()
 
 
 

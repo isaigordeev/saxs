@@ -14,11 +14,12 @@ from saxs.saxs_model.model import SAXSViT10
 from saxs.saxs_model.model_settings import DEVICE
 
 
-with open('train_config.json') as file:
+with open('model_train_config.json') as file:
     config = json.load(file)
 
 
 model = SAXSViT10(**config)
+model.to(DEVICE)
 
 TRAIN_DATA_PATH = os.path.join(os.getcwd(), 'train_data')
 
