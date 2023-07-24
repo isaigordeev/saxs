@@ -42,19 +42,9 @@ class ProminenceKernel(DefaultPeakKernel):
         self.filtering_decomposition()
 
     def detecting_relevant_noisy(self):
-        self.peaks, props = find_peaks(self.current_I_state, height=1, prominence=1)
-        print(props["left_bases"])
-        print(props["right_bases"])
-        print(self.peaks)
-        print(props["right_bases"][0])
-        self.noisy_relevant_cut_point = props["right_bases"][0]
+        self.peaks, self.props = find_peaks(self.current_I_state, height=1, prominence=1)
 
-        # plt.plot(self.current_q_state[self.peaks], self.current_I_state[self.peaks], 'rx', label='peaks')
-        # plt.plot(self.current_q_state[props["left_bases"]], self.current_I_state[props["left_bases"]], 'gx', label='peaks')
-        # plt.plot(self.current_q_state[props["right_bases"]], self.current_I_state[props["right_bases"]], 'bx', label='peaks')
-        # plt.show()
-        # plt.plot(self.q, self.I_background_reduced)
-        # plt.plot(self.q[_["right_bases"][0]], self.I_background_reduced[_["left_bases"][0]], 'ro')
+        self.noisy_relevant_cut_point = self.props["right_bases"][0]
 
     def filtering_decomposition(self):
         # noisy_part = np.ones(noisy_indice)
@@ -67,38 +57,33 @@ class ProminenceKernel(DefaultPeakKernel):
 
         self.current_I_state = medfilt(np.concatenate((noisy_part, noiseless_part)), 3)
 
-        # self.I_filt = medfilt(good_smoothed_without_loss, 3)
-        # _, __ = find_peaks(self.I_denoised, height=1, prominence=1)
-        # plt.plot(self.q, self.I_denoised)
-        # plt.plot(self.q, self.I_background_reduced)
-        # plt.plot(self.q[_], self.I_background_reduced[_], 'ro')
-        # plt.show()
-        # plotting
-        # plt.plot(self.q[noisy_indice:], medfilt(self.I_background_reduced[noisy_indice:], 3))
-        # plt.plot(self.q[:noisy_indice], noisy_part)
-        # plt.plot(self.q[noisy_indice:], noiseless_part)
-        # plt.show()
+    def search_peaks(self, height=1, prominence=0.3):
+        self.peaks, self.props = find_peaks(self.current_I_state,
+                                            height=height,
+                                            prominence=prominence)
 
-    def search_peaks(self):
-        self.peaks, props = find_peaks(self.current_I_state, height=1, prominence=0.3)
         # print(self.current_q_state[self.peaks])
         # self.current_state_plot()
         # self.peaks_plots()
 
     def custom_sample_processing(self):
-        with open('without_back_res/{}'.format(self.filename), mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(np.stack((self.current_q_state, self.current_I_state), axis=1))
+        pass
+
+
+        #background reduction
+        # with open('without_back_res/{}'.format(self.filename), mode='w', newline='') as file:
+        #     writer = csv.writer(file)
+        #     writer.writerows(np.stack((self.current_q_state, self.current_I_state), axis=1))
 
     def gathering(self) -> dict:
-        peak_number = len(self.peaks) if self.peaks else -1
-
+        peak_number = len(self.peaks) if self.peaks is not None else -1
 
         return {
             'peak_number': peak_number,
-            # 'q': self.current_q_state[self.peaks].tolist(),
-            # 'I': self.current_q_state[self.peaks].tolist(),
+            'q': self.current_q_state[self.peaks].tolist(),
+            # 'I': self.current_I_state[self.peaks].tolist(),
 
+            # 'kernel': self.str_type
             # 'dI': dI.tolist(),
             # 'I_raw': I_raw.tolist(),
             # 'peaks': peaks_detected.tolist(),

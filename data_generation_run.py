@@ -7,21 +7,15 @@ import json
 
 
 with open(DEFAULT_CONFIG_PATH) as config:
-    config_data = json.load(config)
+    generation_config = json.load(config)
 
 if __name__ == '__main__':
 
-    # generator = Generator(phase=config_data['phase'],
-    #                       cubic_mesophase=config_data['cubic_mesophase'],
-    #                       len_num=config_data['len_num'],
-    #                       lat_num=config_data['lat_num'],
-    #                       sigma_num=config_data['sigma_num'],
-    #                       params=config_data['params'],
-    #                       )
-    #
+    generator = Generator(**generation_config)
+
     # generator.generation()
-    # processing = Processing()
+    processing = Processing()
 
 
-    processing = Processing('/Users/isaigordeev/Desktop/generated/', 4000, 0)
+    # processing = Processing('/Users/isaigordeev/Desktop/generated/', 4000, 0)
     processing.process()
