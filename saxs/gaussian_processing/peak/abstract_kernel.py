@@ -29,6 +29,7 @@ class AbstractPeakKernel:
                  'total_fit',
                  'I_background_filtered',
                  'max_I',
+                 'delta_q',
                  'peaks',
                  'str_type',
                  'short_str_type',
@@ -39,6 +40,7 @@ class AbstractPeakKernel:
                  'data_dir',
                  'data_path',
                  'filename',
+                 'props'
                  )
 
     @classmethod
@@ -61,14 +63,16 @@ class AbstractPeakKernel:
         self.data_dir = data_dir
         self.data_path, self.filename = os.path.split(data_dir)
         self.file_analysis_dir = file_analysis_dir
-        self.file_analysis_dir_peaks = os.path.join(self.file_analysis_dir, 'peaks')
+        self.file_analysis_dir_peaks = os.path.join(self.file_analysis_dir, 'peaks/')
         self.q_raw, self.I_raw, self.dI = read_data(self.data_dir)
 
         self.noisy_irrelevant_cut_point = 0
 
         # print(self.q_raw)
 
-        self.max_I = None
+        self.max_I = np.max(self.I_raw)
+        self.delta_q = (self.q_raw[np.size(self.q_raw)-1]-self.q_raw[0])/np.size(self.q_raw)
+
         self.I_background_filtered = None
         self.zero_level = np.zeros(len(self.q_raw))
         self.total_fit = self.zero_level
@@ -89,8 +93,6 @@ class AbstractPeakKernel:
         self.str_type = 'abstract_kernel'
         self.short_str_type = 'abs_kern'
 
-
-        self.raw_plot()
 
     def __call__(self, *args, **kwargs):
         self.sample_processing()
@@ -126,8 +128,6 @@ class AbstractPeakKernel:
         plt.legend()
         plt.savefig("{}/raw_state.pdf".format(self.file_analysis_dir))
 
-
-
     def peaks_plots(self):
         plt.clf()
         plt.plot(self.current_q_state, self.current_I_state, label='current_state')
@@ -150,6 +150,7 @@ class AbstractPeakKernel:
         plt.clf()
         plt.plot(self.current_q_state[self.peaks], self.current_I_state[self.peaks], 'rx', label='peaks')
         plt.legend()
+
 
     def background_plot(self):
         plt.clf()
@@ -181,20 +182,22 @@ class AbstractPeakKernel:
         # self.I_filt = self.I_filt[i:]
         pass
 
+    def filtering(self):
+        pass
+
     def background_reduction(self):
         pass
 
     def search_peaks(self, *args):
         pass
 
-
-    def filtering(self):
-        pass
-
     def gathering(self) -> dict:
         pass
 
     def sample_processing(self):
+
+        self.raw_plot()
+
         if self.is_preprocessing:
             self.preprocessing()
 

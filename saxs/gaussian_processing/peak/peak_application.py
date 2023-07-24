@@ -13,13 +13,24 @@ from saxs.gaussian_processing.settings_processing import EXTENSION, ANALYSE_DIR_
 
 class PeakApplication(ApplicationClassificator):
 
-    def __init__(self, data_directory, kernel: AbstractPeakKernel = None):
+    def __init__(self, data_directory,
+                 kernel: AbstractPeakKernel = None,
+                 is_preprocessing=True,
+                 is_background_reduction=True,
+                 is_filtering=True,
+                 is_peak_processing=True,
+                 ):
         super().__init__(data_directory)
 
         self.kernel = kernel
         self.file_analysis_dir_peaks = None
         self.file_analysis_dir = None
         self.samples = get_filenames_without_ext(self.data_directory)
+
+        self.is_preprocessing = is_preprocessing
+        self.is_background_reduction = is_background_reduction
+        self.is_filtering = is_filtering
+        self.is_peak_processing = is_peak_processing
 
     def set_output_peak_directories(self, filename):  # TODO MAKE STATIC
         self.file_analysis_dir = os.path.join(self._result_plots_dir, filename)
@@ -45,10 +56,10 @@ class PeakApplication(ApplicationClassificator):
             peak_classificator = self.kernel(
                                             os.path.join(self.data_directory, sample),
                                             self.file_analysis_dir,
-                                            False,
-                                            True,
-                                            False,
-                                            False)
+                                            self.is_peak_processing,
+                                            self.is_background_reduction,
+                                            self.is_filtering,
+                                            self.is_peak_processing)
 
             self.data[sample] = peak_classificator()
 
