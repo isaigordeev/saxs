@@ -95,8 +95,9 @@ class AbstractPeakKernel:
 
 
     def __call__(self, *args, **kwargs):
+        self.custom_sample_preprocessing()
         self.sample_processing()
-        self.custom_sample_processing()
+        self.custom_sample_postprocessing()
         return self.gathering()
 
     def __str__(self):
@@ -104,7 +105,10 @@ class AbstractPeakKernel:
         return ''.join(self.short_str_type)
 
 
-    def custom_sample_processing(self):
+    def custom_sample_postprocessing(self):
+        pass
+
+    def custom_sample_preprocessing(self):
         pass
 
 
