@@ -57,6 +57,8 @@ class ProminenceKernel(DefaultPeakKernel):
 
         self.current_I_state = medfilt(np.concatenate((noisy_part, noiseless_part)), 3)
 
+        self.total_fit = np.zeros_like(self.current_I_state)
+
     def search_peaks(self, height=1, prominence=0.3):
         self.peaks, self.props = find_peaks(self.current_I_state,
                                             height=height,
@@ -66,9 +68,8 @@ class ProminenceKernel(DefaultPeakKernel):
         # self.current_state_plot()
         # self.peaks_plots()
 
-    def custom_sample_processing(self):
+    def custom_sample_postprocessing(self):
         pass
-
 
         #background reduction
         # with open('without_back_res/{}'.format(self.filename), mode='w', newline='') as file:
