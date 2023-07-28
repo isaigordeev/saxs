@@ -1,7 +1,10 @@
 import json
+import os.path
 from datetime import date, datetime
 
+from saxs import DEFAULT_PHASES_PATH
 from saxs.gaussian_processing.processing_classificator import ApplicationClassificator
+from saxs.gaussian_processing.processing_outils import get_filenames_without_ext
 from saxs.gaussian_processing.settings_processing import *
 
 # from fastdtw import fastdtw
@@ -30,10 +33,18 @@ class PhaseApplication(ApplicationClassificator):
                  'data',
                  'phases_number',
                  'phases_dict')
-    def __init__(self, current_session, data_directory, phases_directory=PHASES_DIR):
-        super().__init__(current_session, data_directory)
 
-        self.phases_directory = '{}'.format(phases_directory) #relative path
+    def __init__(self, data_directory, kernel, phases_directory=DEFAULT_PHASES_PATH):
+        super().__init__(data_directory)
+
+        self.samples = None
+        self.phases_directory = phases_directory
+        self.kernel = kernel
+
+        print(self.data_directory)
+        # filepath, extension = os.path.split(data_directory)
+        # assert extension == '.json'
+
 
         self.phases_coefficients = np.array([])
         self.phases = {}
@@ -41,7 +52,10 @@ class PhaseApplication(ApplicationClassificator):
         self.phases_dict = {}
         self.phases_number = 0
 
+
         self.set_phases()
+        self.load_peak_data()
+
 
 
     def set_phases(self):
@@ -62,15 +76,31 @@ class PhaseApplication(ApplicationClassificator):
         # print(self.phases_coefficients)
         # print(self.phases_dict)
 
-    def data_preparation(self):
-        pass
 
-    def loss(self, f, coeffs):
-        pass
+    def load_peak_data(self):
 
-    def analyze(self):
-        pass
+        with open(self.data_directory, 'r') as f:
+            self.data = json.load(f)
 
-    def gathering(self):
-        pass
+    def write_phase_data(self):  # TODO MAKE STATIC
 
+        # with open('{}.json'.format(self._current_results_dir_session), 'r') as f:
+        #     directory_data = json.load(f)
+        with open(self.data_directory, 'w') as f:
+            json.dump(self.data, f, indent=4, separators=(",", ": "))
+
+    def phase_classification(self):
+
+        self.samples = self.data.keys()
+        for sample in self.samples:
+            # sample = '{}{}'.format(sample_name, sample_ext)
+            print(id(self.data), 'class')
+            phase_classificator = self.kernel(
+                                            sample,
+                                            self.data
+                                            )
+
+            self.data[sample]['predicted_phase'] = phase_classificator()
+
+
+        self.write_phase_data()

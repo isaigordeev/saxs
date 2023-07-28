@@ -28,24 +28,24 @@ class ParabolePeakKernel(ProminenceKernel):
         self.peaks_processed = np.array([])
 
     def negative_reduction(self):
-        self.difference = np.maximum(self.current_I_state, 0)
+        self.current_I_state = np.maximum(self.current_I_state, 0)
 
     def parabole_peak_fitting(self, i):
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
-                left_base = abs(self.peaks[i] - self.props['left_bases'][i])
-                right_base = abs(self.peaks[i] - self.props['right_bases'][i])
+                # left_base = abs(self.peaks[i] - self.props['left_bases'][i])
+                # right_base = abs(self.peaks[i] - self.props['right_bases'][i])
 
-                delta = min(left_base, right_base) / 2
+                # delta = min(left_base, right_base) / 2
 
+                delta = 4
                 start_delta = delta
 
                 period1 = int(self.peaks[i] - delta)
                 period2 = int(self.peaks[i] + delta)
 
-                print(period1, period2, 'perods')
-
-                current_peak_parabole = lambda x, sigma, ampl: parabole(x, self.current_q_state[self.peaks[i]], sigma, ampl)
+                current_peak_parabole = lambda x, sigma, ampl: parabole(x, self.current_q_state[self.peaks[i]], sigma,
+                                                                        ampl)
 
                 popt, pcov = curve_fit(
                     f=current_peak_parabole,
@@ -54,7 +54,6 @@ class ParabolePeakKernel(ProminenceKernel):
                     bounds=([self.delta_q ** 2, 1], [0.05, 4 * self.max_I]),
                     sigma=self.dI[period1:period2]
                 )
-
 
                 period2 = int(self.peaks[i] + start_delta)
                 period1 = int(self.peaks[i] - start_delta)
@@ -75,8 +74,9 @@ class ParabolePeakKernel(ProminenceKernel):
     def gauss_peak_fitting(self, i):
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
+                delta = self.parabole_popt_for_gauss[self.peaks[i]][0] / self.delta_q
 
-                delta = self.parabole_popt_for_gauss[self.peaks[i]][0]/self.delta_q
+                delta /= 2
 
                 period1 = int(self.peaks[i] - delta)
                 period2 = int(self.peaks[i] + delta)
@@ -93,9 +93,7 @@ class ParabolePeakKernel(ProminenceKernel):
                     sigma=self.dI[period1:period2]
                 )
 
-
                 self.current_gauss = current_peak_gauss(self.current_q_state, popt[0], popt[1])
-
 
                 plt.clf()
                 plt.plot(self.current_q_state, self.current_I_state)
@@ -106,7 +104,7 @@ class ParabolePeakKernel(ProminenceKernel):
 
                 plt.title(f'{popt},{np.sqrt(np.diag(pcov))}')
                 plt.savefig('{}gauss_peak_{}.png'.format(self.file_analysis_dir_peaks, self.gaussian_peak_number))
-
+                
                 self.gaussian_peak_number += 1
 
     def gaussian_peak_reduction(self, i):
@@ -114,11 +112,10 @@ class ParabolePeakKernel(ProminenceKernel):
         self.total_fit += self.current_gauss
         self.peaks_processed = np.append(self.peaks_processed, self.peaks[i])
 
-
-    def search_peaks(self, height=1, prominence=0.3):
+    def search_peaks(self, height=1.5, prominence=0.3):  # TODO Optimal parameteres?
         self.sequential_search_peaks(height, prominence)
 
-    def sequential_search_peaks(self, height=1, prominence=0.3):
+    def sequential_search_peaks(self, height, prominence):
 
         peak_counter = 0
 
@@ -134,3 +131,6 @@ class ParabolePeakKernel(ProminenceKernel):
             self.gaussian_peak_reduction(peak_counter)
 
         self.peaks = self.peaks_processed.astype(int)
+
+    def relevant_search_peaks(self):
+        pass

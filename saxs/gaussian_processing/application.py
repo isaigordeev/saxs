@@ -4,7 +4,7 @@ from typing import Any
 
 from .processing_classificator import Application
 from saxs.gaussian_processing.peak.peak_application import PeakApplication
-from saxs.gaussian_processing.phase.abstr_phase import PhaseApplication
+from saxs.gaussian_processing.phase.phase_application import PhaseApplication
 
 
 class ApplicationManager(Application):

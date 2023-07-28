@@ -1,7 +1,7 @@
 import time
 from typing import Any
 
-from saxs.gaussian_processing.phase.abstr_phase import PhaseApplication
+from saxs.gaussian_processing.phase.phase_application import PhaseApplication
 from saxs.gaussian_processing.peak.peak_application import PeakApplication
 from .application import ApplicationManager
 
@@ -62,7 +62,7 @@ class Manager(ApplicationManager):
         directory_peak_classificator = self.peak_kernel(data_directory=self.peak_data_directory)
         print('DIRECTORY {} PEAK CLASSIFICATION'.format(directory_peak_classificator.data_directory))
 
-        directory_peak_classificator.directory_classification()
+        directory_peak_classificator.peak_classification()
 
     def print_data(self):
         print(self.data)
@@ -71,7 +71,7 @@ class Manager(ApplicationManager):
         directory_phase_classificator = self.phase_kernel(data_directory=self.phase_data_directory)
         print('DIRECTORY {} PHASE CLASSIFICATION'.format(directory_phase_classificator.data_directory))
 
-        directory_phase_classificator.directory_classification()
+        directory_phase_classificator.peak_classification()
 
     def custom_process(self, filename):
         peaks = self.peak_classificator(current_session=self.current_session,
