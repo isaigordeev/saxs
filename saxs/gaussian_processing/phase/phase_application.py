@@ -97,7 +97,9 @@ class PhaseApplication(ApplicationClassificator):
             print(id(self.data), 'class')
             phase_classificator = self.kernel(
                                             sample,
-                                            self.data
+                                            self.data,
+                                            self.phases_dict,
+                                            self.phases_coefficients
                                             )
 
             self.data[sample]['predicted_phase'] = phase_classificator()
