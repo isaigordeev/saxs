@@ -17,18 +17,21 @@ def gauss(x, mu, sigma, ampl):
 
 
 def parabole(x, mu, sigma, ampl):
-    return ampl*(1 - (x - mu) ** 2 / (sigma ** 2))
+    return ampl * (1 - (x - mu) ** 2 / (sigma ** 2))
+
 
 def gaussian_sum(x, *params):
     y = np.zeros_like(x)
     for i in range(0, len(params), 3):
-        mean, amplitude , std_dev   = params[i:i+3]
-        y += amplitude * np.exp(-((x - mean) / std_dev)**2)
+        mean, amplitude, std_dev = params[i:i + 3]
+        y += amplitude * np.exp(-((x - mean) / std_dev) ** 2)
     return y
+
 
 def moving_average(data, window_size):
     window = np.ones(window_size) / window_size
     return np.convolve(data, window, mode='same')
+
 
 def timer_decorator(func):
     @wraps(func)
@@ -39,4 +42,5 @@ def timer_decorator(func):
         execution_time = end_time - start_time
         print(f"Function {func.__name__} executed in {execution_time} seconds")
         return result
+
     return wrapper

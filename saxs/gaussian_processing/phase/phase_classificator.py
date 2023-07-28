@@ -10,14 +10,19 @@ from saxs.gaussian_processing.settings_processing import ANALYSE_DIR_SESSIONS, A
 
 
 class AbstractPhaseKernel:
-    def __init__(self, sample, data):
+    def __init__(self, sample, data, phases_dict, phases_coefficients):
 
+        self.phases_coefficients = phases_coefficients
+        self.phases_dict = phases_dict
         self.data = data
-        print(id(self.data), 'inst')
-        print(id(data), 'inst')
+        self.sample = sample
+        self.analyzed_q = np.array([])
+        self.phases_number = len(self.phases_coefficients)
+        self.distances = np.zeros(self.phases_number)
+
 
     def __call__(self, *args, **kwargs):
-        pass
+        return self.point_classification()
 
     def set_directories(self, sample_name):
         self.filename_analyse_dir_phases = '../' + ANALYSE_DIR_SESSIONS + sample_name + '/phases'
@@ -25,16 +30,8 @@ class AbstractPhaseKernel:
         if not os.path.exists(self.filename_analyse_dir_phases):
             os.mkdir(self.filename_analyse_dir_phases)
 
-    def read_data(self):
-        with open(self.data_directory, 'r') as file:  # NOTE make it better with string formatting
-            self.data = json.load(file)
-
-    def read_sample_data(self, sample_name):  # better return?
-        self.sample_data = self.data[sample_name]
-        self.q = np.array(self.sample_data['q'])
-
-    def q_preprocessing(self):
-        self.preprocessed_q = self.q / self.q[0]
+    def preprocessing_q(self):
+        self.preprocessed_q = self.analyzed_q / self.analyzed_q[0]
         self.preprocessed_q = self.preprocessed_q[1:]
 
     def absolute_sequence_comparison(self):
@@ -44,46 +41,21 @@ class AbstractPhaseKernel:
         # print(self.preprocessed_q)
         # print(self.distances)
 
-    def point_classification(self, sample_name):
+    def point_classification(self):
         # self.set_directories(sample_name)
-        self.read_sample_data(sample_name)
-        if len(self.q) > 1:
-            self.q_preprocessing()
+        self.read_sample_data()
+
+        if len(self.analyzed_q) > 1:
+            self.preprocessing_q()
             self.absolute_sequence_comparison()
-            self.data[sample_name]['phase'] = self.phases_dict[np.argmax(self.distances)]
-            self.write_data(sample_name)
-        elif len(self.q) == 1:
-            self.data[sample_name]['phase'] = 'lam'
-            self.write_data(sample_name)
+
+            return self.phases_dict[np.argmax(self.distances)]
+        elif len(self.analyzed_q) == 1:
+            return 'lamellar'
         else:
-            self.data[sample_name]['phase'] = 'blanc'
-            self.write_data(sample_name)
+            return 'blanc'
 
-    def directory_classification(self, sample_names=None):
-        if sample_names is not None:
-            for sample in sample_names:
-                # print(sample)
-                self.point_classification(sample)
+    def read_sample_data(self):
+        self.analyzed_q = self.data[self.sample]['q']
+        self.analyzed_q = np.array(self.analyzed_q)
 
-    def write_data(self, sample_name):
-        # print(self.phases_dict[np.argmax(self.distances)])
-        with open(self.data_directory, 'w') as f:
-            json.dump(self.data, f, indent=4, separators=(",", ": "))
-
-# from settings_processing import *
-# from datetime import date, datetime
-# #
-# #
-# #
-# now = datetime.now()
-#
-# today = now.today().date()
-# print(today)
-# current_time = now.strftime("%H:%M:%S")
-
-# works
-# b = DefaultPhaseClassificator('../' + ANALYSE_DIR_SESSIONS_RESULTS + '2023-07-06/' + '04:59:02.json', now)
-# b.classification('075776_treated_xye')
-
-# b = DefaultPhaseClassificator(now, ANALYSE_DIR_SESSIONS_RESULTS + '2023-07-07/' + '01:26:01.json')
-# b.directory_classification()
