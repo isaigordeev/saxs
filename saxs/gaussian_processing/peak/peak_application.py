@@ -49,10 +49,11 @@ class PeakApplication(ApplicationClassificator):
                   'w') as f:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
-    def directory_classification(self):
+    def peak_classification(self):
         for sample_name, sample_ext in self.samples:
             sample = '{}{}'.format(sample_name, sample_ext)
             self.set_output_peak_directories(sample)
+
             peak_classificator = self.kernel(
                                             os.path.join(self.data_directory, sample),
                                             self.file_analysis_dir,
@@ -65,24 +66,3 @@ class PeakApplication(ApplicationClassificator):
 
 
         self.write_peaks_data()
-
-    def background_reduction(self):
-        pass
-
-    def filtering(self):
-        pass
-
-    def peak_searching(self, height, distance, prominence):
-        pass
-
-    def peak_fitting(self, i, width_factor):
-        pass
-
-    def peak_processing(self):
-        pass
-
-    def gathering(self):
-        pass
-
-    def sum_total_fit(self):
-        pass

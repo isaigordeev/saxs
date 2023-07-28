@@ -148,8 +148,6 @@ class AbstractPeakKernel:
         plt.legend()
         plt.savefig("{}/final_plot.pdf".format(self.file_analysis_dir))
 
-
-
     def extended_peaks_plots(self):
         plt.clf()
         plt.plot(self.current_q_state[self.peaks], self.current_I_state[self.peaks], 'rx', label='peaks')

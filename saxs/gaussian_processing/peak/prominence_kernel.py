@@ -64,6 +64,9 @@ class ProminenceKernel(DefaultPeakKernel):
                                             height=height,
                                             prominence=prominence)
 
+        # print(self.props['left_bases'])
+        # print(self.props['right_bases'])
+        # print(self.peaks)
         # print(self.current_q_state[self.peaks])
         # self.current_state_plot()
         # self.peaks_plots()
@@ -82,6 +85,7 @@ class ProminenceKernel(DefaultPeakKernel):
         return {
             'peak_number': peak_number,
             'q': self.current_q_state[self.peaks].tolist(),
+            'peaks': self.peaks.tolist(),
             # 'I': self.current_I_state[self.peaks].tolist(),
 
             # 'kernel': self.str_type
