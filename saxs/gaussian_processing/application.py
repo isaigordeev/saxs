@@ -9,9 +9,9 @@ from saxs.gaussian_processing.phase.phase_application import PhaseApplication
 
 class ApplicationManager(Application):
     def __init__(self,
-                 current_session=None,
                  peak_kernel: PeakApplication = None,
                  phase_kernel: PhaseApplication= None,
+                 current_session=None,
                  custom_output_directory=None
                  ) -> None:
         super().__init__(current_session, custom_output_directory)
@@ -25,12 +25,3 @@ class ApplicationManager(Application):
 
         self.peak_classification = True if self.peak_kernel is not None else False
         self.phase_classification = True if self.phase_kernel is not None else False
-
-        # self.set_directories()
-        self.write_data()  # create json
-
-
-    def write_data(self):
-        write_json_path = os.path.join(self._current_results_dir_session, '{}.json'.format(self.current_time))
-        with open(write_json_path, 'w') as f:
-            json.dump(self.data, f)

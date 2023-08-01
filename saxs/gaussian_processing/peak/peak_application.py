@@ -45,7 +45,7 @@ class PeakApplication(ApplicationClassificator):
 
         # with open('{}.json'.format(self._current_results_dir_session), 'r') as f:
         #     directory_data = json.load(f)
-        with open('{}{}_{}.json'.format(self._current_results_dir_session, self.current_time, self.kernel.class_info()),
+        with open(self._default_peak_data_path,
                   'w') as f:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
