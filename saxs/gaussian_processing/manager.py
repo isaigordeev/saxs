@@ -1,9 +1,11 @@
 import time
 from typing import Any
 
-from saxs.gaussian_processing.phase.phase_application import PhaseApplication
-from saxs.gaussian_processing.peak.peak_application import PeakApplication
 from .application import ApplicationManager
+from .peak.abstract_kernel import AbstractPeakKernel
+from .peak.peak_application import PeakApplication
+from .phase.phase_application import PhaseApplication
+from .phase.phase_classificator import AbstractPhaseKernel
 
 time_start1 = time.time()
 
@@ -21,8 +23,8 @@ class Manager(ApplicationManager):
     def __init__(self,
                  peak_data_directory='test_processing_data/',
                  phase_data_directory=None,
-                 peak_kernel: PeakApplication=None,
-                 phase_kernel: PhaseApplication=None,
+                 peak_kernel: AbstractPeakKernel=None,
+                 phase_kernel: AbstractPhaseKernel=None,
                  current_session=None) -> None:
 
         super().__init__(current_session=current_session,
@@ -30,12 +32,15 @@ class Manager(ApplicationManager):
                          phase_kernel=phase_kernel)
 
         self.peak_data_directory = os.path.join(self.executing_path, peak_data_directory)
+        self.phase_data_directory = self._default_peak_data_path if phase_data_directory is None else phase_data_directory
 
 
-        if phase_data_directory is not None:
-            self.phase_data_directory = phase_data_directory
-        else:
-            self.phase_data_directory = self._current_results_dir_session
+    def __call__(self):
+        a = PeakApplication(self.peak_data_directory, self.peak_kernel)
+        a.peak_classification()
+
+        b = PhaseApplication(self.phase_data_directory, self.phase_kernel)
+        b.phase_classification()
 
 
 

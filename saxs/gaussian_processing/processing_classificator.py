@@ -33,10 +33,10 @@ class Application(AbstractApplication):
     _result_plots_dir = None
     _total_results_dir_ = None
     _current_results_dir_session = None
+    _default_peak_data_path = None
 
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
-
         return instance
 
     def __init__(self, current_session=None, custom_output_directory=None):
@@ -44,6 +44,9 @@ class Application(AbstractApplication):
 
         self.custom_output_directory = custom_output_directory
         self.set_output_directories()
+
+        Application._default_peak_data_path = os.path.join(self._current_results_dir_session,
+                                               '{}.json'.format(self.current_time))
 
     def set_output_directories(self):
 
@@ -70,6 +73,8 @@ class Application(AbstractApplication):
             os.mkdir(Application._total_results_dir_)
         if not os.path.exists(Application._current_results_dir_session):
             os.mkdir(Application._current_results_dir_session)
+
+
 
 
 @dataclass
