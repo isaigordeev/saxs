@@ -34,29 +34,3 @@ class ApplicationManager(Application):
         write_json_path = os.path.join(self._current_results_dir_session, '{}.json'.format(self.current_time))
         with open(write_json_path, 'w') as f:
             json.dump(self.data, f)
-
-    def point_peak_processing(self, sample):
-        pass
-
-    def point_phase_processing(self, sample):
-        pass
-
-    def directory_peak_processing(self):
-        pass
-
-    def directory_phase_processing(self):
-        pass
-
-    def point_processing(self, sample):
-        pass
-
-
-    def directory_processing(self):
-        self.directory_peak_processing()
-        self.directory_phase_processing()
-
-    def custom_directory_processing(self):
-        self.custom_process()
-
-    def custom_process(self):
-        pass

@@ -104,31 +104,6 @@ def background_plot(q, I):
     # plt.savefig('1')
 
 
-def background_reduction(q, I, dI):
-    i = np.argmax(q > START)
-    q, I, dI = q[i:], I[i:], dI[i:]
-
-    zeros = np.zeros(len(q))
-    total_fit = zeros
-    peaks_plots = np.zeros((20, len(q)))
-
-    popt, _ = curve_fit(
-        f=background_hyberbole,
-        xdata=q,
-        ydata=I,
-        p0=(3, 2),
-        sigma=dI
-    )
-
-
-def filtering(I, model):
-    I_background_filtered = I - BACKGROUND_COEF * model
-    difference = gaussian_filter(I_background_filtered,
-                                      sigma=SIGMA_FILTER,
-                                      truncate=TRUNCATE,
-                                      cval=0)
-
-
 def calculate_absolute_difference(sequence, target):
     sequence = sequence[:len(target)]
     absolute_difference = np.sum([1/abs(x-y) for x,y in zip(sequence,target)])
