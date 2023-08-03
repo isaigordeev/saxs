@@ -4,7 +4,7 @@ from saxs.gaussian_processing.manager import Manager
 from saxs.gaussian_processing.peak.peak_application import PeakApplication
 from saxs.gaussian_processing.phase.phase_application import PhaseApplication
 
-from saxs.gaussian_processing.peak.prominence_kernel import ProminenceKernel
+from saxs.gaussian_processing.peak.prominence_kernel import ProminencePeakKernel
 from saxs.gaussian_processing.peak.parabole_kernel import ParabolePeakKernel
 from saxs.gaussian_processing.phase.phase_classificator import AbstractPhaseKernel
 
@@ -16,11 +16,12 @@ from saxs.gaussian_processing.phase.phase_classificator import AbstractPhaseKern
 # b = PhaseApplication('/Users/isaigordeev/Desktop/2023/saxs/results/session_results/2023-07-28/22:57:00_prominence_kernel.json', AbstractPhaseKernel)
 # b.phase_classification()
 
-a = Manager(peak_kernel=ProminenceKernel, phase_kernel=AbstractPhaseKernel)
+a = Manager(peak_kernel=ParabolePeakKernel, phase_kernel=AbstractPhaseKernel)
 
 
-
-
+a()
+# if __main__ == '__main__'
+# a()
 # test.directory_processing()
 
 

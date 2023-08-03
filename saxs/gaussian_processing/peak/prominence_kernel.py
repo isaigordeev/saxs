@@ -10,7 +10,7 @@ from saxs.gaussian_processing.peak.default_kernel import DefaultPeakKernel
 from saxs.gaussian_processing.settings_processing import START
 
 
-class ProminenceKernel(DefaultPeakKernel):
+class ProminencePeakKernel(DefaultPeakKernel):
     str_type = 'prominence_kernel'
     short_str_type = 'prom_kern'
 
@@ -101,7 +101,7 @@ class ProminenceKernel(DefaultPeakKernel):
             # 'loss_ratio': self.final_loss / self.start_loss
         }
 
-class SyntheticKernel(ProminenceKernel):
+class SyntheticPeakKernel(ProminencePeakKernel):
     def __init__(self, data_dir,
                  is_preprocessing=False,
                  is_background_reduction=False,
@@ -113,7 +113,7 @@ class SyntheticKernel(ProminenceKernel):
                          is_filtering,
                          )
 
-class RobustProminence(ProminenceKernel):
+class RobustProminencePeak(ProminencePeakKernel):
     def __init__(self, data_dir,
                  is_preprocessing=True,
                  is_background_reduction=True,
