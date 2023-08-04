@@ -2,17 +2,9 @@
 
 Gaussian processing and transformer model for classification SAXS data 
 
-TODO
+for running
 
-- ROBUST FLITERING
-- finish 4 models 
-    - Convolutional or Transformer Model + RNN with peak positions?
-- cache for DL
-- packaging
-– dataset image map creation
-____
+choose peak and phase kernels (algorithms of classification) for your data
+and its paths to .csv files. 
 
-Algo special 
-
-first peak and the others of the first wave of searching have the priority
-after this priority decreases for Phase classification class 
+after call an instance of manager class. 
