@@ -1,65 +1,75 @@
 import json
 import time
 
+from saxs.gaussian_processing.manager import Manager
 from saxs.gaussian_processing.phase.custom_phase_classification import *
+from saxs.saxs_model.phase_prediction import prediction_from_csv, prediction_from_npy
+import torch
 
-today = date.today()
-
-now = datetime.now()
-current_time = now.strftime("%H:%M:%S")
-
-
-
-current_session = ANALYSE_DIR_SESSIONS + str(today) + '/'
-current_session_results = ANALYSE_DIR_SESSIONS_RESULTS + str(today) + '/'
-
-if not os.path.exists(current_session):
-    os.mkdir(current_session)
-if not os.path.exists(current_session_results):
-    os.mkdir(current_session_results)
-
-
-def get_filenames(folder_path):
-    for filename in os.listdir(folder_path):
-        if os.path.isfile(os.path.join(folder_path, filename)):
-            yield filename
+class PipelineAbstract: #TODO TYPING
+    __slots__ = (
+                 "data_path",
+                 "model",
+                 "peak_kernel",
+                 "phase_kernel",
+                 "model_path",
+                 "model",
+                 "is_model_prediction",
+                 "processing_manager"
+                 )
 
 
-def get_filenames_without_ext(folder_path):
-    for filename in os.listdir(folder_path):
-        if os.path.isfile(os.path.join(folder_path, filename)):
-            name, extension = os.path.splitext(filename)
-            yield name
+class Pipeline(PipelineAbstract): 
+    def __init__(self, data_path, model_path, peak_kernel, phase_kernel):
+        self.model = None
+        self.processing_manager = None
+        self.data_path = data_path
+        self.model_path = model_path
+        self.peak_kernel = peak_kernel
+        self.phase_kernel = phase_kernel
+        
+        self.is_model_prediction = True if self.model_path is not None else False
+        self.is_processing_prediction = True if self.peak_kernel is not None\
+                                                and self.phase_kernel is not None else False
+
+        self.setting()
 
 
-data = {}
-files_number = 0
-time_start = time.time()
+    def __call__(self, *args, **kwargs):
+        self.prediction()
+        
+        
+    
+    def setting(self):
+        if self.is_model_prediction:
+            self.load_model()
+        if self.is_processing_prediction:
+            self.processing_manager = Manager(self.data_path, self.peak_kernel, self.phase_kernel)
+    
+    def load_model(self):
+        self.model = torch.load(self.model_path)
+    
+    def model_prediction(self):
+        filename, ext = os.path.split(self.data_path)
+        if ext == ".csv":
+            prediction_from_csv(self.model, self.data_path) #TODO prediction writes in json
+        if ext == ".npy":
+            prediction_from_npy(self.model, self.data_path) #TODO prediction writes in json
 
-get_breaked = True
+    def processing_prediction(self):
+        self.processing_manager()
 
-for filename in get_filenames_without_ext(DATA_DIR):
-    peaks = Peaks(filename, DATA_DIR, current_session)
-    peaks.background_reduction()
-    peaks.filtering()
-    peaks.background_plot()
-    peaks.filtering_negative()
-    peaks.peak_processing()
-    peaks.result_plot()
-    data[peaks.file] = peaks.gathering()
-    files_number += 1
-    # print(peaks.peaks_data)
-    if data[peaks.file]['peak_number'] == 0:
-        continue
+    def prediction(self):
+        if self.is_model_prediction:
+            self.model_prediction()
+        if self.is_processing_prediction:
+            self.processing_prediction()
 
-    phases = Fastdw(filename, current_session, defined_phases, class_names, data[peaks.file])
-    phases.preset_plot()
-    phases.data_preparing()
-    phases.alignement()
-    data[peaks.file] = phases.gathering()
+    
+        
+        
+        
+        
+    
+    
 
-time_final = time.time()
-print('Taken: ', time_final - time_start)
-
-with open(current_session_results + current_time + f'_{files_number}.json', 'w') as f:
-    json.dump(data, f, indent=4, separators=(",", ": "))
