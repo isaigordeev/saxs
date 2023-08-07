@@ -45,18 +45,14 @@ class PhaseApplication(ApplicationClassificator):
         # filepath, extension = os.path.split(data_directory)
         # assert extension == '.json'
 
-
         self.phases_coefficients = np.array([])
         self.phases = {}
         self.data = {}
         self.phases_dict = {}
         self.phases_number = 0
 
-
         self.set_phases()
         self.load_peak_data()
-
-
 
     def set_phases(self):
         with open(self.phases_directory, 'r') as file:  # NOTE make it better with string formatting
@@ -75,7 +71,6 @@ class PhaseApplication(ApplicationClassificator):
 
         # print(self.phases_coefficients)
         # print(self.phases_dict)
-
 
     def load_peak_data(self):
 
@@ -96,13 +91,12 @@ class PhaseApplication(ApplicationClassificator):
             # sample = '{}{}'.format(sample_name, sample_ext)
             print(id(self.data), 'class')
             phase_classificator = self.kernel(
-                                            sample,
-                                            self.data,
-                                            self.phases_dict,
-                                            self.phases_coefficients
-                                            )
+                sample,
+                self.data,
+                self.phases_dict,
+                self.phases_coefficients
+            )
 
             self.data[sample]['predicted_phase'] = phase_classificator()
-
 
         self.write_phase_data()
