@@ -19,6 +19,8 @@ class AbstractPhaseKernel:
         self.phases_number = len(self.phases_coefficients)
         self.distances = np.zeros(self.phases_number)
 
+        assert data is not None
+
     def __call__(self, *args, **kwargs):
         return self.phase_classification()
 
@@ -28,7 +30,7 @@ class AbstractPhaseKernel:
         if not os.path.exists(self.filename_analyse_dir_phases):
             os.mkdir(self.filename_analyse_dir_phases)
 
-    def preprocessing_q(self):
+    def default_preprocessing_q(self):
         self.preprocessed_q = self.analyzed_q / self.analyzed_q[0]
         self.preprocessed_q = self.preprocessed_q[1:]
 
@@ -38,7 +40,7 @@ class AbstractPhaseKernel:
         self.read_sample_data()
 
         if len(self.analyzed_q) > 1:
-            self.phase_processing()
+            self.distances = self.phase_processing()
 
             return self.phases_dict[np.argmax(self.distances)]
         elif len(self.analyzed_q) == 1:

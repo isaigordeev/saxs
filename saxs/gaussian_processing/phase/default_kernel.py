@@ -3,12 +3,12 @@ from saxs.gaussian_processing.processing_outils import calculate_absolute_differ
 
 
 class DefaultPhaseKernel(AbstractPhaseKernel):
-    def __init__(self, data, sample, phases_dict, phases_coefficients):
+    def __init__(self, sample, data, phases_dict, phases_coefficients):
         super().__init__(sample, data, phases_dict, phases_coefficients)
 
 
     def phase_processing(self):
-        self.preprocessing_q()
+        self.default_preprocessing_q()
         self.absolute_sequence_comparison()
 
 
