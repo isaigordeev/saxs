@@ -109,6 +109,15 @@ def calculate_absolute_difference(sequence, target):
     absolute_difference = np.sum([1/abs(x-y) for x,y in zip(sequence,target)])
     return absolute_difference
 
+def calculate_first_peaks(sequence, target):
+    if len(target) > 0:
+        sequence = sequence[:len(target)]
+        absolute_difference = abs(sequence[0]-target[0])
+        return 1/absolute_difference
+    else: 
+        print("Can not be classified")
+        return None
+
 # I, _, __, q = load_generated_data('cubic')
 #
 # write_generated_data_to_csv(q, I[7], 'sample.csv')

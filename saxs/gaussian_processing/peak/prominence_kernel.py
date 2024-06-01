@@ -43,8 +43,9 @@ class ProminencePeakKernel(DefaultPeakKernel):
 
     def detecting_relevant_noisy(self):
         self.peaks, self.props = find_peaks(self.current_I_state, height=1, prominence=1)
-
-        self.noisy_relevant_cut_point = self.props["right_bases"][0]
+        if len(self.props["right_bases"]) > 0:
+            self.noisy_relevant_cut_point = self.props["right_bases"][0]
+        else: self.noisy_relevant_cut_point = 100
 
     def filtering_decomposition(self):
         # noisy_part = np.ones(noisy_indice)
@@ -59,10 +60,11 @@ class ProminencePeakKernel(DefaultPeakKernel):
 
         self.total_fit = np.zeros_like(self.current_I_state)
 
-    def search_peaks(self, height=1, prominence=0.3):
+    def search_peaks(self, height=1, prominence=0.3, distance=10):
         self.peaks, self.props = find_peaks(self.current_I_state,
                                             height=height,
-                                            prominence=prominence)
+                                            prominence=prominence, distance=distance)
+        print(self.props)
 
         # print(self.props['left_bases'])
         # print(self.props['right_bases'])
