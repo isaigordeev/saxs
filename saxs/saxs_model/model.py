@@ -159,8 +159,6 @@ class OriginalViT(nn.Module):
 
         return x
 
-        nn.Transformer
-
 
 class SAXSViT10(OriginalViT):
     def __init__(self, img_size, in_channels, patch_size, num_transformer_layers, embedding_dim, mlp_size, num_heads,
@@ -169,9 +167,6 @@ class SAXSViT10(OriginalViT):
         super().__init__(img_size, in_channels, patch_size, num_transformer_layers, embedding_dim, mlp_size, num_heads,
                          attn_dropout, mlp_dropout, embedding_dropout, num_classes)
 
-
-
-class NLP
 
 
 class SAXSViT(nn.Module):

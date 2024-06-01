@@ -40,8 +40,11 @@ class AbstractPhaseKernel:
         self.read_sample_data()
 
         if len(self.analyzed_q) > 1:
-            self.distances = self.phase_processing()
+            
+            self.phase_processing()
 
+            print("DIST ", self.distances)
+            print(self.phases_dict[np.argmax(self.distances)])
             return self.phases_dict[np.argmax(self.distances)]
         elif len(self.analyzed_q) == 1:
             return 'lamellar'
