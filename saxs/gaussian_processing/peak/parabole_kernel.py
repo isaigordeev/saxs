@@ -102,7 +102,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
                 self.current_gauss = current_peak_gauss(self.current_q_state, popt[0], popt[1])
 
-                self.peak_params = np.append(self.peak_params, self.I_background_filtered[self.peaks[i]])
+                self.peak_params = np.append(self.peak_params, self.current_q_state[self.peaks[i]])
                 self.peak_params = np.append(self.peak_params, popt[1])
                 self.peak_params = np.append(self.peak_params, popt[0])
 
@@ -163,6 +163,7 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
                          is_filtering,
                          is_peak_processing
                          )
+        self.fitted_peak_params = None
 
     def gaussian_sum(self, x, *params):
         y = np.zeros_like(x)
@@ -176,7 +177,6 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
 
     def sum_total_fit(self):
         if len(self.peak_params) != 0:
-            print(self.peak_params)
 
             def loss_function(params):
                 # y_pred = gaussian_sum(self.q, *params)
@@ -187,10 +187,19 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
 
             result = minimize(loss_function, self.peak_params, method='BFGS')
             fitted_params = result.x
-            self.params = fitted_params
+            self.fitted_peak_params = fitted_params
             y_fit = self.gaussian_sum(self.current_q_state, *fitted_params)
+            print("fit", self.fitted_peak_params)
 
-            plt.plot(self.current_q_state, y_fit)
+            plt.clf()
+            plt.plot(self.current_q_state, y_fit, label="isit?")
+            plt.plot(self.current_q_state, self.total_fit, label="dd")
+            plt.plot(self.current_q_state, self.I_background_filtered, label="sm?")
+            # plt.plot(self.current_q_state, self.I_cut, label="raw?")
+            # plt.plot(self.current_q_state, self.I_raw, label="raw?")
+            plt.legend()
+            plt.show()
 
     def postprocessing(self):
         print(self.peak_params)
+        self.sum_total_fit()
