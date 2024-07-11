@@ -27,5 +27,3 @@ a()
 # if __main__ == '__main__'
 # a()
 # test.directory_processing()
-
-

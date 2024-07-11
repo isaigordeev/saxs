@@ -13,6 +13,7 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
     def __init__(self, data_dir, file_analysis_dir,
                  is_preprocessing=True,
+                 is_postprocessing=True,
                  is_background_reduction=True,
                  is_filtering=True,
                  is_peak_processing=True,
@@ -20,6 +21,7 @@ class DefaultPeakKernel(AbstractPeakKernel):
         super().__init__(data_dir,
                          file_analysis_dir,
                          is_preprocessing,
+                         is_postprocessing,
                          is_background_reduction,
                          is_filtering,
                          is_peak_processing
