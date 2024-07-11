@@ -19,9 +19,9 @@ from saxs.gaussian_processing.phase.phase_classificator import AbstractPhaseKern
 # b = PhaseApplication('/Users/isaigordeev/Desktop/2023/saxs/results/session_results/2023-07-28/22:57:00_prominence_kernel.json', AbstractPhaseKernel)
 # b.phase_classification()
 
-# a = Manager(peak_kernel=ParabolePeakKernel, phase_kernel=DefaultPhaseKernel)
+a = Manager(peak_kernel=ParabolePeakKernel, phase_kernel=DefaultPhaseKernel)
 
-a = Manager(peak_kernel=ProminencePeakKernel, phase_kernel=DefaultPhaseKernel)
+# a = Manager(peak_kernel=ProminencePeakKernel, phase_kernel=DefaultPhaseKernel)
 a()
 
 # if __main__ == '__main__'
