@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, minimize
 
 from .prominence_kernel import ProminencePeakKernel
 from saxs.gaussian_processing.functions import parabole, gauss
@@ -28,6 +28,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
         self.parabole_popt_for_gauss = {}
         self.current_gauss = np.array([])
         self.peaks_processed = np.array([])
+        self.peak_params = np.array([])  # mean, amlitude, std
 
     def negative_reduction(self):
         self.current_I_state = np.maximum(self.current_I_state, 0)
@@ -88,11 +89,8 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 if period2 >= len(self.peaks):
                     period1 = len(self.peaks) - 1
 
-
                 current_peak_gauss = lambda x, sigma, ampl: gauss(x, self.current_q_state[self.peaks[i]], sigma, ampl)
                 print("y_data", self.current_I_state)
-
-
 
                 popt, pcov = curve_fit(
                     f=current_peak_gauss,
@@ -104,6 +102,10 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
                 self.current_gauss = current_peak_gauss(self.current_q_state, popt[0], popt[1])
 
+                self.peak_params = np.append(self.peak_params, self.I_background_filtered[self.peaks[i]])
+                self.peak_params = np.append(self.peak_params, popt[1])
+                self.peak_params = np.append(self.peak_params, popt[0])
+
                 plt.clf()
                 plt.plot(self.current_q_state, self.current_I_state)
                 plt.plot(self.current_q_state, self.current_gauss)
@@ -113,7 +115,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
                 plt.title(f'{popt},{np.sqrt(np.diag(pcov))}')
                 plt.savefig('{}gauss_peak_{}.png'.format(self.file_analysis_dir_peaks, self.gaussian_peak_number))
-                
+
                 self.gaussian_peak_number += 1
 
     def gaussian_peak_reduction(self, i):
@@ -141,53 +143,54 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
         self.peaks = self.peaks_processed.astype(int)
 
+    def relevant_search_peaks(self):
+        pass
 
-    def gaussian_sum_non_fit_q(self, x, *params):
+
+class RobustParabolePeakKernel(ParabolePeakKernel):
+    def __init__(self, data_dir, file_analysis_dir,
+                 is_preprocessing=True,
+                 is_postprocessing=True,
+                 is_background_reduction=True,
+                 is_filtering=True,
+                 is_peak_processing=True
+                 ):
+
+        super().__init__(data_dir, file_analysis_dir,
+                         is_preprocessing,
+                         is_postprocessing,
+                         is_background_reduction,
+                         is_filtering,
+                         is_peak_processing
+                         )
+
+    def gaussian_sum(self, x, *params):
         y = np.zeros_like(x)
         number = 0
         for i in range(0, len(params), 3):
             mean, amplitude, std_dev = params[i:i + 3]
-            y += amplitude * np.exp(-((x - self.peaks_analysed_q[number]) / std_dev) ** 2)
+            # y += amplitude * np.exp(-((x - self.I_background_filtered[self.peaks[number]]) / std_dev) ** 2)
+            y += amplitude * np.exp(-((x - mean) / std_dev) ** 2)
             number += 1
         return y
 
     def sum_total_fit(self):
-        if len(self.params) != 0:
-            print(self.params)
+        if len(self.peak_params) != 0:
+            print(self.peak_params)
 
             def loss_function(params):
                 # y_pred = gaussian_sum(self.q, *params)
-                y_pred = self.gaussian_sum_non_fit_q(self.q, *params)
+                y_pred = self.gaussian_sum(self.current_q_state, *params)
 
                 # return np.sum((y_pred - self.I_background_filtered) ** 2)
-                return np.sum((y_pred - self.smoothed_I) ** 2)
+                return np.sum((y_pred - self.I_background_filtered) ** 2)
 
-            result = minimize(loss_function, self.params, method='BFGS')
+            result = minimize(loss_function, self.peak_params, method='BFGS')
             fitted_params = result.x
             self.params = fitted_params
-            y_fit = gaussian_sum(self.q, *fitted_params)
+            y_fit = self.gaussian_sum(self.current_q_state, *fitted_params)
 
-            plt.clf()
-            plt.title(str(sorted(self.params.tolist()[1::3])))
-            plt.plot(self.q, self.I_cut_background_reduced, 'g--', label='raw')
-            plt.plot(self.q, y_fit, 'r-', label='found ' + str(self.peak_number))
+            plt.plot(self.current_q_state, y_fit)
 
-            for x in self.peaks_x:
-                plt.axvline(x, color='red', linestyle='--', label='Vertical Line')
-
-            plt.legend()
-            plt.xlabel('x')
-            plt.ylabel('y')
-
-            plt.savefig(self.file_analyse_dir + '/xx_total_fit_' + self.filename + '.pdf')
-            # plt.show()
-
-        else:
-            plt.plot(self.q, self.I_cut_background_reduced, 'g--', label='not found')
-            plt.legend()
-            plt.xlabel('x')
-            plt.ylabel('y')
-            plt.savefig(self.file_analyse_dir + '/xx_not_found_' + self.filename + '.pdf')
-
-    def relevant_search_peaks(self):
-        pass
+    def postprocessing(self):
+        print(self.peak_params)
