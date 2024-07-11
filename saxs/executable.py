@@ -6,7 +6,6 @@ from saxs.gaussian_processing.phase.phase_classificator import AbstractPhaseKern
 
 
 
-
 def main():
     now = datetime.now()
 
