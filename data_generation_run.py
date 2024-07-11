@@ -1,5 +1,4 @@
-from saxs.data_generation.processing import Processing
-from saxs.data_generation.data_visualization import load_data, plot_saxs, plot_saxs_featuremap
+from third_party.data_generation import Processing
 from saxs.data_generation.generation import Generator
 from saxs.data_generation import DEFAULT_CONFIG_PATH
 

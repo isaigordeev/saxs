@@ -19,14 +19,14 @@ now = datetime.now()
 
 today = now.today().date()
 
+
 class Manager(ApplicationManager):
     def __init__(self,
                  peak_data_directory='test_processing_data/',
                  phase_data_directory=None,
-                 peak_kernel: AbstractPeakKernel=None,
-                 phase_kernel: AbstractPhaseKernel=None,
+                 peak_kernel: AbstractPeakKernel = None,
+                 phase_kernel: AbstractPhaseKernel = None,
                  current_session=None) -> None:
-
         super().__init__(current_session=current_session,
                          peak_kernel=peak_kernel,
                          phase_kernel=phase_kernel)
@@ -34,13 +34,9 @@ class Manager(ApplicationManager):
         self.peak_data_directory = os.path.join(self.executing_path, peak_data_directory)
         self.phase_data_directory = self._default_peak_data_path if phase_data_directory is None else phase_data_directory
 
-
     def __call__(self):
         a = PeakApplication(self.peak_data_directory, self.peak_kernel)
         a.peak_classification()
 
         b = PhaseApplication(self.phase_data_directory, self.phase_kernel)
         b.phase_classification()
-
-
-
