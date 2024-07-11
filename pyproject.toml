@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "saxs"
+version = "0.1.0"
+description = ""
+authors = ["Isai Gordeev <isai.gordeev.2022@polytechnique.org>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "2.1.0"
+numpy = "^2.0.0"
+scipy = "^1.14.0"
+tqdm = "^4.66.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
