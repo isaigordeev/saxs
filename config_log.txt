@@ -1,8 +1,0 @@
-{
-  "phase": "cubic",
-  "params": [[40, 60], [0.05, 0.17], [0.01, 2]],
-  "lat_num": 2,
-  "len_num": 1,
-  "sigma_num": 10,
-  "cubic_mesophase": "Im3m"
-}
