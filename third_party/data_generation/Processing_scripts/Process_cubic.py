@@ -154,4 +154,4 @@ if __name__ == '__main__':
                 processed_d = parallel_process(rawdat, Process_cubic)
                 processed_d = np.array(processed_d)
                 np.save('../Synthetic_Processed/Pn3m_cubic.npy', processed_d)
-            np.save('../Synthetic_Processed/cubic_q.npy', np.linspace(0.01,0.43,200))
+            np.save('../Synthetic_Processed/cubic_q.npy', np.linspace(0.01, 0.43, 200))
