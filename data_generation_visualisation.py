@@ -3,9 +3,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
-from saxs.data_generation.processing import Processing
-from saxs.data_generation.data_visualization import load_data, plot_saxs, plot_saxs_featuremap
-from saxs.data_generation.generation import Generator
+from saxs.data_generation.data_visualization import load_data
 from saxs.data_generation import DEFAULT_CONFIG_PATH
 
 import json

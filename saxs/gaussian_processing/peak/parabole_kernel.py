@@ -2,11 +2,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
 
-from .prominence_kernel import ProminenceKernel
+from .prominence_kernel import ProminencePeakKernel
 from saxs.gaussian_processing.functions import parabole, gauss
 
 
-class ParabolePeakKernel(ProminenceKernel):
+class ParabolePeakKernel(ProminencePeakKernel):
     def __init__(self, data_dir, file_analysis_dir,
                  is_preprocessing=True,
                  is_background_reduction=True,
