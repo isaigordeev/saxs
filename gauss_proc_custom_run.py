@@ -21,6 +21,7 @@ from saxs.gaussian_processing.phase.phase_classificator import AbstractPhaseKern
 
 # a = Manager(peak_kernel=ParabolePeakKernel, phase_kernel=DefaultPhaseKernel)
 a = Manager(peak_kernel=RobustParabolePeakKernel, phase_kernel=DefaultPhaseKernel)
+# a = Manager(peak_data_directory='res/', peak_kernel=RobustParabolePeakKernel, phase_kernel=DefaultPhaseKernel)
 
 # a = Manager(peak_kernel=ProminencePeakKernel, phase_kernel=DefaultPhaseKernel)
 a()

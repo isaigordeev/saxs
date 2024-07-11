@@ -91,7 +91,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
                     period1 = len(self.peaks) - 1
 
                 current_peak_gauss = lambda x, sigma, ampl: gauss(x, self.current_q_state[self.peaks[i]], sigma, ampl)
-                print("y_data", self.current_I_state)
+                # print("y_data", self.current_I_state)
 
                 popt, pcov = curve_fit(
                     f=current_peak_gauss,
@@ -201,7 +201,7 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
             self.robust_parabole_peak_kernel_plot()
 
     def postprocessing(self):
-        print(self.peak_params)
+        # print(self.peak_params)
         self.sum_total_fit()
 
     def gathering(self) -> dict:
