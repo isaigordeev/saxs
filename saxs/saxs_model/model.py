@@ -169,9 +169,6 @@ class SAXSViT10(OriginalViT):
 
 
 
-
-
-
 class SAXSViT(nn.Module):
     def __init__(self, pretrained=False):
         super().__init__()
