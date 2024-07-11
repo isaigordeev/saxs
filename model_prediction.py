@@ -16,7 +16,7 @@ state_dict = torch.load('model0.pth')
 model.load_state_dict(state_dict)
 
 # prediction_from_csv(model, 'without_back_res/075775_treated_xye.csv')
-prediction_from_npy(model, 'saxs/data_generation/Synthetic_Processed/Im3m_cubic_processed.npy')
+prediction_from_npy(model, 'third_party/data_generation/Synthetic_Processed/Im3m_cubic_processed.npy')
 
 # for x in os.listdir('without_back_res/'):
 #     prediction_from_csv(model, 'without_back_res/{}'.format(str(x)))
