@@ -30,6 +30,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
         self.peaks_processed = np.array([])
         self.peak_params = np.array([])  # mean, amlitude, std
 
+
     def negative_reduction(self):
         self.current_I_state = np.maximum(self.current_I_state, 0)
 
@@ -148,6 +149,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
 
 class RobustParabolePeakKernel(ParabolePeakKernel):
+    str_type = "RobustParabolePeakKernel"
     def __init__(self, data_dir, file_analysis_dir,
                  is_preprocessing=True,
                  is_postprocessing=True,
@@ -164,6 +166,11 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
                          is_peak_processing
                          )
         self.fitted_peak_params = None
+        self.y_final_fit = None
+
+    @classmethod
+    def define_signature(cls):
+        cls.str_type = "RobustParabolePeakKernel"
 
     def gaussian_sum(self, x, *params):
         y = np.zeros_like(x)
@@ -188,18 +195,45 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
             result = minimize(loss_function, self.peak_params, method='BFGS')
             fitted_params = result.x
             self.fitted_peak_params = fitted_params
-            y_fit = self.gaussian_sum(self.current_q_state, *fitted_params)
+            self.y_final_fit = self.gaussian_sum(self.current_q_state, *fitted_params)
             print("fit", self.fitted_peak_params)
 
-            plt.clf()
-            plt.plot(self.current_q_state, y_fit, label="isit?")
-            plt.plot(self.current_q_state, self.total_fit, label="dd")
-            plt.plot(self.current_q_state, self.I_background_filtered, label="sm?")
-            # plt.plot(self.current_q_state, self.I_cut, label="raw?")
-            # plt.plot(self.current_q_state, self.I_raw, label="raw?")
-            plt.legend()
-            plt.show()
+            self.robust_parabole_peak_kernel_plot()
 
     def postprocessing(self):
         print(self.peak_params)
         self.sum_total_fit()
+
+    def gathering(self) -> dict:
+        peak_number = len(self.peaks) if self.peaks is not None else -1
+        self.final_peaks = sorted(self.fitted_peak_params[::3])
+
+        return {
+            'peak kernel method': self.class_info(),
+            'peak_number': peak_number,
+            'initial peak indices': self.peaks.tolist(),
+            'q': self.final_peaks,
+            # 'I': self.current_I_state[self.peaks].tolist(),
+            # 'kernel': self.str_type
+            # 'dI': dI.tolist(),
+            # 'I_raw': I_raw.tolist(),
+            # 'peaks': peaks_detected.tolist(),
+            # 'params_amplitude': self.params.tolist()[::3],
+            # 'params_mean': self.params.tolist()[1::3],
+            # 'params_sigma': self.params.tolist()[2::3],
+            # 'start_loss': self.start_loss,
+            # 'final_loss': self.final_loss,
+            # 'error': error
+            # 'loss_ratio': self.final_loss / self.start_loss
+        }
+
+
+    def robust_parabole_peak_kernel_plot(self):
+        plt.clf()
+        plt.plot(self.current_q_state, self.total_fit, color='b',label="preliminary fit")
+        plt.plot(self.current_q_state, self.I_background_filtered, color='g', label="unfiltered cut background")
+        plt.plot(self.current_q_state, self.y_final_fit, color='r', label="final fit")
+
+        plt.legend()
+
+        plt.savefig("{}/robust_parabole_peak_kernel_plot.pdf".format(self.file_analysis_dir))

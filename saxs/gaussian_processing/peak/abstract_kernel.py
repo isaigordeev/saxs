@@ -21,6 +21,7 @@ class AbstractPeakKernel:
                  'current_q_state',
                  'is_background_reduction',
                  'is_preprocessing',
+                 'is_postprocessing',
                  'is_filtering',
                  'popt_background',
                  'pcov_background',
