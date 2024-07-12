@@ -69,7 +69,7 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
         if self.dI is not None:
             self.dI = self.dI[self.noisy_irrelevant_cut_point:]
-            print(len(self.dI), 'len dI')
+            # print(len(self.dI), 'len dI')
 
         self.q_cut, self.I_cut = self.current_q_state, self.current_I_state
         self.max_I = np.max(self.current_I_state)

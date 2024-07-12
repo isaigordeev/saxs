@@ -67,7 +67,8 @@ class ProminencePeakKernel(DefaultPeakKernel):
         self.peaks, self.props = find_peaks(self.current_I_state,
                                             height=height,
                                             prominence=prominence, distance=distance)
-        print(self.props)
+
+        # print(self.props)
 
         # print(self.props['left_bases'])
         # print(self.props['right_bases'])
