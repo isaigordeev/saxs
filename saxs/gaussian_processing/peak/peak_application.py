@@ -62,6 +62,7 @@ class PeakApplication(ApplicationClassificator):
                                             self.is_filtering,
                                             self.is_peak_processing)
 
+            print(sample)
             self.data[sample] = peak_classificator()
 
 

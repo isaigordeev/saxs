@@ -165,6 +165,7 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
                          is_filtering,
                          is_peak_processing
                          )
+        self.final_peaks = None
         self.fitted_peak_params = None
         self.y_final_fit = None
 
@@ -183,7 +184,7 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
         return y
 
     def sum_total_fit(self):
-        if len(self.peak_params) != 0:
+        if len(self.peaks) != 0 and len(self.peak_params) != 0:
 
             def loss_function(params):
                 # y_pred = gaussian_sum(self.q, *params)
@@ -196,9 +197,11 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
             fitted_params = result.x
             self.fitted_peak_params = fitted_params
             self.y_final_fit = self.gaussian_sum(self.current_q_state, *fitted_params)
-            print("fit", self.fitted_peak_params)
+            # print("fit", self.fitted_peak_params)
 
             self.robust_parabole_peak_kernel_plot()
+            self.final_peaks = sorted(self.fitted_peak_params[::3])
+
 
     def postprocessing(self):
         # print(self.peak_params)
@@ -206,7 +209,8 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
 
     def gathering(self) -> dict:
         peak_number = len(self.peaks) if self.peaks is not None else -1
-        self.final_peaks = sorted(self.fitted_peak_params[::3])
+        print("peak found: ", peak_number)
+        
 
         return {
             'peak kernel method': self.class_info(),
