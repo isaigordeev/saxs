@@ -1,7 +1,7 @@
 [project]
 name = "saxs"
 version = "0.1.0"
-description = ""
+description = "A Isai Gordeev saxs classification package"
 authors = [{ name = "Isai Gordeev", email = "isai.gordeev.2022@polytechnique.org" }]
 requires-python = "~=3.10"
 readme = "README.md"
