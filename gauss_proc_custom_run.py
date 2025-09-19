@@ -1,8 +1,8 @@
-from saxs.gaussian_processing.manager import Manager
-from saxs.gaussian_processing.peak.parabole_kernel import (
+from saxs.algo.manager import Manager
+from saxs.algo.peak.parabole_kernel import (
     RobustParabolePeakKernel,
 )
-from saxs.gaussian_processing.phase.default_kernel import DefaultPhaseKernel
+from saxs.algo.phase.default_kernel import DefaultPhaseKernel
 
 # a = ProminenceKernel('/Users/isaigordeev/Desktop/2023/saxs/test_processing_data/075775_treated_xye.csv')
 
