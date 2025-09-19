@@ -3,10 +3,33 @@
 #
 
 
-from typing import Optional, Dict
+from dataclasses import dataclass, field
+from typing import Any, Dict, Optional
+
 import numpy as np
 
-QValues = np.ndarray
-Intensity = np.ndarray
-IntensityError = Optional[np.ndarray]
-Metadata = Dict[str, any]
+from saxs.algo.data.abstract_data import AData
+
+
+# --- Individual type wrappers ---
+@dataclass(frozen=True)
+class QValues:
+    values: np.ndarray
+
+
+@dataclass(frozen=True)
+class Intensity:
+    values: np.ndarray
+
+
+@dataclass(frozen=True)
+class IntensityError:
+    values: Optional[np.ndarray] = None
+
+
+@dataclass(frozen=True)
+class AbstractSampleMetadata(AData):
+    data: Dict[str, Any] = field(default_factory=dict)
+
+    def describe(self) -> str:
+        return f"Metadata with keys: {list(self.data.keys())}"

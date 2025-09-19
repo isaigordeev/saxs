@@ -3,19 +3,15 @@
 #
 
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
 
-from saxs.algo.data.objects import Intensity, IntensityError, Metadata, QValues
-
-
-@dataclass
-class AData(ABC):
-    id: int
-
-    @abstractmethod
-    def describe(self) -> str:
-        pass
+from saxs.algo.data.abstract_data import AData
+from saxs.algo.data.objects import (
+    AbstractSampleMetadata,
+    Intensity,
+    IntensityError,
+    QValues,
+)
 
 
 @dataclass(frozen=True)
@@ -27,7 +23,7 @@ class SAXSSample(AData):
     q_values: QValues
     intensity: Intensity
     intensity_error: IntensityError = None
-    metadata: Metadata = field(default_factory=dict)
+    metadata: AbstractSampleMetadata = field(default_factory=dict)
 
     # Setter-style methods
     def set_intensity(self, new_intensity: Intensity) -> "SAXSSample":
@@ -36,9 +32,16 @@ class SAXSSample(AData):
     def set_q_values(self, q_values: QValues) -> "SAXSSample":
         return replace(self, q_values=q_values)
 
-    def set_metadata(self, new_metadata: Metadata) -> "SAXSSample":
+    def append_metadata(
+        self, new_metadata: AbstractSampleMetadata
+    ) -> "SAXSSample":
         merged = {**self.metadata, **new_metadata}
         return replace(self, metadata=merged)
+
+    def set_metadata(
+        self, new_metadata: AbstractSampleMetadata
+    ) -> "SAXSSample":
+        return replace(self, metadata=new_metadata)
 
     def describe(self) -> str:
         return "SAXS Sample"
