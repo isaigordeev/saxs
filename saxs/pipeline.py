@@ -4,7 +4,6 @@ import time
 from saxs.gaussian_processing.manager import Manager
 from saxs.gaussian_processing.phase.custom_phase_classification import *
 from saxs.saxs_model.phase_prediction import prediction_from_csv, prediction_from_npy
-import torch
 
 
 class PipelineAbstract:  # TODO TYPING CLASS
