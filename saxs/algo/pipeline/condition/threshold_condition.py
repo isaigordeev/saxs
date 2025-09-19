@@ -2,7 +2,7 @@
 # Created by Isai GORDEEV on 19/09/2025.
 #
 
-from saxs.algo.data.sample import SAXSSample
+from saxs.algo.data.sample_objects import AbstractSampleMetadata
 from saxs.algo.pipeline.condition.abstract_condition import AbstractCondition
 
 
@@ -11,6 +11,6 @@ class ThresholdCondition(AbstractCondition):
         self.key = key
         self.threshold = threshold
 
-    def evaluate(self, sample: "SAXSSample") -> bool:
+    def evaluate(self, sample: AbstractSampleMetadata) -> bool:
         value = sample.metadata.get(self.key, 0)
         return value > self.threshold
