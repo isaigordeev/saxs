@@ -3,8 +3,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-from saxs.gaussian_processing.processing_outils import read_data
-from saxs.gaussian_processing.settings_processing import BACKGROUND_COEF
+from saxs.algo.processing_outils import read_data
+from saxs.algo.settings_processing import BACKGROUND_COEF
 
 
 class AbstractPeakKernel:

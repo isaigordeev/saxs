@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.signal import find_peaks, medfilt
 
-from saxs.gaussian_processing.functions import moving_average
-from saxs.gaussian_processing.peak.default_kernel import DefaultPeakKernel
+from saxs.algo.functions import moving_average
+from saxs.algo.peak.default_kernel import DefaultPeakKernel
 
 
 class ProminencePeakKernel(DefaultPeakKernel):

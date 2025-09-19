@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-from saxs.gaussian_processing.settings_processing import (
+from saxs.algo.settings_processing import (
     ANALYSE_DIR_SESSIONS,
 )
 

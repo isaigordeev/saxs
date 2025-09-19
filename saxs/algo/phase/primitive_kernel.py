@@ -1,7 +1,7 @@
-from saxs.gaussian_processing.phase.phase_classificator import (
+from saxs.algo.phase.phase_classificator import (
     AbstractPhaseKernel,
 )
-from saxs.gaussian_processing.processing_outils import (
+from saxs.algo.processing_outils import (
     calculate_first_peaks,
 )
 

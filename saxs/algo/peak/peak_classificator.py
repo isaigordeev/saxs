@@ -4,14 +4,14 @@ from scipy.ndimage import gaussian_filter
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks, medfilt, savgol_filter
 
-from saxs.gaussian_processing.functions import (
+from saxs.algo.functions import (
     background_hyberbole,
     gaussian_sum,
     moving_average,
     parabole,
 )
-from saxs.gaussian_processing.peak.peak_application import PeakApplication
-from saxs.gaussian_processing.settings_processing import (
+from saxs.algo.peak.peak_application import PeakApplication
+from saxs.algo.settings_processing import (
     BACKGROUND_COEF,
     INFINITY,
     PROMINENCE,

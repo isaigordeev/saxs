@@ -1,11 +1,11 @@
 import json
 import os
 
-from saxs.gaussian_processing.peak.abstract_kernel import AbstractPeakKernel
-from saxs.gaussian_processing.processing_classificator import (
+from saxs.algo.peak.abstract_kernel import AbstractPeakKernel
+from saxs.algo.processing_classificator import (
     ApplicationClassificator,
 )
-from saxs.gaussian_processing.processing_outils import (
+from saxs.algo.processing_outils import (
     get_filenames_without_ext,
 )
 

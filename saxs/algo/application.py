@@ -1,5 +1,5 @@
-from saxs.gaussian_processing.peak.peak_application import PeakApplication
-from saxs.gaussian_processing.phase.phase_application import PhaseApplication
+from saxs.algo.peak.peak_application import PeakApplication
+from saxs.algo.phase.phase_application import PhaseApplication
 
 from .processing_classificator import Application
 

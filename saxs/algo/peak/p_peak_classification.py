@@ -3,12 +3,12 @@ import numpy as np
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks
 
-from saxs.gaussian_processing.functions import (
+from saxs.algo.functions import (
     gaussian_sum,
     moving_average,
     parabole,
 )
-from saxs.gaussian_processing.settings_processing import (
+from saxs.algo.settings_processing import (
     BACKGROUND_COEF,
     INFINITY,
     PROMINENCE,
