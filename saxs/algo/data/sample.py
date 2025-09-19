@@ -6,7 +6,7 @@
 from dataclasses import dataclass, field, replace
 
 from saxs.algo.data.abstract_data import AData
-from saxs.algo.data.objects import (
+from saxs.algo.data.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
     IntensityError,
