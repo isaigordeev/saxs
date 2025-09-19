@@ -4,9 +4,8 @@ from datetime import date, datetime
 # from fastdtw import fastdtw
 import matplotlib.pyplot as plt
 import torch
-from torch import nn
-
 from settings_processing import *
+from torch import nn
 
 today = date.today()
 
@@ -297,7 +296,7 @@ class Fastdw(Phases):
         self.sorted_indices_I = np.delete(self.sorted_indices_I, [0])
 
     def alignement(self):
-        fig = plt.figure(figsize=(12, 12))
+        plt.figure(figsize=(12, 12))
         self.analyze()
         for i in range(self.suspicious_peaks):
             self.analyze()

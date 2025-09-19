@@ -1,11 +1,9 @@
-import json
 import os
 
 import numpy as np
 
 from saxs.gaussian_processing.settings_processing import (
     ANALYSE_DIR_SESSIONS,
-    ANALYSE_DIR_SESSIONS_RESULTS,
 )
 
 

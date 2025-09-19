@@ -1,11 +1,9 @@
+import csv
 import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import csv
-from scipy.ndimage import gaussian_filter
-from scipy.optimize import curve_fit
 
 
 def get_filenames(folder_path):
@@ -83,10 +81,8 @@ def read_data(data_dir_file):
             I.append(data)
         I = np.array(I)
 
-        phase = "cubic"
         q = np.linspace(0.001, 0.2, 500)
 
-        exp_data = None
         return q, I[0], None
 
 

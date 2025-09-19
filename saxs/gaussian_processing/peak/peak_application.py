@@ -1,22 +1,12 @@
 import json
 import os
-from abc import ABC
-
-import numpy as np
-import pandas as pd
 
 from saxs.gaussian_processing.peak.abstract_kernel import AbstractPeakKernel
 from saxs.gaussian_processing.processing_classificator import (
     ApplicationClassificator,
 )
 from saxs.gaussian_processing.processing_outils import (
-    get_filenames,
     get_filenames_without_ext,
-)
-from saxs.gaussian_processing.settings_processing import (
-    EXTENSION,
-    ANALYSE_DIR_SESSIONS,
-    ANALYSE_DIR_SESSIONS_RESULTS,
 )
 
 

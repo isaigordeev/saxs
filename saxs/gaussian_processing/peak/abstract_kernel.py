@@ -1,12 +1,9 @@
 import os
 
-import numpy as np
-from scipy.optimize import curve_fit
-
-from saxs.gaussian_processing.functions import background_hyberbole
-from saxs.gaussian_processing.processing_outils import read_data
 import matplotlib.pyplot as plt
+import numpy as np
 
+from saxs.gaussian_processing.processing_outils import read_data
 from saxs.gaussian_processing.settings_processing import BACKGROUND_COEF
 
 

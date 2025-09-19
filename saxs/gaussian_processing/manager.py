@@ -1,5 +1,4 @@
 import time
-from typing import Any
 
 from .application import ApplicationManager
 from .peak.abstract_kernel import AbstractPeakKernel
@@ -10,7 +9,6 @@ from .phase.phase_classificator import AbstractPhaseKernel
 time_start1 = time.time()
 
 import os
-
 from datetime import datetime
 
 time_start2 = time.time()

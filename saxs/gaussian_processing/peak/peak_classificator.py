@@ -12,12 +12,12 @@ from saxs.gaussian_processing.functions import (
 )
 from saxs.gaussian_processing.peak.peak_application import PeakApplication
 from saxs.gaussian_processing.settings_processing import (
+    BACKGROUND_COEF,
     INFINITY,
     PROMINENCE,
-    BACKGROUND_COEF,
+    RESOLUTION_FACTOR,
     START,
     WINDOWSIZE,
-    RESOLUTION_FACTOR,
 )
 
 
@@ -356,20 +356,17 @@ class DefaultPeakApplication(PeakApplication):
 
                 y = self.I_cut_background_reduced
                 window_size = 5
-                smoothed_y = moving_average(y, window_size)
+                moving_average(y, window_size)
 
-                sigma_values = np.linspace(3, 20, 5)  # NOTE optimine
-
-                best_metric = np.inf
+                np.linspace(3, 20, 5)  # NOTE optimine
 
                 period1 = int(self.peaks[i] - delta)
                 period2 = int(self.peaks[i] + delta)
 
                 print(period1, period2, "perods")
 
-                current_peak_parabole = lambda x, sigma, ampl: parabole(
-                    x, self.q[self.peaks[i]], sigma, ampl
-                )
+                def current_peak_parabole(x, sigma, ampl):
+                    return parabole(x, self.q[self.peaks[i]], sigma, ampl)
 
                 popt, pcov = curve_fit(
                     f=current_peak_parabole,
@@ -422,13 +419,14 @@ class DefaultPeakApplication(PeakApplication):
 
                 start_delta = delta
 
-                gauss = lambda x, ampl, sigma: ampl * np.exp(
-                    -((x - self.q[self.peaks[i]]) ** 2) / (sigma**2)
-                )
+                def gauss(x, ampl, sigma):
+                    return ampl * np.exp(
+                        -((x - self.q[self.peaks[i]]) ** 2) / (sigma**2)
+                    )
 
                 y = self.I_cut_background_reduced
                 window_size = 5
-                smoothed_y = moving_average(y, window_size)
+                moving_average(y, window_size)
 
                 self.resolution = 0.5
 
@@ -545,9 +543,8 @@ class DefaultPeakApplication(PeakApplication):
             period1 = self.peaks[i] - delta
             period2 = self.peaks[i] + delta
 
-            gauss = lambda x, c, b: c * np.exp(
-                -((x - self.q[self.peaks[i]]) ** 2) / (b**2)
-            )
+            def gauss(x, c, b):
+                return c * np.exp(-((x - self.q[self.peaks[i]]) ** 2) / (b**2))
 
             if period1 != period2:
                 popt, pcov = curve_fit(
@@ -592,7 +589,6 @@ class DefaultPeakApplication(PeakApplication):
     def peak_substraction(self, i):
         self.peak_empty = False
 
-        factor = 1
         # self.custom_peak_fitting_with_parabole(i)
         peak = self.custom_peak_fitting(i)
 

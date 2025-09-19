@@ -1,10 +1,7 @@
-import json
-import os
-from typing import Any
-
-from .processing_classificator import Application
 from saxs.gaussian_processing.peak.peak_application import PeakApplication
 from saxs.gaussian_processing.phase.phase_application import PhaseApplication
+
+from .processing_classificator import Application
 
 
 class ApplicationManager(Application):

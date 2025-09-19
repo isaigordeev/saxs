@@ -2,8 +2,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit, minimize
 
+from saxs.gaussian_processing.functions import gauss, parabole
+
 from .prominence_kernel import ProminencePeakKernel
-from saxs.gaussian_processing.functions import parabole, gauss
 
 
 class ParabolePeakKernel(ProminencePeakKernel):
@@ -51,9 +52,10 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 period1 = int(self.peaks[i] - delta)
                 period2 = int(self.peaks[i] + delta)
 
-                current_peak_parabole = lambda x, sigma, ampl: parabole(
-                    x, self.current_q_state[self.peaks[i]], sigma, ampl
-                )
+                def current_peak_parabole(x, sigma, ampl):
+                    return parabole(
+                        x, self.current_q_state[self.peaks[i]], sigma, ampl
+                    )
 
                 popt, pcov = curve_fit(
                     f=current_peak_parabole,
@@ -185,9 +187,11 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 if period2 >= len(self.peaks):
                     period1 = len(self.peaks) - 1
 
-                current_peak_gauss = lambda x, sigma, ampl: gauss(
-                    x, self.current_q_state[self.peaks[i]], sigma, ampl
-                )
+                def current_peak_gauss(x, sigma, ampl):
+                    return gauss(
+                        x, self.current_q_state[self.peaks[i]], sigma, ampl
+                    )
+
                 # print("y_data", self.current_I_state)
 
                 popt, pcov = curve_fit(

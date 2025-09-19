@@ -2,7 +2,6 @@ from saxs.gaussian_processing.phase.phase_classificator import (
     AbstractPhaseKernel,
 )
 from saxs.gaussian_processing.processing_outils import (
-    calculate_absolute_difference,
     calculate_first_peaks,
 )
 

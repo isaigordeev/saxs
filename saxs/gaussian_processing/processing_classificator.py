@@ -1,12 +1,12 @@
 import os
-from abc import abstractmethod, ABC
+from abc import ABC
 from dataclasses import dataclass
 from datetime import datetime
 
 from .settings_processing import (
     ANALYSE_DIR,
-    ANALYSE_DIR_SESSIONS_RESULTS,
     ANALYSE_DIR_SESSIONS,
+    ANALYSE_DIR_SESSIONS_RESULTS,
 )
 
 

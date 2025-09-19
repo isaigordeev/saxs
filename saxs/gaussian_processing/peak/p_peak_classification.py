@@ -3,17 +3,18 @@ import numpy as np
 from scipy.optimize import curve_fit, minimize
 from scipy.signal import find_peaks
 
-from .peak_classificator import DefaultPeakApplication
 from saxs.gaussian_processing.functions import (
     gaussian_sum,
     moving_average,
     parabole,
 )
 from saxs.gaussian_processing.settings_processing import (
+    BACKGROUND_COEF,
     INFINITY,
     PROMINENCE,
-    BACKGROUND_COEF,
 )
+
+from .peak_classificator import DefaultPeakApplication
 
 
 class PDefaultPeakClassificator(DefaultPeakApplication):
@@ -59,7 +60,6 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                 # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
 
-                y = self.I_cut_background_reduced
                 # window_size = 5
                 # smoothed_y = moving_average(y, window_size)
 
@@ -77,19 +77,17 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                 sigma_values = [3]  # 3?
                 best_metric = np.inf
 
-                period1_global = int(self.peaks[i] - 20)
-                period2_global = int(self.peaks[i] + 20)
+                int(self.peaks[i] - 20)
+                int(self.peaks[i] + 20)
 
                 period1_fix = int(self.peaks[i] - 20)
                 period2_fix = int(self.peaks[i] + 20)
 
-                current_peak_parabole = lambda x, sigma, ampl: parabole(
-                    x, self.q[self.peaks[i]], sigma, ampl
-                )
+                def current_peak_parabole(x, sigma, ampl):
+                    return parabole(x, self.q[self.peaks[i]], sigma, ampl)
 
                 popt = None
 
-                p_num = 0
                 for delta in sigma_values:
                     period1 = int(self.peaks[i] - delta)
                     period2 = int(self.peaks[i] + delta)
@@ -109,7 +107,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                     period1_fix = int(self.peaks[i] - delta)
                     period2_fix = int(self.peaks[i] + delta)
 
-                    new_delta = popt1[0] / self.delta_q
+                    popt1[0] / self.delta_q
                     # print(new_delta, 'new delta')
 
                     smoothed_difference = current_peak_parabole(
@@ -197,11 +195,11 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
 
             y = self.I_cut_background_reduced
             window_size = 5
-            smoothed_y = moving_average(y, window_size)
+            moving_average(y, window_size)
 
-            gauss = lambda x, c, b: c * np.exp(
-                -((x - self.q[self.peaks[i]]) ** 2) / (b**2)
-            )
+            def gauss(x, c, b):
+                return c * np.exp(-((x - self.q[self.peaks[i]]) ** 2) / (b**2))
+
             print(self.peaks[i])
             print(delta)
             print(self.difference[period1:period2])
@@ -253,7 +251,6 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
     def peak_substraction(self, i):
         self.peak_empty = False
 
-        factor = 1
         self.custom_peak_fitting_with_parabole(i)
         peak = self.custom_peak_fitting(i)
 
@@ -495,12 +492,12 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
 
         sorted_indices_q = np.argsort(self.peaks_analysed_q)
 
-        I = self.peaks_analysed_I[sorted_indices_q]
+        self.peaks_analysed_I[sorted_indices_q]
         q = self.peaks_analysed_q[sorted_indices_q]
         # I_raw = self.I[self.peaks_detected][sorted_indices_q]
         # dI = self.dI[self.peaks_detected][sorted_indices_q]
         # peaks_detected = self.peaks_detected[sorted_indices_q]
-        error = np.sum(self.total_fit - self.I_cut_background_reduced) / np.sum(
+        np.sum(self.total_fit - self.I_cut_background_reduced) / np.sum(
             self.I_cut_background_reduced
         )
         # print(error, 'Error')

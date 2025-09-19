@@ -1,12 +1,10 @@
 import json
-import os.path
 from datetime import date, datetime
 
 from saxs import DEFAULT_PHASES_PATH
 from saxs.gaussian_processing.processing_classificator import (
     ApplicationClassificator,
 )
-from saxs.gaussian_processing.processing_outils import get_filenames_without_ext
 from saxs.gaussian_processing.settings_processing import *
 
 # from fastdtw import fastdtw
