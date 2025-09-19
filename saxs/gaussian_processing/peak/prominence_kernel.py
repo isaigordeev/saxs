@@ -11,24 +11,28 @@ from saxs.gaussian_processing.settings_processing import START
 
 
 class ProminencePeakKernel(DefaultPeakKernel):
-    str_type = 'prominence_kernel'
-    short_str_type = 'prom_kern'
+    str_type = "prominence_kernel"
+    short_str_type = "prom_kern"
 
-    def __init__(self, data_dir, file_analysis_dir,
-                 is_preprocessing=True,
-                 is_postprocessing=True,
-                 is_background_reduction=True,
-                 is_filtering=True,
-                 is_peak_processing=True,
-                 ):
-        super().__init__(data_dir,
-                         file_analysis_dir,
-                         is_preprocessing,
-                         is_postprocessing,
-                         is_background_reduction,
-                         is_filtering,
-                         is_peak_processing
-                         )
+    def __init__(
+        self,
+        data_dir,
+        file_analysis_dir,
+        is_preprocessing=True,
+        is_postprocessing=True,
+        is_background_reduction=True,
+        is_filtering=True,
+        is_peak_processing=True,
+    ):
+        super().__init__(
+            data_dir,
+            file_analysis_dir,
+            is_preprocessing,
+            is_postprocessing,
+            is_background_reduction,
+            is_filtering,
+            is_peak_processing,
+        )
 
         self.peaks = None
 
@@ -44,7 +48,9 @@ class ProminencePeakKernel(DefaultPeakKernel):
         self.filtering_decomposition()
 
     def detecting_relevant_noisy(self):
-        self.peaks, self.props = find_peaks(self.current_I_state, height=1, prominence=1)
+        self.peaks, self.props = find_peaks(
+            self.current_I_state, height=1, prominence=1
+        )
         if len(self.props["right_bases"]) > 0:
             self.noisy_relevant_cut_point = self.props["right_bases"][0]
         else:
@@ -54,19 +60,26 @@ class ProminencePeakKernel(DefaultPeakKernel):
         # noisy_part = np.ones(noisy_indice)
         self.detecting_relevant_noisy()
 
-        noisy_part = moving_average(self.current_I_state[:self.noisy_relevant_cut_point], 10)
+        noisy_part = moving_average(
+            self.current_I_state[: self.noisy_relevant_cut_point], 10
+        )
 
         # noiseless_part = medfilt(self.I_background_reduced[noisy_indice:], 3)
-        noiseless_part = self.current_I_state[self.noisy_relevant_cut_point:]
+        noiseless_part = self.current_I_state[self.noisy_relevant_cut_point :]
 
-        self.current_I_state = medfilt(np.concatenate((noisy_part, noiseless_part)), 3)
+        self.current_I_state = medfilt(
+            np.concatenate((noisy_part, noiseless_part)), 3
+        )
 
         self.total_fit = np.zeros_like(self.current_I_state)
 
     def search_peaks(self, height=0.5, prominence=0.3, distance=10):
-        self.peaks, self.props = find_peaks(self.current_I_state,
-                                            height=height,
-                                            prominence=prominence, distance=distance)
+        self.peaks, self.props = find_peaks(
+            self.current_I_state,
+            height=height,
+            prominence=prominence,
+            distance=distance,
+        )
         # print(self.props)
 
         # print(self.props['left_bases'])
@@ -88,11 +101,10 @@ class ProminencePeakKernel(DefaultPeakKernel):
         peak_number = len(self.peaks) if self.peaks is not None else -1
 
         return {
-            'peak_number': peak_number,
-            'q': self.current_q_state[self.peaks].tolist(),
-            'peaks': self.peaks.tolist(),
+            "peak_number": peak_number,
+            "q": self.current_q_state[self.peaks].tolist(),
+            "peaks": self.peaks.tolist(),
             # 'I': self.current_I_state[self.peaks].tolist(),
-
             # 'kernel': self.str_type
             # 'dI': dI.tolist(),
             # 'I_raw': I_raw.tolist(),
@@ -108,26 +120,32 @@ class ProminencePeakKernel(DefaultPeakKernel):
 
 
 class SyntheticPeakKernel(ProminencePeakKernel):
-    def __init__(self, data_dir,
-                 is_preprocessing=False,
-                 is_background_reduction=False,
-                 is_filtering=False,
-                 ):
-        super().__init__(data_dir,
-                         is_preprocessing,
-                         is_background_reduction,
-                         is_filtering,
-                         )
+    def __init__(
+        self,
+        data_dir,
+        is_preprocessing=False,
+        is_background_reduction=False,
+        is_filtering=False,
+    ):
+        super().__init__(
+            data_dir,
+            is_preprocessing,
+            is_background_reduction,
+            is_filtering,
+        )
 
 
 class RobustProminencePeak(ProminencePeakKernel):
-    def __init__(self, data_dir,
-                 is_preprocessing=True,
-                 is_background_reduction=True,
-                 is_filtering=True,
-                 ):
-        super().__init__(data_dir,
-                         is_preprocessing,
-                         is_background_reduction,
-                         is_filtering,
-                         )
+    def __init__(
+        self,
+        data_dir,
+        is_preprocessing=True,
+        is_background_reduction=True,
+        is_filtering=True,
+    ):
+        super().__init__(
+            data_dir,
+            is_preprocessing,
+            is_background_reduction,
+            is_filtering,
+        )

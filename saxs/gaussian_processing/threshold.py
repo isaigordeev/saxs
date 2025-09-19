@@ -6,9 +6,9 @@ from scipy.signal import medfilt
 
 from settings_processing import EXTENSION
 
-data = pd.read_csv('../' + 'res/' + '075773_treated_xye' + EXTENSION, sep=',')
+data = pd.read_csv("../" + "res/" + "075773_treated_xye" + EXTENSION, sep=",")
 
-data = data.apply(pd.to_numeric, errors='coerce')
+data = data.apply(pd.to_numeric, errors="coerce")
 data = data.dropna()
 
 q = np.array(data.iloc[:, 0])
@@ -22,23 +22,23 @@ threshold = np.mean(difference) + 0.5 * np.std(difference)
 
 noisy_indices = np.where(difference > threshold)[0]
 
-first_part = gaussian_filter(I[:max(noisy_indices)], sigma=3)
-sec_part = medfilt(I[max(noisy_indices):], 3)
+first_part = gaussian_filter(I[: max(noisy_indices)], sigma=3)
+sec_part = medfilt(I[max(noisy_indices) :], 3)
 good_smoothed_without_loss = np.concatenate((first_part, sec_part))
 good_smoothed_without_loss = medfilt(good_smoothed_without_loss, 3)
 
 
-plt.plot(I, label='Original Data')
+plt.plot(I, label="Original Data")
 # plt.plot(smoothed_data, label='Smoothed Data')
-plt.plot(good_smoothed_without_loss, label='GoodSm')
+plt.plot(good_smoothed_without_loss, label="GoodSm")
 plt.legend()
 
 plt.show()
 
 plt.clf()
-plt.plot(I, label='Original Data')
+plt.plot(I, label="Original Data")
 
-plt.plot(gaussian_filter(I, sigma=2), label='Gauss')
+plt.plot(gaussian_filter(I, sigma=2), label="Gauss")
 # plt.scatter(noisy_indices, I[noisy_indices], c='red', label='Noisy Part')
 plt.legend()
 plt.show()

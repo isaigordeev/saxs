@@ -13,24 +13,24 @@ def background_hyberbole(x, a, b):
 
 
 def gauss(x, mu, sigma, ampl):
-    return ampl * np.exp(-(x - mu) ** 2 / (sigma ** 2))
+    return ampl * np.exp(-((x - mu) ** 2) / (sigma**2))
 
 
 def parabole(x, mu, sigma, ampl):
-    return ampl * (1 - (x - mu) ** 2 / (sigma ** 2))
+    return ampl * (1 - (x - mu) ** 2 / (sigma**2))
 
 
 def gaussian_sum(x, *params):
     y = np.zeros_like(x)
     for i in range(0, len(params), 3):
-        mean, amplitude, std_dev = params[i:i + 3]
-        y += amplitude * np.exp(-((x - mean) / std_dev) ** 2)
+        mean, amplitude, std_dev = params[i : i + 3]
+        y += amplitude * np.exp(-(((x - mean) / std_dev) ** 2))
     return y
 
 
 def moving_average(data, window_size):
     window = np.ones(window_size) / window_size
-    return np.convolve(data, window, mode='same')
+    return np.convolve(data, window, mode="same")
 
 
 def timer_decorator(func):

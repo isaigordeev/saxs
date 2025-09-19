@@ -8,24 +8,28 @@ from saxs.gaussian_processing.settings_processing import BACKGROUND_COEF, START
 
 
 class DefaultPeakKernel(AbstractPeakKernel):
-    str_type = 'default_kernel'
-    short_str_type = 'def_kern'
+    str_type = "default_kernel"
+    short_str_type = "def_kern"
 
-    def __init__(self, data_dir, file_analysis_dir,
-                 is_preprocessing=True,
-                 is_postprocessing=True,
-                 is_background_reduction=True,
-                 is_filtering=True,
-                 is_peak_processing=True,
-                 ):
-        super().__init__(data_dir,
-                         file_analysis_dir,
-                         is_preprocessing,
-                         is_postprocessing,
-                         is_background_reduction,
-                         is_filtering,
-                         is_peak_processing
-                         )
+    def __init__(
+        self,
+        data_dir,
+        file_analysis_dir,
+        is_preprocessing=True,
+        is_postprocessing=True,
+        is_background_reduction=True,
+        is_filtering=True,
+        is_peak_processing=True,
+    ):
+        super().__init__(
+            data_dir,
+            file_analysis_dir,
+            is_preprocessing,
+            is_postprocessing,
+            is_background_reduction,
+            is_filtering,
+            is_peak_processing,
+        )
 
         self.q_cut = None
         self.I_cut = None
@@ -39,7 +43,9 @@ class DefaultPeakKernel(AbstractPeakKernel):
     def preprocessing(self):
         self.default_preprocessing()
 
-    def default_background_reduction(self, background_function=background_hyberbole):
+    def default_background_reduction(
+        self, background_function=background_hyberbole
+    ):
         # self.peaks_plots = np.zeros((20, len(self.q)))
 
         popt, pcov = curve_fit(
@@ -47,15 +53,21 @@ class DefaultPeakKernel(AbstractPeakKernel):
             xdata=self.current_q_state,
             ydata=self.current_I_state,  # TODO after of before preprocess?
             p0=(3, 2),
-            sigma=self.dI
+            sigma=self.dI,
         )
 
         self.popt_background = popt
         self.pcov_background = pcov
 
-        self.background = background_hyberbole(self.current_q_state, self.popt_background[0], self.popt_background[1])
+        self.background = background_hyberbole(
+            self.current_q_state,
+            self.popt_background[0],
+            self.popt_background[1],
+        )
 
-        self.current_I_state = self.current_I_state - BACKGROUND_COEF * self.background
+        self.current_I_state = (
+            self.current_I_state - BACKGROUND_COEF * self.background
+        )
 
         self.I_background_filtered = self.current_I_state
 
@@ -64,11 +76,13 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
     def cutting_irrelevant_noisy(self):
         self.noisy_irrelevant_cut_point = np.argmax(self.q_raw > START)
-        self.current_q_state, self.current_I_state = self.q_raw[self.noisy_irrelevant_cut_point:], \
-            self.I_raw[self.noisy_irrelevant_cut_point:],
+        self.current_q_state, self.current_I_state = (
+            self.q_raw[self.noisy_irrelevant_cut_point :],
+            self.I_raw[self.noisy_irrelevant_cut_point :],
+        )
 
         if self.dI is not None:
-            self.dI = self.dI[self.noisy_irrelevant_cut_point:]
+            self.dI = self.dI[self.noisy_irrelevant_cut_point :]
             # print(len(self.dI), 'len dI')
 
         self.q_cut, self.I_cut = self.current_q_state, self.current_I_state
