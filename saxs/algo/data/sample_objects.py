@@ -32,4 +32,4 @@ class AbstractSampleMetadata(AData):
     data: Dict[str, Any] = field(default_factory=dict)
 
     def describe(self) -> str:
-        return f"Metadata with keys: {list(self.data.keys())}"
+        return f"Stage metadata with keys: {list(self.data.keys())}"
