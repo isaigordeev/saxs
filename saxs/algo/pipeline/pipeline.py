@@ -2,15 +2,15 @@
 # Created by Isai GORDEEV on 19/09/2025.
 #
 
-from saxs.algo.data.stage import SAXSSample
-from saxs.algo.pipeline.stage.abstract_stage import Stage
+from saxs.algo.data.sample import SAXSSample
+from saxs.algo.pipeline.stage.abstract_stage import AbstractStage
 
 
 class Pipeline:
     def __init__(self):
         self.stages = []
 
-    def add_stage(self, stage: Stage):
+    def add_stage(self, stage: AbstractStage):
         self.stages.append(stage)
         return self  # allow chaining
 
