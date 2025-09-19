@@ -1,6 +1,8 @@
 import json
 from datetime import date, datetime
 
+import numpy as np
+
 from saxs import DEFAULT_PHASES_PATH
 from saxs.gaussian_processing.processing_classificator import (
     ApplicationClassificator,
