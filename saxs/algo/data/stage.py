@@ -19,7 +19,7 @@ class AData(ABC):
 
 
 @dataclass(frozen=True)
-class SAXSSample:
+class SAXSSample(AData):
     """
     Immutable SAXS sample with typed fields and builder-style setters.
     """
@@ -39,3 +39,6 @@ class SAXSSample:
     def set_metadata(self, new_metadata: Metadata) -> "SAXSSample":
         merged = {**self.metadata, **new_metadata}
         return replace(self, metadata=merged)
+
+    def describe(self) -> str:
+        return "SAXS Sample"

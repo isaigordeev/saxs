@@ -1,3 +1,7 @@
+#
+# Created by Isai GORDEEV on 19/09/2025.
+#
+
 from saxs.algo.data.stage import SAXSSample
 from saxs.algo.pipeline.stage.abstract_stage import Stage
 
