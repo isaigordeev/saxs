@@ -3,9 +3,19 @@
 #
 
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
 
 from saxs.algo.data.objects import Intensity, IntensityError, Metadata, QValues
+
+
+@dataclass
+class AData(ABC):
+    id: int
+
+    @abstractmethod
+    def describe(self) -> str:
+        pass
 
 
 @dataclass(frozen=True)
