@@ -10,7 +10,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from saxs.saxs.core.data.abstract_data import AData
+from saxs.saxs.core.data.abstract_data import AData, BaseDataType
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 
 
@@ -20,16 +20,16 @@ class TestAbstractStageMetadata:
     def test_stage_metadata_creation_with_dict(self):
         """Test creating AbstractStageMetadata with dictionary."""
         metadata_dict = {"stage_name": "test_stage", "version": "1.0"}
-        metadata = AbstractStageMetadata(data=metadata_dict)
+        metadata = AbstractStageMetadata(values=metadata_dict)
 
-        assert metadata.data == metadata_dict
-        assert len(metadata.data) == 2
+        assert metadata.values == metadata_dict
+        assert len(metadata.values) == 2
 
     def test_stage_metadata_creation_empty(self):
         """Test creating AbstractStageMetadata with empty dictionary."""
         metadata = AbstractStageMetadata()
-        assert metadata.data == {}
-        assert len(metadata.data) == 0
+        assert metadata.values == {}
+        assert len(metadata.values) == 0
 
     def test_stage_metadata_creation_with_nested_dict(self):
         """Test creating AbstractStageMetadata with nested dictionary."""
@@ -37,13 +37,13 @@ class TestAbstractStageMetadata:
             "stage_info": {"name": "filter_stage", "version": "2.0"},
             "parameters": {"threshold": 0.5, "enabled": True},
         }
-        metadata = AbstractStageMetadata(data=nested_dict)
-        assert metadata.data == nested_dict
+        metadata = AbstractStageMetadata(values=nested_dict)
+        assert metadata.values == nested_dict
 
     def test_stage_metadata_describe(self):
         """Test the describe method."""
         metadata = AbstractStageMetadata(
-            data={"key1": "value1", "key2": "value2"}
+            values={"key1": "value1", "key2": "value2"}
         )
         description = metadata.describe()
 
@@ -63,15 +63,15 @@ class TestAbstractStageMetadata:
 
     def test_stage_metadata_immutable(self):
         """Test that AbstractStageMetadata is immutable."""
-        metadata = AbstractStageMetadata(data={"key": "value"})
+        metadata = AbstractStageMetadata(values={"key": "value"})
 
         with pytest.raises(FrozenInstanceError):
-            metadata.data = {"new_key": "new_value"}
+            metadata.values = {"new_key": "new_value"}
 
     def test_stage_metadata_inheritance(self):
         """Test that AbstractStageMetadata inherits from AData."""
-        metadata = AbstractStageMetadata(data={"key": "value"})
-        assert isinstance(metadata, AData)
+        metadata = AbstractStageMetadata(values={"key": "value"})
+        assert isinstance(metadata, BaseDataType)
 
     def test_stage_metadata_with_various_types(self):
         """Test AbstractStageMetadata with various value types."""
@@ -84,14 +84,14 @@ class TestAbstractStageMetadata:
             "nested_dict": {"inner": "value"},
             "none": None,
         }
-        metadata = AbstractStageMetadata(data=complex_dict)
-        assert metadata.data == complex_dict
+        metadata = AbstractStageMetadata(values=complex_dict)
+        assert metadata.values == complex_dict
 
     def test_stage_metadata_equality(self):
         """Test AbstractStageMetadata equality comparison."""
-        metadata1 = AbstractStageMetadata(data={"key": "value"})
-        metadata2 = AbstractStageMetadata(data={"key": "value"})
-        metadata3 = AbstractStageMetadata(data={"different": "value"})
+        metadata1 = AbstractStageMetadata(values={"key": "value"})
+        metadata2 = AbstractStageMetadata(values={"key": "value"})
+        metadata3 = AbstractStageMetadata(values={"different": "value"})
 
         # Same data should be equal
         assert metadata1 == metadata2
@@ -116,12 +116,12 @@ class TestAbstractStageMetadata:
             "dependencies": ["preprocessing", "background_subtraction"],
             "output_format": "numpy_array",
         }
-        metadata = AbstractStageMetadata(data=stage_data)
+        metadata = AbstractStageMetadata(values=stage_data)
 
-        assert metadata.data == stage_data
-        assert metadata.data["stage_type"] == "filter"
-        assert metadata.data["parameters"]["threshold"] == 0.5
-        assert len(metadata.data["dependencies"]) == 2
+        assert metadata.values == stage_data
+        assert metadata.values["stage_type"] == "filter"
+        assert metadata.values["parameters"]["threshold"] == 0.5
+        assert len(metadata.values["dependencies"]) == 2
 
     def test_stage_metadata_describe_with_complex_data(self):
         """Test describe method with complex nested data."""
@@ -130,11 +130,10 @@ class TestAbstractStageMetadata:
             "parameters": {"param1": "value1", "param2": "value2"},
             "results": {"success": True, "count": 42},
         }
-        metadata = AbstractStageMetadata(data=complex_data)
+        metadata = AbstractStageMetadata(values=complex_data)
         description = metadata.describe()
 
         assert isinstance(description, str)
         assert "stage_info" in description
         assert "parameters" in description
         assert "results" in description
-

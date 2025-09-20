@@ -55,4 +55,4 @@ class MetadataKeyPolicy(InsertionPolicy):
         self.key = key
 
     def __call__(self, request: StageRequest) -> bool:
-        return self.key in request.metadata.data
+        return self.key in request.metadata.unwrap()

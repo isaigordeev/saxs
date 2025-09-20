@@ -30,12 +30,16 @@ class BackgroundStage(AbstractStage):
             sigma=stage_data.get_intensity_error_array(),
         )
 
-        background = background_hyberbole(
+        background = _background_func(
             current_q_state,
             popt[0],
             popt[1],
         )
+        # mutable state
+        # current_intensity_state -= _background_coef * background
 
-        current_intensity_state -= _background_coef * background
+        current_intensity_state = (
+            current_intensity_state - _background_coef * background
+        )
 
         return stage_data.set_intensity(current_intensity_state)
