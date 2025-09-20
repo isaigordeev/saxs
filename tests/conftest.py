@@ -102,7 +102,11 @@ def stage_metadata():
 def mock_stage():
     stage = MagicMock(spec=AbstractStage)
     stage.get_next_stage.return_value = []
-    stage._process.return_value = SAXSSample(...)  # fake sample if needed
+    intensity = Intensity()
+    q_values = QValues()
+    stage._process.return_value = SAXSSample(
+        q_values=q_values, intensity=intensity
+    )  # fake sample if needed
     stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
     return stage
 
