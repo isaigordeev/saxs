@@ -5,7 +5,7 @@
 from scipy.signal import find_peaks
 
 from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
-from saxs.saxs.core.stage.abstract_stage import (
+from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractConditionalStage,
 )
 from saxs.saxs.processing.stage.peak.process_peak_stage import ProcessPeakStage
