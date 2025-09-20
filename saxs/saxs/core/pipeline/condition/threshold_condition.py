@@ -13,6 +13,6 @@ class ThresholdCondition(SampleCondition):
         self.key = key
         self.threshold = threshold
 
-    def evaluate(self, sample: AbstractSampleMetadata) -> bool:
-        value = sample.metadata.get(self.key, 0)
+    def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+        value = metadata.unwrap().get(self.key, 0)
         return value > self.threshold

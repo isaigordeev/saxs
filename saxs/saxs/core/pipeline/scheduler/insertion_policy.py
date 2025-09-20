@@ -36,8 +36,12 @@ class SaturationInsertPolicy(InsertionPolicy):
     _calls = 0
     _saturation = 6
 
+    def __init__(self, saturation: int = 6):
+        self._saturation = saturation
+
     def __call__(self, request: StageRequest) -> bool:
         if self._calls < self._saturation:
+            self._calls += 1
             return True
         return False
 

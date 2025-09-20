@@ -132,7 +132,7 @@ class TestSaturationInsertPolicy:
         # 7th call and beyond should return False
         for i in range(6, 10):
             assert policy(stage_request) is False
-            assert policy._calls == i + 1
+            assert policy._calls == policy._saturation
 
     def test_saturation_insert_policy_reset_behavior(self, stage_request):
         """Test that SaturationInsertPolicy maintains state across calls."""
@@ -151,7 +151,8 @@ class TestSaturationInsertPolicy:
 
     def test_saturation_insert_policy_with_different_requests(self):
         """Test SaturationInsertPolicy with different request types."""
-        policy = SaturationInsertPolicy()
+        saturation_point = 6
+        policy = SaturationInsertPolicy(saturation_point)
 
         # Create different requests
         metadata1 = AbstractStageMetadata({"type": "filter"})
