@@ -46,5 +46,7 @@ class BaseScheduler(AbstractScheduler):
             for req in requests:
                 if self._insertion_policy(req):  # <- policy decides
                     queue.append(req.stage)
+                else:
+                    return sample
 
         return sample
