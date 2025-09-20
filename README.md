@@ -8,3 +8,12 @@ choose peak and phase kernels (algorithms of classification) for your data
 and its paths to .csv files. 
 
 after call an instance of manager class. 
+
+
+# todo
+
+- Replace deque.popleft() → use list + index to avoid function call overhead.
+- Batch process samples → if stages can handle arrays, vectorize NumPy operations.
+- Minimize Python object creation → reuse metadata, requests, and temporary objects.
+- Use numba / JIT compilation → compile loops if Python overhead dominates.
+- Parallelize independent stages → with ThreadPoolExecutor if process releases GIL.
