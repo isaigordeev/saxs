@@ -15,7 +15,7 @@ class FindAllPeaksStage(AbstractConditionalStage):
     def __init__(
         self, chaining_stage: ProcessPeakStage, condition: SampleCondition
     ):
-        super.__init__(chaining_stage, condition)
+        super().__init__(chaining_stage, condition)
 
     def _process(self, stage_data):
         _params = {"x": stage_data.get_intensity_array()}
