@@ -268,7 +268,7 @@ class TestChainingPeakCondition:
         sample_success = AbstractSampleMetadata(
             {
                 "peaks_detected": True,
-                "peak_count": 3,
+                "peak_count": 2,
                 "peaks_fitted": True,
                 "peak_quality": "good",
             }
@@ -302,6 +302,6 @@ class TestChainingPeakCondition:
             }
         )
         assert condition_detected.evaluate(sample_partial) is True
-        assert condition_min_peaks.evaluate(sample_partial) is True
+        assert condition_min_peaks.evaluate(sample_partial) is False
         assert condition_fitted.evaluate(sample_partial) is False
         assert condition_quality.evaluate(sample_partial) is False

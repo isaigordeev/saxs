@@ -13,5 +13,5 @@ class ChainingPeakCondition(SampleCondition):
         self.key = key
         self.expected_value = expected_value
 
-    def evaluate(self, sample: AbstractSampleMetadata) -> bool:
-        return sample.metadata.get(self.key) == self.expected_value
+    def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+        return metadata.unwrap().get(self.key) == self.expected_value
