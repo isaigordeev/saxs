@@ -8,7 +8,7 @@ from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
-    AbstractCondition,
+    SampleCondition,
 )
 from saxs.saxs.core.pipeline.scheduler.stage_request import StageRequest
 
@@ -27,11 +27,12 @@ class AbstractStage(ABC):
         """Process input data and return new SAXSSample."""
         pass
 
+    def get_next_stage(self):
+        return []
+
 
 class AbstractConditionalStage(AbstractStage):
-    def __init__(
-        self, stage_to_add: AbstractStage, condition: AbstractCondition
-    ):
+    def __init__(self, stage_to_add: AbstractStage, condition: SampleCondition):
         self.stage_to_add = stage_to_add
         self.condition = condition
 
@@ -42,7 +43,7 @@ class AbstractConditionalStage(AbstractStage):
 
 
 class AbstractSelfRepeatingConditionalStage(AbstractStage):
-    def __init__(self, condition: AbstractCondition):
+    def __init__(self, condition: SampleCondition):
         self.condition = condition
 
     def get_next_stage(self):
