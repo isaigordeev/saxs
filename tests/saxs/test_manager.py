@@ -1,5 +1,5 @@
 #
-# Created by Isai GORDEEV on 19/09/2025.
+# Created by Isai GORDEEV on 20/09/2025.
 #
 
 from saxs.application.manager import Manager

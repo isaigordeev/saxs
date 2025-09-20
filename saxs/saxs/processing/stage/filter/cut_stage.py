@@ -1,3 +1,7 @@
+#
+# Created by Isai GORDEEV on 20/09/2025.
+#
+
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
