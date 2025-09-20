@@ -5,11 +5,11 @@ from abc import ABC, abstractmethod
 from collections import deque
 from typing import List, Optional
 
-from saxs.saxs.pipeline.scheduler.insertion_policy import (
+from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
 )
-from saxs.saxs.pipeline.scheduler.stage_request import StageRequest
+from saxs.saxs.core.pipeline.scheduler.stage_request import StageRequest
 
 
 class AbstractScheduler(ABC):

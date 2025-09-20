@@ -6,7 +6,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-from saxs.saxs.data.abstract_data import AData
+from saxs.saxs.core.data.abstract_data import AData
 
 
 @dataclass(frozen=True)

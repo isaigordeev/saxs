@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.signal import find_peaks, medfilt
 
-from saxs.saxs.functions import moving_average
+from saxs.saxs.processing.functions import moving_average
 from saxs.saxs.peak.default_kernel import DefaultPeakKernel
 
 

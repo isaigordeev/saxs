@@ -8,28 +8,33 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 
-from saxs.saxs.data.abstract_data import AData
+
+# --- Base wrapper for array-like data ---
+@dataclass(frozen=True)
+class BaseArrayWrapper:
+    values: Optional[np.ndarray] = None
+
+    def unwrap(self) -> Optional[np.ndarray]:
+        """Return the underlying NumPy array (or None if missing)."""
+        return self.values
 
 
 # --- Individual type wrappers ---
 @dataclass(frozen=True)
-class QValues:
-    values: np.ndarray
+class QValues(BaseArrayWrapper):
+    values: np.ndarray  # required
 
 
 @dataclass(frozen=True)
-class Intensity:
-    values: np.ndarray
+class Intensity(BaseArrayWrapper):
+    values: np.ndarray  # required
 
 
 @dataclass(frozen=True)
-class IntensityError:
-    values: Optional[np.ndarray] = None
+class IntensityError(BaseArrayWrapper):
+    values: Optional[np.ndarray] = None  # optional
 
 
 @dataclass(frozen=True)
-class AbstractSampleMetadata(AData):
-    data: Dict[str, Any] = field(default_factory=dict)
-
-    def describe(self) -> str:
-        return f"Stage metadata with keys: {list(self.data.keys())}"
+class AbstractSampleMetadata(BaseArrayWrapper):
+    values: Dict[str, Any] = field(default_factory=dict)

@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.optimize import curve_fit
 
-from saxs.saxs.functions import background_hyberbole
+from saxs.application.settings_processing import BACKGROUND_COEF, START
+from saxs.saxs.processing.functions import background_hyberbole
 from saxs.saxs.peak.abstract_kernel import AbstractPeakKernel
-from saxs.saxs.settings_processing import BACKGROUND_COEF, START
 
 
 class DefaultPeakKernel(AbstractPeakKernel):

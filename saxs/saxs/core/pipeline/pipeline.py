@@ -4,12 +4,12 @@
 
 from typing import List, Optional
 
-from saxs.saxs.data.sample import SAXSSample
-from saxs.saxs.pipeline.scheduler.scheduler import (
+from saxs.saxs.core.data.sample import SAXSSample
+from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,
     BaseScheduler,
 )
-from saxs.saxs.pipeline.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
 
 class Pipeline:

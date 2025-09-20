@@ -4,11 +4,13 @@
 
 from abc import ABC, abstractmethod
 
-from saxs.saxs.data.sample_objects import AbstractSampleMetadata
-from saxs.saxs.data.sample import SAXSSample
-from saxs.saxs.data.stage_objects import AbstractStageMetadata
-from saxs.saxs.pipeline.condition.abstract_condition import AbstractCondition
-from saxs.saxs.pipeline.scheduler.stage_request import StageRequest
+from saxs.saxs.core.data.sample import SAXSSample
+from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.pipeline.condition.abstract_condition import (
+    AbstractCondition,
+)
+from saxs.saxs.core.pipeline.scheduler.stage_request import StageRequest
 
 
 class AbstractStage(ABC):
@@ -16,13 +18,12 @@ class AbstractStage(ABC):
 
     metadata: AbstractStageMetadata
 
-    @abstractmethod
-    def process(self, data: SAXSSample) -> SAXSSample:
+    def process(self, stage_data: SAXSSample) -> SAXSSample:
         """Process input data and return new SAXSSample."""
-        pass
+        return self._process(stage_data)
 
     @abstractmethod
-    def _process(self, data: SAXSSample) -> SAXSSample:
+    def _process(self, stage_data: SAXSSample) -> SAXSSample:
         """Process input data and return new SAXSSample."""
         pass
 
