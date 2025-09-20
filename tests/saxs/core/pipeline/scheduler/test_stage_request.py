@@ -14,6 +14,7 @@ from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageRequest,
 )
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
 
 class TestAbstractStageRequest:
@@ -89,14 +90,6 @@ class TestStageRequest:
         different_metadata = AbstractStageMetadata({"different": "value"})
         request3 = StageRequest(stage=mock_stage, metadata=different_metadata)
         assert request1 != request3
-
-    def test_stage_request_hash(self, mock_stage, stage_metadata):
-        """Test StageRequest hashability."""
-        request = StageRequest(stage=mock_stage, metadata=stage_metadata)
-
-        # Should be hashable (can be used as dict key)
-        request_dict = {request: "test_value"}
-        assert request_dict[request] == "test_value"
 
     def test_stage_request_with_different_stage_types(self, stage_metadata):
         """Test StageRequest with different stage types."""

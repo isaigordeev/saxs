@@ -14,12 +14,12 @@ class AbstractConditionalStage(AbstractStage):
     def __init__(
         self, chaining_stage: AbstractStage, condition: SampleCondition
     ):
-        self.stage_to_add = chaining_stage
+        self.chaining_stage = chaining_stage
         self.condition = condition
 
     def get_next_stage(self):
         if self.condition.evaluate(self.metadata):
-            return [StageRequest(self.stage_to_add, self.metadata)]
+            return [StageRequest(self.chaining_stage, self.metadata)]
         return []
 
 
