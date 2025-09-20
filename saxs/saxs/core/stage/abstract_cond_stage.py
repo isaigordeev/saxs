@@ -19,7 +19,8 @@ class AbstractConditionalStage(AbstractStage):
 
     def get_next_stage(self):
         if self.condition.evaluate(self.metadata):
-            return [StageRequest(self.chaining_stage, self.metadata)]
+            state_to_inject = self.chaining_stage(self.condition)
+            return [StageRequest(state_to_inject, self.metadata)]
         return []
 
 
