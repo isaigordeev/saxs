@@ -94,8 +94,8 @@ class TestAbstractStage:
                 return []
 
         stage = MetadataStage()
-        assert stage.metadata.data["name"] == "meta"
-        assert stage.metadata.data["type"] == "test"
+        assert stage.metadata.unwrap()["name"] == "meta"
+        assert stage.metadata.unwrap()["type"] == "test"
         result = stage.process(saxs_sample)
         assert result == saxs_sample
 
@@ -261,4 +261,3 @@ class TestAbstractConditionalStageAdvanced:
         requests = stage.get_next_stage()
 
         assert requests == []
-

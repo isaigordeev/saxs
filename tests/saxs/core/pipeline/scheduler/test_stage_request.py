@@ -141,7 +141,7 @@ class TestStageRequest:
 
         assert request.stage == mock_stage
         assert request.metadata == complex_metadata
-        assert request.metadata.data["stage_info"]["name"] == "test_stage"
+        assert request.metadata.values["stage_info"]["name"] == "test_stage"
 
     def test_stage_request_with_empty_metadata(self, mock_stage):
         """Test StageRequest with empty metadata."""
@@ -150,7 +150,7 @@ class TestStageRequest:
 
         assert request.stage == mock_stage
         assert request.metadata == empty_metadata
-        assert len(request.metadata.data) == 0
+        assert len(request.metadata.values) == 0
 
     def test_stage_request_inheritance(self, mock_stage, stage_metadata):
         """Test that StageRequest inherits from AbstractStageRequest."""
@@ -198,11 +198,10 @@ class TestStageRequest:
 
         request = StageRequest(stage=mock_stage, metadata=metadata)
 
-        assert request.metadata.data["string"] == "test"
-        assert request.metadata.data["int"] == 42
-        assert request.metadata.data["float"] == 3.14
-        assert request.metadata.data["bool"] is True
-        assert request.metadata.data["list"] == [1, 2, 3]
-        assert request.metadata.data["dict"] == {"inner": "value"}
-        assert request.metadata.data["none"] is None
-
+        assert request.metadata.values["string"] == "test"
+        assert request.metadata.values["int"] == 42
+        assert request.metadata.values["float"] == 3.14
+        assert request.metadata.values["bool"] is True
+        assert request.metadata.values["list"] == [1, 2, 3]
+        assert request.metadata.values["dict"] == {"inner": "value"}
+        assert request.metadata.values["none"] is None
