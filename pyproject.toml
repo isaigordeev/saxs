@@ -2,7 +2,9 @@
 name = "saxs"
 version = "0.1.0"
 description = "A Isai Gordeev saxs classification package"
-authors = [{ name = "Isai Gordeev", email = "isai.gordeev.2022@polytechnique.org" }]
+authors = [
+    { name = "Isai Gordeev", email = "isai.gordeev.2022@polytechnique.org" },
+]
 requires-python = "~=3.10"
 readme = "README.md"
 license = "MIT"
@@ -26,7 +28,13 @@ indent-width = 4
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "C"]  # errors, formatting, imports, namings, complexity
+select = [
+    "E",
+    "F",
+    "I",
+    "N",
+    "C",
+] # errors, formatting, imports, namings, complexity
 ignore = ["RUF100"] # custom new lines with \
 
 [dependency-groups]
