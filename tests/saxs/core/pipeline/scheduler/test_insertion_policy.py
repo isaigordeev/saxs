@@ -9,15 +9,15 @@ Tests for insertion_policy.py module.
 import pytest
 
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    StageRequest,
+)
 from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
     MetadataKeyPolicy,
     NeverInsertPolicy,
     SaturationInsertPolicy,
-)
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
 )
 
 

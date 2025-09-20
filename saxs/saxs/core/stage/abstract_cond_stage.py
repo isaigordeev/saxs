@@ -4,10 +4,10 @@
 
 
 from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageRequest,
 )
+from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
 
 class AbstractConditionalStage(AbstractStage):
