@@ -6,9 +6,10 @@
 Tests for abstract_data.py module.
 """
 
-import pytest
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+
+import pytest
 
 from saxs.saxs.core.data.abstract_data import AData
 
