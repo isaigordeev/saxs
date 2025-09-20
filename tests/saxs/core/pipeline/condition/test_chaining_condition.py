@@ -304,3 +304,4 @@ class TestChainingPeakCondition:
         assert condition_min_peaks.evaluate(sample_partial) is False
         assert condition_fitted.evaluate(sample_partial) is False
         assert condition_quality.evaluate(sample_partial) is False
+

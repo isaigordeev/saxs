@@ -68,3 +68,4 @@ class TestAData:
         assert data.name == "test"
         assert data.value == 0
         assert data.describe() == "MultiInheritData: test with value 0"
+

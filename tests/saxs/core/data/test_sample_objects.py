@@ -237,3 +237,4 @@ class TestAbstractSampleMetadata:
         """Test that AbstractSampleMetadata inherits from BaseArrayWrapper."""
         metadata = AbstractSampleMetadata(values={"key": "value"})
         assert isinstance(metadata, BaseDataType)
+

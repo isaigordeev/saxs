@@ -249,3 +249,4 @@ class TestPipeline:
         filtering_stage.process.return_value = intermediate_sample2
         peak_detection_stage.process.return_value = final_sample
         analysis_stage.process.return_value = final_sample
+
