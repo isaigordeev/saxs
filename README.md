@@ -17,3 +17,10 @@ after call an instance of manager class.
 - Minimize Python object creation → reuse metadata, requests, and temporary objects.
 - Use numba / JIT compilation → compile loops if Python overhead dominates.
 - Parallelize independent stages → with ThreadPoolExecutor if process releases GIL.
+
+
+# ?
+
+- inplace ops?
+- instance or class injections?
+- lambda for state factory in injections?
