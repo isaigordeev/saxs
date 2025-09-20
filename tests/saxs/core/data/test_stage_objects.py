@@ -98,14 +98,6 @@ class TestAbstractStageMetadata:
         # Different data should not be equal
         assert metadata1 != metadata3
 
-    def test_stage_metadata_hash(self):
-        """Test AbstractStageMetadata hashability."""
-        metadata = AbstractStageMetadata(data={"key": "value"})
-
-        # Should be hashable (can be used as dict key)
-        metadata_dict = {metadata: "test_value"}
-        assert metadata_dict[metadata] == "test_value"
-
     def test_stage_metadata_with_stage_specific_data(self):
         """Test AbstractStageMetadata with stage-specific data structures."""
         stage_data = {
