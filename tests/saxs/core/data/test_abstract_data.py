@@ -30,7 +30,7 @@ class TestAData:
     def test_concrete_implementation_works(self):
         """Test that a concrete implementation of AData works correctly."""
 
-        @dataclass
+        @dataclass(frozen=True)
         class ConcreteData(AData):
             value: int = 42
 
@@ -44,7 +44,7 @@ class TestAData:
     def test_concrete_implementation_without_describe_fails(self):
         """Test that a concrete implementation without describe method fails."""
 
-        @dataclass
+        @dataclass(frozen=True)
         class IncompleteData(AData):
             value: int = 42
             # Missing describe method
@@ -56,17 +56,16 @@ class TestAData:
         """Test that AData works with multiple inheritance."""
 
         class BaseClass:
-            def __init__(self, name: str):
-                self.name = name
+            name = "test"
 
-        @dataclass
+        @dataclass(frozen=True)
         class MultiInheritData(BaseClass, AData):
             value: int = 0
 
             def describe(self) -> str:
                 return f"MultiInheritData: {self.name} with value {self.value}"
 
-        data = MultiInheritData("test")
+        data = MultiInheritData()
         assert data.name == "test"
         assert data.value == 0
         assert data.describe() == "MultiInheritData: test with value 0"
