@@ -6,11 +6,13 @@
 Tests for find_peak_stage.py module.
 """
 
+from typing import Type
 from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
 
+from saxs.logging.logger import logger
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.sample_objects import (
     AbstractSampleMetadata,
@@ -19,6 +21,9 @@ from saxs.saxs.core.data.sample_objects import (
     QValues,
 )
 from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
+from saxs.saxs.core.pipeline.condition.chaining_condition import (
+    ChainingPeakCondition,
+)
 from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
 from saxs.saxs.processing.stage.peak.process_peak_stage import ProcessPeakStage
 
@@ -51,6 +56,12 @@ def mock_condition():
 
 
 @pytest.fixture
+def mock_chaining_condition():
+    """Create a mock condition for testing."""
+    return ChainingPeakCondition("peaks")
+
+
+@pytest.fixture
 def mock_chaining_stage():
     """Create a mock chaining stage for testing."""
     return Mock(spec=ProcessPeakStage)
@@ -61,6 +72,14 @@ def find_peaks_stage(mock_chaining_stage, mock_condition):
     """Create FindAllPeaksStage instance for testing."""
     return FindAllPeaksStage(
         chaining_stage=mock_chaining_stage, condition=mock_condition
+    )
+
+
+@pytest.fixture
+def find_peaks_chaining_stage(mock_chaining_stage, mock_chaining_condition):
+    """Create FindAllPeaksStage instance for testing."""
+    return FindAllPeaksStage(
+        chaining_stage=ProcessPeakStage, condition=mock_chaining_condition
     )
 
 
@@ -420,3 +439,29 @@ class TestFindAllPeaksStage:
             assert "peaks" in result1.get_metadata_dict()
             assert "peaks" in result2.get_metadata_dict()
             assert "peaks" in result3.get_metadata_dict()
+
+    def test_find_peaks_stage_with_suite(
+        self, sample_data, find_peaks_chaining_stage
+    ):
+        """Test FindAllPeaksStage with multiple consecutive calls."""
+        with patch(
+            "saxs.saxs.processing.stage.peak.find_peak_stage.find_peaks"
+        ) as mock_find_peaks:
+            mock_find_peaks.return_value = (
+                np.array([4]),
+                {"peak_heights": [30.0]},
+            )
+
+            sample1 = find_peaks_chaining_stage.process(sample_data)
+            requests = find_peaks_chaining_stage.get_next_stage()
+            logger.info(f"{requests}")
+            # All results should have peaks in metadata
+            assert "peaks" in sample1.get_metadata_dict()
+            assert len(requests) > 0
+
+            assert isinstance(requests[0].stage, ProcessPeakStage)
+            new_stage = requests[0].stage
+            sample2 = new_stage.process(sample1)
+            logger.info(new_stage)
+            logger.info(f"{sample2}")
+            assert "peaks" in sample2.get_metadata_dict()
