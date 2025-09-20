@@ -1,13 +1,13 @@
 import json
 import os
 
-from saxs.saxs.peak.abstract_kernel import AbstractPeakKernel
 from saxs.application.processing_classificator import (
     ApplicationClassificator,
 )
 from saxs.application.processing_outils import (
     get_filenames_without_ext,
 )
+from saxs.saxs.peak.abstract_kernel import AbstractPeakKernel
 
 
 class PeakApplication(ApplicationClassificator):

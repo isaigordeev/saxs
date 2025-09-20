@@ -6,23 +6,24 @@
 Tests for scheduler.py module.
 """
 
-import pytest
 from collections import deque
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock, Mock
 
-from saxs.saxs.core.pipeline.scheduler.scheduler import (
-    AbstractScheduler,
-    BaseScheduler,
+import pytest
+
+from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    StageRequest,
 )
 from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
     AlwaysInsertPolicy,
     NeverInsertPolicy,
 )
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
+from saxs.saxs.core.pipeline.scheduler.scheduler import (
+    AbstractScheduler,
+    BaseScheduler,
 )
-from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 
 
 class TestAbstractScheduler:
