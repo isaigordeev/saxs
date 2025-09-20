@@ -8,6 +8,7 @@ Pytest configuration and shared fixtures for SAXS testing.
 
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -99,20 +100,11 @@ def stage_metadata():
 
 @pytest.fixture
 def mock_stage():
-    """Create a mock stage for testing."""
-
-    class MockStage(AbstractStage):
-        def __init__(self, name: str = "mock_stage"):
-            self.metadata = AbstractStageMetadata({"name": name})
-
-        def _process(self, stage_data: SAXSSample) -> SAXSSample:
-            # Simple pass-through for testing
-            return stage_data
-
-        def get_next_stage(self):
-            return []
-
-    return MockStage()
+    stage = MagicMock(spec=AbstractStage)
+    stage.get_next_stage.return_value = []
+    stage._process.return_value = SAXSSample(...)  # fake sample if needed
+    stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
+    return stage
 
 
 @pytest.fixture

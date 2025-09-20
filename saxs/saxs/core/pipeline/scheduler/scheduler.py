@@ -35,7 +35,7 @@ class BaseScheduler(AbstractScheduler):
     queue."""
 
     def run(self, init_sample):
-        queue = deque(self._queue)
+        queue = self._queue
         sample = init_sample
 
         while queue:

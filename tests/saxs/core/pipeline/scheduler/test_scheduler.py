@@ -7,11 +7,18 @@ Tests for scheduler.py module.
 """
 
 from collections import deque
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
+import numpy as np
 import pytest
 
-from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.data.sample import SAXSSample
+from saxs.saxs.core.data.sample_objects import (
+    AbstractSampleMetadata,
+    Intensity,
+    IntensityError,
+    QValues,
+)
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageRequest,
@@ -26,6 +33,36 @@ from saxs.saxs.core.pipeline.scheduler.scheduler import (
 )
 
 
+# ----------------
+# Fixtures
+# ----------------
+@pytest.fixture
+def saxs_sample():
+    """Create a minimal valid SAXSSample for testing."""
+    q = QValues(np.array([0.1, 0.2, 0.3]))
+    i = Intensity(np.array([1.0, 2.0, 3.0]))
+    err = IntensityError(np.array([0.01, 0.02, 0.03]))
+    meta = AbstractSampleMetadata({"source": "test"})
+    return SAXSSample(
+        q_values=q, intensity=i, intensity_error=err, metadata=meta
+    )
+
+
+@pytest.fixture
+def mock_stage(saxs_sample):
+    """Return a mock stage with process and get_next_stage mocked."""
+    stage = Mock()
+    stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
+    stage.process = Mock(
+        return_value=saxs_sample
+    )  # you can set return_value in each test
+    stage.get_next_stage.return_value = []  # no new stages by default
+    return stage
+
+
+# ----------------
+# Tests
+# ----------------
 class TestAbstractScheduler:
     """Test cases for AbstractScheduler abstract base class."""
 
@@ -106,24 +143,30 @@ class TestBaseScheduler:
     ):
         """Test BaseScheduler run with single stage."""
         # Mock the stage's process method
-        mock_stage.process = Mock(return_value=saxs_sample)
 
         scheduler = BaseScheduler(init_stages=[mock_stage])
         result = scheduler.run(saxs_sample)
 
         # Should call process on the stage
         mock_stage.process.assert_called_once_with(saxs_sample)
+        assert result
         assert result == saxs_sample
+        print("dodf", result)
+        assert result.metadata.unwrap().get("source") == "test"
 
-    def test_base_scheduler_run_with_multiple_stages(self, saxs_sample):
+    def test_base_scheduler_run_with_multiple_stages(
+        self, saxs_sample, mock_stage
+    ):
         """Test BaseScheduler run with multiple stages."""
         # Create mock stages
-        stage1 = Mock()
-        stage2 = Mock()
-        stage3 = Mock()
+        import copy
+
+        stage1 = copy.deepcopy(mock_stage)
+        stage2 = copy.deepcopy(mock_stage)
+        stage3 = copy.deepcopy(mock_stage)
 
         # Set up return values
-        modified_sample = saxs_sample.set_q_values([0.1, 0.2, 0.3])
+        modified_sample = saxs_sample.set_q_values(np.array([0.1, 0.2, 0.3]))
         stage1.process.return_value = modified_sample
         stage2.process.return_value = modified_sample
         stage3.process.return_value = modified_sample
@@ -235,7 +278,6 @@ class TestBaseScheduler:
         """Test BaseScheduler run with nested stage requests."""
         # Create mock stages
         stage1 = Mock()
-        stage2 = Mock()
         additional_stage1 = Mock()
         additional_stage2 = Mock()
 
@@ -284,9 +326,6 @@ class TestBaseScheduler:
         self, saxs_sample, mock_stage
     ):
         """Test BaseScheduler run when stage returns empty requests."""
-        mock_stage.get_next_stage.return_value = []
-        mock_stage.process.return_value = saxs_sample
-
         scheduler = BaseScheduler(init_stages=[mock_stage])
         result = scheduler.run(saxs_sample)
 
@@ -298,18 +337,14 @@ class TestBaseScheduler:
         self, saxs_sample, mock_stage
     ):
         """Test BaseScheduler run when stage returns None for requests."""
-        mock_stage.get_next_stage.return_value = None
-        mock_stage.process.return_value = saxs_sample
-
         scheduler = BaseScheduler(init_stages=[mock_stage])
 
-        # Should handle None gracefully (might raise AttributeError or similar)
+        # Should handle None gracefully
         try:
             result = scheduler.run(saxs_sample)
             mock_stage.process.assert_called_once_with(saxs_sample)
             assert result == saxs_sample
         except (AttributeError, TypeError):
-            # If None handling isn't implemented, that's also valid
             pytest.skip("None stage requests handling not implemented")
 
     def test_base_scheduler_queue_management(self, saxs_sample):
