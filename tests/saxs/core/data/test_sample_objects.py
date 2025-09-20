@@ -14,7 +14,7 @@ import pytest
 
 from saxs.saxs.core.data.sample_objects import (
     AbstractSampleMetadata,
-    BaseArrayWrapper,
+    BaseDataType,
     Intensity,
     IntensityError,
     QValues,
@@ -27,30 +27,30 @@ class TestBaseArrayWrapper:
     def test_base_array_wrapper_creation(self):
         """Test creating BaseArrayWrapper with and without values."""
         # With values
-        wrapper = BaseArrayWrapper(values=np.array([1, 2, 3]))
+        wrapper = BaseDataType(values=np.array([1, 2, 3]))
         assert wrapper.values is not None
         np.testing.assert_array_equal(wrapper.values, np.array([1, 2, 3]))
 
         # Without values
-        wrapper_empty = BaseArrayWrapper()
+        wrapper_empty = BaseDataType()
         assert wrapper_empty.values is None
 
     def test_base_array_wrapper_unwrap(self):
         """Test the unwrap method."""
         values = np.array([1, 2, 3, 4, 5])
-        wrapper = BaseArrayWrapper(values=values)
+        wrapper = BaseDataType(values=values)
 
         unwrapped = wrapper.unwrap()
         assert unwrapped is not None
         np.testing.assert_array_equal(unwrapped, values)
 
         # Test with None values
-        wrapper_empty = BaseArrayWrapper()
+        wrapper_empty = BaseDataType()
         assert wrapper_empty.unwrap() is None
 
     def test_base_array_wrapper_immutable(self):
         """Test that BaseArrayWrapper is immutable."""
-        wrapper = BaseArrayWrapper(values=np.array([1, 2, 3]))
+        wrapper = BaseDataType(values=np.array([1, 2, 3]))
 
         with pytest.raises(FrozenInstanceError):
             wrapper.values = np.array([4, 5, 6])
@@ -236,4 +236,4 @@ class TestAbstractSampleMetadata:
     def test_metadata_inheritance(self):
         """Test that AbstractSampleMetadata inherits from BaseArrayWrapper."""
         metadata = AbstractSampleMetadata(values={"key": "value"})
-        assert isinstance(metadata, BaseArrayWrapper)
+        assert isinstance(metadata, BaseDataType)

@@ -26,7 +26,9 @@ class SAXSSample(AData):
     q_values: QValues
     intensity: Intensity
     intensity_error: IntensityError = None
-    metadata: AbstractSampleMetadata = field(default_factory=dict)
+    metadata: AbstractSampleMetadata = field(
+        default_factory=AbstractSampleMetadata
+    )
 
     # --- Getters ---
     def get_q_values(self) -> "QValues":
@@ -95,3 +97,37 @@ class SAXSSample(AData):
 
     def describe(self) -> str:
         return "SAXS Sample"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, SAXSSample):
+            return False
+
+        # Compare q_values
+        if not np.array_equal(self.q_values.unwrap(), other.q_values.unwrap()):
+            return False
+
+        # Compare intensity
+        if not np.array_equal(
+            self.intensity.unwrap(), other.intensity.unwrap()
+        ):
+            return False
+
+        # Compare intensity_error
+        if self.intensity_error is None and other.intensity_error is not None:
+            return False
+        if self.intensity_error is not None and other.intensity_error is None:
+            return False
+        if (
+            self.intensity_error is not None
+            and other.intensity_error is not None
+        ):
+            if not np.array_equal(
+                self.intensity_error.unwrap(), other.intensity_error.unwrap()
+            ):
+                return False
+
+        # Compare metadata dictionaries
+        if self.metadata.unwrap() != other.metadata.unwrap():
+            return False
+
+        return True
