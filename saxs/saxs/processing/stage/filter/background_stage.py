@@ -9,7 +9,7 @@ from saxs.saxs.processing.functions import background_hyberbole
 class BackgroundStage(AbstractStage):
     def __init__(self, _background_func=background_hyberbole):
         self.metadata = AbstractStageMetadata(
-            data={
+            values={
                 "_background_func": _background_func,
                 "_background_coef": BACKGROUND_COEF,
             }
