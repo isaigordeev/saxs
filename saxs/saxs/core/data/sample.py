@@ -81,7 +81,7 @@ class SAXSSample(AData):
     def set_metadata_dict(self, metadata_dict: Dict[str, Any]) -> "SAXSSample":
         """Set metadata from raw dictionary."""
         return replace(
-            self, metadata=AbstractSampleMetadata(data=metadata_dict)
+            self, metadata=AbstractSampleMetadata(values=metadata_dict)
         )
 
     def append_metadata(
