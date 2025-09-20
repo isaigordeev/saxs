@@ -18,7 +18,9 @@ from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
     AlwaysInsertPolicy,
     NeverInsertPolicy,
 )
-from saxs.saxs.core.pipeline.scheduler.stage_request import StageRequest
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    StageRequest,
+)
 from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 

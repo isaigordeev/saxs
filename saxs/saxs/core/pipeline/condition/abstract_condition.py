@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from saxs.saxs.data.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
 
 
 class SampleCondition(ABC):

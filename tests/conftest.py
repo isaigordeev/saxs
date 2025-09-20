@@ -6,21 +6,24 @@
 Pytest configuration and shared fixtures for SAXS testing.
 """
 
+from dataclasses import dataclass
+from typing import Any, Dict, Optional
+
 import numpy as np
 import pytest
-from dataclasses import dataclass
-from typing import Dict, Any, Optional
 
+from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.sample_objects import (
-    QValues,
+    AbstractSampleMetadata,
     Intensity,
     IntensityError,
-    AbstractSampleMetadata,
+    QValues,
 )
-from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    StageRequest,
+)
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
-from saxs.saxs.core.pipeline.scheduler.stage_request import StageRequest
 
 
 @pytest.fixture

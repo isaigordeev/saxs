@@ -146,7 +146,7 @@ class TestPipeline:
         additional_stage = Mock()
 
         # Set up stage request
-        from saxs.saxs.core.pipeline.scheduler.stage_request import StageRequest
+        from saxs.saxs.core.stage.abstract_stage import StageRequest
         from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 
         stage_metadata = AbstractStageMetadata({"type": "additional"})

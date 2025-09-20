@@ -4,7 +4,6 @@
 
 
 from dataclasses import dataclass
-from typing import Callable
 
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.stage.abstract_stage import AbstractStage

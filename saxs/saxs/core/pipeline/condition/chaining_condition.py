@@ -4,11 +4,11 @@
 
 from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
-    AbstractCondition,
+    SampleCondition,
 )
 
 
-class ChainingPeakCondition(AbstractCondition):
+class ChainingPeakCondition(SampleCondition):
     def __init__(self, key: str, expected_value):
         self.key = key
         self.expected_value = expected_value

@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class AData(ABC):
     @abstractmethod
     def describe(self) -> str:
