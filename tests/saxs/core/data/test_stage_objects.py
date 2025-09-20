@@ -6,11 +6,12 @@
 Tests for stage_objects.py module.
 """
 
-import pytest
 from dataclasses import FrozenInstanceError
 
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+import pytest
+
 from saxs.saxs.core.data.abstract_data import AData
+from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 
 
 class TestAbstractStageMetadata:

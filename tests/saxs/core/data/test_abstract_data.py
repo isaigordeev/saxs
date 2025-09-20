@@ -6,7 +6,6 @@
 Tests for abstract_data.py module.
 """
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 import pytest

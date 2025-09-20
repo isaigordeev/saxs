@@ -6,8 +6,6 @@
 Pytest configuration and shared fixtures for SAXS testing.
 """
 
-from dataclasses import dataclass
-from typing import Any, Dict, Optional
 from unittest.mock import MagicMock
 
 import numpy as np

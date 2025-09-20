@@ -6,7 +6,6 @@
 Tests for abstract_condition.py module.
 """
 
-from abc import ABC, abstractmethod
 
 import pytest
 
