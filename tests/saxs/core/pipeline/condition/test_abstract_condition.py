@@ -6,11 +6,12 @@
 Tests for abstract_condition.py module.
 """
 
-import pytest
 from abc import ABC, abstractmethod
 
-from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
+import pytest
+
 from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
 
 
 class TestSampleCondition:
@@ -33,8 +34,8 @@ class TestSampleCondition:
             def __init__(self, threshold: float):
                 self.threshold = threshold
 
-            def evaluate(self, sample: AbstractSampleMetadata) -> bool:
-                return sample.metadata.get("value", 0) > self.threshold
+            def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+                return metadata.unwrap().get("value", 0) > self.threshold
 
         condition = ConcreteCondition(threshold=10.0)
 
@@ -69,15 +70,15 @@ class TestSampleCondition:
                 self.max_value = max_value
                 self.required_keys = required_keys
 
-            def evaluate(self, sample: AbstractSampleMetadata) -> bool:
-                metadata = sample.metadata
+            def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+                metadata_raw = metadata.unwrap()
 
                 # Check if all required keys are present
-                if not all(key in metadata for key in self.required_keys):
+                if not all(key in metadata_raw for key in self.required_keys):
                     return False
 
                 # Check if value is within range
-                value = metadata.get("value", 0)
+                value = metadata_raw.get("value", 0)
                 return self.min_value <= value <= self.max_value
 
         condition = ComplexCondition(
@@ -106,8 +107,8 @@ class TestSampleCondition:
         """Test condition evaluation with empty metadata."""
 
         class SimpleCondition(SampleCondition):
-            def evaluate(self, sample: AbstractSampleMetadata) -> bool:
-                return "test_key" in sample.metadata
+            def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+                return "test_key" in metadata.unwrap()
 
         condition = SimpleCondition()
         empty_sample = AbstractSampleMetadata()
@@ -121,9 +122,10 @@ class TestSampleCondition:
             def __init__(self, base_threshold: float):
                 self.base_threshold = base_threshold
 
-            def evaluate(self, sample: AbstractSampleMetadata) -> bool:
+            def evaluate(self, sample_metadata: AbstractSampleMetadata) -> bool:
                 return (
-                    sample.metadata.get("base_value", 0) > self.base_threshold
+                    sample_metadata.unwrap().get("base_value", 0)
+                    > self.base_threshold
                 )
 
         class ExtendedCondition(BaseCondition):
@@ -141,7 +143,7 @@ class TestSampleCondition:
 
                 # Check extended condition
                 return (
-                    sample.metadata.get("extended_value", 0)
+                    sample.unwrap().get("extended_value", 0)
                     > self.extended_threshold
                 )
 
