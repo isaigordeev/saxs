@@ -6,7 +6,6 @@
 Tests for abstract_stage.py module.
 """
 
-from abc import ABC
 from unittest.mock import Mock
 
 import numpy as np

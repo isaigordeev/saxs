@@ -6,12 +6,11 @@
 Tests for chaining_condition.py module.
 """
 
-import pytest
 
+from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.pipeline.condition.chaining_condition import (
     ChainingPeakCondition,
 )
-from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
 
 
 class TestChainingPeakCondition:

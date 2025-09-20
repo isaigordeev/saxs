@@ -13,10 +13,10 @@ import pytest
 
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.pipeline import Pipeline
-from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageRequest,
 )
+from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
 
 # ------------------------
 # Fixtures
