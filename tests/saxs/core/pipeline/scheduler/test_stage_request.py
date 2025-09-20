@@ -9,12 +9,11 @@ Tests for stage_request.py module.
 import pytest
 from dataclasses import FrozenInstanceError
 
-from saxs.saxs.core.pipeline.scheduler.stage_request import (
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     AbstractStageRequest,
     StageRequest,
 )
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
 
 class TestAbstractStageRequest:

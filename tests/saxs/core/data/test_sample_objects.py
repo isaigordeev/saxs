@@ -7,16 +7,17 @@
 Tests for sample_objects.py module.
 """
 
-import pytest
-import numpy as np
 from dataclasses import FrozenInstanceError
 
+import numpy as np
+import pytest
+
 from saxs.saxs.core.data.sample_objects import (
+    AbstractSampleMetadata,
     BaseArrayWrapper,
-    QValues,
     Intensity,
     IntensityError,
-    AbstractSampleMetadata,
+    QValues,
 )
 
 

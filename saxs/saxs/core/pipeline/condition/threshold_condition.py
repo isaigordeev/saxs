@@ -4,11 +4,11 @@
 
 from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
-    AbstractCondition,
+    SampleCondition,
 )
 
 
-class ThresholdCondition(AbstractCondition):
+class ThresholdCondition(SampleCondition):
     def __init__(self, key: str, threshold: float):
         self.key = key
         self.threshold = threshold

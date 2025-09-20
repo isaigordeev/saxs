@@ -4,7 +4,9 @@
 
 from abc import ABC, abstractmethod
 
-from saxs.saxs.core.pipeline.scheduler.stage_request import StageRequest
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    StageRequest,
+)
 
 
 class InsertionPolicy(ABC):

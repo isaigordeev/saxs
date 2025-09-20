@@ -9,7 +9,9 @@ from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
 )
-from saxs.saxs.core.pipeline.scheduler.stage_request import StageRequest
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    StageRequest,
+)
 
 
 class AbstractScheduler(ABC):
