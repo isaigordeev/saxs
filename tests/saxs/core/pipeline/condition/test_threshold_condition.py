@@ -201,3 +201,4 @@ class TestThresholdCondition:
         assert condition_intensity.evaluate(sample_partial_pass) is False
         assert condition_temperature.evaluate(sample_partial_pass) is True
         assert condition_pressure.evaluate(sample_partial_pass) is False
+

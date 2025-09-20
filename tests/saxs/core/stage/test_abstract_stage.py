@@ -261,3 +261,4 @@ class TestAbstractConditionalStageAdvanced:
         requests = stage.get_next_stage()
 
         assert requests == []
+

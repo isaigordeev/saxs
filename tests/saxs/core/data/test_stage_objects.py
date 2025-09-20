@@ -137,3 +137,4 @@ class TestAbstractStageMetadata:
         assert "stage_info" in description
         assert "parameters" in description
         assert "results" in description
+

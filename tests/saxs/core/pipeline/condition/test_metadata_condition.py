@@ -197,3 +197,4 @@ class TestMetadataCondition:
         assert condition_temp.evaluate(sample_partial_match) is True
         assert condition_pressure.evaluate(sample_partial_match) is False
         assert condition_type.evaluate(sample_partial_match) is True
+

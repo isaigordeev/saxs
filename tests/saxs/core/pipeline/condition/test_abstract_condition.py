@@ -167,3 +167,4 @@ class TestSampleCondition:
             {"base_value": 15.0, "extended_value": 10.0}
         )
         assert condition.evaluate(invalid_sample2) is False
+

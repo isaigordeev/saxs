@@ -205,3 +205,4 @@ class TestStageRequest:
         assert request.metadata.data["list"] == [1, 2, 3]
         assert request.metadata.data["dict"] == {"inner": "value"}
         assert request.metadata.data["none"] is None
+

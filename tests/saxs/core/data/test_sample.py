@@ -219,3 +219,4 @@ class TestSAXSSample:
         description = sample.describe()
         assert isinstance(description, str)
         assert len(description) > 0
+

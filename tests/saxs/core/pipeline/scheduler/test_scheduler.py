@@ -380,3 +380,4 @@ class TestBaseScheduler:
         # Queue should be empty after execution
         assert len(scheduler._queue) == 0
         assert result == saxs_sample
+
