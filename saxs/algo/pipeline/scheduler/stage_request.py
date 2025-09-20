@@ -6,6 +6,7 @@
 from dataclasses import dataclass
 from typing import Callable
 
+from saxs.algo.data.stage_objects import AbstractStageMetadata
 from saxs.algo.pipeline.stage.abstract_stage import AbstractStage
 
 
@@ -22,3 +23,4 @@ class AbstractStageRequest:
 @dataclass(frozen=True)
 class StageRequest(AbstractStageRequest):
     stage: AbstractStage
+    metadata: AbstractStageMetadata

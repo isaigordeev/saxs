@@ -7,7 +7,7 @@ from typing import List, Optional
 from saxs.algo.data.sample import SAXSSample
 from saxs.algo.pipeline.scheduler.scheduler import (
     AbstractScheduler,
-    SimpleScheduler,
+    BaseScheduler,
 )
 from saxs.algo.pipeline.stage.abstract_stage import AbstractStage
 
@@ -25,7 +25,7 @@ class Pipeline:
         scheduler: Optional[AbstractScheduler] = None,
     ):
         self.init_stages = init_stages or []
-        self.scheduler = scheduler or SimpleScheduler(self.init_stages)
+        self.scheduler = scheduler or BaseScheduler(self.init_stages)
 
     @classmethod
     def with_stages(

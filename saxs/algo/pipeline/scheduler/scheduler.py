@@ -1,27 +1,36 @@
 #
 # Created by Isai GORDEEV on 20/09/2025.
 #
-
-
+from abc import ABC, abstractmethod
 from collections import deque
-from typing import Callable, List
+from typing import List, Optional
 
+from saxs.algo.pipeline.scheduler.insertion_policy import (
+    AlwaysInsertPolicy,
+    InsertionPolicy,
+)
 from saxs.algo.pipeline.scheduler.stage_request import StageRequest
 
 
-class AbstractScheduler:
-    """Abstract Scheduler"""
+class AbstractScheduler(ABC):
+    """Abstract base class for all schedulers."""
 
-    _insertion_policy: Callable[..., bool]
-    _queue = deque()
-
-    def __init__(self, init_stages):
+    def __init__(
+        self,
+        init_stages: Optional[List] = None,
+        insertion_policy: Optional[InsertionPolicy] = None,
+    ):
         self._queue = deque(init_stages or [])
+        self._insertion_policy = insertion_policy or AlwaysInsertPolicy()
+
+    @abstractmethod
+    def run(self, init_sample):
+        pass
 
 
-class SimpleScheduler:
-    def __init__(self, init_stages):
-        super().__init__(init_stages)
+class BaseScheduler(AbstractScheduler):
+    """Executes stages sequentially and appends new requests to the end of the
+    queue."""
 
     def run(self, init_sample):
         queue = deque(self._queue)
@@ -29,14 +38,13 @@ class SimpleScheduler:
 
         while queue:
             stage = queue.popleft()
-
-            # Process the sample
             sample = stage.process(sample)
 
-            # Get additional stages from the current stage
-            requests: List[StageRequest] = stage.get_additional_stages()
+            # collect new stage requests
+            requests: List[StageRequest] = stage.get_next_stage()
 
-            # Scheduler decides where to insert them
             for req in requests:
-                # Policy: insert at end of queue
-                queue.append(req.stage)
+                if self._insertion_policy(req):  # <- policy decides
+                    queue.append(req.stage)
+
+        return sample
