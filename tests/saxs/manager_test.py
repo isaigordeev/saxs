@@ -1,8 +1,8 @@
-from saxs.algo.manager import Manager
-from saxs.algo.peak.parabole_kernel import (
+from saxs.saxs.manager import Manager
+from saxs.saxs.peak.parabole_kernel import (
     RobustParabolePeakKernel,
 )
-from saxs.algo.phase.default_kernel import DefaultPhaseKernel
+from saxs.saxs.phase.default_kernel import DefaultPhaseKernel
 
 
 def test_manager_runs_without_error():
