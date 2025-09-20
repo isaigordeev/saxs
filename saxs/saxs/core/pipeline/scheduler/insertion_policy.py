@@ -30,6 +30,16 @@ class NeverInsertPolicy(InsertionPolicy):
         return False
 
 
+class SaturationInsertPolicy(InsertionPolicy):
+    _calls = 0
+    _saturation = 6
+
+    def __call__(self, request: StageRequest) -> bool:
+        if self._calls < self._saturation:
+            return True
+        return False
+
+
 class MetadataKeyPolicy(InsertionPolicy):
     """
     Only insert stage if metadata contains a specific key.
