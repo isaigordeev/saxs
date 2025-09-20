@@ -12,9 +12,9 @@ from dataclasses import FrozenInstanceError
 import numpy as np
 import pytest
 
+from saxs.saxs.core.data.abstract_data import BaseDataType
 from saxs.saxs.core.data.sample_objects import (
     AbstractSampleMetadata,
-    BaseDataType,
     Intensity,
     IntensityError,
     QValues,
@@ -237,4 +237,3 @@ class TestAbstractSampleMetadata:
         """Test that AbstractSampleMetadata inherits from BaseArrayWrapper."""
         metadata = AbstractSampleMetadata(values={"key": "value"})
         assert isinstance(metadata, BaseDataType)
-

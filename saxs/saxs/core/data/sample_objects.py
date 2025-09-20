@@ -8,15 +8,7 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 
-
-# --- Base wrapper for array-like data ---
-@dataclass(frozen=True)
-class BaseDataType:
-    values: Optional[Any] = None
-
-    def unwrap(self) -> Optional[Any]:
-        """Return the underlying NumPy array (or None if missing)."""
-        return self.values
+from saxs.saxs.core.data.abstract_data import BaseDataType
 
 
 # --- Individual type wrappers ---

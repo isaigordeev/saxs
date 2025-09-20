@@ -16,8 +16,8 @@ class BackgroundStage(AbstractStage):
         )
 
     def _process(self, stage_data):
-        _background_func = self.metadata.get("_background_func")
-        _background_coef = self.metadata.get("_background_coef")
+        _background_func = self.metadata.unwrap().get("_background_func")
+        _background_coef = self.metadata.unwrap().get("_background_coef")
 
         current_intensity_state = stage_data.get_intensity_array()
         current_q_state = stage_data.get_q_values_array()
