@@ -32,8 +32,10 @@ class AbstractStage(ABC):
 
 
 class AbstractConditionalStage(AbstractStage):
-    def __init__(self, stage_to_add: AbstractStage, condition: SampleCondition):
-        self.stage_to_add = stage_to_add
+    def __init__(
+        self, chaining_stage: AbstractStage, condition: SampleCondition
+    ):
+        self.stage_to_add = chaining_stage
         self.condition = condition
 
     def get_next_stage(self):
