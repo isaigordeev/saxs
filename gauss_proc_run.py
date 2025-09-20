@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from saxs.algo.application import ApplicationManager
+from saxs.saxs.application import ApplicationManager
 
 now = datetime.now()
 

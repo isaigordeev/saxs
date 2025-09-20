@@ -1,5 +1,5 @@
-from saxs.algo.manager import Manager
-from saxs.algo.phase.custom_phase_classification import *
+from saxs.saxs.manager import Manager
+from saxs.saxs.phase.custom_phase_classification import *
 from saxs.saxs_model.phase_prediction import (
     prediction_from_csv,
     prediction_from_npy,

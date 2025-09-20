@@ -1,8 +1,4 @@
-#
-# Created by Isai GORDEEV on 19/09/2025.
-#
-
-from saxs.application.manager import Manager
+from saxs.saxs.manager import Manager
 from saxs.saxs.peak.parabole_kernel import (
     RobustParabolePeakKernel,
 )
