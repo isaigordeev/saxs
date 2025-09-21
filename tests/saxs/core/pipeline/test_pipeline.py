@@ -16,7 +16,12 @@ from saxs.saxs.core.pipeline.pipeline import Pipeline
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageRequest,
 )
+from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
+    SaturationInsertPolicy,
+)
 from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
+from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
+from saxs.saxs.processing.stage.filter.cut_stage import CutStage
 
 # ------------------------
 # Fixtures
@@ -72,6 +77,53 @@ def multi_mock_stages():
     stage3.get_next_stage.return_value = []
 
     return [stage1, stage2, stage3]
+
+
+# ------------------------
+# Real fixtures
+# ------------------------
+
+
+@pytest.fixture
+def init_sample():
+    from saxs.saxs.core.data.sample import SAXSSample
+    from saxs.saxs.core.data.sample_objects import (
+        AbstractSampleMetadata,
+        Intensity,
+        IntensityError,
+        QValues,
+    )
+
+    q = QValues([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+    i = Intensity([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
+    err = IntensityError(
+        [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
+    )
+
+    meta = AbstractSampleMetadata({"source": "test"})
+    return SAXSSample(
+        q_values=q, intensity=i, intensity_error=err, metadata=meta
+    )
+
+
+@pytest.fixture
+def init_stage():
+    cut_point = 1
+    init_stage = CutStage(cut_point=cut_point)
+    bg_stage = BackgroundStage()
+    return [init_stage, bg_stage]
+
+
+@pytest.fixture
+def init_scheduler():
+    policy = SaturationInsertPolicy()
+    scheduler = BaseScheduler
+    return scheduler
+
+
+@pytest.fixture
+def init_pipeline(init_stage):
+    return Pipeline.with_stages(*init_stage)
 
 
 # ------------------------
@@ -250,3 +302,10 @@ class TestPipeline:
         peak_detection_stage.process.return_value = final_sample
         analysis_stage.process.return_value = final_sample
 
+
+class TestRealPipeline:
+    """Test cases for Pipeline class using fixtures."""
+
+    def test_pipeline_run(self, init_sample, init_pipeline):
+        sample = init_sample
+        final_sample = init_pipeline.run(sample)

@@ -225,10 +225,6 @@ class TestAbstractConditionalStageAdvanced:
         assert len(requests) == 1
 
     def test_conditional_stage_skips_if_condition_false(self, saxs_sample):
-        from saxs.saxs.core.stage.abstract_cond_stage import (
-            AbstractConditionalStage,
-        )
-
         # Threshold higher than max intensity → condition False
         condition = MaxIntensityCondition(threshold=10.0)
         stage = ConcreteConditionalStage(
