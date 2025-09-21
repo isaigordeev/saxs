@@ -4,13 +4,14 @@
 
 from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
 from saxs.saxs.core.stage.abstract_cond_stage import (
+    AbstractConditionalStage,
     AbstractSelfRepeatingConditionalStage,
 )
 
 
-class ProcessPeakStage(AbstractSelfRepeatingConditionalStage):
-    def __init__(self, condition: SampleCondition):
-        super().__init__(condition)
+class ProcessPeakStage(AbstractConditionalStage):
+    def __init__(self, chaining_stage, condition: SampleCondition):
+        super().__init__(chaining_stage, condition)
 
     def _process(self, stage_data):
-        return stage_data
+        return stage_data, None
