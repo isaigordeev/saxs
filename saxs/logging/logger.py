@@ -7,7 +7,8 @@ import sys
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s – %(module)s.%(funcName)s():%(lineno)d – %(message)s",
+    format="%(asctime)s [%(levelname)s] %(name)s – %(module)s.%(funcName)s():%"
+    "(lineno)d – %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[logging.StreamHandler(sys.stdout)],
 )
@@ -15,7 +16,9 @@ logging.basicConfig(
 
 def get_logger(name: str) -> logging.Logger:
     """Return a logger named after the module."""
-    return logging.getLogger(name)
+    logger = logging.getLogger(name)
+    logger.propagate = True
+    return logger
 
 
 logger = get_logger("application logger")
