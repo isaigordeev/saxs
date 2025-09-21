@@ -42,4 +42,4 @@ class BackgroundStage(AbstractStage):
             current_intensity_state - _background_coef * background
         )
 
-        return stage_data.set_intensity(current_intensity_state)
+        return stage_data.set_intensity(current_intensity_state), None

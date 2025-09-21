@@ -18,7 +18,7 @@ class CutStage(AbstractStage):
             .set_intensity_error(stage_data.intensity_error[:cut_point])
         )
 
-        return _preprocessed_stage_data
+        return _preprocessed_stage_data, None
 
     def process(self, stage_data):
         return super().process(stage_data)

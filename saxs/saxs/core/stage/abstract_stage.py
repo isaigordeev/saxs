@@ -4,6 +4,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Dict, Optional, Tuple
 
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
@@ -13,18 +14,51 @@ from saxs.saxs.core.pipeline.condition.abstract_condition import (
 
 
 class AbstractStage(ABC):
-    """Abstract base class for all processing stages."""
+    metadata: "AbstractStageMetadata"
 
-    metadata: AbstractStageMetadata
+    def __init__(self):
+        self.metadata = AbstractStageMetadata()
 
-    def process(self, stage_data: SAXSSample) -> SAXSSample:
-        """Process input data and return new SAXSSample."""
-        return self._process(stage_data)
+    def process(self, stage_data):
+        """
+        Run the stage on stage_data.
+        Handles metadata management via hooks.
+        """
+        result, metadata = self._process(stage_data)
+
+        # Delegate metadata management to hook
+        result = self.handle_metadata(result, metadata)
+
+        return result
 
     @abstractmethod
-    def _process(self, stage_data: SAXSSample) -> SAXSSample:
-        """Process input data and return new SAXSSample."""
-        pass
+    def _process(self, stage_data) -> Tuple["SAXSSample", Optional[Dict]]:
+        """Override in subclass. Return (updated_sample,
+        optional_metadata_dict)."""
+        raise NotImplementedError
+
+    def handle_metadata(
+        self, sample: "SAXSSample", metadata: Optional[Dict]
+    ) -> "SAXSSample":
+        """
+        Default metadata handler: updates both sample and stage metadata.
+        Can be overridden in subclasses for custom behavior.
+        """
+        if metadata is None:
+            return sample
+
+        # Update sample metadata
+        updated_sample = sample.set_metadata_dict(
+            {
+                **sample.get_metadata_dict(),
+                **metadata,
+            }
+        )
+
+        # Update stage metadata
+        self.metadata = AbstractStageMetadata(values=metadata)
+
+        return updated_sample
 
     def get_next_stage(self):
         return []
