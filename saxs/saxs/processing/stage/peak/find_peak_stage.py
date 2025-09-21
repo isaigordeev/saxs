@@ -26,6 +26,6 @@ class FindAllPeaksStage(AbstractConditionalStage):
         _peaks, _props = find_peaks(**_params)
 
         processed_stage_data = stage_data.set_metadata_dict({"peaks": _peaks})
-        self.metadata = AbstractStageMetadata(values={"peaks": _peaks})
+        # self.metadata = AbstractStageMetadata(values={"peaks": _peaks})
 
-        return processed_stage_data
+        return processed_stage_data, {"peaks": _peaks}

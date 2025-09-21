@@ -47,6 +47,15 @@ def mock_stage():
     return stage
 
 
+class ConcreteConditionalStage(AbstractConditionalStage):
+    def _process(self, stage_data):
+        new_stage_ = stage_data.set_intensity(
+            stage_data.get_intensity_array() * 2
+        )
+
+        return new_stage_, {"max_I": max(new_stage_.get_intensity_array())}
+
+
 class TestAbstractStage:
     """Tests for AbstractStage."""
 
@@ -70,7 +79,7 @@ class TestAbstractStage:
                 self.metadata = AbstractStageMetadata({"name": "concrete"})
 
             def _process(self, stage_data):
-                return stage_data
+                return stage_data, None
 
             def get_next_stage(self):
                 return []
@@ -88,7 +97,7 @@ class TestAbstractStage:
                 )
 
             def _process(self, stage_data):
-                return stage_data
+                return stage_data, None
 
             def get_next_stage(self):
                 return []
@@ -128,7 +137,7 @@ class TestAbstractStage:
             def _process(self, stage_data):
                 arr = stage_data.get_intensity_array()
                 new_arr = arr * self.multiplier
-                return stage_data.set_intensity(new_arr)
+                return stage_data.set_intensity(new_arr), None
 
             def get_next_stage(self):
                 return []
@@ -149,7 +158,7 @@ class TestAbstractStage:
             def _process(self, stage_data):
                 if self.should_raise:
                     raise ValueError("Processing failed")
-                return stage_data
+                return stage_data, None
 
             def get_next_stage(self):
                 return []
@@ -173,7 +182,7 @@ class TestAbstractConditionalStage:
 
         class ConcreteConditionalStage(AbstractConditionalStage):
             def _process(self, stage_data):
-                return stage_data
+                return stage_data, None
 
         condition = Mock(spec=SampleCondition)
         stage = ConcreteConditionalStage(
@@ -199,20 +208,6 @@ class TestAbstractConditionalStageAdvanced:
     """Tests for AbstractConditionalStage with real condition logic."""
 
     def test_conditional_stage_runs_only_if_condition_true(self, saxs_sample):
-        from saxs.saxs.core.stage.abstract_cond_stage import (
-            AbstractConditionalStage,
-        )
-
-        class ConcreteConditionalStage(AbstractConditionalStage):
-            def _process(self, stage_data):
-                new_stage_ = stage_data.set_intensity(
-                    stage_data.get_intensity_array() * 2
-                )
-                self.metadata = AbstractSampleMetadata(
-                    {"max_I": max(new_stage_.get_intensity_array())}
-                )
-                return new_stage_
-
         # Threshold lower than max intensity → condition True
         condition = MaxIntensityCondition(threshold=1.5)
         stage = ConcreteConditionalStage(
@@ -233,18 +228,6 @@ class TestAbstractConditionalStageAdvanced:
         from saxs.saxs.core.stage.abstract_cond_stage import (
             AbstractConditionalStage,
         )
-
-        class ConcreteConditionalStage(AbstractConditionalStage):
-            def _process(self, stage_data):
-                new_stage_ = stage_data.set_intensity(
-                    stage_data.get_intensity_array() * 2
-                )
-
-                self.metadata = AbstractSampleMetadata(
-                    {"max_I": max(new_stage_.get_intensity_array())}
-                )
-
-                return new_stage_
 
         # Threshold higher than max intensity → condition False
         condition = MaxIntensityCondition(threshold=10.0)
