@@ -12,6 +12,9 @@ from unittest.mock import Mock
 import pytest
 
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.pipeline.condition.chaining_condition import (
+    ChainingPeakCondition,
+)
 from saxs.saxs.core.pipeline.pipeline import Pipeline
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageRequest,
@@ -22,6 +25,7 @@ from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
 from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
 from saxs.saxs.processing.stage.filter.cut_stage import CutStage
+from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
 
 # ------------------------
 # Fixtures
@@ -95,7 +99,7 @@ def init_sample():
     )
 
     q = QValues([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-    i = Intensity([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
+    i = Intensity([1.0, 2.0, 3.0, 9.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
     err = IntensityError(
         [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
     )
@@ -111,7 +115,10 @@ def init_stage():
     cut_point = 1
     init_stage = CutStage(cut_point=cut_point)
     bg_stage = BackgroundStage()
-    return [init_stage, bg_stage]
+    find_peak_stage = FindAllPeaksStage(
+        condition=ChainingPeakCondition("peaks")
+    )
+    return [init_stage, bg_stage, find_peak_stage]
 
 
 @pytest.fixture

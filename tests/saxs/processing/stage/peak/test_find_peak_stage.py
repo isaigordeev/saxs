@@ -25,7 +25,9 @@ from saxs.saxs.core.pipeline.condition.chaining_condition import (
     ChainingPeakCondition,
 )
 from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
-from saxs.saxs.processing.stage.peak.process_peak_stage import ProcessPeakStage
+from saxs.saxs.processing.stage.peak.process_peak_stage import (
+    AProcessPeakStage,
+)
 
 
 @pytest.fixture
@@ -64,7 +66,7 @@ def mock_chaining_condition():
 @pytest.fixture
 def mock_chaining_stage():
     """Create a mock chaining stage for testing."""
-    return Mock(spec=ProcessPeakStage)
+    return Mock(spec=AProcessPeakStage)
 
 
 @pytest.fixture
@@ -79,7 +81,7 @@ def find_peaks_stage(mock_chaining_stage, mock_condition):
 def find_peaks_chaining_stage(mock_chaining_stage, mock_chaining_condition):
     """Create FindAllPeaksStage instance for testing."""
     return FindAllPeaksStage(
-        chaining_stage=ProcessPeakStage, condition=mock_chaining_condition
+        chaining_stage=AProcessPeakStage, condition=mock_chaining_condition
     )
 
 
@@ -459,7 +461,7 @@ class TestFindAllPeaksStage:
             assert "peaks" in sample1.get_metadata_dict()
             assert len(requests) > 0
 
-            assert isinstance(requests[0].stage, ProcessPeakStage)
+            assert isinstance(requests[0].stage, AProcessPeakStage)
             new_stage = requests[0].stage
             sample2 = new_stage.process(sample1)
             logger.info(new_stage)

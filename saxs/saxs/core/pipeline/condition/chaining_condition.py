@@ -13,4 +13,4 @@ class ChainingPeakCondition(SampleCondition):
         self.key = key
 
     def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
-        return bool(metadata.unwrap().get(self.key))
+        return len(metadata.unwrap().get(self.key)) > 0
