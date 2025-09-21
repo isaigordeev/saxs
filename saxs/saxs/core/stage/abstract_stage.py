@@ -19,7 +19,7 @@ class AbstractStage(ABC):
     def __init__(self):
         self.metadata = AbstractStageMetadata()
 
-    def process(self, stage_data):
+    def process(self, stage_data: SAXSSample):
         """
         Run the stage on stage_data.
         Handles metadata management via hooks.
@@ -32,7 +32,9 @@ class AbstractStage(ABC):
         return result
 
     @abstractmethod
-    def _process(self, stage_data) -> Tuple["SAXSSample", Optional[Dict]]:
+    def _process(
+        self, stage_data: SAXSSample
+    ) -> Tuple["SAXSSample", Optional[Dict]]:
         """Override in subclass. Return (updated_sample,
         optional_metadata_dict)."""
         raise NotImplementedError
