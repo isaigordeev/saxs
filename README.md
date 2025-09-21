@@ -25,3 +25,4 @@ after call an instance of manager class.
 - instance or class injections?
 - lambda for state factory in injections?
 - metaclass for logging
+- pydantic for gluing metadata between stages
