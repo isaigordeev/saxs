@@ -24,3 +24,4 @@ after call an instance of manager class.
 - inplace ops?
 - instance or class injections?
 - lambda for state factory in injections?
+- metaclass for logging
