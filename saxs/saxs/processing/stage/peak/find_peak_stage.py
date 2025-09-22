@@ -3,6 +3,7 @@
 #
 
 from typing import Type
+
 from scipy.signal import find_peaks
 
 from saxs.logging.logger import logger
