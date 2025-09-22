@@ -28,7 +28,7 @@ def init_sample():
     )
 
     meta = AbstractSampleMetadata(
-        {"delta_q": 0.1, "max_intensity": max(i.unwrap())}
+        {"delta_q": 0.01, "max_intensity": max(i.unwrap())}
     )
     return SAXSSample(
         q_values=q, intensity=i, intensity_error=err, metadata=meta
