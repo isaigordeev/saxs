@@ -4,6 +4,7 @@
 
 
 from abc import abstractmethod
+
 from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
@@ -45,14 +46,3 @@ class AbstractRequestingStage(AbstractStage):
     @abstractmethod
     def create_request(self):
         pass
-
-
-class AbstractSelfRepeatingConditionalStage(AbstractStage):
-    def __init__(self, condition: SampleCondition):
-        self.condition = condition
-
-    def request_stage(self):
-        # if condition is true, reinsert itself into the pipeline
-        if self.condition.evaluate(self.metadata):
-            return [StageApprovalRequest(self, self.metadata)]
-        return []
