@@ -33,6 +33,3 @@ def get_logger(name: str) -> logging.Logger:
 
 
 logger = get_logger("application logger")
-
-# Example usage
-logger.info("Step 1: Running stage 'preprocessing'", sample="Sample_A")

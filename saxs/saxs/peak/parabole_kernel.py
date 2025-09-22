@@ -71,25 +71,25 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 current_parabole = current_peak_parabole(
                     self.current_q_state, popt[0], popt[1]
                 )
-                plt.clf()
-                plt.plot(self.current_q_state, self.current_I_state)
+                # plt.clf()
+                # plt.plot(self.current_q_state, self.current_I_state)
                 # plt.plot(self.current_q_state[period1//2:period2*2], current_parabole[period1//2:period2*2])
-                plt.plot(
-                    self.current_q_state[period1:period2],
-                    self.current_I_state[period1:period2],
-                )
-                plt.plot(
-                    self.current_q_state[period1:period2],
-                    current_parabole[period1:period2],
-                    "red",
-                )
+                # plt.plot(
+                #     self.current_q_state[period1:period2],
+                #     self.current_I_state[period1:period2],
+                # )
+                # plt.plot(
+                #     self.current_q_state[period1:period2],
+                #     current_parabole[period1:period2],
+                #     "red",
+                # )
 
-                plt.title(f"{popt},{np.sqrt(np.diag(pcov))}")
-                plt.savefig(
-                    "{}parabole_{}.png".format(
-                        self.file_analysis_dir_peaks, self.parabole_number
-                    )
-                )
+                # plt.title(f"{popt},{np.sqrt(np.diag(pcov))}")
+                # plt.savefig(
+                #     "{}parabole_{}.png".format(
+                #         self.file_analysis_dir_peaks, self.parabole_number
+                #     )
+                # )
 
                 self.parabole_number += 1
                 self.parabole_popt_for_gauss[self.peaks[i]] = popt
@@ -146,26 +146,26 @@ class ParabolePeakKernel(ProminencePeakKernel):
                     fitted_params[1],
                 )
 
-                plt.clf()
-                plt.plot(self.current_q_state, self.current_I_state)
-                plt.plot(self.current_q_state, self.current_gauss)
+                # plt.clf()
+                # plt.plot(self.current_q_state, self.current_I_state)
+                # plt.plot(self.current_q_state, self.current_gauss)
                 # plt.plot(self.current_q_state[period1//2:period2*2], current_parabole[period1//2:period2*2])
-                plt.plot(
-                    self.current_q_state[period1:period2],
-                    self.current_I_state[period1:period2],
-                )
-                plt.plot(
-                    self.current_q_state[period1:period2],
-                    self.current_gauss[period1:period2],
-                    "red",
-                )
+                # plt.plot(
+                #     self.current_q_state[period1:period2],
+                #     self.current_I_state[period1:period2],
+                # )
+                # plt.plot(
+                #     self.current_q_state[period1:period2],
+                #     self.current_gauss[period1:period2],
+                #     "red",
+                # )
 
-                plt.title(f"{fitted_params}")
-                plt.savefig(
-                    "{}minimize_gauss_peak_{}.png".format(
-                        self.file_analysis_dir_peaks, self.gaussian_peak_number
-                    )
-                )
+                # plt.title(f"{fitted_params}")
+                # plt.savefig(
+                #     "{}minimize_gauss_peak_{}.png".format(
+                #         self.file_analysis_dir_peaks, self.gaussian_peak_number
+                #     )
+                # )
 
                 self.gaussian_peak_number += 1
 
@@ -212,26 +212,26 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 self.peak_params = np.append(self.peak_params, popt[1])
                 self.peak_params = np.append(self.peak_params, popt[0])
 
-                plt.clf()
-                plt.plot(self.current_q_state, self.current_I_state)
-                plt.plot(self.current_q_state, self.current_gauss)
+                # plt.clf()
+                # plt.plot(self.current_q_state, self.current_I_state)
+                # plt.plot(self.current_q_state, self.current_gauss)
                 # plt.plot(self.current_q_state[period1//2:period2*2], current_parabole[period1//2:period2*2])
-                plt.plot(
-                    self.current_q_state[period1:period2],
-                    self.current_I_state[period1:period2],
-                )
-                plt.plot(
-                    self.current_q_state[period1:period2],
-                    self.current_gauss[period1:period2],
-                    "red",
-                )
+                # plt.plot(
+                #     self.current_q_state[period1:period2],
+                #     self.current_I_state[period1:period2],
+                # )
+                # plt.plot(
+                #     self.current_q_state[period1:period2],
+                #     self.current_gauss[period1:period2],
+                #     "red",
+                # )
 
-                plt.title(f"{popt},{np.sqrt(np.diag(pcov))}")
-                plt.savefig(
-                    "{}gauss_peak_{}.png".format(
-                        self.file_analysis_dir_peaks, self.gaussian_peak_number
-                    )
-                )
+                # plt.title(f"{popt},{np.sqrt(np.diag(pcov))}")
+                # plt.savefig(
+                #     "{}gauss_peak_{}.png".format(
+                #         self.file_analysis_dir_peaks, self.gaussian_peak_number
+                #     )
+                # )
 
                 self.gaussian_peak_number += 1
 
@@ -327,7 +327,7 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
             )
             # print("fit", self.fitted_peak_params)
 
-            self.robust_parabole_peak_kernel_plot()
+            # self.robust_parabole_peak_kernel_plot()
             self.final_peaks = sorted(self.fitted_peak_params[::3])
 
     def postprocessing(self):

@@ -12,6 +12,7 @@ from saxs.saxs.processing.kernels.abstract_kernel import (
     build_initial_stages,
 )
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
+from saxs.saxs.processing.stage.filter.filter_stage import FilterStage
 from saxs.saxs.processing.stage.filter.cut_stage import CutStage
 from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
 from saxs.saxs.processing.stage.peak.process_peak_stage import (
@@ -27,6 +28,7 @@ class SimpleKernel(AbstractKernel):
         # Example pipeline: Cut → Background → FindAllPeaks (with chaining)
         return [
             (CutStage, {"cut_point": 2}),
+            (FilterStage),
             (BackgroundStage),
             (
                 FindAllPeaksStage,
