@@ -19,12 +19,12 @@ class AbstractStage(ABC):
     def __init__(self, metadata: Optional[AbstractStageMetadata]):
         self.metadata = metadata if metadata else AbstractStageMetadata()
 
-    def process(self, stage_data: SAXSSample):
+    def process(self, sample_data: SAXSSample):
         """
         Run the stage on stage_data.
         Handles metadata management via hooks.
         """
-        result, metadata = self._process(stage_data)
+        result, metadata = self._process(sample_data)
 
         # Delegate metadata management to hook
         result = self.handle_metadata(result, metadata)
@@ -33,7 +33,7 @@ class AbstractStage(ABC):
 
     @abstractmethod
     def _process(
-        self, stage_data: SAXSSample
+        self, sample_data: SAXSSample
     ) -> Tuple["SAXSSample", Optional[Dict]]:
         """Override in subclass. Return (updated_sample,
         optional_metadata_dict)."""
