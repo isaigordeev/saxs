@@ -84,7 +84,7 @@ def multi_mock_stages():
 
 
 # ------------------------
-# Real fixtures
+# Semi-real fixtures
 # ------------------------
 
 
