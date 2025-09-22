@@ -84,7 +84,6 @@ def init_sample():
 
 
 from saxs.application.manager import Manager
-
 from saxs.saxs.peak.parabole_kernel import (
     RobustParabolePeakKernel,
 )
@@ -105,7 +104,7 @@ class TestSimpleKernel:
 
     def test_simple_kernel_run_with_real_sample(self, real_sample):
         kernel = SimpleKernel(
-            scheduler=BaseScheduler, scheduler_policy=SaturationInsertPolicy()
+            scheduler=BaseScheduler, scheduler_policy=SaturationInsertPolicy(15)
         )
         kernel.build_pipeline()
         sample = real_sample

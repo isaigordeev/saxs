@@ -7,6 +7,7 @@ from typing import List, Optional, Type
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     SaturationInsertPolicy,
+    InsertionPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,
@@ -26,8 +27,9 @@ class Pipeline:
         self,
         init_stages: Optional[List[AbstractStage]] = None,
         scheduler: Optional[Type[AbstractScheduler]] = None,
+        scheduler_policy: Optional[Type[InsertionPolicy]] = None,
     ):
-        self.policy = SaturationInsertPolicy()
+        self.policy = scheduler_policy or SaturationInsertPolicy()
         self.init_stages = init_stages or []
         self.scheduler = scheduler or BaseScheduler
 
@@ -36,9 +38,14 @@ class Pipeline:
         cls,
         *stages: AbstractStage,
         scheduler: Optional[Type[AbstractScheduler]] = None,
+        scheduler_policy: Optional[Type[InsertionPolicy]] = None,
     ) -> "Pipeline":
         """Convenience constructor to create a Pipeline with given stages."""
-        return cls(init_stages=list(stages), scheduler=scheduler)
+        return cls(
+            init_stages=list(stages),
+            scheduler=scheduler,
+            scheduler_policy=scheduler_policy,
+        )
 
     def run(self, init_sample: SAXSSample) -> SAXSSample:
         _instance = self.scheduler(self.init_stages, self.policy)
