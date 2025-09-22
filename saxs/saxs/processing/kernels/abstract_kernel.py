@@ -61,7 +61,7 @@ def build_initial_stages(
             if issubclass(stage_cls, AbstractRequestingStage):
                 actual_policy = policy or stage_cls.default_policy()
                 registry.register(stage_cls, actual_policy)
-                stages.append(stage_cls(policy=actual_policy, **kwargs))
+                stages.append(stage_cls(metadata=kwargs, policy=actual_policy))
                 logger.info(
                     f"[{idx}] Built requesting stage {stage_cls.__name__} with policy {actual_policy.__class__.__name__} and kwargs {kwargs}"
                 )

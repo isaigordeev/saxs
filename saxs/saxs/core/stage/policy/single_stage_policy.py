@@ -45,7 +45,10 @@ class SingleStageChainingPolicy(ChainingPolicy):
 
             return [
                 StageApprovalRequest(
-                    self.next_stage_cls(_pass_metadata), _scheduler_metadata
+                    self.next_stage_cls(
+                        metadata=_pass_metadata,
+                    ),
+                    _scheduler_metadata,
                 )
             ]
 
