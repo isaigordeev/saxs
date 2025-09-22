@@ -21,9 +21,9 @@ from saxs.saxs.core.data.sample_objects import (
 )
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
+    StageApprovalRequest,
 )
-from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
+from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     AlwaysInsertPolicy,
     NeverInsertPolicy,
 )
@@ -50,13 +50,13 @@ def saxs_sample():
 
 @pytest.fixture
 def mock_stage(saxs_sample):
-    """Return a mock stage with process and get_next_stage mocked."""
+    """Return a mock stage with process and request_stage mocked."""
     stage = Mock()
     stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
     stage.process = Mock(
         return_value=saxs_sample
     )  # you can set return_value in each test
-    stage.get_next_stage.return_value = []  # no new stages by default
+    stage.request_stage.return_value = []  # no new stages by default
     return stage
 
 
@@ -189,13 +189,13 @@ class TestBaseScheduler:
 
         # Set up stage requests
         stage_metadata = AbstractStageMetadata({"type": "additional"})
-        stage_request = StageRequest(
+        stage_request = StageApprovalRequest(
             stage=additional_stage, metadata=stage_metadata
         )
 
-        stage1.get_next_stage.return_value = [stage_request]
-        stage2.get_next_stage.return_value = []
-        additional_stage.get_next_stage.return_value = []
+        stage1.request_stage.return_value = [stage_request]
+        stage2.request_stage.return_value = []
+        additional_stage.request_stage.return_value = []
 
         # Set up process methods
         stage1.process.return_value = saxs_sample
@@ -221,11 +221,11 @@ class TestBaseScheduler:
 
         # Set up stage request
         stage_metadata = AbstractStageMetadata({"type": "additional"})
-        stage_request = StageRequest(
+        stage_request = StageApprovalRequest(
             stage=additional_stage, metadata=stage_metadata
         )
 
-        stage1.get_next_stage.return_value = [stage_request]
+        stage1.request_stage.return_value = [stage_request]
         stage1.process.return_value = saxs_sample
 
         # Use NeverInsertPolicy to reject all requests
@@ -249,16 +249,16 @@ class TestBaseScheduler:
         # Set up multiple stage requests
         stage_metadata1 = AbstractStageMetadata({"type": "additional1"})
         stage_metadata2 = AbstractStageMetadata({"type": "additional2"})
-        stage_request1 = StageRequest(
+        stage_request1 = StageApprovalRequest(
             stage=additional_stage1, metadata=stage_metadata1
         )
-        stage_request2 = StageRequest(
+        stage_request2 = StageApprovalRequest(
             stage=additional_stage2, metadata=stage_metadata2
         )
 
-        stage1.get_next_stage.return_value = [stage_request1, stage_request2]
-        additional_stage1.get_next_stage.return_value = []
-        additional_stage2.get_next_stage.return_value = []
+        stage1.request_stage.return_value = [stage_request1, stage_request2]
+        additional_stage1.request_stage.return_value = []
+        additional_stage2.request_stage.return_value = []
 
         # Set up process methods
         stage1.process.return_value = saxs_sample
@@ -284,16 +284,16 @@ class TestBaseScheduler:
         # Set up nested requests
         stage_metadata1 = AbstractStageMetadata({"type": "additional1"})
         stage_metadata2 = AbstractStageMetadata({"type": "additional2"})
-        stage_request1 = StageRequest(
+        stage_request1 = StageApprovalRequest(
             stage=additional_stage1, metadata=stage_metadata1
         )
-        stage_request2 = StageRequest(
+        stage_request2 = StageApprovalRequest(
             stage=additional_stage2, metadata=stage_metadata2
         )
 
-        stage1.get_next_stage.return_value = [stage_request1]
-        additional_stage1.get_next_stage.return_value = [stage_request2]
-        additional_stage2.get_next_stage.return_value = []
+        stage1.request_stage.return_value = [stage_request1]
+        additional_stage1.request_stage.return_value = [stage_request2]
+        additional_stage2.request_stage.return_value = []
 
         # Set up process methods
         stage1.process.return_value = saxs_sample
@@ -356,13 +356,13 @@ class TestBaseScheduler:
 
         # Set up stage request
         stage_metadata = AbstractStageMetadata({"type": "additional"})
-        stage_request = StageRequest(
+        stage_request = StageApprovalRequest(
             stage=additional_stage, metadata=stage_metadata
         )
 
-        stage1.get_next_stage.return_value = [stage_request]
-        stage2.get_next_stage.return_value = []
-        additional_stage.get_next_stage.return_value = []
+        stage1.request_stage.return_value = [stage_request]
+        stage2.request_stage.return_value = []
+        additional_stage.request_stage.return_value = []
 
         # Set up process methods
         stage1.process.return_value = saxs_sample
@@ -380,4 +380,3 @@ class TestBaseScheduler:
         # Queue should be empty after execution
         assert len(scheduler._queue) == 0
         assert result == saxs_sample
-

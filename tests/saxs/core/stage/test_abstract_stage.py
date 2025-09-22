@@ -39,11 +39,11 @@ def saxs_sample():
 
 @pytest.fixture
 def mock_stage():
-    """Mock stage with process and get_next_stage."""
+    """Mock stage with process and request_stage."""
     stage = Mock()
     stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
     stage.process = Mock()
-    stage.get_next_stage.return_value = []
+    stage.request_stage.return_value = []
     return stage
 
 
@@ -68,8 +68,8 @@ class TestAbstractStage:
         assert callable(getattr(AbstractStage, "process"))
         assert hasattr(AbstractStage, "_process")
         assert callable(getattr(AbstractStage, "_process"))
-        assert hasattr(AbstractStage, "get_next_stage")
-        assert callable(getattr(AbstractStage, "get_next_stage"))
+        assert hasattr(AbstractStage, "request_stage")
+        assert callable(getattr(AbstractStage, "request_stage"))
 
     def test_concrete_stage_process(self, saxs_sample):
         """Test minimal concrete subclass of AbstractStage."""
@@ -81,13 +81,13 @@ class TestAbstractStage:
             def _process(self, stage_data):
                 return stage_data, None
 
-            def get_next_stage(self):
+            def request_stage(self):
                 return []
 
         stage = ConcreteStage()
         result = stage.process(saxs_sample)
         assert result == saxs_sample
-        assert stage.get_next_stage() == []
+        assert stage.request_stage() == []
 
     def test_stage_with_metadata(self, saxs_sample):
         class MetadataStage(AbstractStage):
@@ -99,7 +99,7 @@ class TestAbstractStage:
             def _process(self, stage_data):
                 return stage_data, None
 
-            def get_next_stage(self):
+            def request_stage(self):
                 return []
 
         stage = MetadataStage()
@@ -117,16 +117,16 @@ class TestAbstractStage:
             def _process(self, stage_data):
                 return stage_data
 
-            def get_next_stage(self):
+            def request_stage(self):
                 return self.next_stages
 
         stage1 = ChainingStage()
-        assert stage1.get_next_stage() == []
+        assert stage1.request_stage() == []
 
         next_stage1 = Mock()
         next_stage2 = Mock()
         stage2 = ChainingStage([next_stage1, next_stage2])
-        assert stage2.get_next_stage() == [next_stage1, next_stage2]
+        assert stage2.request_stage() == [next_stage1, next_stage2]
 
     def test_processing_stage_modifies_sample(self, saxs_sample):
         class ProcessingStage(AbstractStage):
@@ -139,7 +139,7 @@ class TestAbstractStage:
                 new_arr = arr * self.multiplier
                 return stage_data.set_intensity(new_arr), None
 
-            def get_next_stage(self):
+            def request_stage(self):
                 return []
 
         stage = ProcessingStage(multiplier=3.0)
@@ -160,7 +160,7 @@ class TestAbstractStage:
                     raise ValueError("Processing failed")
                 return stage_data, None
 
-            def get_next_stage(self):
+            def request_stage(self):
                 return []
 
         stage_ok = ErrorStage(False)
@@ -220,7 +220,7 @@ class TestAbstractConditionalStageAdvanced:
             result.get_intensity_array(), saxs_sample.get_intensity_array() * 2
         )
 
-        requests = stage.get_next_stage()
+        requests = stage.request_stage()
 
         assert len(requests) == 1
 
@@ -237,6 +237,6 @@ class TestAbstractConditionalStageAdvanced:
             result.get_intensity_array(), saxs_sample.get_intensity_array() * 2
         )
 
-        requests = stage.get_next_stage()
+        requests = stage.request_stage()
 
         assert requests == []

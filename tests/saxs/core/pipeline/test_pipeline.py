@@ -17,9 +17,9 @@ from saxs.saxs.core.pipeline.condition.chaining_condition import (
 )
 from saxs.saxs.core.pipeline.pipeline import Pipeline
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
+    StageApprovalRequest,
 )
-from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
+from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     SaturationInsertPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
@@ -58,7 +58,7 @@ def mock_stage():
     stage = Mock()
     stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
     stage.process = Mock()
-    stage.get_next_stage.return_value = []
+    stage.request_stage.return_value = []
     return stage
 
 
@@ -68,17 +68,17 @@ def multi_mock_stages():
     stage1 = Mock()
     stage1.metadata = AbstractStageMetadata({"name": "stage1"})
     stage1.process = Mock()
-    stage1.get_next_stage.return_value = []
+    stage1.request_stage.return_value = []
 
     stage2 = Mock()
     stage2.metadata = AbstractStageMetadata({"name": "stage2"})
     stage2.process = Mock()
-    stage2.get_next_stage.return_value = []
+    stage2.request_stage.return_value = []
 
     stage3 = Mock()
     stage3.metadata = AbstractStageMetadata({"name": "stage3"})
     stage3.process = Mock()
-    stage3.get_next_stage.return_value = []
+    stage3.request_stage.return_value = []
 
     return [stage1, stage2, stage3]
 
@@ -226,15 +226,15 @@ class TestPipeline:
     def test_pipeline_run_with_stage_requests(self, saxs_sample):
         stage1 = Mock()
         additional_stage = Mock()
-        stage_request = StageRequest(
+        stage_request = StageApprovalRequest(
             stage=additional_stage,
             metadata=AbstractStageMetadata({"type": "additional"}),
         )
-        stage1.get_next_stage.return_value = [stage_request]
+        stage1.request_stage.return_value = [stage_request]
 
         stage1.process.return_value = saxs_sample
         additional_stage.process.return_value = saxs_sample
-        additional_stage.get_next_stage.return_value = []
+        additional_stage.request_stage.return_value = []
 
         pipeline = Pipeline(init_stages=[stage1])
         result = pipeline.run(saxs_sample)
@@ -293,10 +293,10 @@ class TestPipeline:
         peak_detection_stage = Mock()
         analysis_stage = Mock()
 
-        preprocessing_stage.get_next_stage.return_value = []
-        filtering_stage.get_next_stage.return_value = []
-        peak_detection_stage.get_next_stage.return_value = []
-        analysis_stage.get_next_stage.return_value = []
+        preprocessing_stage.request_stage.return_value = []
+        filtering_stage.request_stage.return_value = []
+        peak_detection_stage.request_stage.return_value = []
+        analysis_stage.request_stage.return_value = []
 
         intermediate_sample1 = saxs_sample.set_q_values([0.1, 0.2, 0.3])
         intermediate_sample2 = intermediate_sample1.set_intensity(

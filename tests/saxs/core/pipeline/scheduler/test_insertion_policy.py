@@ -10,9 +10,9 @@ import pytest
 
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
+    StageApprovalRequest,
 )
-from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
+from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
     MetadataKeyPolicy,
@@ -55,7 +55,7 @@ class TestAlwaysInsertPolicy:
 
         # Test with different request types
         metadata = AbstractStageMetadata({"test": "value"})
-        different_request = StageRequest(stage=None, metadata=metadata)
+        different_request = StageApprovalRequest(stage=None, metadata=metadata)
         assert policy(different_request) is True
 
     def test_always_insert_policy_with_multiple_requests(self, stage_request):
@@ -90,7 +90,7 @@ class TestNeverInsertPolicy:
 
         # Test with different request types
         metadata = AbstractStageMetadata({"test": "value"})
-        different_request = StageRequest(stage=None, metadata=metadata)
+        different_request = StageApprovalRequest(stage=None, metadata=metadata)
         assert policy(different_request) is False
 
     def test_never_insert_policy_with_multiple_requests(self, stage_request):
@@ -157,8 +157,8 @@ class TestSaturationInsertPolicy:
         # Create different requests
         metadata1 = AbstractStageMetadata({"type": "filter"})
         metadata2 = AbstractStageMetadata({"type": "peak"})
-        request1 = StageRequest(stage=None, metadata=metadata1)
-        request2 = StageRequest(stage=None, metadata=metadata2)
+        request1 = StageApprovalRequest(stage=None, metadata=metadata1)
+        request2 = StageApprovalRequest(stage=None, metadata=metadata2)
 
         # Both should count towards saturation
         assert policy(request1) is True  # Call 1
@@ -188,7 +188,7 @@ class TestMetadataKeyPolicy:
         metadata = AbstractStageMetadata(
             {"required_key": "value", "other_key": "other_value"}
         )
-        request = StageRequest(stage=None, metadata=metadata)
+        request = StageApprovalRequest(stage=None, metadata=metadata)
 
         policy = MetadataKeyPolicy(key="required_key")
         assert policy(request) is True
@@ -197,7 +197,7 @@ class TestMetadataKeyPolicy:
         """Test MetadataKeyPolicy when required key is missing."""
         # Create request without required key
         metadata = AbstractStageMetadata({"other_key": "other_value"})
-        request = StageRequest(stage=None, metadata=metadata)
+        request = StageApprovalRequest(stage=None, metadata=metadata)
 
         policy = MetadataKeyPolicy(key="required_key")
         assert policy(request) is False
@@ -205,7 +205,7 @@ class TestMetadataKeyPolicy:
     def test_metadata_key_policy_with_empty_metadata(self):
         """Test MetadataKeyPolicy with empty metadata."""
         metadata = AbstractStageMetadata()
-        request = StageRequest(stage=None, metadata=metadata)
+        request = StageApprovalRequest(stage=None, metadata=metadata)
 
         policy = MetadataKeyPolicy(key="any_key")
         assert policy(request) is False
@@ -213,7 +213,7 @@ class TestMetadataKeyPolicy:
     def test_metadata_key_policy_with_none_value(self):
         """Test MetadataKeyPolicy when key exists but value is None."""
         metadata = AbstractStageMetadata({"required_key": None})
-        request = StageRequest(stage=None, metadata=metadata)
+        request = StageApprovalRequest(stage=None, metadata=metadata)
 
         policy = MetadataKeyPolicy(key="required_key")
         # Should return True because key exists, regardless of value
@@ -224,7 +224,7 @@ class TestMetadataKeyPolicy:
         metadata = AbstractStageMetadata(
             {"stage_type": "filter", "priority": "high", "enabled": True}
         )
-        request = StageRequest(stage=None, metadata=metadata)
+        request = StageApprovalRequest(stage=None, metadata=metadata)
 
         # Test with different key names
         policy1 = MetadataKeyPolicy(key="stage_type")
@@ -242,7 +242,7 @@ class TestMetadataKeyPolicy:
     def test_metadata_key_policy_case_sensitivity(self):
         """Test MetadataKeyPolicy with case-sensitive key matching."""
         metadata = AbstractStageMetadata({"StageType": "filter"})
-        request = StageRequest(stage=None, metadata=metadata)
+        request = StageApprovalRequest(stage=None, metadata=metadata)
 
         # Test with exact case match
         policy_exact = MetadataKeyPolicy(key="StageType")
@@ -259,7 +259,7 @@ class TestMetadataKeyPolicy:
         metadata = AbstractStageMetadata(
             {"config": {"stage": {"type": "filter"}}}
         )
-        request = StageRequest(stage=None, metadata=metadata)
+        request = StageApprovalRequest(stage=None, metadata=metadata)
 
         # Test with top-level key
         policy_top = MetadataKeyPolicy(key="config")
@@ -279,7 +279,7 @@ class TestMetadataKeyPolicy:
         metadata = AbstractStageMetadata(
             {"stage_type": "filter", "priority": "high", "enabled": True}
         )
-        request = StageRequest(stage=None, metadata=metadata)
+        request = StageApprovalRequest(stage=None, metadata=metadata)
 
         # Create multiple policies
         policy_type = MetadataKeyPolicy(key="stage_type")
