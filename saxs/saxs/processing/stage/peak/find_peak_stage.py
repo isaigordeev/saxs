@@ -40,15 +40,11 @@ class FindAllPeaksStage(AbstractRequestingStage):
             next_stage_cls=ProcessFitPeakStage,
         )
 
-    def _process(self, stage_data):
-        intensity = stage_data.get_intensity_array()
+    def _process(self, sample_data):
+        intensity = sample_data.get_intensity_array()
 
         # Find peaks
         peaks_indices, peaks_properties = find_peaks(intensity)
-
-        processed_stage_data = stage_data.set_metadata_dict(
-            {"peaks": peaks_indices}
-        )
 
         # Log peaks info in readable format
         logger.info(
@@ -60,7 +56,7 @@ class FindAllPeaksStage(AbstractRequestingStage):
             f"==========================="
         )
 
-        return processed_stage_data, {"peaks": peaks_indices}
+        return sample_data, {"peaks": peaks_indices}
 
     def create_request(self) -> StageRequest:
         eval_metadata = self.metadata
