@@ -61,12 +61,12 @@
 #         # Check that it has the required methods from AbstractStage
 #         assert hasattr(process_peak_stage, 'process')
 #         assert hasattr(process_peak_stage, '_process')
-#         assert hasattr(process_peak_stage, 'get_next_stage')
+#         assert hasattr(process_peak_stage, 'request_stage')
 
 #         # Check that methods are callable
 #         assert callable(process_peak_stage.process)
 #         assert callable(process_peak_stage._process)
-#         assert callable(process_peak_stage.get_next_stage)
+#         assert callable(process_peak_stage.request_stage)
 
 #     def test_process_peak_stage_process_method(self, sample_data, process_peak_stage):
 #         """Test ProcessPeakStage process method."""
@@ -263,9 +263,9 @@
 #         assert result2 == result3
 #         assert result1 == sample_data
 
-#     def test_process_peak_stage_get_next_stage(self, process_peak_stage):
-#         """Test ProcessPeakStage get_next_stage method."""
-#         next_stages = process_peak_stage.get_next_stage()
+#     def test_process_peak_stage_request_stage(self, process_peak_stage):
+#         """Test ProcessPeakStage request_stage method."""
+#         next_stages = process_peak_stage.request_stage()
 
 #         # Should return a list (empty for now)
 #         assert isinstance(next_stages, list)

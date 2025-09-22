@@ -455,7 +455,7 @@ class TestFindAllPeaksStage:
             )
 
             sample1 = find_peaks_chaining_stage.process(sample_data)
-            requests = find_peaks_chaining_stage.get_next_stage()
+            requests = find_peaks_chaining_stage.request_stage()
             logger.info(f"{requests}")
             # All results should have peaks in metadata
             assert "peaks" in sample1.get_metadata_dict()
