@@ -3,31 +3,89 @@
 #
 
 from saxs.saxs.core.data.sample import SAXSSample
+from saxs.saxs.core.data.scheduler_objects import AbstractSchedulerMetadata
+from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractConditionalStage,
+    AbstractRequestingStage,
     AbstractSelfRepeatingConditionalStage,
 )
-from saxs.saxs.processing.functions import parabole
+from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.processing.functions import gauss, parabole
+
+from scipy.optimize import curve_fit
 
 
-class AProcessPeakStage(AbstractConditionalStage):
+class AProcessPeakStage(AbstractRequestingStage):
     def __init__(self, chaining_stage, condition: SampleCondition):
         super().__init__(chaining_stage, condition)
 
-    def _process(self, stage_data):
-        return stage_data, None
+    def _process(self, sample_data):
+        return sample_data, None
 
 
 class ProcessFitPeakStage(AProcessPeakStage):
-    def _process(self, stage_data: SAXSSample):
-        current_peak_index = stage_data.metadata.unwrap().get(
+    fit_range = 10
+
+    def _process(self, sample_data: SAXSSample):
+        current_peak_index = sample_data.metadata.unwrap().get(
             "current_peak_index"
         )
 
-        def current_peak_parabole(x, sigma, ampl):
-            return parabole(
-                x, self.current_q_state[current_peak_index], sigma, ampl
-            )
+        current_q_state = sample_data.get_q_values_array()
+        current_intensity_state = sample_data.get_intensity_array()
+        current_intensity_errors_state = sample_data.get_intensity_error_array()
 
-        return stage_data, None
+        def current_peak_parabole(x, sigma, ampl):
+            return parabole(x, current_q_state[current_peak_index], sigma, ampl)
+
+        def current_peak_gauss(x, sigma, ampl):
+            return gauss(x, current_q_state[current_peak_index], sigma, ampl)
+
+        left_range = current_q_state[current_peak_index] - self.fit_range
+
+        right_range = current_q_state[current_peak_index] + self.fit_range
+
+        popt, pcov = curve_fit(
+            f=current_peak_parabole,
+            xdata=current_q_state[left_range:right_range],
+            ydata=current_intensity_state[left_range:right_range],
+            bounds=([self.delta_q**2, 1], [0.05, 4 * self.max_I]),
+            sigma=current_intensity_errors_state[left_range:right_range],
+        )
+
+        gauss_range = popt[0] / self.delta_q
+
+        left_range = current_q_state[current_peak_index] - gauss_range
+
+        right_range = current_q_state[current_peak_index] + gauss_range
+
+        popt, pcov = curve_fit(
+            f=current_peak_parabole,
+            xdata=current_q_state[left_range:right_range],
+            ydata=current_intensity_state[left_range:right_range],
+            bounds=([self.delta_q**2, 1], [0.05, 4 * self.max_I]),
+            sigma=current_intensity_errors_state[left_range:right_range],
+        )
+
+        _current_gauss_approximation = current_peak_gauss(
+            self.current_q_state, popt[0], popt[1]
+        )
+
+        new_intensity_state = (
+            current_intensity_state - _current_gauss_approximation
+        )
+
+        new_sample_data = sample_data.set_intensity(new_intensity_state)
+
+        return (
+            new_sample_data,
+            {"popt": [current_peak_index, popt[0], popt[1]]},
+        )
+
+    def create_request(self):
+        eval_metadata = AbstractStageMetadata()
+        pass_metadata = AbstractStageMetadata()
+        scheduler_metadata = AbstractSchedulerMetadata(self.metadata.unwrap())
+        return StageRequest(eval_metadata, pass_metadata, scheduler_metadata)
