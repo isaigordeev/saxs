@@ -79,9 +79,11 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         gauss_range = int(popt[0] / delta_q)
 
+        logger.info(f"gauss_range {popt[0]} {gauss_range}")
+
         left_range = (
             current_peak_index - gauss_range
-            if current_peak_index - gauss_range
+            if current_peak_index - gauss_range >= 0
             else 0
         )
 
@@ -91,12 +93,12 @@ class ProcessFitPeakStage(AProcessPeakStage):
             f=current_peak_parabole,
             xdata=current_q_state[left_range:right_range],
             ydata=current_intensity_state[left_range:right_range],
-            bounds=([self.delta_q**2, 1], [0.05, 4 * self.max_I]),
+            bounds=([delta_q**2, 1], [0.05, 4 * max_intensity]),
             sigma=current_intensity_errors_state[left_range:right_range],
         )
 
         _current_gauss_approximation = current_peak_gauss(
-            self.current_q_state, popt[0], popt[1]
+            current_q_state, popt[0], popt[1]
         )
 
         new_intensity_state = (
