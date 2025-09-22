@@ -41,7 +41,7 @@ class AbstractRequestingStage(AbstractStage):
     def request_stage(self):
         if self.policy is None:
             default = self.default_policy()
-            if not isinstance(default, ChainingPolicy):
+            if issubclass(default.__class__, ChainingPolicy):
                 self.policy = default
 
         if not self.policy:
