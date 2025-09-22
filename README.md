@@ -26,3 +26,5 @@ after call an instance of manager class.
 - lambda for state factory in injections?
 - metaclass for logging
 - pydantic for gluing metadata between stages
+- replace python func calc in processing by cpp ones
+– pipeline scheduler for peaks in order (map reduce like) for multiprocessing
