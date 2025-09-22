@@ -25,8 +25,8 @@ from saxs.saxs.core.stage.request.abst_request import StageRequest
 
 
 class FindAllPeaksStage(AbstractRequestingStage):
-    def __init__(self, policy: SingleStageChainingPolicy):
-        super().__init__(policy)
+    def __init__(self, metadata, policy: SingleStageChainingPolicy):
+        super().__init__(metadata, policy)
 
     @classmethod
     def default_policy(cls) -> "ChainingPolicy":
@@ -65,7 +65,7 @@ class FindAllPeaksStage(AbstractRequestingStage):
     def create_request(self) -> StageRequest:
         eval_metadata = self.metadata
         pass_metadata = AbstractStageMetadata(
-            {"current_peak_index": (self.metadata.unwrap().get("peaks"))}
-        )
+            {"current_peak_index": (self.metadata.unwrap().get("peaks")[0])}
+        )  # first peak
         scheduler_metadata = AbstractSchedulerMetadata(self.metadata.unwrap())
         return StageRequest(eval_metadata, pass_metadata, scheduler_metadata)
