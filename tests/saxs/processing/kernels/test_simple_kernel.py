@@ -1,10 +1,10 @@
 import pytest
+
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     SaturationInsertPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
 from saxs.saxs.processing.kernels.simple_kernel import SimpleKernel
-
 
 # ------------------------
 # Semi-real fixtures
@@ -36,10 +36,11 @@ def init_sample():
 class TestSimpleKernel:
     """Test cases for Pipeline class using fixtures."""
 
-    def test_simple_kernel_run(self):
+    def test_simple_kernel_run(self, init_sample):
         kernel = SimpleKernel(
             scheduler=BaseScheduler, scheduler_policy=SaturationInsertPolicy()
         )
         kernel.build_pipeline()
+        sample = init_sample
         # run kernel
-        kernel.run(init_sample)
+        kernel.run(sample)
