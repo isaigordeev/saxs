@@ -42,6 +42,12 @@ class AbstractRequestingStage(AbstractStage):
         _request = self.create_request()
         return self.policy.request(_request)
 
+    @classmethod
+    def default_policy(cls) -> "ChainingPolicy":
+        """Override in subclasses to provide a fallback policy.
+        By default, returns ChainingPolicy (injects nothing)."""
+        return ChainingPolicy()
+
     @abstractmethod
     def create_request(self) -> StageRequest:
         pass
