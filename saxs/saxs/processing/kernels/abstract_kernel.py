@@ -3,6 +3,7 @@ from typing import List, Tuple, Type, Union
 
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.pipeline.pipeline import Pipeline
 from saxs.saxs.core.pipeline.scheduler.scheduler import AbstractScheduler
 from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
@@ -66,9 +67,10 @@ class AbstractKernel(ABC):
     - sample creation
     """
 
-    def __init__(self, scheduler: "AbstractScheduler"):
+    def __init__(self, scheduler: "AbstractScheduler", scheduler_policy):
         self.scheduler = scheduler
         self.registry = PolicyRegistry()
+        self.scheduler_policy = scheduler_policy
 
     @abstractmethod
     def create_sample(self, *args, **kwargs) -> "SAXSSample":
@@ -92,10 +94,8 @@ class AbstractKernel(ABC):
         stage_defs = self.pipeline_definition()
         initial_stages = build_initial_stages(stage_defs, self.registry)
 
-        for stage in initial_stages:
-            metadata = AbstractStageMetadata(values={"sample": sample})
-            StageRequest(stage, metadata).execute(self.scheduler)
+        self.pipeline = Pipeline.with_stages(*initial_stages, self.scheduler)
 
     def run(self):
         """Run the scheduler until pipeline is complete."""
-        self.scheduler.run()
+        return self.pipeline.run()
