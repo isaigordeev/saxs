@@ -1,3 +1,6 @@
+import os
+import numpy as np
+import pandas as pd
 import pytest
 
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
@@ -6,9 +9,54 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
 from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
 from saxs.saxs.processing.kernels.simple_kernel import SimpleKernel
 
+
+def read_data(data_dir_file):
+    data_name_dir, extension = os.path.splitext(data_dir_file)
+
+    if extension == ".csv":
+        data = pd.read_csv(data_dir_file, sep=",")
+        data = data.apply(pd.to_numeric, errors="coerce")
+        data = data.dropna()
+        if data.shape[1] >= 3:
+            q = np.array(data.iloc[:, 0])
+            i = np.array(data.iloc[:, 1])
+            di = np.array(data.iloc[:, 2])
+            return q, i, di
+        elif data.shape[1] == 2:
+            q = np.array(data.iloc[:, 0])
+            i = np.array(data.iloc[:, 1])
+            return q, i, None
+
+
 # ------------------------
 # Semi-real fixtures
 # ------------------------
+
+
+@pytest.fixture
+def real_sample():
+    from saxs.saxs.core.data.sample import SAXSSample
+    from saxs.saxs.core.data.sample_objects import (
+        AbstractSampleMetadata,
+        Intensity,
+        IntensityError,
+        QValues,
+    )
+
+    q, i, err = read_data("tests/test_processing_data/075774_treated_xye.csv")
+
+    delta_q = (q[np.size(q) - 1] - q[0]) / np.size(q)
+
+    q = QValues(q)
+    i = Intensity(i)
+    err = IntensityError(err)
+
+    meta = AbstractSampleMetadata(
+        {"delta_q": delta_q, "max_intensity": max(i.unwrap())}
+    )
+    return SAXSSample(
+        q_values=q, intensity=i, intensity_error=err, metadata=meta
+    )
 
 
 @pytest.fixture
@@ -44,5 +92,14 @@ class TestSimpleKernel:
         )
         kernel.build_pipeline()
         sample = init_sample
+        # run kernel
+        kernel.run(sample)
+
+    def test_simple_kernel_run_with_real_sample(self, real_sample):
+        kernel = SimpleKernel(
+            scheduler=BaseScheduler, scheduler_policy=SaturationInsertPolicy()
+        )
+        kernel.build_pipeline()
+        sample = real_sample
         # run kernel
         kernel.run(sample)
