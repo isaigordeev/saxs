@@ -3,11 +3,14 @@
 #
 
 
+from abc import abstractmethod
 from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
+    StageApprovalRequest,
 )
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
+from saxs.saxs.core.stage.request.abst_request import StageRequest
 
 
 class AbstractConditionalStage(AbstractStage):
@@ -17,23 +20,39 @@ class AbstractConditionalStage(AbstractStage):
         self.chaining_stage = chaining_stage
         self.condition = condition
 
-    def get_next_stage(self):
+    def request_stage(self):
         if not self.condition:
             return []
         if self.condition.evaluate(self.metadata):
             state_to_inject = self.chaining_stage(
                 self.chaining_stage, self.condition
             )
-            return [StageRequest(state_to_inject, self.metadata)]
+            return [StageApprovalRequest(state_to_inject, self.metadata)]
         return []
+
+
+class AbstractRequestingStage(AbstractStage):
+    def __init__(self, policy: ChainingPolicy, condition: SampleCondition):
+        self.policy = policy
+        self.condition = condition
+
+    def request_stage(self):
+        if not self.policy:
+            return []
+        _request = self.create_request()
+        return self.policy.request(_request)
+
+    @abstractmethod
+    def create_request(self):
+        pass
 
 
 class AbstractSelfRepeatingConditionalStage(AbstractStage):
     def __init__(self, condition: SampleCondition):
         self.condition = condition
 
-    def get_next_stage(self):
+    def request_stage(self):
         # if condition is true, reinsert itself into the pipeline
         if self.condition.evaluate(self.metadata):
-            return [StageRequest(self, self.metadata)]
+            return [StageApprovalRequest(self, self.metadata)]
         return []

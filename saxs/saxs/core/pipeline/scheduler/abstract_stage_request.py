@@ -5,12 +5,12 @@
 
 from dataclasses import dataclass
 
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.data.scheduler_objects import AbstractSchedulerMetadata
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
 
 @dataclass(frozen=True)
-class AbstractStageRequest:
+class AbstractStageApprovalRequest:
     """
     Base class for stage addition requests.
     The position (next/end) is determined by the Scheduler/Pipeline.
@@ -20,6 +20,6 @@ class AbstractStageRequest:
 
 
 @dataclass(frozen=True)
-class StageRequest(AbstractStageRequest):
+class StageApprovalRequest(AbstractStageApprovalRequest):
     stage: AbstractStage
-    metadata: AbstractStageMetadata
+    metadata: AbstractSchedulerMetadata
