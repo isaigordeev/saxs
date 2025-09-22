@@ -5,7 +5,7 @@
 from abc import ABC, abstractmethod
 
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
+    StageApprovalRequest,
 )
 
 
@@ -17,18 +17,18 @@ class InsertionPolicy(ABC):
     """
 
     @abstractmethod
-    def __call__(self, request: StageRequest) -> bool:
+    def __call__(self, request: StageApprovalRequest) -> bool:
         """Return True if the stage should be inserted, False otherwise."""
         pass
 
 
 class AlwaysInsertPolicy(InsertionPolicy):
-    def __call__(self, request: StageRequest) -> bool:
+    def __call__(self, request: StageApprovalRequest) -> bool:
         return True
 
 
 class NeverInsertPolicy(InsertionPolicy):
-    def __call__(self, request: StageRequest) -> bool:
+    def __call__(self, request: StageApprovalRequest) -> bool:
         return False
 
 
@@ -39,7 +39,7 @@ class SaturationInsertPolicy(InsertionPolicy):
     def __init__(self, saturation: int = 6):
         self._saturation = saturation
 
-    def __call__(self, request: StageRequest) -> bool:
+    def __call__(self, request: StageApprovalRequest) -> bool:
         if self._calls < self._saturation:
             self._calls += 1
             return True
@@ -54,5 +54,5 @@ class MetadataKeyPolicy(InsertionPolicy):
     def __init__(self, key: str):
         self.key = key
 
-    def __call__(self, request: StageRequest) -> bool:
+    def __call__(self, request: StageApprovalRequest) -> bool:
         return self.key in request.metadata.unwrap()
