@@ -20,7 +20,7 @@ from saxs.saxs.core.data.sample_objects import (
 )
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
+    StageApprovalRequest,
 )
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
@@ -99,7 +99,7 @@ def stage_metadata():
 @pytest.fixture
 def mock_stage():
     stage = MagicMock(spec=AbstractStage)
-    stage.get_next_stage.return_value = []
+    stage.request_stage.return_value = []
     intensity = Intensity()
     q_values = QValues()
     stage._process.return_value = SAXSSample(
@@ -112,7 +112,7 @@ def mock_stage():
 @pytest.fixture
 def stage_request(mock_stage, stage_metadata):
     """Create a StageRequest for testing."""
-    return StageRequest(stage=mock_stage, metadata=stage_metadata)
+    return StageApprovalRequest(stage=mock_stage, metadata=stage_metadata)
 
 
 @pytest.fixture

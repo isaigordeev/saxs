@@ -5,12 +5,12 @@ from abc import ABC, abstractmethod
 from collections import deque
 from typing import List, Optional
 
-from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
+from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageRequest,
+    StageApprovalRequest,
 )
 
 
@@ -43,7 +43,7 @@ class BaseScheduler(AbstractScheduler):
             sample = stage.process(sample)
 
             # collect new stage requests
-            requests: List[StageRequest] = stage.get_next_stage()
+            requests: List[StageApprovalRequest] = stage.request_stage()
 
             for req in requests:
                 if self._insertion_policy(req):  # <- policy decides

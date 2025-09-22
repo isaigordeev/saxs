@@ -16,8 +16,8 @@ from saxs.saxs.core.pipeline.condition.abstract_condition import (
 class AbstractStage(ABC):
     metadata: "AbstractStageMetadata"
 
-    def __init__(self):
-        self.metadata = AbstractStageMetadata()
+    def __init__(self, metadata: Optional[AbstractStageMetadata]):
+        self.metadata = metadata if metadata else AbstractStageMetadata()
 
     def process(self, stage_data: SAXSSample):
         """
@@ -62,5 +62,5 @@ class AbstractStage(ABC):
 
         return updated_sample
 
-    def get_next_stage(self):
+    def request_stage(self):
         return []
