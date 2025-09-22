@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Tuple, Type, Union
 
+from saxs.logging.logger import logger
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.pipeline import Pipeline
@@ -27,29 +28,28 @@ def build_initial_stages(
     registry: "PolicyRegistry",
 ) -> List["AbstractStage"]:
     """
-    Build all initial stages.
+    Build all initial stages with optional kwargs and logging.
 
     Rules:
     - Plain AbstractStage → append as is.
     - AbstractRequestingStage without a tuple → append and register default policy.
     - Tuple(StageClass, kwargs_dict[, policy]) → append stage using kwargs.
-        - If StageClass is AbstractRequestingStage:
-            - Use provided policy if given
-            - Otherwise use default_policy()
-            - Register the policy in registry if needed
     """
     stages = []
 
-    for entry in stage_defs:
-        # Case 1: plain stage class without tuple
+    for idx, entry in enumerate(stage_defs, start=1):
+        # Case 1: plain stage class
         if isinstance(entry, type) and issubclass(entry, AbstractStage):
             if issubclass(entry, AbstractRequestingStage):
-                # Default policy for requesting stage
                 default_policy = entry.default_policy()
                 registry.register(entry, default_policy)
                 stages.append(entry(default_policy))
+                logger.info(
+                    f"[{idx}] Built requesting stage {entry.__name__} with default policy {default_policy.__class__.__name__}"
+                )
             else:
                 stages.append(entry())
+                logger.info(f"[{idx}] Built plain stage {entry.__name__}")
             continue
 
         # Case 2: stage class with kwargs, optional policy
@@ -59,17 +59,22 @@ def build_initial_stages(
             policy = entry[2] if len(entry) == 3 else None
 
             if issubclass(stage_cls, AbstractRequestingStage):
-                # Use given policy or fallback to default
                 actual_policy = policy or stage_cls.default_policy()
                 registry.register(stage_cls, actual_policy)
-                stages.append(stage_cls(actual_policy, **kwargs))
+                stages.append(stage_cls(policy=actual_policy, **kwargs))
+                logger.info(
+                    f"[{idx}] Built requesting stage {stage_cls.__name__} with policy {actual_policy.__class__.__name__} and kwargs {kwargs}"
+                )
             else:
-                # Plain abstract stage with kwargs
                 stages.append(stage_cls(**kwargs))
+                logger.info(
+                    f"[{idx}] Built plain stage {stage_cls.__name__} with kwargs {kwargs}"
+                )
             continue
 
-        raise TypeError(f"Invalid stage definition: {entry}")
+        raise TypeError(f"Invalid stage definition at index {idx}: {entry}")
 
+    logger.info(f"Total stages built: {len(stages)}")
     return stages
 
 
