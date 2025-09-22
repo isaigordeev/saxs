@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit, minimize
 
-from saxs.saxs.functions import gauss, parabole
+from saxs.saxs.processing.functions import gauss, parabole
 
 from .prominence_kernel import ProminencePeakKernel
 

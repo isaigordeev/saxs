@@ -1,4 +1,5 @@
-from saxs.saxs.manager import Manager
+from saxs.application.manager import Manager
+
 from saxs.saxs.peak.parabole_kernel import (
     RobustParabolePeakKernel,
 )
@@ -14,7 +15,9 @@ from saxs.saxs.phase.default_kernel import DefaultPhaseKernel
 
 # a = Manager(peak_kernel=ParabolePeakKernel, phase_kernel=DefaultPhaseKernel)
 a = Manager(
-    peak_kernel=RobustParabolePeakKernel, phase_kernel=DefaultPhaseKernel
+    peak_data_path="tests/test_processing_data",
+    peak_kernel=RobustParabolePeakKernel,
+    phase_kernel=DefaultPhaseKernel,
 )
 # a = Manager(peak_data_directory='res/', peak_kernel=RobustParabolePeakKernel, phase_kernel=DefaultPhaseKernel)
 
