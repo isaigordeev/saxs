@@ -27,7 +27,7 @@ class SimpleKernel(AbstractKernel):
         # Example pipeline: Cut → Background → FindAllPeaks (with chaining)
         return [
             (CutStage, {"cut_point": 2}),
-            BackgroundStage,
+            (BackgroundStage),
             (
                 FindAllPeaksStage,
                 {},
