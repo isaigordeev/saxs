@@ -84,10 +84,12 @@ class SAXSSample(AData):
             self, metadata=AbstractSampleMetadata(values=metadata_dict)
         )
 
-    def append_metadata(
-        self, new_metadata: AbstractSampleMetadata
+    def append_metadata_dict(
+        self, new_metadata: Dict[str, Any]
     ) -> "SAXSSample":
-        merged = {**self.metadata, **new_metadata}
+        merged = AbstractSampleMetadata(
+            {**self.get_metadata_dict(), **new_metadata}
+        )
         return replace(self, metadata=merged)
 
     def set_metadata(
