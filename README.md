@@ -17,6 +17,8 @@ after call an instance of manager class.
 - Minimize Python object creation → reuse metadata, requests, and temporary objects.
 - Use numba / JIT compilation → compile loops if Python overhead dominates.
 - Parallelize independent stages → with ThreadPoolExecutor if process releases GIL.
+- better scheduler metadata 
+- better type hierachy (with more abstaction and more usefullness)
 
 
 # ?
