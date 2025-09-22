@@ -117,7 +117,9 @@ class AbstractKernel(ABC):
         stage_defs = self.pipeline_definition()
         initial_stages = build_initial_stages(stage_defs, self.registry)
 
-        self.pipeline = Pipeline.with_stages(*initial_stages, self.scheduler)
+        self.pipeline = Pipeline.with_stages(
+            *initial_stages, scheduler=self.scheduler
+        )
 
     def run(self, init_sample: "SAXSSample"):
         """Run the scheduler until pipeline is complete."""
