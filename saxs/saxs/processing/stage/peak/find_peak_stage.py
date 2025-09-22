@@ -22,9 +22,6 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
-from saxs.saxs.processing.stage.peak.process_peak_stage import (
-    ProcessFitPeakStage,
-)
 
 
 class FindAllPeaksStage(AbstractRequestingStage):
@@ -34,6 +31,10 @@ class FindAllPeaksStage(AbstractRequestingStage):
     @classmethod
     def default_policy(cls) -> "ChainingPolicy":
         # This default policy will automatically inject NextStage if Condition is true
+        from saxs.saxs.processing.stage.peak.process_peak_stage import (
+            ProcessFitPeakStage,
+        )
+
         return SingleStageChainingPolicy(
             condition=ChainingPeakCondition("peaks"),
             next_stage_cls=ProcessFitPeakStage,
