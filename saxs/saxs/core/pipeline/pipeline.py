@@ -2,7 +2,7 @@
 # Created by Isai GORDEEV on 19/09/2025.
 #
 
-from typing import List, Optional
+from typing import List, Optional, Type
 
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
@@ -25,22 +25,21 @@ class Pipeline:
     def __init__(
         self,
         init_stages: Optional[List[AbstractStage]] = None,
-        scheduler: Optional[AbstractScheduler] = None,
+        scheduler: Optional[Type[AbstractScheduler]] = None,
     ):
         self.policy = SaturationInsertPolicy()
         self.init_stages = init_stages or []
-        self.scheduler = scheduler or BaseScheduler(
-            self.init_stages, self.policy
-        )
+        self.scheduler = scheduler or BaseScheduler
 
     @classmethod
     def with_stages(
         cls,
         *stages: AbstractStage,
-        scheduler: Optional[AbstractScheduler] = None,
+        scheduler: Optional[Type[AbstractScheduler]] = None,
     ) -> "Pipeline":
         """Convenience constructor to create a Pipeline with given stages."""
         return cls(init_stages=list(stages), scheduler=scheduler)
 
     def run(self, init_sample: SAXSSample) -> SAXSSample:
-        return self.scheduler.run(init_sample)
+        _instance = self.scheduler(self.init_stages, self.policy)
+        return _instance.run(init_sample)
