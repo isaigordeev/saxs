@@ -27,7 +27,7 @@ class SimpleKernel(AbstractKernel):
     def pipeline_definition(self):
         # Example pipeline: Cut → Background → FindAllPeaks (with chaining)
         return [
-            (CutStage, {"cut_point": 2}),
+            (CutStage, {"cut_point": 200}),
             (FilterStage),
             (BackgroundStage),
             (
