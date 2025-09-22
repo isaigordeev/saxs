@@ -5,7 +5,7 @@ description = "A Isai Gordeev saxs classification package"
 authors = [
     { name = "Isai Gordeev", email = "isai.gordeev.2022@polytechnique.org" },
 ]
-requires-python = "~=3.10"
+requires-python = ">=3.10"
 readme = "README.md"
 license = "MIT"
 dependencies = [
@@ -39,6 +39,7 @@ ignore = ["RUF100"] # custom new lines with \
 
 [dependency-groups]
 dev = [
+    "jupyter>=1.1.1",
     "matplotlib>=3.9.1",
     "numpy>=2.0.0",
     "pandas>=2.2.2",
