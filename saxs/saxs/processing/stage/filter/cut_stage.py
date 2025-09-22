@@ -39,6 +39,3 @@ class CutStage(AbstractStage):
         )
 
         return _preprocessed_stage_data, None
-
-    def process(self, stage_data):
-        return super().process(stage_data)
