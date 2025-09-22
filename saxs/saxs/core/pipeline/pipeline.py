@@ -5,7 +5,7 @@
 from typing import List, Optional
 
 from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.pipeline.scheduler.insertion_policy import (
+from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     SaturationInsertPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.scheduler import (
