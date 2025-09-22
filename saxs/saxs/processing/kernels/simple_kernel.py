@@ -26,10 +26,11 @@ class SimpleKernel(AbstractKernel):
     def pipeline_definition(self):
         # Example pipeline: Cut → Background → FindAllPeaks (with chaining)
         return [
-            CutStage,
+            (CutStage, {"cut_point": 2}),
             BackgroundStage,
             (
                 FindAllPeaksStage,
+                {},
                 SingleStageChainingPolicy(
                     ChainingPeakCondition("peaks"), ProcessFitPeakStage
                 ),
