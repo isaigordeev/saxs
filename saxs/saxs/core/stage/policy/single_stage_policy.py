@@ -1,5 +1,6 @@
 from typing import List, Type
 
+from saxs.logging.logger import logger
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
@@ -21,14 +22,34 @@ class SingleStageChainingPolicy(ChainingPolicy):
         self, stage_metadata: StageRequest
     ) -> List["StageApprovalRequest"]:
         if not self.condition:
+            logger.info(
+                f"\n{'=' * 30}\n[{self.__class__.__name__}] No condition set, skipping injection.\n{'=' * 30}"
+            )
             return []
+
         _eval_metadata = stage_metadata.eval_metadata
+
+        logger.info(
+            f"\n{'=' * 30}\n[{self.__class__.__name__}] Evaluating condition '{self.condition.__class__.__name__}' "
+            f"for stage '{_eval_metadata}' with metadata: {_eval_metadata.values}\n{'=' * 30}"
+        )
+
         if self.condition.evaluate(_eval_metadata):
             _pass_metadata = stage_metadata.pass_metadata
             _scheduler_metadata = stage_metadata.scheduler_metadata
+
+            logger.info(
+                f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition passed → Injecting stage "
+                f"'{self.next_stage_cls.__name__}' with metadata: {_pass_metadata.values}\n{'=' * 30}"
+            )
+
             return [
                 StageApprovalRequest(
                     self.next_stage_cls(_pass_metadata), _scheduler_metadata
                 )
             ]
+
+        logger.info(
+            f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition failed → No stage injected for '{stage_name}'\n{'=' * 30}"
+        )
         return []
