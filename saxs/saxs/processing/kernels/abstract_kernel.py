@@ -118,7 +118,9 @@ class AbstractKernel(ABC):
         initial_stages = build_initial_stages(stage_defs, self.registry)
 
         self.pipeline = Pipeline.with_stages(
-            *initial_stages, scheduler=self.scheduler
+            *initial_stages,
+            scheduler=self.scheduler,
+            scheduler_policy=self.scheduler_policy,
         )
 
     def run(self, init_sample: "SAXSSample"):
