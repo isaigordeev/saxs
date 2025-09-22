@@ -2,6 +2,8 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
+from scipy.optimize import curve_fit
+
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.scheduler_objects import AbstractSchedulerMetadata
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
@@ -10,9 +12,7 @@ from saxs.saxs.core.pipeline.condition.constant_true_condition import (
     TrueCondition,
 )
 from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractConditionalStage,
     AbstractRequestingStage,
-    AbstractSelfRepeatingConditionalStage,
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.policy.single_stage_policy import (
@@ -20,10 +20,6 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.processing.functions import gauss, parabole
-
-from scipy.optimize import curve_fit
-
-from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
 
 
 class AProcessPeakStage(AbstractRequestingStage):
@@ -40,6 +36,10 @@ class ProcessFitPeakStage(AProcessPeakStage):
     @classmethod
     def default_policy(cls) -> "ChainingPolicy":
         # This default policy will automatically inject NextStage if Condition is true
+        from saxs.saxs.processing.stage.peak.find_peak_stage import (
+            FindAllPeaksStage,
+        )
+
         return SingleStageChainingPolicy(
             condition=TrueCondition(),
             next_stage_cls=FindAllPeaksStage,
