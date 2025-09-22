@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Type, Union
+from typing import Any, Dict, List, Tuple, Type, Union
 
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
@@ -20,10 +20,11 @@ def build_initial_stages(
     stage_defs: List[
         Union[
             Type["AbstractStage"],
-            Tuple[Type["AbstractRequestingStage"], "ChainingPolicy"],
+            Tuple[Type["AbstractStage"], Dict[str, Any], "ChainingPolicy"],
+            Tuple[Type["AbstractStage"], Dict[str, Any]],
         ]
     ],
-    registry: PolicyRegistry,
+    registry: "PolicyRegistry",
 ) -> List["AbstractStage"]:
     """
     Build all initial stages.
@@ -31,15 +32,19 @@ def build_initial_stages(
     Rules:
     - Plain AbstractStage → append as is.
     - AbstractRequestingStage without a tuple → append and register default policy.
-    - Tuple(AbstractRequestingStage, ChainingPolicy) → append and register given policy.
+    - Tuple(StageClass, kwargs_dict[, policy]) → append stage using kwargs.
+        - If StageClass is AbstractRequestingStage:
+            - Use provided policy if given
+            - Otherwise use default_policy()
+            - Register the policy in registry if needed
     """
     stages = []
 
     for entry in stage_defs:
-        # Case 1: plain stage
+        # Case 1: plain stage class without tuple
         if isinstance(entry, type) and issubclass(entry, AbstractStage):
             if issubclass(entry, AbstractRequestingStage):
-                # Register default policy if not already registered
+                # Default policy for requesting stage
                 default_policy = entry.default_policy()
                 registry.register(entry, default_policy)
                 stages.append(entry(default_policy))
@@ -47,15 +52,20 @@ def build_initial_stages(
                 stages.append(entry())
             continue
 
-        # Case 2: requesting stage with explicit policy
-        if isinstance(entry, tuple) and len(entry) == 2:
-            stage_cls, policy = entry
-            if not issubclass(stage_cls, AbstractRequestingStage):
-                raise TypeError(
-                    f"{stage_cls.__name__} does not accept a policy"
-                )
-            # registry.register(stage_cls, policy) # do not registers stages
-            stages.append(stage_cls(policy))
+        # Case 2: stage class with kwargs, optional policy
+        if isinstance(entry, tuple) and 2 <= len(entry) <= 3:
+            stage_cls = entry[0]
+            kwargs = entry[1]
+            policy = entry[2] if len(entry) == 3 else None
+
+            if issubclass(stage_cls, AbstractRequestingStage):
+                # Use given policy or fallback to default
+                actual_policy = policy or stage_cls.default_policy()
+                registry.register(stage_cls, actual_policy)
+                stages.append(stage_cls(actual_policy, **kwargs))
+            else:
+                # Plain abstract stage with kwargs
+                stages.append(stage_cls(**kwargs))
             continue
 
         raise TypeError(f"Invalid stage definition: {entry}")
