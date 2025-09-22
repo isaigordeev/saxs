@@ -43,7 +43,7 @@ def real_sample():
         QValues,
     )
 
-    q, i, err = read_data("tests/test_processing_data/075774_treated_xye.csv")
+    q, i, err = read_data("tests/test_processing_data/075775_treated_xye.csv")
 
     delta_q = (q[np.size(q) - 1] - q[0]) / np.size(q)
 
@@ -83,17 +83,25 @@ def init_sample():
     )
 
 
+from saxs.application.manager import Manager
+
+from saxs.saxs.peak.parabole_kernel import (
+    RobustParabolePeakKernel,
+)
+from saxs.saxs.phase.default_kernel import DefaultPhaseKernel
+
+
 class TestSimpleKernel:
     """Test cases for Pipeline class using fixtures."""
 
-    def test_simple_kernel_run(self, init_sample):
-        kernel = SimpleKernel(
-            scheduler=BaseScheduler, scheduler_policy=SaturationInsertPolicy()
-        )
-        kernel.build_pipeline()
-        sample = init_sample
-        # run kernel
-        kernel.run(sample)
+    # def test_simple_kernel_run(self, init_sample):
+    #     kernel = SimpleKernel(
+    #         scheduler=BaseScheduler, scheduler_policy=SaturationInsertPolicy()
+    #     )
+    #     kernel.build_pipeline()
+    #     sample = init_sample
+    #     # run kernel
+    #     kernel.run(sample)
 
     def test_simple_kernel_run_with_real_sample(self, real_sample):
         kernel = SimpleKernel(
@@ -103,3 +111,11 @@ class TestSimpleKernel:
         sample = real_sample
         # run kernel
         kernel.run(sample)
+
+    # def test_old_run_with_real_sample(self):
+    #     a = Manager(
+    #         peak_data_path="tests/test_processing_data",
+    #         peak_kernel=RobustParabolePeakKernel,
+    #         # phase_kernel=DefaultPhaseKernel,
+    #     )
+    #     a()

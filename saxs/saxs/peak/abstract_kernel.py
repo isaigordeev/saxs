@@ -237,25 +237,25 @@ class AbstractPeakKernel:
         pass
 
     def sample_processing(self):
-        self.raw_plot()
+        # self.raw_plot()
 
         if self.is_preprocessing:
             self.preprocessing()
 
-        self.initial_state_plot()
+        # self.initial_state_plot()
 
         if self.is_background_reduction:
             self.background_reduction()
-            self.background_plot()
+            # self.background_plot()
 
         if self.is_filtering:
             self.filtering()
-            self.filtering_plot()
+            # self.filtering_plot()
 
         if self.is_peak_processing:
             self.search_peaks()
-            self.peaks_plots()
-            self.final_plot()
+            # self.peaks_plots()
+            # self.final_plot()
 
         if self.is_postprocessing:
             self.postprocessing()
