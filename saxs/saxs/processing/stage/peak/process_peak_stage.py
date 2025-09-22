@@ -4,6 +4,7 @@
 
 from scipy.optimize import curve_fit
 
+from saxs.logging.logger import logger
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.scheduler_objects import AbstractSchedulerMetadata
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
@@ -28,7 +29,7 @@ class AProcessPeakStage(AbstractRequestingStage):
 
 
 class ProcessFitPeakStage(AProcessPeakStage):
-    fit_range = 10
+    fit_range = 2
 
     @classmethod
     def default_policy(cls) -> "ChainingPolicy":
@@ -43,9 +44,10 @@ class ProcessFitPeakStage(AProcessPeakStage):
         )
 
     def _process(self, sample_data: SAXSSample):
-        current_peak_index = sample_data.metadata.unwrap().get(
-            "current_peak_index"
-        )
+        current_peak_index = self.metadata.unwrap().get("current_peak_index")
+
+        delta_q = sample_data.metadata.unwrap().get("delta_q")
+        max_intensity = sample_data.metadata.unwrap().get("max_intensity")
 
         current_q_state = sample_data.get_q_values_array()
         current_intensity_state = sample_data.get_intensity_array()
@@ -55,25 +57,35 @@ class ProcessFitPeakStage(AProcessPeakStage):
             return parabole(x, current_q_state[current_peak_index], sigma, ampl)
 
         def current_peak_gauss(x, sigma, ampl):
-            return gauss(x, current_q_state[current_peak_index], sigma, ampl)
+            return gauss(x, current_peak_index, sigma, ampl)
 
-        left_range = current_q_state[current_peak_index] - self.fit_range
+        left_range = (
+            current_peak_index - self.fit_range
+            if current_peak_index - self.fit_range >= 0
+            else 0
+        )
 
-        right_range = current_q_state[current_peak_index] + self.fit_range
+        right_range = current_peak_index + self.fit_range
+
+        logger.info(f"print left r {left_range}  {right_range}")
 
         popt, pcov = curve_fit(
             f=current_peak_parabole,
             xdata=current_q_state[left_range:right_range],
             ydata=current_intensity_state[left_range:right_range],
-            bounds=([self.delta_q**2, 1], [0.05, 4 * self.max_I]),
+            bounds=([delta_q**2, 1], [0.05, 4 * max_intensity]),
             sigma=current_intensity_errors_state[left_range:right_range],
         )
 
-        gauss_range = popt[0] / self.delta_q
+        gauss_range = int(popt[0] / delta_q)
 
-        left_range = current_q_state[current_peak_index] - gauss_range
+        left_range = (
+            current_peak_index - gauss_range
+            if current_peak_index - gauss_range
+            else 0
+        )
 
-        right_range = current_q_state[current_peak_index] + gauss_range
+        right_range = current_peak_index + gauss_range
 
         popt, pcov = curve_fit(
             f=current_peak_parabole,
