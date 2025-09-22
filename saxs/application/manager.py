@@ -1,10 +1,10 @@
 import time
 
 from .application import ApplicationManager
-from .peak.abstract_kernel import AbstractPeakKernel
-from .peak.peak_application import PeakApplication
-from .phase.phase_application import PhaseApplication
-from .phase.phase_classificator import AbstractPhaseKernel
+from saxs.saxs.peak.abstract_kernel import AbstractPeakKernel
+from saxs.saxs.peak.peak_application import PeakApplication
+from saxs.saxs.phase.phase_application import PhaseApplication
+from saxs.saxs.phase.phase_classificator import AbstractPhaseKernel
 
 time_start1 = time.time()
 

@@ -4,10 +4,10 @@ from datetime import date, datetime
 import numpy as np
 
 from saxs import DEFAULT_PHASES_PATH
-from saxs.saxs.processing_classificator import (
+from saxs.application.processing_classificator import (
     ApplicationClassificator,
 )
-from saxs.saxs.settings_processing import *
+from saxs.application.settings_processing import *
 
 # from fastdtw import fastdtw
 

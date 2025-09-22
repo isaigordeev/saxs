@@ -1,7 +1,7 @@
 from saxs.saxs.phase.phase_classificator import (
     AbstractPhaseKernel,
 )
-from saxs.saxs.processing_outils import (
+from saxs.application.processing_outils import (
     calculate_absolute_difference,
 )
 

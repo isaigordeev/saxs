@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-from saxs.saxs.settings_processing import (
+from saxs.application.settings_processing import (
     ANALYSE_DIR_SESSIONS,
 )
 
