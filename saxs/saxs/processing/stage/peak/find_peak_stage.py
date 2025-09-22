@@ -2,7 +2,7 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-from typing import Type
+from typing import Optional, Type
 
 from scipy.signal import find_peaks
 
@@ -25,7 +25,9 @@ from saxs.saxs.core.stage.request.abst_request import StageRequest
 
 
 class FindAllPeaksStage(AbstractRequestingStage):
-    def __init__(self, metadata, policy: SingleStageChainingPolicy):
+    def __init__(
+        self, metadata, policy: Optional[SingleStageChainingPolicy] = None
+    ):
         super().__init__(metadata, policy)
 
     @classmethod
