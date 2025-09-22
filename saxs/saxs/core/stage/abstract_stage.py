@@ -50,17 +50,17 @@ class AbstractStage(ABC):
             return sample
 
         # Update sample metadata
-        updated_sample = sample.set_metadata_dict(
-            {
-                **sample.get_metadata_dict(),
-                **metadata,
-            }
-        )
+        # updated_sample = sample.set_metadata_dict(
+        #     {
+        #         **sample.get_metadata_dict(),
+        #         **metadata,
+        #     }
+        # )
 
         # Update stage metadata
         self.metadata = AbstractStageMetadata(values=metadata)
 
-        return updated_sample
+        return sample
 
     def request_stage(self):
         return []
