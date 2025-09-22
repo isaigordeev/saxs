@@ -23,9 +23,6 @@ from saxs.saxs.processing.functions import gauss, parabole
 
 
 class AProcessPeakStage(AbstractRequestingStage):
-    def __init__(self, chaining_stage, condition: SampleCondition):
-        super().__init__(chaining_stage, condition)
-
     def _process(self, sample_data):
         return sample_data, None
 
