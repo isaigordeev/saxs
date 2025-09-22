@@ -44,7 +44,12 @@ class FindAllPeaksStage(AbstractRequestingStage):
         intensity = sample_data.get_intensity_array()
 
         # Find peaks
-        peaks_indices, peaks_properties = find_peaks(intensity)
+        peaks_indices, peaks_properties = find_peaks(
+            intensity,
+            height=0.5,
+            prominence=0.3,
+            distance=10,
+        )
 
         # Log peaks info in readable format
         logger.info(
