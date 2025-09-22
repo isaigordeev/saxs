@@ -131,3 +131,17 @@ class SAXSSample(AData):
             return False
 
         return True
+
+    def __str__(self) -> str:
+        q_len = len(self.q_values.unwrap()) if self.q_values else 0
+        i_len = len(self.intensity.unwrap()) if self.intensity else 0
+        err_len = (
+            len(self.intensity_error.unwrap()) if self.intensity_error else 0
+        )
+        meta_keys = list(self.metadata.unwrap().keys()) if self.metadata else []
+        return (
+            f"SAXSSample(q_values={q_len} points, "
+            f"intensity={i_len} points, "
+            f"intensity_error={err_len} points, "
+            f"metadata_keys={meta_keys})"
+        )
