@@ -33,9 +33,8 @@ class AbstractConditionalStage(AbstractStage):
 
 
 class AbstractRequestingStage(AbstractStage):
-    def __init__(self, policy: ChainingPolicy, condition: SampleCondition):
+    def __init__(self, policy: ChainingPolicy):
         self.policy = policy
-        self.condition = condition
 
     def request_stage(self):
         if not self.policy:
@@ -44,5 +43,5 @@ class AbstractRequestingStage(AbstractStage):
         return self.policy.request(_request)
 
     @abstractmethod
-    def create_request(self):
+    def create_request(self) -> StageRequest:
         pass
