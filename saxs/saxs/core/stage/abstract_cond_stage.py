@@ -4,6 +4,7 @@
 
 
 from abc import abstractmethod
+from typing import Optional
 
 from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
@@ -33,10 +34,16 @@ class AbstractConditionalStage(AbstractStage):
 
 
 class AbstractRequestingStage(AbstractStage):
-    def __init__(self, policy: ChainingPolicy):
+    def __init__(self, metadata, policy: Optional[ChainingPolicy] = None):
         self.policy = policy
+        super().__init__(metadata)
 
     def request_stage(self):
+        if self.policy is None:
+            default = self.default_policy()
+            if not isinstance(default, ChainingPolicy):
+                self.policy = default
+
         if not self.policy:
             return []
         _request = self.create_request()
