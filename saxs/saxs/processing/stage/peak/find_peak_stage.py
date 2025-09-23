@@ -66,9 +66,18 @@ class FindAllPeaksStage(AbstractRequestingStage):
         return sample_data, {"peaks": peaks_indices}
 
     def create_request(self) -> StageRequest:
-        eval_metadata = self.metadata
+        _current_peak_index = (
+            self.metadata.unwrap().get("peaks")[0]
+            if len(self.metadata.unwrap().get("peaks")) > 0
+            else -1
+        )
+
+        if _current_peak_index == -1:
+            return None
+
         pass_metadata = AbstractStageMetadata(
-            {"current_peak_index": (self.metadata.unwrap().get("peaks")[0])}
+            {"current_peak_index": (_current_peak_index)}
         )  # first peak
+        eval_metadata = self.metadata
         scheduler_metadata = AbstractSchedulerMetadata(self.metadata.unwrap())
         return StageRequest(eval_metadata, pass_metadata, scheduler_metadata)
