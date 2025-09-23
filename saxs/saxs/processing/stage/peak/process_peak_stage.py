@@ -90,7 +90,7 @@ class ProcessFitPeakStage(AProcessPeakStage):
         right_range = current_peak_index + gauss_range
 
         popt, pcov = curve_fit(
-            f=current_peak_parabole,
+            f=current_peak_gauss,
             xdata=current_q_state[left_range:right_range],
             ydata=current_intensity_state[left_range:right_range],
             bounds=([delta_q**2, 1], [0.05, 4 * max_intensity]),
