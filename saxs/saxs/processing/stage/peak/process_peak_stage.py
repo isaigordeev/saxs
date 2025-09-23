@@ -57,7 +57,20 @@ class ProcessFitPeakStage(AProcessPeakStage):
             return parabole(x, current_q_state[current_peak_index], sigma, ampl)
 
         def current_peak_gauss(x, sigma, ampl):
-            return gauss(x, current_peak_index, sigma, ampl)
+            return gauss(x, current_q_state[current_peak_index], sigma, ampl)
+
+        # --- First parabola fit ---
+        left_range = max(current_peak_index - self.fit_range, 0)
+        right_range = current_peak_index + self.fit_range
+
+        logger.info(
+            "\n=== ProcessFitPeakStage: Initial Fit ===\n"
+            f"Peak index: {current_peak_index}\n"
+            f"Fit range:  [{left_range}, {right_range}]\n"
+            f"delta_q:    {delta_q}\n"
+            f"max_I:      {max_intensity}\n"
+            "========================================="
+        )
 
         left_range = (
             current_peak_index - self.fit_range
@@ -79,6 +92,14 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         gauss_range = int(popt[0] / delta_q)
 
+        logger.info(
+            "\n--- First Fit Results ---\n"
+            f"Sigma (σ):   {popt[0]:.5f}\n"
+            f"Amplitude:   {popt[1]:.5f}\n"
+            f"Gauss range: {gauss_range}\n"
+            "--------------------------"
+        )
+
         logger.info(f"gauss_range {popt[0]} {gauss_range}")
 
         left_range = (
@@ -97,6 +118,14 @@ class ProcessFitPeakStage(AProcessPeakStage):
             sigma=current_intensity_errors_state[left_range:right_range],
         )
 
+        logger.info(
+            "\n=== ProcessFitPeakStage: Refined Fit ===\n"
+            f"Refined range: [{left_range}, {right_range}]\n"
+            f"Refined σ:     {popt[0]:.5f}\n"
+            f"Refined ampl:  {popt[1]:.5f}\n"
+            "========================================="
+        )
+
         _current_gauss_approximation = current_peak_gauss(
             current_q_state, popt[0], popt[1]
         )
@@ -106,6 +135,12 @@ class ProcessFitPeakStage(AProcessPeakStage):
         )
 
         new_sample_data = sample_data.set_intensity(new_intensity_state)
+
+        logger.info(
+            "\n+++ ProcessFitPeakStage Completed +++\n"
+            f"Subtracted Gaussian approx (σ={popt[0]:.5f}, A={popt[1]:.5f})\n"
+            "+++++++++++++++++++++++++++++++++++++"
+        )
 
         return (
             new_sample_data,
