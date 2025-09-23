@@ -47,6 +47,10 @@ class AbstractRequestingStage(AbstractStage):
         if not self.policy:
             return []
         _request = self.create_request()
+
+        if not _request:  # no request made
+            return []
+
         return self.policy.request(_request)
 
     @classmethod
