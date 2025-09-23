@@ -2,6 +2,7 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
+import numpy as np
 from scipy.optimize import curve_fit
 
 from saxs.logging.logger import logger
@@ -134,6 +135,8 @@ class ProcessFitPeakStage(AProcessPeakStage):
             current_intensity_state - _current_gauss_approximation
         )
 
+        new_intensity_state = np.maximum(new_intensity_state, 0)
+
         new_sample_data = sample_data.set_intensity(new_intensity_state)
 
         logger.info(
@@ -144,7 +147,10 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         return (
             new_sample_data,
-            {"popt": [current_peak_index, popt[0], popt[1]]},
+            {
+                "popt": [current_peak_index, popt[0], popt[1]],
+                "current_peak_index": current_peak_index,
+            },
         )
 
     def create_request(self):
