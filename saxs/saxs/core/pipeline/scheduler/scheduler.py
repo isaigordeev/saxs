@@ -95,8 +95,23 @@ class BaseScheduler(AbstractScheduler):
         )
         return sample
 
-    def handle_scheduler_meta(self, new_scheduler_metadata: Dict[str, Any]):
+    def handle_scheduler_meta(
+        self, new_scheduler_metadata: AbstractSchedulerMetadata
+    ):
+        if not new_scheduler_metadata.unwrap():
+            return
+
+        curr_peak = new_scheduler_metadata.unwrap().get(
+            "current_peak_index", -1
+        )
+
+        if curr_peak == -1:
+            return
+
         if not self._metadata.unwrap():
-            self._metadata = AbstractSchedulerMetadata({"peaks": 1})
+            self._metadata = AbstractSchedulerMetadata(
+                {"peaks": 1, "processed": [curr_peak]}
+            )
         else:
             self._metadata.unwrap()["peaks"] += 1
+            self._metadata.unwrap()["processed"].append(curr_peak)
