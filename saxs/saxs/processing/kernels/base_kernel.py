@@ -7,7 +7,7 @@ from saxs.saxs.core.stage.compose_stage import CompositeRequstingStage
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.processing.kernels.abstract_kernel import AbstractKernel
+from saxs.saxs.processing.kernels.abstract_kernel import BaseKernel
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
 from saxs.saxs.processing.stage.filter.cut_stage import CutStage
 from saxs.saxs.processing.stage.filter.filter_stage import FilterStage
@@ -17,7 +17,7 @@ from saxs.saxs.processing.stage.peak.process_peak_stage import (
 )
 
 
-class BaseKernel(AbstractKernel):
+class CompositeKernel(BaseKernel):
     def create_sample(self, data: dict) -> "SAXSSample":
         return SAXSSample(data=data)
 
