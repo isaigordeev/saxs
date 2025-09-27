@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import List
 
 from saxs.saxs.core.data.sample import SAXSSample
@@ -10,3 +11,7 @@ from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
 class AbstractKernelSpec(AbstractKernel):
     def define_pipeline(self) -> List[StageSpec]:
         raise NotImplementedError()
+
+    @abstractmethod
+    def build_policy(self):
+        pass
