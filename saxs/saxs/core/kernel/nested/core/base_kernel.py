@@ -14,7 +14,7 @@ from saxs.saxs.processing.kernel.nested.core.abstract_kernel import (
 )
 
 
-from typing import Any, Dict, List, Tuple, Type
+from typing import Any, Dict, List, Tuple, Type, Union
 
 
 class BaseKernel(AbstractKernel):
