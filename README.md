@@ -30,3 +30,6 @@ after call an instance of manager class.
 - pydantic for gluing metadata between stages
 - replace python func calc in processing by cpp ones
 – pipeline scheduler for peaks in order (map reduce like) for multiprocessing
+- composite stage 
+- new frontend yaml
+- new backend with decl specs
