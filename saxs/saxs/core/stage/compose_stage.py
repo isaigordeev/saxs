@@ -6,7 +6,7 @@ from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 
-class CompositeStage(AbstractStage):
+class CompositeRequstingStage(AbstractRequestingStage):
     """
     Wraps a main stage class and optional 'before' and 'after' stage classes.
     All stages are instantiated when the CompositeStage is created.
@@ -25,18 +25,6 @@ class CompositeStage(AbstractStage):
         self.main_kwargs = main_kwargs or {}
         self.policy = policy
 
-        # Instantiate main stage
-        if issubclass(main_stage_cls, AbstractRequestingStage):
-            self.main_stage = main_stage_cls(
-                policy=self.policy, **self.main_kwargs
-            )
-        else:
-            self.main_stage = main_stage_cls(**self.main_kwargs)
-
-        # Instantiate before/after stages
-        self.before = [cls() for cls in (before or [])]
-        self.after = [cls() for cls in (after or [])]
-
     def _process(self, sample):
         for stage in self.before:
             sample = stage.process(sample)
@@ -47,6 +35,19 @@ class CompositeStage(AbstractStage):
         for stage in self.after:
             sample = stage.process(sample)
         return sample, getattr(self.main_stage, "metadata", None)
+
+    def build(self):
+        return self._build()
+
+    def _build(self):
+        # Instantiate main stage
+        self.main_stage = self.main_stage_cls(
+            policy=self.policy, **self.main_kwargs
+        )
+
+        # Instantiate before/after stages
+        self.before = [cls() for cls in (self.before or [])]
+        self.after = [cls() for cls in (self.after or [])]
 
     def request_stage(self):
         """Delegate request to main stage if it is requesting."""
