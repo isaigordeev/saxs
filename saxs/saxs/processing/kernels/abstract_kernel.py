@@ -101,7 +101,7 @@ class AbstractKernel(ABC):
         pass
 
     @abstractmethod
-    def pipeline_definition(
+    def define_pipeline(
         self,
     ) -> List[
         Union[
@@ -114,7 +114,7 @@ class AbstractKernel(ABC):
 
     def build_pipeline(self):
         """Build entry stages and submit them to scheduler."""
-        stage_defs = self.pipeline_definition()
+        stage_defs = self.define_pipeline()
         initial_stages = build_initial_stages(stage_defs, self.registry)
 
         self.pipeline = Pipeline.with_stages(
