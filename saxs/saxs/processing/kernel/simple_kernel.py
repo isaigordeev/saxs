@@ -6,7 +6,7 @@ from saxs.saxs.core.pipeline.condition.chaining_condition import (
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.processing.kernel.nested.core.base_kernel import (
+from saxs.saxs.core.kernel.nested.core.base_kernel import (
     BaseKernel,
 )
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage

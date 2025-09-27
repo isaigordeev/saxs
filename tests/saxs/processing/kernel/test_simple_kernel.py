@@ -7,7 +7,7 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     SaturationInsertPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
-from saxs.saxs.processing.kernels.simple_kernel import SimpleKernel
+from saxs.saxs.processing.kernel.simple_kernel import SimpleKernel
 
 
 def read_data(data_dir_file):
