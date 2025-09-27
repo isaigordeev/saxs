@@ -1,7 +1,9 @@
 from typing import List
 from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.processing.kernels.abstract_kernel import AbstractKernel
-from saxs.saxs.processing.kernels.stage_spec import StageSpec
+from saxs.saxs.processing.kernel.nested_kernel.core.abstract_kernel import (
+    AbstractKernel,
+)
+from saxs.saxs.processing.kernel.stage_spec import StageSpec
 
 
 class SimpleKernelSpec(AbstractKernel):
