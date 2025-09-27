@@ -24,7 +24,7 @@ class SimpleKernel(AbstractKernel):
     def create_sample(self, data: dict) -> "SAXSSample":
         return SAXSSample(data=data)
 
-    def pipeline_definition(self):
+    def define_pipeline(self):
         # Example pipeline: Cut → Background → FindAllPeaks (with chaining)
         return [
             (CutStage, {"cut_point": 200}),
