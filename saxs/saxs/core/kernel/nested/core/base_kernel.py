@@ -1,5 +1,7 @@
+from abc import abstractmethod
 from saxs.logging.logger import logger
 from saxs.saxs.core.data.sample import SAXSSample
+from saxs.saxs.core.pipeline.pipeline import Pipeline
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     InsertionPolicy,
     SaturationInsertPolicy,
@@ -99,3 +101,30 @@ class BaseKernel(AbstractKernel):
 
         logger.info(f"Total stages built: {len(stages)}")
         return stages
+
+    def build_pipeline(self):
+        """Build entry stages and submit them to scheduler."""
+        stage_defs = self.define_pipeline()
+        initial_stages = self.build_initial_stages(stage_defs, self.registry)
+
+        self.pipeline = Pipeline.with_stages(
+            *initial_stages,
+            scheduler=self.scheduler,
+            scheduler_policy=self.scheduler_policy,
+        )
+
+    def run(self, init_sample):
+        """Run the scheduler until pipeline is complete."""
+        return self.pipeline.run(init_sample)
+
+    @abstractmethod
+    def define_pipeline(
+        self,
+    ) -> List[
+        Union[
+            Type["AbstractStage"],
+            Tuple[Type["AbstractRequestingStage"], "ChainingPolicy"],
+        ]
+    ]:
+        """Define which stages and policies form the entrypoint pipeline."""
+        pass

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Type, Union
+from typing import Any, List, Tuple, Type, Union
 
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
@@ -19,30 +19,18 @@ class AbstractKernel(ABC):
     @abstractmethod
     def define_pipeline(
         self,
-    ) -> List[
-        Union[
-            Type["AbstractStage"],
-            Tuple[Type["AbstractRequestingStage"], "ChainingPolicy"],
-        ]
-    ]:
+    ) -> List[Any]:
         """Define which stages and policies form the entrypoint pipeline."""
         pass
 
     def build_pipeline(self):
         """Build entry stages and submit them to scheduler."""
-        stage_defs = self.define_pipeline()
-        initial_stages = self.build_initial_stages(stage_defs, self.registry)
-
-        self.pipeline = Pipeline.with_stages(
-            *initial_stages,
-            scheduler=self.scheduler,
-            scheduler_policy=self.scheduler_policy,
-        )
+        raise NotImplementedError()
 
     def run(self, init_sample: "SAXSSample"):
         """Run the scheduler until pipeline is complete."""
-        return self.pipeline.run(init_sample)
+        raise NotImplementedError()
 
     @staticmethod
-    def build_initial_stage():
+    def build_initial_stage(*args, **kwargs):
         raise NotImplementedError()
