@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from typing import Type, Dict, Optional, Union
+from typing import Dict, Optional, Type, Union
+
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractRequestingStage,
     AbstractStage,
