@@ -19,8 +19,8 @@ class DeclarativePipeline:
     - stores PolicyRefSpec separately
     """
 
-    stages: List[StageDeclSpec] = field(default_factory=list)
-    policies: Dict[str, PolicyDeclSpec] = field(default_factory=dict)
+    stage_decl_specs: List[StageDeclSpec] = field(default_factory=list)
+    policy_decl_specs: Buffer[PolicyDeclSpec] = field(default_factory=dict)
 
     @classmethod
     def from_yaml(cls, yaml_str: str) -> "DeclarativePipeline":
@@ -58,14 +58,16 @@ class DeclarativePipeline:
             )
             stages.append(_stage_decl_spec_obj)
 
-        return cls(stages=stages, policies=policy_spec_buffer)
+        return cls(
+            stage_decl_specs=stages, policy_decl_specs=policy_spec_buffer
+        )
 
     def __str__(self) -> str:
         # Pretty print policies
         policies_str = (
             "\n".join(
                 f"  - {pid}: {spec.policy_cls} (condition={spec.condition_cls}, next={spec.next_stage_ids})"
-                for pid, spec in self.policies.items()
+                for pid, spec in self.policy_decl_specs.items()
             )
             or "  <none>"
         )
@@ -74,7 +76,7 @@ class DeclarativePipeline:
         stages_str = (
             "\n".join(
                 f"  - {s.id}: {s.stage_cls} (policy={s.policy_id}, before={s.before_ids}, after={s.after_ids})"
-                for s in self.stages
+                for s in self.stage_decl_specs
             )
             or "  <none>"
         )
