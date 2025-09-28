@@ -84,8 +84,8 @@ class PipelineSpecCompiler:
                 stage_cls=stage_cls,
                 kwargs=stage_decl_spec.kwargs or {},
                 policy=policy,
-                # before=, link after
-                # after=,
+                before=stage_decl_spec.before_ids or [],
+                after=stage_decl_spec.after_ids or [],
             )
             runtime_stages.append(stage_spec)
 
