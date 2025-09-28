@@ -3,7 +3,7 @@ from typing import List, Optional
 
 
 @dataclass
-class StageRefSpec:
+class StageDeclSpec:
     id: str
     stage_cls: str  # string reference to stage class
     kwargs: Optional[dict] = None
@@ -13,7 +13,7 @@ class StageRefSpec:
 
 
 @dataclass
-class PolicyRefSpec:
+class PolicyDeclSpec:
     id: str
     policy_cls: str  # string reference to ChainingPolicy class
     condition_cls: Optional[str] = None

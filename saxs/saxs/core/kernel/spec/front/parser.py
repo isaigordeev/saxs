@@ -4,8 +4,8 @@ from typing import Dict, List, Optional
 import yaml
 
 from saxs.saxs.core.kernel.spec.front.declarative_specs import (
-    PolicyRefSpec,
-    StageRefSpec,
+    PolicyDeclSpec,
+    StageDeclSpec,
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
@@ -18,17 +18,17 @@ class DeclarativePipeline:
     - stores PolicyRefSpec separately
     """
 
-    stages: List[StageRefSpec] = field(default_factory=list)
-    policies: Dict[str, PolicyRefSpec] = field(default_factory=dict)
+    stages: List[StageDeclSpec] = field(default_factory=list)
+    policies: Dict[str, PolicyDeclSpec] = field(default_factory=dict)
 
     @classmethod
     def from_yaml(cls, yaml_str: str) -> "DeclarativePipeline":
         data = yaml.safe_load(yaml_str)
 
         # Parse policies
-        policies: Dict[str, PolicyRefSpec] = {}
+        policies: Dict[str, PolicyDeclSpec] = {}
         for _policy_spec in data.get("policies", []):
-            policies[_policy_spec["id"]] = PolicyRefSpec(
+            policies[_policy_spec["id"]] = PolicyDeclSpec(
                 id=_policy_spec["id"],
                 policy_cls=_policy_spec["policy_cls"],
                 condition_cls=_policy_spec.get("condition_cls"),
@@ -37,10 +37,10 @@ class DeclarativePipeline:
             )
 
         # Parse stages in order
-        stages: List[StageRefSpec] = []
+        stages: List[StageDeclSpec] = []
         for _stage_spec in data.get("stages", []):
             stages.append(
-                StageRefSpec(
+                StageDeclSpec(
                     id=_stage_spec["id"],
                     stage_cls=_stage_spec["stage_cls"],
                     kwargs=_stage_spec.get("kwargs", {}),

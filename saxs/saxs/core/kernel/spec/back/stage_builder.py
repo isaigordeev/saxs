@@ -1,4 +1,5 @@
 from typing import Dict, List
+from saxs.saxs.core.kernel.spec.back.buffer import Buffer
 from saxs.saxs.core.kernel.spec.back.runtime_spec import StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractStage,
@@ -10,20 +11,20 @@ class StageBuilder:
     """Builds stage instances from StageSpec objects without linking policies."""
 
     @staticmethod
-    def build(stage_specs: List[StageSpec]) -> Dict[str, AbstractStage]:
+    def build(stage_specs: List[StageSpec]) -> Buffer[StageSpec]:
         """
         Returns a dict: stage_id -> stage_instance
         """
-        stage_instances: Dict[str, AbstractStage] = {}
+        stage_instances: Buffer[StageSpec] = Buffer[StageSpec]()
 
-        for spec in stage_specs:
-            kwargs = spec.kwargs or {}
+        for stage_spec in stage_specs:
+            kwargs = stage_spec.kwargs or {}
 
-            if issubclass(spec.stage_cls, AbstractRequestingStage):
-                instance = spec.stage_cls(metadata=kwargs, policy=None)
+            if issubclass(stage_spec.stage_cls, AbstractRequestingStage):
+                instance = stage_spec.stage_cls(metadata=kwargs, policy=None)
             else:
-                instance = spec.stage_cls(**kwargs)
+                instance = stage_spec.stage_cls(**kwargs)
 
-            stage_instances[spec.id] = instance
+            stage_instances.register(stage_spec.id, instance)
 
         return stage_instances
