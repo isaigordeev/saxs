@@ -1,5 +1,5 @@
 from typing import Dict, List
-from saxs.saxs.core.kernel.spec.stage_spec import StageSpec
+from saxs.saxs.core.kernel.spec.back.runtime_spec import StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractStage,
     AbstractRequestingStage,

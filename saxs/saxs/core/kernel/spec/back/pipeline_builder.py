@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from saxs.saxs.core.kernel.spec.stage_spec import StageSpec
+from saxs.saxs.core.kernel.spec.back.runtime_spec import StageSpec
 
 from saxs.saxs.core.kernel.spec.back.stage_builder import StageBuilder
 from saxs.saxs.core.kernel.spec.back.stage_linker import StageLinker
