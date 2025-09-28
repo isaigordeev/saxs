@@ -4,7 +4,7 @@ from saxs.saxs.core.kernel.spec.back.runtime_spec import StageSpec, PolicySpec
 T = TypeVar("T", StageSpec, PolicySpec)
 
 
-class Registry(Generic[T]):
+class Buffer(Generic[T]):
     """
     Generic registry for StageSpec or PolicySpec objects.
     Provides safe registration, lookup, and introspection.
@@ -40,5 +40,5 @@ class Registry(Generic[T]):
 
 
 # Aliases for clarity
-StageRegistryBuffer = Registry[StageSpec]
-PolicyRegistryBuffer = Registry[PolicySpec]
+StageRegistryBuffer = Buffer[StageSpec]
+PolicyRegistryBuffer = Buffer[PolicySpec]
