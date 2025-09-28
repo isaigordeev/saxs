@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional, Type, Union
 
+from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
@@ -9,8 +10,7 @@ from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 class PolicySpec:
     id: str
     policy_cls: Type[ChainingPolicy]
-    condition_cls: Optional[Type] = None
-    condition_kwargs: Optional[dict] = None
+    condition: Type[StageCondition]
     next_stage_ids: Optional[List[str]] = None
 
 
