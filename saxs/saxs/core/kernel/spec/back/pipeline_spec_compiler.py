@@ -35,7 +35,7 @@ class PipelineSpecCompiler:
     # --------------------------
     # Policy building
     # --------------------------
-    def _build_policies(
+    def _build_policy_specs(
         self, policies_decl: Dict[str, "PolicyDeclSpec"]
     ) -> Buffer[PolicySpec]:
         runtime_policies: Buffer[PolicySpec] = Buffer[PolicySpec]()
@@ -64,7 +64,7 @@ class PipelineSpecCompiler:
     # --------------------------
     # Stage building
     # --------------------------
-    def _build_stages(
+    def _build_stage_specs(
         self,
         stages_decl: List["StageDeclSpec"],
         runtime_policies: Buffer[PolicySpec],
@@ -84,8 +84,8 @@ class PipelineSpecCompiler:
                 stage_cls=stage_cls,
                 kwargs=stage_decl_spec.kwargs or {},
                 policy=policy,
-                before=stage_decl_spec.before_ids or [],
-                after=stage_decl_spec.after_ids or [],
+                # before=, link after
+                # after=,
             )
             runtime_stages.append(stage_spec)
 
@@ -102,8 +102,8 @@ class PipelineSpecCompiler:
         - First build policies
         - Then build stages and bind policies
         """
-        runtime_policies = self._build_policies(pipeline_decl.policies)
-        runtime_stages = self._build_stages(
+        runtime_policies = self._build_policy_specs(pipeline_decl.policies)
+        runtime_stages = self._build_stage_specs(
             pipeline_decl.stages, runtime_policies
         )
         return runtime_stages
