@@ -1,17 +1,20 @@
-from typing import List, Dict
+from typing import Dict, List
+
+from saxs.saxs.core.kernel.spec.back.buffer import Buffer
+from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
+
 from saxs.saxs.core.kernel.spec.core.registry import (
     PolicyRegistry,
     StageRegistry,
 )
 from saxs.saxs.core.kernel.spec.front.declarative_specs import (
-    PolicyRefSpec,
-    StageRefSpec,
+    PolicyDeclSpec,
+    StageDeclSpec,
 )
 from saxs.saxs.core.kernel.spec.front.parser import DeclarativePipeline
-from saxs.saxs.core.kernel.spec.stage_spec import StageSpec, PolicySpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractStage,
     AbstractRequestingStage,
+    AbstractStage,
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
@@ -33,9 +36,9 @@ class PipelineSpecCompiler:
     # Policy building
     # --------------------------
     def _build_policies(
-        self, policies_decl: Dict[str, "PolicyRefSpec"]
-    ) -> Dict[str, PolicySpec]:
-        runtime_policies: Dict[str, PolicySpec] = {}
+        self, policies_decl: Dict[str, "PolicyDeclSpec"]
+    ) -> Buffer[PolicySpec]:
+        runtime_policies: Buffer[PolicySpec] = Buffer[PolicySpec]()
 
         for policy_id, p_ref in policies_decl.items():
             policy_cls = self.policy_registry.get_class(p_ref.policy_cls)
@@ -54,8 +57,7 @@ class PipelineSpecCompiler:
                 condition_kwargs=condition_kwargs,
                 next_stage_id=next_stage_ids,
             )
-            runtime_policies[policy_id] = policy
-            self.policy_registry.register(p_ref.id, policy)
+            runtime_policies.register(policy_id, policy)
 
         return runtime_policies
 
@@ -64,26 +66,26 @@ class PipelineSpecCompiler:
     # --------------------------
     def _build_stages(
         self,
-        stages_decl: List["StageRefSpec"],
-        runtime_policies: Dict[str, PolicySpec],
+        stages_decl: List["StageDeclSpec"],
+        runtime_policies: Buffer[PolicySpec],
     ) -> List[StageSpec]:
         runtime_stages: List[StageSpec] = []
 
-        for s_ref in stages_decl:
-            stage_cls = self.stage_registry.get_class(s_ref.stage_cls)
+        for stage_decl_spec in stages_decl:
+            stage_cls = self.stage_registry.get_class(stage_decl_spec.stage_cls)
             policy = (
-                runtime_policies.get(s_ref.policy_id)
-                if s_ref.policy_id
+                runtime_policies.get(stage_decl_spec.policy_id)
+                if stage_decl_spec.policy_id
                 else None
             )
 
             stage_spec = StageSpec(
-                id=s_ref.id,
+                id=stage_decl_spec.id,
                 stage_cls=stage_cls,
-                kwargs=s_ref.kwargs or {},
+                kwargs=stage_decl_spec.kwargs or {},
                 policy=policy,
-                before=s_ref.before_ids or [],
-                after=s_ref.after_ids or [],
+                before=stage_decl_spec.before_ids or [],
+                after=stage_decl_spec.after_ids or [],
             )
             runtime_stages.append(stage_spec)
 
