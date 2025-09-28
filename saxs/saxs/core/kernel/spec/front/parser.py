@@ -59,3 +59,28 @@ class DeclarativePipeline:
             stages.append(_stage_decl_spec_obj)
 
         return cls(stages=stages, policies=policy_spec_buffer)
+
+    def __str__(self) -> str:
+        # Pretty print policies
+        policies_str = (
+            "\n".join(
+                f"  - {pid}: {spec.policy_cls} (condition={spec.condition_cls}, next={spec.next_stage_ids})"
+                for pid, spec in self.policies.items()
+            )
+            or "  <none>"
+        )
+
+        # Pretty print stages
+        stages_str = (
+            "\n".join(
+                f"  - {s.id}: {s.stage_cls} (policy={s.policy_id}, before={s.before_ids}, after={s.after_ids})"
+                for s in self.stages
+            )
+            or "  <none>"
+        )
+
+        return (
+            "DeclarativePipeline:\n"
+            f"Policies:\n{policies_str}\n"
+            f"Stages:\n{stages_str}"
+        )
