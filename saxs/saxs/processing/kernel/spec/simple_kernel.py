@@ -1,11 +1,11 @@
 from typing import List
 from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.kernel.spec.stage_spec import StageSpec, PolicySpec
+from saxs.saxs.core.kernel.spec.back.runtime_spec import StageSpec, PolicySpec
 from saxs.saxs.core.kernel.spec.back.buffer import (
     StageRegistryBuffer,
     PolicyRegistryBuffer,
 )
-from saxs.saxs.core.kernel.spec.back.stage_pipeline_builder import (
+from saxs.saxs.core.kernel.spec.back.pipeline_builder import (
     StagePipelineBuilder,
 )
 from saxs.saxs.core.pipeline.condition.chaining_condition import (
@@ -14,7 +14,7 @@ from saxs.saxs.core.pipeline.condition.chaining_condition import (
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.core.kernel.nested.core.base_kernel import BaseKernel
+from saxs.saxs.core.kernel.forward.core.base_kernel import BaseKernel
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
 from saxs.saxs.processing.stage.filter.cut_stage import CutStage
 from saxs.saxs.processing.stage.filter.filter_stage import FilterStage

@@ -11,7 +11,7 @@ from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.policy.policy_registry import PolicyRegistry
-from saxs.saxs.core.kernel.nested.core.abstract_kernel import (
+from saxs.saxs.core.kernel.forward.core.abstract_kernel import (
     AbstractKernel,
 )
 
