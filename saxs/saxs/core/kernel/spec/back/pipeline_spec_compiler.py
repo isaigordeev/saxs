@@ -16,7 +16,7 @@ from saxs.saxs.core.stage.abstract_cond_stage import (
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 
-class PipelineLinker:
+class PipelineSpecCompiler:
     """
     Builds runtime StageSpec and PolicySpec objects from purely declarative specs.
     - Resolves string references to classes using StageRegistry and PolicyRegistry.
