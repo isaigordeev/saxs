@@ -21,5 +21,5 @@ class StageSpec:
     kwargs: Optional[dict] = None
     metadata: Optional[dict] = None
     policy: Optional[PolicySpec] = None
-    before: Optional[List["StageSpec"]] = None
-    after: Optional[List["StageSpec"]] = None
+    before: Optional[List[str]] = None
+    after: Optional[List[str]] = None
