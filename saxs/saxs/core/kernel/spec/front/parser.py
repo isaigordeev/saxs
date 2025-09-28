@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 
 import yaml
 
+from saxs.saxs.core.kernel.spec.back.buffer import Buffer
 from saxs.saxs.core.kernel.spec.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
@@ -23,31 +24,38 @@ class DeclarativePipeline:
 
     @classmethod
     def from_yaml(cls, yaml_str: str) -> "DeclarativePipeline":
-        data = yaml.safe_load(yaml_str)
+        with open(yaml_str, "r") as f:
+            data = yaml.safe_load(f)
 
         # Parse policies
-        policies: Dict[str, PolicyDeclSpec] = {}
-        for _policy_spec in data.get("policies", []):
-            policies[_policy_spec["id"]] = PolicyDeclSpec(
-                id=_policy_spec["id"],
-                policy_cls=_policy_spec["policy_cls"],
-                condition_cls=_policy_spec.get("condition_cls"),
-                condition_kwargs=_policy_spec.get("condition_kwargs", {}),
-                next_stage_ids=_policy_spec.get("next_stage_ids", []),
+        policy_spec_buffer: Buffer[PolicyDeclSpec] = Buffer[PolicyDeclSpec]()
+        decl_policies: dict = data.get("policies", {})
+        for _policy_decl_spec in decl_policies:
+            _policy_decl_spec_obj = PolicyDeclSpec(
+                id=_policy_decl_spec["id"],
+                policy_cls=_policy_decl_spec["policy_cls"],
+                condition_cls=_policy_decl_spec.get("condition_cls"),
+                condition_kwargs=_policy_decl_spec.get("condition_kwargs", {}),
+                next_stage_ids=_policy_decl_spec.get("next_stage_ids", []),
+            )
+
+            policy_spec_buffer.register(
+                _policy_decl_spec["id"], _policy_decl_spec_obj
             )
 
         # Parse stages in order
         stages: List[StageDeclSpec] = []
-        for _stage_spec in data.get("stages", []):
-            stages.append(
-                StageDeclSpec(
-                    id=_stage_spec["id"],
-                    stage_cls=_stage_spec["stage_cls"],
-                    kwargs=_stage_spec.get("kwargs", {}),
-                    policy_id=_stage_spec.get("policy_id"),
-                    before_ids=_stage_spec.get("before_ids", []),
-                    after_ids=_stage_spec.get("after_ids", []),
-                )
-            )
+        decl_stages: list = data.get("stages", [])
 
-        return cls(stages=stages, policies=policies)
+        for _stage_spec in decl_stages:
+            _stage_decl_spec_obj = StageDeclSpec(
+                id=_stage_spec["id"],
+                stage_cls=_stage_spec["stage_cls"],
+                kwargs=_stage_spec.get("kwargs", {}),
+                policy_id=_stage_spec.get("policy_id"),
+                before_ids=_stage_spec.get("before_ids", []),
+                after_ids=_stage_spec.get("after_ids", []),
+            )
+            stages.append(_stage_decl_spec_obj)
+
+        return cls(stages=stages, policies=policy_spec_buffer)
