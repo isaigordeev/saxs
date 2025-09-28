@@ -102,8 +102,10 @@ class PipelineSpecCompiler:
         - First build policies
         - Then build stages and bind policies
         """
-        runtime_policies = self._build_policy_specs(pipeline_decl.policies)
+        runtime_policies = self._build_policy_specs(
+            pipeline_decl.policy_decl_specs
+        )
         runtime_stages = self._build_stage_specs(
-            pipeline_decl.stages, runtime_policies
+            pipeline_decl.stage_decl_specs, runtime_policies
         )
         return runtime_stages
