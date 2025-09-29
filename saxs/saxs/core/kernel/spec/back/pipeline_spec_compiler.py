@@ -68,8 +68,8 @@ class PipelineSpecCompiler:
         self,
         stages_decl: List["StageDeclSpec"],
         runtime_policies: Buffer[PolicySpec],
-    ) -> List[StageSpec]:
-        runtime_stages: List[StageSpec] = []
+    ) -> Buffer[PolicySpec]:
+        runtime_stages: Buffer[PolicySpec] = Buffer[PolicySpec]()
 
         for stage_decl_spec in stages_decl:
             stage_cls = self.stage_registry.get_class(stage_decl_spec.stage_cls)
@@ -87,7 +87,7 @@ class PipelineSpecCompiler:
                 before=stage_decl_spec.before_ids or [],
                 after=stage_decl_spec.after_ids or [],
             )
-            runtime_stages.append(stage_spec)
+            runtime_stages.register(stage_decl_spec.id, stage_spec)
 
         return runtime_stages
 
