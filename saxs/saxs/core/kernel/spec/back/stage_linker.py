@@ -5,6 +5,8 @@ from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractRequestingStage,
 )
+from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 
 class StageLinker:
@@ -12,36 +14,24 @@ class StageLinker:
 
     @staticmethod
     def link(
-        stage_specs: List[StageSpec], stage_instances: Buffer[StageSpec]
-    ) -> Buffer[PolicySpec]:
-        policy_buffer: Buffer[PolicySpec] = Buffer[PolicySpec]()
-
-        for policy_spec in stage_specs:
-            if not issubclass(policy_spec.stage_cls, AbstractRequestingStage):
-                continue
-            if not policy_spec.policy:
+        stage_specs: List[StageSpec],
+        stage_instances: Buffer[AbstractStage],
+        policy_instances: Buffer[ChainingPolicy],
+    ) -> Buffer[AbstractStage]:
+        for _stage_spec in stage_specs:
+            if not issubclass(_stage_spec.stage_cls, AbstractRequestingStage):
                 continue
 
-            # Instantiate the policy
-            policy_kwargs = policy_spec.policy.condition_kwargs or {}
-            condition_instance = None
-            if policy_spec.policy.condition_cls:
-                condition_instance = policy_spec.policy.condition_cls(
-                    **policy_kwargs
-                )
+            _current_policy_id = _stage_spec.policy
 
-            policy_instance = policy_spec.policy.policy_cls(
-                condition=condition_instance,
-                next_stage_cls=None,  # will fill below
+            if not _current_policy_id:
+                return
+
+            _stage: AbstractRequestingStage = stage_instances.get(
+                _stage_spec.id
             )
+            _policy = policy_instances.get(_current_policy_id)
 
-            # Resolve next stages
-            next_stages = [
-                stage_instances[next_id]
-                for next_id in policy_spec.policy.next_stage_ids or []
-            ]
-            policy_instance.next_stage = next_stages
+            _stage.policy = _policy
 
-            policy_buffer.register(policy_spec.id, policy_instance)
-
-        return policy_buffer
+        return stage_instances
