@@ -229,3 +229,5 @@ test_processing_data/
 *.DS_Store
 
 results/
+
+**.ipynb
