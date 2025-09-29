@@ -44,5 +44,4 @@ class StageLinker:
 
             policy_buffer.register(policy_spec.id, policy_instance)
 
-            # Attach policy to the stage
-            stage_instances[policy_spec.id].policy = policy_instance
+        return policy_buffer
