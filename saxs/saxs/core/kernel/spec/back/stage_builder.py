@@ -11,13 +11,13 @@ class StageBuilder:
     """Builds stage instances from StageSpec objects without linking policies."""
 
     @staticmethod
-    def build(stage_specs: List[StageSpec]) -> Buffer[StageSpec]:
+    def build(stage_specs: Buffer[StageSpec]) -> Buffer[AbstractStage]:
         """
         Returns a dict: stage_id -> stage_instance
         """
-        stage_instances: Buffer[StageSpec] = Buffer[StageSpec]()
+        stage_instances: Buffer[AbstractStage] = Buffer[AbstractStage]()
 
-        for stage_spec in stage_specs:
+        for _, stage_spec in stage_specs.items():
             kwargs = stage_spec.kwargs or {}
 
             if issubclass(stage_spec.stage_cls, AbstractRequestingStage):
