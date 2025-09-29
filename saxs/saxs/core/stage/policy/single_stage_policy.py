@@ -12,11 +12,13 @@ from saxs.saxs.core.stage.request.abst_request import StageRequest
 
 
 class SingleStageChainingPolicy(ChainingPolicy):
-    def __init__(
-        self, condition: "StageCondition", next_stage_cls: Type[AbstractStage]
-    ):
-        self.condition = condition
-        self.next_stage_cls = next_stage_cls
+    def __new__(cls, condition: "StageCondition", next_stage_cls: list):
+        # Validate before object allocation
+        assert len(next_stage_cls) == 1, (
+            f"{cls.__name__} expects exactly one next stage, "
+            f"got {len(next_stage_cls)}"
+        )
+        return super().__new__(cls)
 
     def request(
         self, stage_metadata: StageRequest
@@ -43,9 +45,11 @@ class SingleStageChainingPolicy(ChainingPolicy):
                 f"'{self.next_stage_cls.__name__}' with metadata: {_pass_metadata.values}\n{'=' * 30}"
             )
 
+            single_requested_stage_cls = self.next_stage_cls[0]
+
             return [
                 StageApprovalRequest(
-                    self.next_stage_cls(
+                    single_requested_stage_cls(
                         metadata=_pass_metadata,
                     ),
                     _scheduler_metadata,
