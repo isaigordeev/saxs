@@ -1,0 +1,34 @@
+policies:
+  peaks_policy:
+    policy_cls: SingleStageChainingPolicy
+    condition_cls: ChainingPeakCondition
+    condition_kwargs:
+      key: peaks
+    next_stage_ids:
+      - process_fit_peak
+
+  fit_policy:
+    policy_cls: SingleStageChainingPolicy
+    condition_cls: TrueCondition
+    next_stage_ids:
+      - find_peaks # Example of requesting a previous stage
+
+stages:
+  - id: cut
+    stage_cls: CutStage
+    kwargs:
+      cut_point: 200
+
+  - id: filter
+    stage_cls: FilterStage
+
+  - id: background
+    stage_cls: BackgroundStage
+
+  - id: find_peaks
+    stage_cls: FindAllPeaksStage
+    policy_id: peaks_policy
+
+  - id: process_fit_peak
+    stage_cls: ProcessFitPeakStage
+    policy_id: fit_policy
