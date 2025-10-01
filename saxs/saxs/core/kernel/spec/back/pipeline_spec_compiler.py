@@ -17,6 +17,10 @@ from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractStage,
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
+from saxs.saxs.core.kernel.spec.core.define_registry import (
+    stage_registry,
+    policy_registry,
+)
 
 
 class PipelineSpecCompiler:
@@ -27,7 +31,9 @@ class PipelineSpecCompiler:
     """
 
     def __init__(
-        self, stage_registry: "StageRegistry", policy_registry: "PolicyRegistry"
+        self,
+        stage_registry: "StageRegistry" = stage_registry,
+        policy_registry: "PolicyRegistry" = policy_registry,
     ):
         self.stage_registry = stage_registry
         self.policy_registry = policy_registry
