@@ -1,5 +1,5 @@
 policies:
-  peaks_policy:
+  - id: peaks_policy
     policy_cls: SingleStageChainingPolicy
     condition_cls: ChainingPeakCondition
     condition_kwargs:
@@ -7,7 +7,7 @@ policies:
     next_stage_ids:
       - process_fit_peak
 
-  fit_policy:
+  - id: fit_policy
     policy_cls: SingleStageChainingPolicy
     condition_cls: TrueCondition
     next_stage_ids:
@@ -32,3 +32,9 @@ stages:
   - id: process_fit_peak
     stage_cls: ProcessFitPeakStage
     policy_id: fit_policy
+
+pipeline:
+  - cut
+  - filter
+  - background
+  - find_peaks
