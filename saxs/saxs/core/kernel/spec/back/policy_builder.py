@@ -19,8 +19,15 @@ class PolicyBuilder:
         """
         policy_instances: Buffer[ChainingPolicy] = Buffer[ChainingPolicy]()
 
+        def build_policy_kwargs(_policy_spec: PolicySpec):
+            _kwargs = {}
+            _kwargs["condition"] = _policy_spec.condition
+            _kwargs["next_stage_cls"] = []
+
+            return _kwargs
+
         for _, policy_spec in policy_specs.items():
-            kwargs = policy_spec.kwargs or {}
+            kwargs = build_policy_kwargs(policy_spec)
             instance = policy_spec.policy_cls(**kwargs)
 
             policy_instances.register(policy_spec.id, instance)
