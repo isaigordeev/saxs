@@ -13,13 +13,13 @@ class PolicyBuilder:
     """Builds stage instances from StageSpec objects without linking policies."""
 
     @staticmethod
-    def build(stage_specs: Buffer[PolicySpec]) -> Buffer[ChainingPolicy]:
+    def build(policy_specs: Buffer[PolicySpec]) -> Buffer[ChainingPolicy]:
         """
         Returns a dict: stage_id -> stage_instance
         """
         policy_instances: Buffer[ChainingPolicy] = Buffer[ChainingPolicy]()
 
-        for _, policy_spec in stage_specs.items():
+        for _, policy_spec in policy_specs.items():
             kwargs = policy_spec.kwargs or {}
             instance = policy_spec.policy_cls(**kwargs)
 
