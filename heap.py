@@ -4,8 +4,10 @@ from saxs.saxs.core.kernel.spec.back.pipeline_spec_compiler import (
     PipelineSpecCompiler,
 )
 from saxs.saxs.core.kernel.spec.back.policy_builder import PolicyBuilder
+from saxs.saxs.core.kernel.spec.back.policy_linker import PolicyLinker
 from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
 from saxs.saxs.core.kernel.spec.back.stage_builder import StageBuilder
+from saxs.saxs.core.kernel.spec.back.stage_linker import StageLinker
 from saxs.saxs.core.kernel.spec.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
@@ -35,6 +37,15 @@ stage_specs: Buffer[StageSpec] = compiler._build_stage_specs(stage_decl_specs)
 stage_instance: Buffer[AbstractStage] = StageBuilder.build(stage_specs)
 policy_instance: Buffer[ChainingPolicy] = PolicyBuilder.build(policy_specs)
 
-
 print(stage_instance)
 print(policy_instance)
+
+linked_policy_instance: Buffer[ChainingPolicy] = PolicyLinker.link(
+    policy_specs, stage_instance, policy_instance
+)
+linked_stage_instance: Buffer[ChainingPolicy] = StageLinker.link(
+    stage_specs, stage_instance, policy_instance
+)
+
+print(linked_policy_instance)
+print(linked_stage_instance)
