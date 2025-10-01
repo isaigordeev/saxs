@@ -1,4 +1,4 @@
-from saxs.saxs.manager import Manager
+from saxs.application.manager import Manager
 from saxs.saxs.peak.parabole_kernel import (
     RobustParabolePeakKernel,
 )
@@ -19,6 +19,5 @@ def test_manager_runs_without_error():
 
     # Call the processing pipeline
     manager_instance = manager()
-
     # Check that result is a dictionary (based on AbstractPeakKernel.gathering)
     # assert manager.peak_application_instance.kernel == 2
