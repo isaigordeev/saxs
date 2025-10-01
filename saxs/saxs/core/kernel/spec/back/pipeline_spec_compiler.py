@@ -46,22 +46,27 @@ class PipelineSpecCompiler:
     ) -> Buffer[PolicySpec]:
         runtime_policies: Buffer[PolicySpec] = Buffer[PolicySpec]()
 
-        for policy_id, p_ref in policies_decl.items():
-            policy_cls = self.policy_registry.get_class(p_ref.policy_cls)
+        for policy_id, policy_decl_spec in policies_decl.items():
+            policy_cls = self.policy_registry.get_class(
+                policy_decl_spec.policy_cls
+            )
             condition_cls = (
-                self.stage_registry.get_class(p_ref.condition_cls)
-                if p_ref.condition_cls
+                self.stage_registry.get_class(policy_decl_spec.condition_cls)
+                if policy_decl_spec.condition_cls
                 else None
             )
-            condition_kwargs = p_ref.condition_kwargs or {}
-            next_stage_ids = p_ref.next_stage_ids or []
+            condition_kwargs = policy_decl_spec.condition_kwargs or {}
+            next_stage_ids = policy_decl_spec.next_stage_ids or []
+
+            _condition = (
+                condition_cls(condition_kwargs) if condition_cls else None
+            )
 
             policy = PolicySpec(
-                id=p_ref.id,
+                id=policy_decl_spec.id,
                 policy_cls=policy_cls,
-                condition_cls=condition_cls,
-                condition_kwargs=condition_kwargs,
-                next_stage_id=next_stage_ids,
+                condition=_condition,
+                next_stage_ids=next_stage_ids,
             )
             runtime_policies.register(policy_id, policy)
 
@@ -76,7 +81,7 @@ class PipelineSpecCompiler:
     ) -> Buffer[StageSpec]:
         runtime_stages: Buffer[StageSpec] = Buffer[StageSpec]()
 
-        for stage_decl_spec in stages_decl:
+        for _, stage_decl_spec in stages_decl.items():
             stage_cls = self.stage_registry.get_class(stage_decl_spec.stage_cls)
             policy_id = (
                 stage_decl_spec.policy_id if stage_decl_spec.policy_id else None
