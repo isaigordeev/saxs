@@ -20,6 +20,6 @@ class StageSpec:
     stage_cls: Type[AbstractStage]
     kwargs: Optional[dict] = None
     metadata: Optional[dict] = None
-    policy: Optional[PolicySpec] = None
+    policy: Optional[str] = None
     before: Optional[List[str]] = None
     after: Optional[List[str]] = None
