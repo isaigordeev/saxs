@@ -14,11 +14,11 @@ class StageLinker:
 
     @staticmethod
     def link(
-        stage_specs: List[StageSpec],
+        stage_specs: Buffer[StageSpec],
         stage_instances: Buffer[AbstractStage],
         policy_instances: Buffer[ChainingPolicy],
     ) -> Buffer[AbstractStage]:
-        for _stage_spec in stage_specs:
+        for _, _stage_spec in stage_specs.items():
             if not issubclass(_stage_spec.stage_cls, AbstractRequestingStage):
                 continue
 
