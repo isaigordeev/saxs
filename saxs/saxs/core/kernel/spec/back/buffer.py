@@ -38,6 +38,20 @@ class Buffer(Generic[T]):
         """Return iterable of (id, item) pairs."""
         return self._registry.items()
 
+    def __str__(self) -> str:
+        """Pretty string showing all items with their attributes."""
+        lines = [
+            f"{self.__class__.__name__} of {T.__name__} with {len(self._registry)} items:"
+        ]
+        for id_, item in self._registry.items():
+            lines.append(
+                f"  {id_}: {item.__class__.__name__}, attributes: {item.__dict__}"
+            )
+        return "\n".join(lines)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({list(self._registry.keys())})"
+
 
 # Aliases for clarity
 StageRegistryBuffer = Buffer[StageSpec]
