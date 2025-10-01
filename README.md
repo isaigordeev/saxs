@@ -1,14 +1,13 @@
 # SAXS analyse
 
-Gaussian processing and transformer model for classification SAXS data 
+Gaussian processing and transformer model for classification SAXS data
 
 for running
 
 choose peak and phase kernels (algorithms of classification) for your data
-and its paths to .csv files. 
+and its paths to .csv files.
 
-after call an instance of manager class. 
-
+after call an instance of manager class.
 
 # todo
 
@@ -17,9 +16,8 @@ after call an instance of manager class.
 - Minimize Python object creation → reuse metadata, requests, and temporary objects.
 - Use numba / JIT compilation → compile loops if Python overhead dominates.
 - Parallelize independent stages → with ThreadPoolExecutor if process releases GIL.
-- better scheduler metadata 
+- better scheduler metadata
 - better type hierachy (with more abstaction and more usefullness)
-
 
 # ?
 
@@ -29,15 +27,13 @@ after call an instance of manager class.
 - metaclass for logging
 - pydantic for gluing metadata between stages
 - replace python func calc in processing by cpp ones
-– pipeline scheduler for peaks in order (map reduce like) for multiprocessing
-- composite stage 
+  – pipeline scheduler for peaks in order (map reduce like) for multiprocessing
+- composite stage
 - new frontend yaml
+  - parser verifier
 - new backend with decl specs
 
-
-
-## ?? 
-
+## ??
 
 ```
 from saxs.application.manager import Manager
