@@ -14,8 +14,8 @@ from saxs.saxs.core.stage.request.abst_request import StageRequest
 class SingleStageChainingPolicy(ChainingPolicy):
     def __new__(cls, condition: "StageCondition", next_stage_cls: list):
         # Validate before object allocation
-        assert len(next_stage_cls) == 1, (
-            f"{cls.__name__} expects exactly one next stage, "
+        assert len(next_stage_cls) <= 1, (
+            f"{cls.__name__} expects exactly no more than one next stage, "
             f"got {len(next_stage_cls)}"
         )
         return super().__new__(cls)
