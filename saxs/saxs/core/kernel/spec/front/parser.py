@@ -44,7 +44,7 @@ class DeclarativePipeline:
             )
 
         # Parse stages in order
-        stages: List[StageDeclSpec] = []
+        stage_spec_buffer: Buffer[StageDeclSpec] = Buffer[StageDeclSpec]()
         decl_stages: list = data.get("stages", [])
 
         for _stage_spec in decl_stages:
@@ -56,10 +56,11 @@ class DeclarativePipeline:
                 before_ids=_stage_spec.get("before_ids", []),
                 after_ids=_stage_spec.get("after_ids", []),
             )
-            stages.append(_stage_decl_spec_obj)
+            stage_spec_buffer.register(_stage_spec["id"], _stage_decl_spec_obj)
 
         return cls(
-            stage_decl_specs=stages, policy_decl_specs=policy_spec_buffer
+            stage_decl_specs=stage_spec_buffer,
+            policy_decl_specs=policy_spec_buffer,
         )
 
     def __str__(self) -> str:
@@ -75,8 +76,8 @@ class DeclarativePipeline:
         # Pretty print stages
         stages_str = (
             "\n".join(
-                f"  - {s.id}: {s.stage_cls} (policy={s.policy_id}, before={s.before_ids}, after={s.after_ids})"
-                for s in self.stage_decl_specs
+                f"  - {spec.id}: {spec.stage_cls} (policy={spec.policy_id}, before={spec.before_ids}, after={spec.after_ids})"
+                for pid, spec in self.stage_decl_specs.items()
             )
             or "  <none>"
         )
