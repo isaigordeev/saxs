@@ -57,6 +57,6 @@ class SingleStageChainingPolicy(ChainingPolicy):
             ]
 
         logger.info(
-            f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition failed → No stage injected for '{stage_name}'\n{'=' * 30}"
+            f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition failed → No stage injected for '{self.next_stage_cls}'\n{'=' * 30}"
         )
         return []
