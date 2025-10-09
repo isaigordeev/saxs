@@ -11,6 +11,7 @@ from saxs.saxs.core.kernel.spec.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
+
 from saxs.saxs.core.kernel.spec.front.parser import DeclarativePipeline
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractRequestingStage,
