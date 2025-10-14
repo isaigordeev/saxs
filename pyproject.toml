@@ -28,14 +28,69 @@ indent-width = 4
 target-version = "py311"
 
 [tool.ruff.lint]
-select = [
+extend-select = [
     "E",
     "F",
     "I",
     "N",
+    "W",
     "C",
+    "N",     # PEP8 Naming
+    "D",     # pydocstyle
+    "UP",    # pyupgrade
+    "YTT",   # flake8-2020
+    "ANN",   # flake8-annotations errors and warnings
+    "ASYNC", # flake8-async errors and warnings
+    "S",     # flake8-bandit security warnings
+    "BLE",   # flake8-blind-except errors
+    "FBT",   # flake8-boolean-trap errors and warnings
+    "B",     # flake8-bugbear warnings
+    "A",     # flake8-builtins errors
+    "COM",   # flake8-commas errors
+    "C4",    # flake8-comprehensions warnings
+    "T10",   # flake8-debugger errors
+    "EM",    # flake8-errmsg errors
+    "EXE",   # flake8-executable errors
+    "FA",    # flake8-future-annotations errors
+    "ISC",   # flake8-implicit-str-concat warnings
+    "ICN",   # flake8-import-conventions errors and warnings
+    "LOG",   # flake8-logging errors
+    "G",     # flake8-logging-format warnings
+    "INP",   # flake8-no-pep420 errors
+    "PIE",   # flake8-pie errors and warnings
+    "T20",   # flake8-print errors
+    "PYI",   # flake8-pyi errors and warnings
+    "PT",    # flake8-pytest-style errors and warnings
+    "Q",     # flake8-quotes errors
+    "RSE",   # flake8-raise errors
+    "S",
+    "SLF",   # flake8-self errors
+    "RET",   # flake8-return errors
+    "SLOT",  # flake8-slots errors
+    "SIM",   # flake8-simplify errors and warnings
+    "TID",   # flake8-tidy-imports errors
+    "TCH",   # flake8-type-checking errors and warnings
+    "INT",   # flake8-gettext errors and warnings
+    "ARG",   # flake8-unused-arguments warnings
+    "PTH",   # flake8-use-pathlib warnings
+    "TD",    # flake8-todos warnings
+    "FIX",   # flake8-fixme warnings
+    "ERA",   # eradicate
+    "PD",    # pandas-vet.
+    "PGH",   # pygrep-hooks,
+    "PL",    # pylint
+    "R",     # Pylint refactor messages
+    "TRY",   # tryceratops
+    "FLY",   # flyint
+    "NPY",   # numpy,
+    "PERF",  # perflint # performance -> check @recap
+    "FURB",  # refurb
+    "RUF",   # ruff # check @translate
+    "FAST", 
 ] # errors, formatting, imports, namings, complexity
-ignore = ["RUF100"] # custom new lines with \
+ignore = [
+    "RUF100", # custom new lines with \
+    "ANN204"] 
 
 [dependency-groups]
 dev = [
