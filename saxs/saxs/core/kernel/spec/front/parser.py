@@ -13,14 +13,14 @@ from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 @dataclass
 class DeclarativePipeline:
-    """
-    Purely declarative pipeline:
+    """Purely declarative pipeline:
     - stores ordered StageRefSpec
-    - stores PolicyRefSpec separately
+    - stores PolicyRefSpec separately.
     """
 
-    stage_decl_specs: List[StageDeclSpec] = field(default_factory=list)
+    stage_decl_specs: Buffer[StageDeclSpec] = field(default_factory=dict)
     policy_decl_specs: Buffer[PolicyDeclSpec] = field(default_factory=dict)
+    order: list[StageDeclSpec] = field(default_factory=list)
 
     @classmethod
     def from_yaml(cls, yaml_str: str) -> "DeclarativePipeline":
@@ -43,7 +43,7 @@ class DeclarativePipeline:
                 _policy_decl_spec["id"], _policy_decl_spec_obj
             )
 
-        # Parse stages in order
+        # Parse stages without order will link later
         stage_spec_buffer: Buffer[StageDeclSpec] = Buffer[StageDeclSpec]()
         decl_stages: list = data.get("stages", [])
 
@@ -58,9 +58,18 @@ class DeclarativePipeline:
             )
             stage_spec_buffer.register(_stage_spec["id"], _stage_decl_spec_obj)
 
+        # Stage order
+
+        order = data.get("pipeline", [])
+
+        if not order:
+            msg = "Order must be present in yaml file"
+            raise ValueError(msg)
+
         return cls(
             stage_decl_specs=stage_spec_buffer,
             policy_decl_specs=policy_spec_buffer,
+            order=order,
         )
 
     def __str__(self) -> str:
@@ -82,8 +91,17 @@ class DeclarativePipeline:
             or "  <none>"
         )
 
+        # Pretty print stages
+        order_str = (
+            "\n".join(
+                f"  - {i} stage={order}" for i, order in enumerate(self.order)
+            )
+            or "  <none>"
+        )
+
         return (
             "DeclarativePipeline:\n"
             f"Policies:\n{policies_str}\n"
-            f"Stages:\n{stages_str}"
+            f"Stages:\n{stages_str}\n"
+            f"Order:\n{order_str}"
         )
