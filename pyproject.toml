@@ -96,8 +96,10 @@ ignore = [
 dev = [
     "jupyter>=1.1.1",
     "matplotlib>=3.9.1",
+    "mypy>=1.18.2",
     "numpy>=2.0.0",
     "pandas>=2.2.2",
+    "pyright>=1.1.406",
     "pytest>=8.4.2",
     "ruff>=0.13.1",
     "scikit-image>=0.24.0",
@@ -105,3 +107,13 @@ dev = [
     "tqdm>=4.66.4",
     "uv>=0.8.18",
 ]
+
+[tool.pyright]
+typeCheckingMode = "strict"  # enforce strict type checking on all annotated code
+exclude = ["**/tests/**"] # exclude test directories from type checking
+
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+exclude = "tests"
