@@ -26,6 +26,8 @@ build-backend = "hatchling.build"
 line-length = 79
 indent-width = 4
 target-version = "py311"
+fix = true
+unsafe-fixes = true
 
 [tool.ruff.lint]
 extend-select = [
@@ -86,11 +88,21 @@ extend-select = [
     "PERF",  # perflint # performance -> check @recap
     "FURB",  # refurb
     "RUF",   # ruff # check @translate
-    "FAST", 
+    "FAST",
+    "W505",  # docstring style
 ] # errors, formatting, imports, namings, complexity
 ignore = [
     "RUF100", # custom new lines with \
-    "ANN204"] 
+    "ANN204",
+]
+
+[tool.ruff.lint.pydocstyle]
+# Configure docstring style checks
+convention = "numpy"
+
+[tool.ruff.lint.pycodestyle]
+# Override the max doc line length rule (W505)
+max-doc-length = 72
 
 [dependency-groups]
 dev = [
@@ -109,8 +121,8 @@ dev = [
 ]
 
 [tool.pyright]
-typeCheckingMode = "strict"  # enforce strict type checking on all annotated code
-exclude = ["**/tests/**"] # exclude test directories from type checking
+typeCheckingMode = "strict" # enforce strict type checking on all annotated code
+exclude = ["**/tests/**"]   # exclude test directories from type checking
 
 
 [tool.mypy]
