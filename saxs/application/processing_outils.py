@@ -84,6 +84,7 @@ def read_data(data_dir_file):
         q = np.linspace(0.001, 0.2, 500)
 
         return q, I[0], None
+    return None
 
 
 def read_I(data_dir_file, EXTENSION):
