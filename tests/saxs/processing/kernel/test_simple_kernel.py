@@ -104,7 +104,8 @@ class TestSimpleKernel:
 
     def test_simple_kernel_run_with_real_sample(self, real_sample):
         kernel = SimpleKernel(
-            scheduler=BaseScheduler, scheduler_policy=SaturationInsertPolicy(15)
+            scheduler=BaseScheduler,
+            scheduler_policy=SaturationInsertPolicy(15),
         )
         kernel.build_pipeline()
         sample = real_sample

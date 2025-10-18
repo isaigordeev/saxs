@@ -19,6 +19,7 @@ from saxs.saxs.core.stage.abstract_stage import AbstractStage
 class Pipeline:
     """
     Manages dynamic execution of stages.
+
     Stages can request additional stages, and the Scheduler decides the
     insertion policy.
     """
@@ -40,7 +41,7 @@ class Pipeline:
         scheduler: Optional[Type[AbstractScheduler]] = None,
         scheduler_policy: Optional[Type[InsertionPolicy]] = None,
     ) -> "Pipeline":
-        """Convenience constructor to create a Pipeline with given stages."""
+        """Creation of pipeline with given stages."""
         return cls(
             init_stages=list(stages),
             scheduler=scheduler,

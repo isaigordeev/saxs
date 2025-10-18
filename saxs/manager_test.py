@@ -7,10 +7,11 @@ from saxs.saxs.phase.default_kernel import DefaultPhaseKernel
 
 def test_manager_runs_without_error():
     """
-    Test that the Manager runs the processing pipeline without crashing.
-    """
+    Test that the Manager runs the processing pipeline.
 
-    # Initialize Manager
+    This test ensures that the pipeline completes all processing steps
+    without raising any exceptions or crashing.
+    """
     manager = Manager(
         peak_data_path="tests/test_processing_data",
         peak_kernel=RobustParabolePeakKernel,
@@ -19,5 +20,5 @@ def test_manager_runs_without_error():
 
     # Call the processing pipeline
     manager_instance = manager()
-    # Check that result is a dictionary (based on AbstractPeakKernel.gathering)
-    # assert manager.peak_application_instance.kernel == 2
+    # Check that result is a dictionary (based on AbstractPeakKernel.gat
+    # hering)

@@ -9,37 +9,37 @@ from saxs.application.settings_processing import BACKGROUND_COEF
 
 class AbstractPeakKernel:
     __slots__ = (
-        "I_raw",
-        "q_raw",
+        "I_background_filtered",
         "I_cut",
-        "q_cut",
-        "dI",
-        "data_dir",
+        "I_raw",
+        "background",
         "current_I_state",
         "current_q_state",
-        "is_background_reduction",
-        "is_preprocessing",
-        "is_postprocessing",
-        "is_filtering",
-        "popt_background",
-        "pcov_background",
-        "background",
-        "zero_level",
-        "total_fit",
-        "I_background_filtered",
-        "max_I",
-        "delta_q",
-        "peaks",
-        "str_type",
-        "short_str_type",
-        "file_analysis_dir",
-        "file_analysis_dir_peaks",
-        "noisy_irrelevant_cut_point",
-        "is_peak_processing",
+        "dI",
+        "data_dir",
         "data_dir",
         "data_path",
+        "delta_q",
+        "file_analysis_dir",
+        "file_analysis_dir_peaks",
         "filename",
+        "is_background_reduction",
+        "is_filtering",
+        "is_peak_processing",
+        "is_postprocessing",
+        "is_preprocessing",
+        "max_I",
+        "noisy_irrelevant_cut_point",
+        "pcov_background",
+        "peaks",
+        "popt_background",
         "props",
+        "q_cut",
+        "q_raw",
+        "short_str_type",
+        "str_type",
+        "total_fit",
+        "zero_level",
     )
 
     @classmethod
@@ -126,7 +126,9 @@ class AbstractPeakKernel:
         plt.clf()
         plt.plot(self.q_raw, self.I_raw, label="raw_plot")
         plt.plot(
-            self.current_q_state, self.current_I_state, label="starting_state"
+            self.current_q_state,
+            self.current_I_state,
+            label="starting_state",
         )
         plt.legend()
         plt.savefig("{}/starting_state.pdf".format(self.file_analysis_dir))
