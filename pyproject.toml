@@ -39,7 +39,6 @@ extend-select = [
     "C",
     "N",     # PEP8 Naming
     "D",     # pydocstyle
-    "UP",    # pyupgrade
     "YTT",   # flake8-2020
     "ANN",   # flake8-annotations errors and warnings
     "ASYNC", # flake8-async errors and warnings
