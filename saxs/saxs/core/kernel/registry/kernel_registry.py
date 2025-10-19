@@ -27,3 +27,9 @@ class KernelRegistry:
     def register_policy(self, policy: PolicySpec) -> None:
         """Register policy."""
         self.policy_specs.register(policy.id, policy)
+
+    def pipeline(
+        self,
+    ) -> tuple[Buffer[StageSpec], Buffer[PolicySpec], list[str]]:
+        """Return pipeline."""
+        return self.stage_specs, self.policy_specs, self.execution_order

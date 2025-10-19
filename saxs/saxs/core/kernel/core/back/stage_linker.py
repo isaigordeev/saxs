@@ -24,7 +24,7 @@ class StageLinker:
             if not issubclass(_stage_spec.stage_cls, AbstractRequestingStage):
                 continue
 
-            _current_policy_id = _stage_spec.policy
+            _current_policy_id = _stage_spec.policy_id
 
             if not _current_policy_id:
                 continue

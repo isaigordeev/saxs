@@ -1,22 +1,22 @@
 from typing import TYPE_CHECKING
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
-from saxs.saxs.core.kernel.core.core._define_registry import (
+from saxs.saxs.core.kernel.core._define_registry import (
     policy_registry,
     stage_registry,
 )
+from saxs.saxs.core.kernel.core.back.buffer import Buffer
+from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
 from saxs.saxs.core.kernel.core.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
 
 if TYPE_CHECKING:
-    from saxs.saxs.core.kernel.core.core.registry import (
+    from saxs.saxs.core.kernel.core.front.parser import DeclarativePipeline
+    from saxs.saxs.core.kernel.core.registry import (
         PolicyRegistry,
         StageRegistry,
     )
-    from saxs.saxs.core.kernel.core.front.parser import DeclarativePipeline
 
 
 class SpecCompiler:
@@ -86,6 +86,10 @@ class SpecCompiler:
             stage_cls = self.stage_registry.get_class(
                 stage_decl_spec.stage_cls,
             )
+
+            if not stage_cls:
+                continue
+
             policy_id = (
                 stage_decl_spec.policy_id
                 if stage_decl_spec.policy_id
@@ -96,7 +100,7 @@ class SpecCompiler:
                 id=stage_decl_spec.id,
                 stage_cls=stage_cls,
                 kwargs=stage_decl_spec.kwargs or {},
-                policy=policy_id,
+                policy_id=policy_id,
                 before=stage_decl_spec.before_ids or [],
                 after=stage_decl_spec.after_ids or [],
             )

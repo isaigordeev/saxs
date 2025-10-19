@@ -27,26 +27,6 @@ from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 
 @dataclass
-class PolicySpec:
-    """Specification for defining a chaining policy.
-
-    Attributes
-    ----------
-        id: Unique identifier for the policy.
-        policy_cls: Class implementing the chaining logic.
-        condition: Class defining the stage activation or
-        transition condition.
-        next_stage_ids: Optional list of stage IDs
-        this policy connects to.
-    """
-
-    id: str
-    policy_cls: type[ChainingPolicy]
-    condition: type[StageCondition]
-    next_stage_ids: list[str] | None = None
-
-
-@dataclass
 class StageSpec:
     """Specification for a pipeline stage in the SAXS workflow.
 
@@ -68,6 +48,27 @@ class StageSpec:
     stage_cls: type[AbstractStage]
     kwargs: dict[str, Any] | None = None
     metadata: AbstractStageMetadata | None = None
-    policy: str | None = None
+    policy_id: str | None = None
     before: list[str] | None = None
     after: list[str] | None = None
+
+
+@dataclass
+class PolicySpec:
+    """Specification for defining a chaining policy.
+
+    Attributes
+    ----------
+        id: Unique identifier for the policy.
+        policy_cls: Class implementing the chaining logic.
+        condition: Class defining the stage activation or
+        transition condition.
+        next_stage_ids: Optional list of stage IDs
+        this policy connects to.
+    """
+
+    id: str
+    policy_cls: type[ChainingPolicy]
+    condition: type[StageCondition]
+    condition_kwargs: dict[str, Any]
+    next_stage_ids: list[str] | None = None
