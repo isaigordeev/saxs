@@ -2,7 +2,7 @@ from scipy.optimize import curve_fit
 
 from saxs.application.settings_processing import BACKGROUND_COEF
 from saxs.logging.logger import logger
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.processing.functions import background_hyberbole
 

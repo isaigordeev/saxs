@@ -4,9 +4,9 @@
 
 import numpy as np
 from saxs.logging.logger import logger
-from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.data.scheduler_objects import AbstractSchedulerMetadata
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.condition.constant_true_condition import (
     TrueCondition,
 )

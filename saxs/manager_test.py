@@ -9,8 +9,9 @@ def test_manager_runs_without_error():
     """
     Test that the Manager runs the processing pipeline.
 
-    This test ensures that the pipeline completes all processing steps
-    without raising any exceptions or crashing.
+    This test ensures that the pipeline completes all
+    processing steps without raising any exceptions or
+    crashing.
     """
     manager = Manager(
         peak_data_path="tests/test_processing_data",

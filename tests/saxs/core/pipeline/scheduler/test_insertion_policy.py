@@ -8,7 +8,7 @@ Tests for insertion_policy.py module.
 
 import pytest
 
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )

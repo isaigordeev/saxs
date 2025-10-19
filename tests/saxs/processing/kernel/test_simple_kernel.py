@@ -35,8 +35,8 @@ def read_data(data_dir_file):
 
 @pytest.fixture
 def real_sample():
-    from saxs.saxs.core.data.sample import SAXSSample
-    from saxs.saxs.core.data.sample_objects import (
+    from saxs.saxs.core.types.sample import SAXSSample
+    from saxs.saxs.core.types.sample_objects import (
         AbstractSampleMetadata,
         Intensity,
         IntensityError,
@@ -61,8 +61,8 @@ def real_sample():
 
 @pytest.fixture
 def init_sample():
-    from saxs.saxs.core.data.sample import SAXSSample
-    from saxs.saxs.core.data.sample_objects import (
+    from saxs.saxs.core.types.sample import SAXSSample
+    from saxs.saxs.core.types.sample_objects import (
         AbstractSampleMetadata,
         Intensity,
         IntensityError,

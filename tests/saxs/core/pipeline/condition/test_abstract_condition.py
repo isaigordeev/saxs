@@ -6,11 +6,12 @@
 Tests for abstract_condition.py module.
 """
 
-
 import pytest
 
-from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
-from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
+from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.pipeline.condition.abstract_condition import (
+    SampleCondition,
+)
 
 
 class TestSampleCondition:
@@ -121,7 +122,9 @@ class TestSampleCondition:
             def __init__(self, base_threshold: float):
                 self.base_threshold = base_threshold
 
-            def evaluate(self, sample_metadata: AbstractSampleMetadata) -> bool:
+            def evaluate(
+                self, sample_metadata: AbstractSampleMetadata
+            ) -> bool:
                 return (
                     sample_metadata.unwrap().get("base_value", 0)
                     > self.base_threshold
@@ -167,4 +170,3 @@ class TestSampleCondition:
             {"base_value": 15.0, "extended_value": 10.0}
         )
         assert condition.evaluate(invalid_sample2) is False
-

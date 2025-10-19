@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from saxs.saxs.core.data.abstract_data import AData
+from saxs.saxs.core.types.abstract_data import AData
 
 
 class TestAData:
@@ -68,4 +68,3 @@ class TestAData:
         assert data.name == "test"
         assert data.value == 0
         assert data.describe() == "MultiInheritData: test with value 0"
-

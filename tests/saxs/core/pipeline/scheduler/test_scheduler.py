@@ -12,14 +12,14 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.data.sample_objects import (
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
     IntensityError,
     QValues,
 )
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )

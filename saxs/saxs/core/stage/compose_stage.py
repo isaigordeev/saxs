@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Type
 
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy

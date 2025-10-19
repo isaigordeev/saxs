@@ -5,8 +5,8 @@
 
 from dataclasses import dataclass
 
-from saxs.saxs.core.data.scheduler_objects import AbstractSchedulerMetadata
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
 
 
 @dataclass(frozen=True)

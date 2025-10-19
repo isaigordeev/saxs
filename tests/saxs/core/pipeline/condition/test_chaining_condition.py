@@ -6,7 +6,7 @@
 Tests for chaining_condition.py module.
 """
 
-from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.pipeline.condition.chaining_condition import (
     ChainingPeakCondition,
 )
