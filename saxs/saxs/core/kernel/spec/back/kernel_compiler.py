@@ -26,13 +26,7 @@ if TYPE_CHECKING:
 
 
 class BaseStageCompiler:
-    def __init__(self):
-        pass
-
-    def compile(self):
-        policy_decl_specs: Buffer[PolicyDeclSpec] = parser.policy_decl_specs
-        stage_decl_specs: Buffer[StageDeclSpec] = parser.stage_decl_specs
-
+    def build(self, policy_decl_specs, stage_decl_specs):
         compiler = PipelineSpecCompiler()
 
         policy_specs: Buffer[PolicySpec] = compiler.build_policy_specs(
@@ -53,19 +47,27 @@ class BaseStageCompiler:
         linked_policy_instance: Buffer[ChainingPolicy] = PolicyLinker.link(
             policy_specs, stage_instance, policy_instance
         )
-        linked_stage_instance: Buffer[ChainingPolicy] = StageLinker.link(
+        linked_stage_instance: Buffer[AbstractStage] = StageLinker.link(
             stage_specs, stage_instance, policy_instance
         )
 
-        return linked_stage_instance
+        return linked_stage_instance, linked_policy_instance
 
 
 class YamlCompiler(BaseStageCompiler):
     """Yaml compiler."""
 
+    @staticmethod
     def get_parser(
-        self,
         path_to_yaml: str = "kernel.yaml",
     ) -> DeclarativePipeline:
         """Parser."""
         return DeclarativePipeline.from_yaml(path_to_yaml)
+
+    def compile(
+        self,
+    ):
+        _parser = self.get_parser()
+        policy_decl_specs = _parser.policy_decl_specs
+        stage_decl_specs = _parser.stage_decl_specs
+        return super().build(policy_decl_specs, stage_decl_specs)

@@ -31,9 +31,7 @@ class AbstractKernel(ABC):
         """Build sample."""
 
     @abstractmethod
-    def define(
-        self,
-    ) -> Buffer[StageSpec]:
+    def define(self) -> None:
         """Define pipeline.
 
         Define which stages and policies form
