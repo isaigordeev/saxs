@@ -1,53 +1,109 @@
-#
-# Created by Isai GORDEEV on 19/09/2025.
-#
+"""pipeline.py.
 
-from typing import List, Optional, Type
+This module defines the `Pipeline` class, which manages the dynamic
+execution of SAXS (Small-Angle X-ray Scattering) processing stages.
+A `Pipeline` coordinates a set of `AbstractStage` objects and
+executes them using a provided scheduler. Stages can generate
+additional stages at runtime, and their inclusion is governed by
+the scheduler's insertion policy.
+
+Classes
+--------
+Pipeline
+    Manages execution of a sequence of stages using a scheduler.
+"""
 
 from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
-    InsertionPolicy,
-    SaturationInsertPolicy,
-)
 from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,
-    BaseScheduler,
 )
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
 
 class Pipeline:
     """
-    Manages dynamic execution of stages.
+    Manages the dynamic execution of SAXS processing stages.
 
-    Stages can request additional stages, and the Scheduler
-    decides the insertion policy.
+    A `Pipeline` coordinates a list of `AbstractStage` instances and
+    executes them using a given `AbstractScheduler`. The scheduler
+    determines the execution order and decides whether new stages
+    requested by existing stages should be added to the queue based
+    on its insertion policy.
+
+    Attributes
+    ----------
+    init_stages : list of AbstractStage
+        List of initial stages to execute in the pipeline.
+    scheduler : AbstractScheduler
+        Scheduler responsible for controlling stage execution and
+        handling insertion policies.
     """
 
     def __init__(
         self,
         init_stages: list[AbstractStage],
-        scheduler: type[AbstractScheduler],
-        scheduler_policy: type[InsertionPolicy],
+        scheduler: AbstractScheduler,
     ):
-        self.policy = scheduler_policy or SaturationInsertPolicy()
+        """Initialize the pipeline with stages and a scheduler.
+
+        Parameters
+        ----------
+        init_stages : list of AbstractStage
+            Initial list of stages to include in the pipeline.
+        scheduler : AbstractScheduler
+            Scheduler instance that manages stage execution and
+            insertion logic.
+        """
         self.init_stages = init_stages or []
-        self.scheduler = scheduler or BaseScheduler
+        self.scheduler = scheduler
 
     @classmethod
     def with_stages(
         cls,
         stages: list[AbstractStage],
-        scheduler: type[AbstractScheduler],
-        scheduler_policy: type[InsertionPolicy],
+        scheduler: AbstractScheduler,
     ) -> "Pipeline":
-        """Creation of pipeline with given stages."""
+        """Class method to create a pipeline with initial stages.
+
+        Create a new pipeline with the specified stages and
+        scheduler.
+
+        Parameters
+        ----------
+        stages : list of AbstractStage
+            List of stages to initialize the pipeline with.
+        scheduler : AbstractScheduler
+            Scheduler that will manage execution and insertion
+            of stages.
+
+        Returns
+        -------
+        Pipeline
+            A configured pipeline instance with the given stages
+            and scheduler.
+        """
         return cls(
             init_stages=list(stages),
             scheduler=scheduler,
-            scheduler_policy=scheduler_policy,
         )
 
     def run(self, init_sample: SAXSSample) -> SAXSSample:
-        _instance = self.scheduler(self.init_stages, self.policy)
-        return _instance.run(init_sample)
+        """Run the pipeline on the provided sample.
+
+        Enqueues the initial stages into the scheduler, then
+        delegates execution to the scheduler's `run` method.
+
+        Parameters
+        ----------
+        init_sample : SAXSSample
+            The initial sample object to be processed through all
+            pipeline stages.
+
+        Returns
+        -------
+        SAXSSample
+            The final processed sample after all stages in the
+            pipeline have completed.
+        """
+        self.scheduler.enqueue_initial_stages(self.init_stages)
+        return self.scheduler.run(init_sample)
