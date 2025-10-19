@@ -54,6 +54,8 @@ class BaseKernel(AbstractKernel):
         self.scheduler = scheduler
         self.execution_order: list[str] = []
 
+        self.build()
+
     def build(self) -> None:
         """Build entry stages and submit them to scheduler."""
         _stage_decl, _policy_decl, _execution_order = self.define()
