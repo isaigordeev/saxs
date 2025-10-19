@@ -39,7 +39,7 @@ policy_registry
 >>> policy_instance = policy_cls()
 """
 
-from saxs.saxs.core.kernel.spec.core.registry import (
+from saxs.saxs.core.kernel.core.registry import (
     PolicyRegistry,
     StageRegistry,
 )

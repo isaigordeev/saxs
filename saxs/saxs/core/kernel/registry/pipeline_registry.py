@@ -1,9 +1,7 @@
 """Interface to manage Buffers."""
 
-from typing import List
-
-from saxs.saxs.core.kernel.spec.back.buffer import Buffer
-from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
+from saxs.saxs.core.kernel.core.back.buffer import Buffer
+from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
 
 
 class KernelRegistry:
@@ -12,7 +10,7 @@ class KernelRegistry:
     def __init__(self):
         self.stage_specs: Buffer[StageSpec] = Buffer()
         self.policy_specs: Buffer[PolicySpec] = Buffer()
-        self.execution_order: List[
+        self.execution_order: list[
             str
         ] = []  # Explicit memorized order of stage IDs
 

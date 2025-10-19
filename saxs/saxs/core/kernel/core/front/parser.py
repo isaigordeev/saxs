@@ -3,8 +3,8 @@ from typing import Dict, List, Optional
 
 import yaml
 
-from saxs.saxs.core.kernel.spec.back.buffer import Buffer
-from saxs.saxs.core.kernel.spec.front.declarative_specs import (
+from saxs.saxs.core.kernel.core.back.buffer import Buffer
+from saxs.saxs.core.kernel.core.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
