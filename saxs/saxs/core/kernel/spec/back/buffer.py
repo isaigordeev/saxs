@@ -13,7 +13,8 @@ Classes:
     objects.
 """
 
-from typing import Dict, Generic, ItemsView, Optional, TypeVar, ValuesView
+from collections.abc import ItemsView, ValuesView
+from typing import Generic, TypeVar
 
 from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
 
@@ -28,7 +29,7 @@ class Buffer(Generic[T]):
     """
 
     def __init__(self):
-        self._registry: Dict[str, T] = {}
+        self._registry: dict[str, T] = {}
 
     def register(self, id_: str, item: T, *, overwrite: bool = False) -> None:
         """
@@ -42,7 +43,7 @@ class Buffer(Generic[T]):
             raise KeyError(msg)
         self._registry[id_] = item
 
-    def get(self, id_: str) -> Optional[T]:
+    def get(self, id_: str) -> T | None:
         """Retrieve the item by ID. Returns None if not found."""
         return self._registry.get(id_)
 
