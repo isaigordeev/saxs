@@ -9,7 +9,7 @@ from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
 
 
 class AbstractKernelSpec(AbstractKernel):
-    def define_pipeline(self) -> List[StageSpec]:
+    def define(self) -> List[StageSpec]:
         raise NotImplementedError()
 
     @abstractmethod

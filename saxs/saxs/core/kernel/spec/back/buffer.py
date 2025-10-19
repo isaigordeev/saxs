@@ -1,12 +1,14 @@
 from typing import Dict, Generic, Optional, TypeVar, Union
-from saxs.saxs.core.kernel.spec.back.runtime_spec import StageSpec, PolicySpec
 
-T = TypeVar("T", StageSpec, PolicySpec)
+from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
+
+T = TypeVar("T")
 
 
 class Buffer(Generic[T]):
     """
     Generic registry for StageSpec or PolicySpec objects.
+
     Provides safe registration, lookup, and introspection.
     """
 
@@ -16,15 +18,17 @@ class Buffer(Generic[T]):
     def register(self, id: str, item: T, overwrite: bool = False):
         """
         Register an item under a given ID.
+
         Raises an error if the ID already exists and overwrite is False.
         """
         if id in self._registry and not overwrite:
-            raise KeyError(f"ID '{id}' is already registered.")
+            msg = f"ID '{id}' is already registered."
+            raise KeyError(msg)
         self._registry[id] = item
 
-    def get(self, id: str) -> Optional[T]:
+    def get(self, id_: str) -> Optional[T]:
         """Retrieve the item by ID. Returns None if not found."""
-        return self._registry.get(id)
+        return self._registry.get(id_)
 
     def contains(self, id: str) -> bool:
         """Check if an ID is already registered."""

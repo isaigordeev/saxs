@@ -21,10 +21,12 @@ from typing import Any, Dict, List, Tuple, Type, Union
 
 class BaseKernel(AbstractKernel):
     """
+    Base kernel class.
+
     Encapsulates orchestration of:
     - pipeline building
     - scheduler wiring
-    - sample creation
+    - sample creation.
     """
 
     def __init__(
@@ -35,9 +37,6 @@ class BaseKernel(AbstractKernel):
         self.scheduler = scheduler
         self.registry = PolicyRegistry()
         self.scheduler_policy = scheduler_policy or SaturationInsertPolicy()
-
-    def create_sample(self, data: dict) -> "SAXSSample":
-        return SAXSSample(data=data)
 
     @staticmethod
     def build_initial_stages(
@@ -97,14 +96,16 @@ class BaseKernel(AbstractKernel):
                     )
                 continue
 
-            raise TypeError(f"Invalid stage definition at index {idx}: {entry}")
+            raise TypeError(
+                f"Invalid stage definition at index {idx}: {entry}"
+            )
 
         logger.info(f"Total stages built: {len(stages)}")
         return stages
 
-    def build_pipeline(self):
+    def build(self):
         """Build entry stages and submit them to scheduler."""
-        stage_defs = self.define_pipeline()
+        stage_defs = self.define()
         initial_stages = self.build_initial_stages(stage_defs, self.registry)
 
         self.pipeline = Pipeline.with_stages(
@@ -118,7 +119,7 @@ class BaseKernel(AbstractKernel):
         return self.pipeline.run(init_sample)
 
     @abstractmethod
-    def define_pipeline(
+    def define(
         self,
     ) -> List[
         Union[

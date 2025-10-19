@@ -6,8 +6,8 @@ from typing import List, Optional, Type
 
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
-    SaturationInsertPolicy,
     InsertionPolicy,
+    SaturationInsertPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,

@@ -6,7 +6,7 @@ from saxs.saxs.core.pipeline.condition.chaining_condition import (
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.core.kernel.nested.core.base_kernel import (
+from saxs.saxs.core.kernel.forward.core.base_kernel import (
     BaseKernel,
 )
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
@@ -22,7 +22,7 @@ class SimpleKernel(BaseKernel):
     def create_sample(self, data: dict) -> "SAXSSample":
         return SAXSSample(data=data)
 
-    def define_pipeline(self):
+    def define(self):
         # Example pipeline: Cut → Background → FindAllPeaks (with chaining)
         return [
             (CutStage, {"cut_point": 200}),
