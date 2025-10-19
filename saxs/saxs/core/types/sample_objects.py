@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 
-from saxs.saxs.core.data.abstract_data import BaseDataType
+from saxs.saxs.core.types.abstract_data import BaseDataType
 
 
 @dataclass(frozen=True)

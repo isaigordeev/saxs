@@ -10,16 +10,20 @@ from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
 
 
 class InsertionPolicy(ABC):
-    """
+    """Abstract insertion policy.
+
     Base class for insertion policies.
-    Policies decide whether a StageRequest should be inserted into the ]
-    scheduler's queue.
+    Policies decide whether a StageRequest should be
+    inserted into the scheduler's queue.
     """
 
     @abstractmethod
     def __call__(self, request: StageApprovalRequest) -> bool:
-        """Return True if the stage should be inserted, False otherwise."""
-        pass
+        """Calculate predicat in order to approve stage insertion.
+
+        Return True if the stage should be inserted,
+        False otherwise.
+        """
 
 
 class AlwaysInsertPolicy(InsertionPolicy):
@@ -47,9 +51,7 @@ class SaturationInsertPolicy(InsertionPolicy):
 
 
 class MetadataKeyPolicy(InsertionPolicy):
-    """
-    Only insert stage if metadata contains a specific key.
-    """
+    """Only insert stage if metadata contains a specific key."""
 
     def __init__(self, key: str):
         self.key = key

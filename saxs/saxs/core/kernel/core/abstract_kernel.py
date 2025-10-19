@@ -11,33 +11,22 @@ Classes derived from `AbstractKernel` are responsible for:
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
 
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.front.declarative_specs import (
-    PolicyDeclSpec,
-    StageDeclSpec,
-)
-
-if TYPE_CHECKING:
-    from saxs.saxs.core.data.sample import SAXSSample
+from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
 
 
 class AbstractKernel(ABC):
-    """Abstract kernel class.
+    """Abstract kernel class for SAXS pipeline.
 
     Defines the core interface that all SAXS kernel
     implementations must follow.
     """
 
     @abstractmethod
-    def create_sample(self) -> "SAXSSample":
-        """Build sample."""
-
-    @abstractmethod
     def define(
         self,
-    ) -> tuple[Buffer[StageDeclSpec], Buffer[PolicyDeclSpec], list[str]]:
+    ) -> tuple[Buffer[StageSpec], Buffer[PolicySpec], list[str]]:
         """Define pipeline.
 
         Define which stages and policies form

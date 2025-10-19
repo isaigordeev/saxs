@@ -8,8 +8,8 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 
-from saxs.saxs.core.data.abstract_data import AData
-from saxs.saxs.core.data.sample_objects import (
+from saxs.saxs.core.types.abstract_data import AData
+from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
     IntensityError,
@@ -140,7 +140,9 @@ class SAXSSample(AData):
         err_len = (
             len(self.intensity_error.unwrap()) if self.intensity_error else 0
         )
-        meta_keys = list(self.metadata.unwrap().keys()) if self.metadata else []
+        meta_keys = (
+            list(self.metadata.unwrap().keys()) if self.metadata else []
+        )
         return (
             f"SAXSSample(q_values={q_len} points, "
             f"intensity={i_len} points, "

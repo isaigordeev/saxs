@@ -47,14 +47,16 @@ stages and policies.
 definitions.
 """
 
-from typing import TYPE_CHECKING
-
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.pipeline_spec_compiler import (
     SpecCompiler,
 )
 from saxs.saxs.core.kernel.core.back.policy_builder import PolicyBuilder
 from saxs.saxs.core.kernel.core.back.policy_linker import PolicyLinker
+from saxs.saxs.core.kernel.core.back.runtime_spec import (
+    PolicySpec,
+    StageSpec,
+)
 from saxs.saxs.core.kernel.core.back.stage_builder import StageBuilder
 from saxs.saxs.core.kernel.core.back.stage_linker import StageLinker
 from saxs.saxs.core.kernel.core.front.declarative_specs import (
@@ -66,12 +68,6 @@ from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
     ChainingPolicy,
 )
-
-if TYPE_CHECKING:
-    from saxs.saxs.core.kernel.core.back.runtime_spec import (
-        PolicySpec,
-        StageSpec,
-    )
 
 
 class BaseCompiler:
@@ -87,8 +83,8 @@ class BaseCompiler:
 
     def build(
         self,
-        stage_decl_specs: Buffer[StageDeclSpec],
-        policy_decl_specs: Buffer[PolicyDeclSpec],
+        stage_specs: Buffer[StageSpec],
+        policy_specs: Buffer[PolicySpec],
     ) -> tuple[Buffer[AbstractStage], Buffer[ChainingPolicy]]:
         """
         Build and link stage and policy instances.
@@ -120,15 +116,6 @@ class BaseCompiler:
         - The returned instances are fully linked and ready for
         execution in the SAXS processing pipeline.
         """
-        compiler = SpecCompiler()
-
-        policy_specs: Buffer[PolicySpec] = compiler.build_policy_specs(
-            policy_decl_specs,
-        )
-        stage_specs: Buffer[StageSpec] = compiler.build_stage_specs(
-            stage_decl_specs,
-        )
-
         stage_instance: Buffer[AbstractStage] = StageBuilder.build(stage_specs)
         policy_instance: Buffer[ChainingPolicy] = PolicyBuilder.build(
             policy_specs,
@@ -162,4 +149,47 @@ class YamlCompiler(BaseCompiler):
         _parser = self.get_parser()
         policy_decl_specs = _parser.policy_decl_specs
         stage_decl_specs = _parser.stage_decl_specs
-        return super().build(stage_decl_specs, policy_decl_specs)
+        return self.build_from_decl(stage_decl_specs, policy_decl_specs)
+
+    def build_from_decl(
+        self,
+        stage_decl_specs: Buffer[StageDeclSpec],
+        policy_decl_specs: Buffer[PolicyDeclSpec],
+    ) -> tuple[Buffer[AbstractStage], Buffer[ChainingPolicy]]:
+        """
+        Build and link stage and policy instances.
+
+        This method orchestrates the compilation process:
+        1. Converts declarative specifications into internal
+          `StageSpec` and `PolicySpec` objects using `SpecCompiler`.
+        2. Calls build main method for Specs
+
+        Parameters
+        ----------
+        policy_decl_specs : Buffer[PolicyDeclSpec]
+            Buffer containing declarative policy specifications.
+        stage_decl_specs : Buffer[StageDeclSpec]
+            Buffer containing declarative stage specifications.
+
+        Returns
+        -------
+        tuple[Buffer[AbstractStage], Buffer[ChainingPolicy]]
+            A tuple containing:
+            - Buffer of linked stage instances
+            - Buffer of linked policy instances
+
+        Notes
+        -----
+        - The returned instances are fully linked and ready for
+        execution in the SAXS processing pipeline.
+        """
+        compiler = SpecCompiler()
+
+        stage_specs: Buffer[StageSpec] = compiler.build_stage_specs(
+            stage_decl_specs,
+        )
+        policy_specs: Buffer[PolicySpec] = compiler.build_policy_specs(
+            policy_decl_specs,
+        )
+
+        return self.build(stage_specs, policy_specs)
