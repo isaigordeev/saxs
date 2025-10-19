@@ -28,6 +28,7 @@ indent-width = 4
 target-version = "py311"
 fix = true
 unsafe-fixes = true
+src = ["saxs", "tests"]
 
 [tool.ruff.lint]
 extend-select = [
@@ -102,7 +103,7 @@ convention = "numpy"
 
 [tool.ruff.lint.pycodestyle]
 # Override the max doc line length rule (W505)
-max-doc-length = 66
+max-doc-length = 68
 
 [dependency-groups]
 dev = [
@@ -121,11 +122,12 @@ dev = [
 ]
 
 [tool.pyright]
-typeCheckingMode = "strict" # enforce strict type checking on all annotated code
-exclude = ["**/tests/**"]   # exclude test directories from type checking
-
+typeCheckingMode = "strict"
+include = ["saxs/", "tests"]
+exclude = ["**/site-packages", "build", ".venv"]
 
 [tool.mypy]
 python_version = "3.11"
 strict = true
-exclude = "tests"
+files = ["saxs", "tests"]
+exclude = "|build|.venv"
