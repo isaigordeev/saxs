@@ -1,4 +1,4 @@
-from saxs.saxs.core.data.read import DataReader
+from saxs.saxs.core.data.reader import DataReader
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     SaturationInsertPolicy,
 )

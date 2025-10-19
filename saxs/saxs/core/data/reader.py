@@ -8,6 +8,11 @@ import numpy as np
 import pandas as pd
 
 from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample_objects import (
+    QValues,
+    Intensity,
+    IntensityError,
+)
 
 
 class DataReader:
@@ -54,4 +59,7 @@ class DataReader:
         raise ValueError(msg)
 
     def create_sample(self, q, i, di):
-        return SAXSSample(q_values=q, intensity=i, intensity_error=di)
+        _q = QValues(q)
+        _i = Intensity(i)
+        _di = IntensityError(di)
+        return SAXSSample(q_values=_q, intensity=_i, intensity_error=_di)

@@ -19,9 +19,7 @@ from saxs.saxs.core.types.sample_objects import (
 
 @dataclass(frozen=True)
 class SAXSSample(AData):
-    """
-    Immutable SAXS sample with typed fields and builder-style setters.
-    """
+    """Immutable SAXS sample with typed fields and builder-style setters."""
 
     q_values: QValues
     intensity: Intensity

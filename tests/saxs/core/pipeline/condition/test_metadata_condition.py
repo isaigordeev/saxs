@@ -7,11 +7,10 @@ Tests for metadata_condition.py module.
 """
 
 import pytest
-
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.pipeline.condition.metadata_condition import (
     MetadataCondition,
 )
+from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 
 
 class TestMetadataCondition:
