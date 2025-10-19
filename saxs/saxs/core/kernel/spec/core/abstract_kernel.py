@@ -11,9 +11,13 @@ Classes derived from `AbstractKernel` are responsible for:
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING
 
 from saxs.saxs.core.kernel.spec.back.buffer import Buffer
+from saxs.saxs.core.kernel.spec.front.declarative_specs import (
+    PolicyDeclSpec,
+    StageDeclSpec,
+)
 
 if TYPE_CHECKING:
     from saxs.saxs.core.data.sample import SAXSSample
@@ -31,7 +35,9 @@ class AbstractKernel(ABC):
         """Build sample."""
 
     @abstractmethod
-    def define(self) -> None:
+    def define(
+        self,
+    ) -> tuple[Buffer[StageDeclSpec], Buffer[PolicyDeclSpec], list[str]]:
         """Define pipeline.
 
         Define which stages and policies form

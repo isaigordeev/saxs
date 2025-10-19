@@ -1,23 +1,24 @@
-from typing import Dict, List
 from saxs.saxs.core.kernel.spec.back.buffer import Buffer
 from saxs.saxs.core.kernel.spec.back.runtime_spec import StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractStage,
     AbstractRequestingStage,
+    AbstractStage,
 )
 
 
 class StageBuilder:
-    """Builds stage instances from StageSpec objects without linking policies."""
+    """Stage builder.
+
+    Builds stage instances from StageSpec objects without linking
+    policies.
+    """
 
     @staticmethod
     def build(stage_specs: Buffer[StageSpec]) -> Buffer[AbstractStage]:
-        """
-        Returns a dict: stage_id -> stage_instance
-        """
+        """Return a dict: stage_id -> stage_instance."""
         stage_instances: Buffer[AbstractStage] = Buffer[AbstractStage]()
 
-        for _, stage_spec in stage_specs.items():
+        for stage_spec in stage_specs.values():
             kwargs = stage_spec.kwargs or {}
 
             if issubclass(stage_spec.stage_cls, AbstractRequestingStage):

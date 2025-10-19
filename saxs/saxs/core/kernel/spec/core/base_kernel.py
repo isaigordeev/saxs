@@ -1,6 +1,10 @@
-from abc import abstractmethod
 from saxs.logging.logger import logger
 from saxs.saxs.core.data.sample import SAXSSample
+from saxs.saxs.core.kernel.spec.back.buffer import Buffer
+from saxs.saxs.core.kernel.spec.back.kernel_compiler import BaseCompiler
+from saxs.saxs.core.kernel.spec.core.abstract_kernel import (
+    AbstractKernel,
+)
 from saxs.saxs.core.pipeline.pipeline import Pipeline
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     InsertionPolicy,
@@ -11,19 +15,16 @@ from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.policy.policy_registry import PolicyRegistry
-from saxs.saxs.core.kernel.spec.core.abstract_decl_kernel import (
-    AbstractKernelSpec,
-)
-
-from typing import Any, Dict, List, Tuple, Type, Union
 
 
-class BaseKernel(AbstractKernelSpec):
+class BaseKernel(AbstractKernel):
     """
+    Base kernel class.
+
     Encapsulates orchestration of:
     - pipeline building
     - scheduler wiring
-    - sample creation
+    - sample creation.
     """
 
     def __init__(
@@ -32,45 +33,44 @@ class BaseKernel(AbstractKernelSpec):
         scheduler_policy: InsertionPolicy,
     ):
         self.scheduler = scheduler
-        self.registry = PolicyRegistry()
         self.scheduler_policy = scheduler_policy or SaturationInsertPolicy()
+        self.execution_order: list[str] = []
 
-    def create_sample(self, data: dict) -> "SAXSSample":
-        return SAXSSample(data=data)
-
-    @staticmethod
-    def build_initial_stages(order: list[str]) -> List["AbstractStage"]:
-        """
-        Build all initial stages with optional kwargs and logging.
-        """
-        stages = []
-
-        logger.info(f"Total stages built: {len(stages)}")
-        return stages
-
-    def build(self):
+    def build(self) -> None:
         """Build entry stages and submit them to scheduler."""
-        stage_defs = self.define()
-        initial_stages = self.build_initial_stages(stage_defs, self.registry)
+        _stage_decl, _policy_decl, _execution_order = self.define()
+
+        _comp = BaseCompiler()
+
+        self.stage_buffer: Buffer[AbstractStage]
+        self.policy_buffer: Buffer[ChainingPolicy]
+
+        self.stage_buffer, self.policy_buffer = _comp.build(
+            _stage_decl,
+            _policy_decl,
+        )
+
+        _initial_stages = self._get_initial_stage(_execution_order)
 
         self.pipeline = Pipeline.with_stages(
-            *initial_stages,
+            _initial_stages,
             scheduler=self.scheduler,
             scheduler_policy=self.scheduler_policy,
         )
 
-    def run(self, init_sample):
+    def _get_initial_stage(
+        self,
+        _execution_order: list[str],
+    ) -> list[AbstractStage]:
+        _initial_stages: list[AbstractStage] = []
+
+        for _stage_id in _execution_order:
+            _stage = self.stage_buffer.get(_stage_id)
+            if _stage:
+                _initial_stages.append(_stage)
+
+        return _initial_stages
+
+    def run(self, init_sample: SAXSSample) -> SAXSSample:
         """Run the scheduler until pipeline is complete."""
         return self.pipeline.run(init_sample)
-
-    @abstractmethod
-    def define(
-        self,
-    ) -> List[
-        Union[
-            Type["AbstractStage"],
-            Tuple[Type["AbstractRequestingStage"], "ChainingPolicy"],
-        ]
-    ]:
-        """Define which stages and policies form the entrypoint pipeline."""
-        pass

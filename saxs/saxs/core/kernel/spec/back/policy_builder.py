@@ -1,32 +1,34 @@
-from typing import Dict, List
+from typing import Any
 
 from saxs.saxs.core.kernel.spec.back.buffer import Buffer
-from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
-from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractRequestingStage,
-    AbstractStage,
-)
+from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 
 class PolicyBuilder:
-    """Builds stage instances from StageSpec objects without linking policies."""
+    """Policy builder.
+
+    Builds stage instances from StageSpec objects without linking
+    policies.
+    """
 
     @staticmethod
     def build(policy_specs: Buffer[PolicySpec]) -> Buffer[ChainingPolicy]:
-        """
-        Returns a dict: stage_id -> stage_instance
+        """Policy builder.
+
+        Returns a dict: stage_id -> stage_instance.
         """
         policy_instances: Buffer[ChainingPolicy] = Buffer[ChainingPolicy]()
 
-        def build_policy_kwargs(_policy_spec: PolicySpec):
-            _kwargs = {}
+        def build_policy_kwargs(_policy_spec: PolicySpec) -> dict[str, Any]:
+            _kwargs: dict[str, Any] = {}
+
             _kwargs["condition"] = _policy_spec.condition
             _kwargs["next_stage_cls"] = []
 
             return _kwargs
 
-        for _, policy_spec in policy_specs.items():
+        for policy_spec in policy_specs.values():
             kwargs = build_policy_kwargs(policy_spec)
             instance = policy_spec.policy_cls(**kwargs)
 

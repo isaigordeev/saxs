@@ -1,34 +1,33 @@
-from typing import Dict, List
+from typing import TYPE_CHECKING
 
 from saxs.saxs.core.kernel.spec.back.buffer import Buffer
 from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
-
-from saxs.saxs.core.kernel.spec.core.registry import (
-    PolicyRegistry,
-    StageRegistry,
+from saxs.saxs.core.kernel.spec.core._define_registry import (
+    policy_registry,
+    stage_registry,
 )
 from saxs.saxs.core.kernel.spec.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
 
-from saxs.saxs.core.kernel.spec.front.parser import DeclarativePipeline
-from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractRequestingStage,
-    AbstractStage,
-)
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
-from saxs.saxs.core.kernel.spec.core.define_registry import (
-    stage_registry,
-    policy_registry,
-)
+if TYPE_CHECKING:
+    from saxs.saxs.core.kernel.spec.core.registry import (
+        PolicyRegistry,
+        StageRegistry,
+    )
+    from saxs.saxs.core.kernel.spec.front.parser import DeclarativePipeline
 
 
-class PipelineSpecCompiler:
-    """
-    Builds runtime StageSpec and PolicySpec objects from purely declarative specs.
-    - Resolves string references to classes using StageRegistry and PolicyRegistry.
-    - Keeps policy and stage building logically separated but in one class.
+class SpecCompiler:
+    """SpecCompiler.
+
+    Builds runtime StageSpec and PolicySpec objects from purely
+    declarative specs.
+    - Resolves string references to classes using StageRegistry
+    and PolicyRegistry.
+    - Keeps policy and stage building logically separated but in
+    one class.
     """
 
     def __init__(
@@ -36,20 +35,21 @@ class PipelineSpecCompiler:
         stage_registry: "StageRegistry" = stage_registry,
         policy_registry: "PolicyRegistry" = policy_registry,
     ):
-        self.stage_registry = stage_registry
-        self.policy_registry = policy_registry
+        self.stage_registry: StageRegistry = stage_registry
+        self.policy_registry: PolicyRegistry = policy_registry
 
     # --------------------------
     # Policy building
     # --------------------------
     def build_policy_specs(
-        self, policies_decl: Buffer[PolicyDeclSpec]
+        self,
+        policies_decl: Buffer[PolicyDeclSpec],
     ) -> Buffer[PolicySpec]:
         runtime_policies: Buffer[PolicySpec] = Buffer[PolicySpec]()
 
         for policy_id, policy_decl_spec in policies_decl.items():
             policy_cls = self.policy_registry.get_class(
-                policy_decl_spec.policy_cls
+                policy_decl_spec.policy_cls,
             )
             condition_cls = (
                 self.stage_registry.get_class(policy_decl_spec.condition_cls)
@@ -82,9 +82,9 @@ class PipelineSpecCompiler:
     ) -> Buffer[StageSpec]:
         runtime_stages: Buffer[StageSpec] = Buffer[StageSpec]()
 
-        for _, stage_decl_spec in stages_decl.items():
+        for stage_decl_spec in stages_decl.values():
             stage_cls = self.stage_registry.get_class(
-                stage_decl_spec.stage_cls
+                stage_decl_spec.stage_cls,
             )
             policy_id = (
                 stage_decl_spec.policy_id
@@ -108,17 +108,19 @@ class PipelineSpecCompiler:
     # Public API
     # --------------------------
     def build_pipeline(
-        self, pipeline_decl: "DeclarativePipeline"
-    ) -> List[StageSpec]:
-        """
+        self,
+        pipeline_decl: "DeclarativePipeline",
+    ) -> list[StageSpec]:
+        """Pipeline builder.
+
         Build a runtime pipeline:
         - First build policies
-        - Then build stages and bind policies
+        - Then build stages and bind policies.
         """
         runtime_policies = self.build_policy_specs(
-            pipeline_decl.policy_decl_specs
+            pipeline_decl.policy_decl_specs,
         )
         runtime_stages = self.build_stage_specs(
             pipeline_decl.stage_decl_specs, runtime_policies
         )
-        return runtime_stages
+        return runtime_stages, runtime_policies

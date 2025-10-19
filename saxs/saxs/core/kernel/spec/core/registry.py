@@ -1,60 +1,165 @@
-from dataclasses import dataclass, field
-from typing import Dict, Optional, Type, Union
+"""
+Registry module.
 
-from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractRequestingStage,
-    AbstractStage,
-)
+This module provides a generic and type-safe registry system for
+mapping string identifiers to class objects in the SAXS processing
+pipeline. It allows registering and retrieving classes in a
+bijective manner, meaning each string identifier uniquely maps to
+a single class and vice versa.
+
+Classes
+-------
+ClassRegistry
+    A generic registry for bijective mapping between string names
+    and class objects.
+StageRegistry
+    Specialized registry for AbstractStage subclasses.
+PolicyRegistry
+    Specialized registry for ChainingPolicy subclasses.
+
+Functions
+---------
+Optional listing of module-level functions.
+
+Examples
+--------
+>>> from saxs.saxs.core.stage.registry import StageRegistry,
+PolicyRegistry
+>>> stage_registry = StageRegistry()
+>>> stage_registry.register("MyStage", MyStage)
+>>> stage_registry.get_class("MyStage")
+<class 'MyStage'>
+
+Notes
+-----
+- This module uses Python generics (TypeVar, Generic) to ensure
+type safety.
+- Designed to integrate with YAML-based deserialization workflows.
+"""
+
+from typing import Generic, TypeVar
+
+from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
+# Generic type variable for classes that can be registered.
+T = TypeVar("T")
 
-@dataclass
-class ClassRegistry:
+
+class ClassRegistry(Generic[T]):
+    """ClassRegistry.
+
+    A bijective registry mapping string identifiers to class
+    objects.
+
+    This registry allows registering classes (such as
+    `AbstractStage` or `ChainingPolicy` subclasses) under unique
+    string names and retrieving them in both directions
+    (name → class or class → name).
+
+    Examples
+    --------
+        >>> registry = ClassRegistry()
+        >>> registry.register("MyStage", MyStage)
+        >>> registry.get_class("MyStage")
+        <class 'MyStage'>
+        >>> registry.get_name(MyStage)
+        'MyStage'
+
+    Attributes
+    ----------
+        _name_to_class (Dict[str, Type[T]]): Maps string names to
+        class objects.
+        _class_to_name (Dict[Type[T], str]): Maps class objects to
+        their string names.
     """
-    Generic bijective registry for stages or policies.
-    Maps string identifiers <-> class objects.
-    """
 
-    _name_to_class: Dict[str, Type] = field(default_factory=dict)
-    _class_to_name: Dict[Type, str] = field(default_factory=dict)
+    def __init__(self) -> None:
+        self._name_to_class: dict[str, type[T]] = {}
+        self._class_to_name: dict[type[T], str] = {}
 
-    def __init__(self, initial_mapping: Optional[Dict[str, Type]] = None):
-        self._name_to_class = {}
-        self._class_to_name = {}
-        if initial_mapping:
-            for name, cls in initial_mapping.items():
-                self.register(name, cls)
+    def register(self, name: str, cls_: type[T]) -> None:
+        """
+        Register a class under a unique string identifier.
 
-    def register(self, name: str, cls: Type):
-        """Register a class with a unique string identifier."""
+        Parameters
+        ----------
+            name: The unique string identifier for the class.
+            cls: The class object to register.
+
+        Raises
+        ------
+            ValueError: If the name or class is already
+            registered.
+        """
         if name in self._name_to_class:
-            raise ValueError(f"Name '{name}' is already registered.")
-        if cls in self._class_to_name:
-            raise ValueError(f"Class '{cls.__name__}' is already registered.")
+            msg = f"Name '{name}' is already registered."
+            raise ValueError(msg)
+        if cls_ in self._class_to_name:
+            msg = f"Class '{cls_.__name__}' is already registered."
+            raise ValueError(msg)
 
-        self._name_to_class[name] = cls
-        self._class_to_name[cls] = name
+        self._name_to_class[name] = cls_
+        self._class_to_name[cls_] = name
 
-    def get_class(self, name: str) -> Optional[Type]:
-        """Return the class for a given string identifier."""
+    def get_class(self, name: str) -> type[T] | None:
+        """
+        Retrieve the class object associated with a given name.
+
+        Parameters
+        ----------
+            name: The string identifier of the class.
+
+        Returns
+        -------
+            The class object if found, otherwise None.
+        """
         return self._name_to_class.get(name)
 
-    def get_name(self, cls: Type) -> Optional[str]:
-        """Return the string identifier for a given class."""
+    def get_name(self, cls: type[T]) -> str | None:
+        """Get name func.
+
+        Retrieve the registered name associated with a given class
+        object.
+
+        Parameters
+        ----------
+            cls: The class object to look up.
+
+        Returns
+        -------
+            The registered string name if found, otherwise None.
+        """
         return self._class_to_name.get(cls)
 
-    def from_yaml(self, name: str) -> Type:
-        """Return the class for a YAML string. Raises KeyError if not found."""
+    def from_yaml(self, name: str) -> type[T]:
+        """
+        Retrieve a class object by its name, raising if not found.
+
+        This method is intended for deserialization workflows
+        (e.g., when constructing objects from YAML configuration).
+
+        Parameters
+        ----------
+            name: The string identifier to look up.
+
+        Returns
+        -------
+            The class object corresponding to the given name.
+
+        Raises
+        ------
+            KeyError: If the name is not registered.
+        """
         cls = self.get_class(name)
         if cls is None:
-            raise KeyError(f"Name '{name}' not registered in ClassRegistry.")
+            msg = f"Name '{name}' not registered in ClassRegistry."
+            raise KeyError(msg)
         return cls
 
 
 # ------------------------
 # Aliases for clarity
 # ------------------------
-StageRegistry = (
-    ClassRegistry  # expects AbstractStage / AbstractRequestingStage subclasses
-)
-PolicyRegistry = ClassRegistry  # expects ChainingPolicy subclasses
+StageRegistry = ClassRegistry[AbstractStage]
+PolicyRegistry = ClassRegistry[ChainingPolicy]

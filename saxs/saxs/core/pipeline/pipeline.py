@@ -26,9 +26,9 @@ class Pipeline:
 
     def __init__(
         self,
-        init_stages: Optional[List[AbstractStage]] = None,
-        scheduler: Optional[Type[AbstractScheduler]] = None,
-        scheduler_policy: Optional[Type[InsertionPolicy]] = None,
+        init_stages: list[AbstractStage],
+        scheduler: type[AbstractScheduler],
+        scheduler_policy: type[InsertionPolicy],
     ):
         self.policy = scheduler_policy or SaturationInsertPolicy()
         self.init_stages = init_stages or []
@@ -37,9 +37,9 @@ class Pipeline:
     @classmethod
     def with_stages(
         cls,
-        *stages: AbstractStage,
-        scheduler: Optional[Type[AbstractScheduler]] = None,
-        scheduler_policy: Optional[Type[InsertionPolicy]] = None,
+        stages: list[AbstractStage],
+        scheduler: type[AbstractScheduler],
+        scheduler_policy: type[InsertionPolicy],
     ) -> "Pipeline":
         """Creation of pipeline with given stages."""
         return cls(
