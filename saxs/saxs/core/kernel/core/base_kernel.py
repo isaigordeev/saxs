@@ -21,13 +21,13 @@ BaseKernel
 from typing import TYPE_CHECKING
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.kernel.core.abstract_kernel import (
     AbstractKernel,
 )
 from saxs.saxs.core.kernel.core.back.kernel_compiler import BaseCompiler
 from saxs.saxs.core.pipeline.pipeline import Pipeline
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.types.sample import SAXSSample
 
 if TYPE_CHECKING:
     from saxs.saxs.core.kernel.core.back.buffer import Buffer
