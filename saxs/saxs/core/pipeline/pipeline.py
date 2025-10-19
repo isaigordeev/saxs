@@ -20,8 +20,8 @@ class Pipeline:
     """
     Manages dynamic execution of stages.
 
-    Stages can request additional stages, and the Scheduler decides the
-    insertion policy.
+    Stages can request additional stages, and the Scheduler
+    decides the insertion policy.
     """
 
     def __init__(

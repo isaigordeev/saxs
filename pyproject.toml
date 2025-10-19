@@ -37,6 +37,7 @@ extend-select = [
     "N",
     "W",
     "C",
+    "UP",    # pyupgrade
     "N",     # PEP8 Naming
     "D",     # pydocstyle
     "YTT",   # flake8-2020
@@ -101,7 +102,7 @@ convention = "numpy"
 
 [tool.ruff.lint.pycodestyle]
 # Override the max doc line length rule (W505)
-max-doc-length = 60
+max-doc-length = 66
 
 [dependency-groups]
 dev = [

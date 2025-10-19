@@ -11,7 +11,7 @@ class StagePipelineBuilder:
     Orchestrates building and linking of stages from StageSpec list.
     Maintains SOLID separation:
       - StageBuilder: creates stage instances
-      - StageLinker: attaches policies and resolves next stages
+      - StageLinker: attaches policies and resolves next stages.
     """
 
     def __init__(self, stage_specs: List[StageSpec]):

@@ -22,7 +22,7 @@ class StageLinker:
         stage_instances: Buffer[AbstractStage],
         policy_instances: Buffer[ChainingPolicy],
     ) -> Buffer[AbstractStage]:
-        for _, _stage_spec in stage_specs.items():
+        for _, _stage_spec in stage_specs.values():
             if not issubclass(_stage_spec.stage_cls, AbstractRequestingStage):
                 continue
 

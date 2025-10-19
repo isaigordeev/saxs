@@ -1,13 +1,13 @@
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.kernel.forward.core.base_kernel import (
+    BaseKernel,
+)
 from saxs.saxs.core.pipeline.condition.chaining_condition import (
     ChainingPeakCondition,
 )
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
-)
-from saxs.saxs.core.kernel.forward.core.base_kernel import (
-    BaseKernel,
 )
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
 from saxs.saxs.processing.stage.filter.cut_stage import CutStage

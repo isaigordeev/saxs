@@ -1,4 +1,19 @@
-from typing import Dict, Generic, Optional, TypeVar, Union
+"""Generic typed registry buffers for SAXS pipeline.
+
+This module defines a reusable, type-safe registry class
+ (`Buffer`) that can store and manage SAXS pipeline specifications
+such as `StageSpec` and `PolicySpec`.
+
+Classes:
+    Buffer: Generic registry for storing items keyed by unique
+    string IDs.
+    StageRegistryBuffer: Registry specialized for `StageSpec`
+    objects.
+    PolicyRegistryBuffer: Registry specialized for `PolicySpec`
+    objects.
+"""
+
+from typing import Dict, Generic, ItemsView, Optional, TypeVar, ValuesView
 
 from saxs.saxs.core.kernel.spec.back.runtime_spec import PolicySpec, StageSpec
 
@@ -15,45 +30,63 @@ class Buffer(Generic[T]):
     def __init__(self):
         self._registry: Dict[str, T] = {}
 
-    def register(self, id: str, item: T, overwrite: bool = False):
+    def register(self, id_: str, item: T, *, overwrite: bool = False) -> None:
         """
         Register an item under a given ID.
 
-        Raises an error if the ID already exists and overwrite is False.
+        Raises an error if the ID already exists and overwrite
+        is False.
         """
         if id in self._registry and not overwrite:
             msg = f"ID '{id}' is already registered."
             raise KeyError(msg)
-        self._registry[id] = item
+        self._registry[id_] = item
 
     def get(self, id_: str) -> Optional[T]:
         """Retrieve the item by ID. Returns None if not found."""
         return self._registry.get(id_)
 
-    def contains(self, id: str) -> bool:
+    def contains(self, id_: str) -> bool:
         """Check if an ID is already registered."""
-        return id in self._registry
+        return id_ in self._registry
 
     def all_ids(self) -> list[str]:
         """Return a list of all registered IDs."""
         return list(self._registry.keys())
 
-    def items(self):
-        """Return iterable of (id, item) pairs."""
+    def items(self) -> ItemsView[str, T]:
+        """Return iterable of (ID, item) pairs.
+
+        Returns
+        -------
+            A view of (ID, item) pairs stored in the registry.
+        """
         return self._registry.items()
 
+    def values(self) -> ValuesView[T]:
+        """Return iterable of registered items.
+
+        Returns
+        -------
+            A view of all registered objects.
+        """
+        return self._registry.values()
+
     def __str__(self) -> str:
-        """Pretty string showing all items with their attributes."""
+        """Return a human-readable summary of the registry."""
         lines = [
-            f"{self.__class__.__name__} of {T.__name__} with {len(self._registry)} items:"
+            f"{self.__class__.__name__} of {T.__name__} with"
+            "{len(self._registry)} items:",
         ]
         for id_, item in self._registry.items():
             lines.append(
-                f"  {id_}: {item.__class__.__name__}, attributes: {item.__dict__}"
+                f"  {id_}: {item.__class__.__name__},"
+                "attributes: {item.__dict__}",
             )
         return "\n".join(lines)
 
     def __repr__(self) -> str:
+        """Return a developer-friendly string representation."""
         return f"{self.__class__.__name__}({list(self._registry.keys())})"
 
 
