@@ -11,7 +11,6 @@ import numpy as np
 from saxs.saxs.core.data.abstract_data import BaseDataType
 
 
-# --- Individual type wrappers ---
 @dataclass(frozen=True)
 class QValues(BaseDataType):
     values: np.ndarray  # required

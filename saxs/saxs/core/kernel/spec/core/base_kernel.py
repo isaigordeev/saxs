@@ -48,9 +48,9 @@ class BaseKernel(AbstractKernelSpec):
         logger.info(f"Total stages built: {len(stages)}")
         return stages
 
-    def build_pipeline(self):
+    def build(self):
         """Build entry stages and submit them to scheduler."""
-        stage_defs = self.define_pipeline()
+        stage_defs = self.define()
         initial_stages = self.build_initial_stages(stage_defs, self.registry)
 
         self.pipeline = Pipeline.with_stages(
@@ -64,7 +64,7 @@ class BaseKernel(AbstractKernelSpec):
         return self.pipeline.run(init_sample)
 
     @abstractmethod
-    def define_pipeline(
+    def define(
         self,
     ) -> List[
         Union[

@@ -1,36 +1,45 @@
-from abc import ABC, abstractmethod
-from typing import Any, List, Tuple, Type, Union
+"""Abstract base class for SAXS kernels.
 
-from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
-from saxs.saxs.core.pipeline.pipeline import Pipeline
-from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
-from saxs.saxs.core.stage.request.abst_request import StageRequest
+This module defines the `AbstractKernel` class, which provides
+an abstract interface for SAXS (Small-Angle X-ray Scattering)
+kernel implementations.
+
+Classes derived from `AbstractKernel` are responsible for:
+- Creating a `SAXSSample` instance.
+- Defining the pipeline stages and policies.
+- Building and submitting the pipeline to a scheduler.
+"""
+
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, List
+
+from saxs.saxs.core.kernel.spec.back.buffer import Buffer
+
+if TYPE_CHECKING:
+    from saxs.saxs.core.data.sample import SAXSSample
 
 
 class AbstractKernel(ABC):
-    @abstractmethod
-    def create_sample(self, *args, **kwargs) -> "SAXSSample":
-        """Factory for building a sample."""
-        pass
+    """Abstract kernel class.
+
+    Defines the core interface that all SAXS kernel
+    implementations must follow.
+    """
 
     @abstractmethod
-    def define_pipeline(
+    def create_sample(self) -> "SAXSSample":
+        """Build sample."""
+
+    @abstractmethod
+    def define(
         self,
-    ) -> List[Any]:
-        """Define which stages and policies form the entrypoint pipeline."""
-        pass
+    ) -> Buffer[StageSpec]:
+        """Define pipeline.
 
-    def build_pipeline(self):
+        Define which stages and policies form
+        the entrypoint pipeline.
+        """
+
+    @abstractmethod
+    def build(self) -> None:
         """Build entry stages and submit them to scheduler."""
-        raise NotImplementedError()
-
-    def run(self, init_sample: "SAXSSample"):
-        """Run the scheduler until pipeline is complete."""
-        raise NotImplementedError()
-
-    @staticmethod
-    def build_initial_stage(*args, **kwargs):
-        raise NotImplementedError()

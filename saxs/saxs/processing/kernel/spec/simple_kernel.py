@@ -29,7 +29,7 @@ class SimpleKernel(BaseKernel):
     def create_sample(self, data: dict) -> SAXSSample:
         return SAXSSample(data=data)
 
-    def define_pipeline(self) -> List[StageSpec]:
+    def define(self) -> List[StageSpec]:
         """
         Define pipeline declaratively using StageSpec and PolicySpec.
         Policies reference stages by ID (no class instances here yet).
@@ -79,7 +79,7 @@ class SimpleKernel(BaseKernel):
         policy_buffer = PolicyRegistryBuffer()
 
         # Register policies
-        for stage in self.define_pipeline():
+        for stage in self.define():
             if stage.policy:
                 policy_buffer.register(stage.policy.id, stage.policy)
             stage_buffer.register(stage.id, stage)
