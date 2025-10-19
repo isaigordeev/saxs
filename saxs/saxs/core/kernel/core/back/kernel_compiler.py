@@ -26,7 +26,7 @@ YamlCompiler
 
 Examples
 --------
->>> from saxs.saxs.core.kernel.spec.core.compiler import
+>>> from saxs.saxs.core.kernel.core.core.compiler import
 YamlCompiler
 >>> compiler = YamlCompiler()
 >>> stages, policies = compiler.compile()
@@ -49,26 +49,26 @@ definitions.
 
 from typing import TYPE_CHECKING
 
-from saxs.saxs.core.kernel.spec.back.buffer import Buffer
-from saxs.saxs.core.kernel.spec.back.pipeline_spec_compiler import (
+from saxs.saxs.core.kernel.core.back.buffer import Buffer
+from saxs.saxs.core.kernel.core.back.pipeline_spec_compiler import (
     SpecCompiler,
 )
-from saxs.saxs.core.kernel.spec.back.policy_builder import PolicyBuilder
-from saxs.saxs.core.kernel.spec.back.policy_linker import PolicyLinker
-from saxs.saxs.core.kernel.spec.back.stage_builder import StageBuilder
-from saxs.saxs.core.kernel.spec.back.stage_linker import StageLinker
-from saxs.saxs.core.kernel.spec.front.declarative_specs import (
+from saxs.saxs.core.kernel.core.back.policy_builder import PolicyBuilder
+from saxs.saxs.core.kernel.core.back.policy_linker import PolicyLinker
+from saxs.saxs.core.kernel.core.back.stage_builder import StageBuilder
+from saxs.saxs.core.kernel.core.back.stage_linker import StageLinker
+from saxs.saxs.core.kernel.core.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
-from saxs.saxs.core.kernel.spec.front.parser import DeclarativePipeline
+from saxs.saxs.core.kernel.core.front.parser import DeclarativePipeline
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
     ChainingPolicy,
 )
 
 if TYPE_CHECKING:
-    from saxs.saxs.core.kernel.spec.back.runtime_spec import (
+    from saxs.saxs.core.kernel.core.back.runtime_spec import (
         PolicySpec,
         StageSpec,
     )

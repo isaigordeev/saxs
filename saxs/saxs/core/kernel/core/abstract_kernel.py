@@ -13,8 +13,8 @@ Classes derived from `AbstractKernel` are responsible for:
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from saxs.saxs.core.kernel.spec.back.buffer import Buffer
-from saxs.saxs.core.kernel.spec.front.declarative_specs import (
+from saxs.saxs.core.kernel.core.back.buffer import Buffer
+from saxs.saxs.core.kernel.core.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )

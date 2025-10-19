@@ -3,13 +3,10 @@
 #
 
 import numpy as np
-from scipy.optimize import curve_fit
-
 from saxs.logging.logger import logger
 from saxs.saxs.core.data.sample import SAXSSample
 from saxs.saxs.core.data.scheduler_objects import AbstractSchedulerMetadata
 from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
-from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
 from saxs.saxs.core.pipeline.condition.constant_true_condition import (
     TrueCondition,
 )
@@ -22,6 +19,7 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.processing.functions import gauss, parabole
+from scipy.optimize import curve_fit
 
 
 class AProcessPeakStage(AbstractRequestingStage):
@@ -52,10 +50,14 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         current_q_state = sample_data.get_q_values_array()
         current_intensity_state = sample_data.get_intensity_array()
-        current_intensity_errors_state = sample_data.get_intensity_error_array()
+        current_intensity_errors_state = (
+            sample_data.get_intensity_error_array()
+        )
 
         def current_peak_parabole(x, sigma, ampl):
-            return parabole(x, current_q_state[current_peak_index], sigma, ampl)
+            return parabole(
+                x, current_q_state[current_peak_index], sigma, ampl
+            )
 
         def current_peak_gauss(x, sigma, ampl):
             return gauss(x, current_q_state[current_peak_index], sigma, ampl)
@@ -95,10 +97,10 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         logger.info(
             "\n--- First Fit Results ---\n"
-            f"Sigma (σ):   {popt[0]:.5f}\n"
+            f"Sigma (σ):   {popt[0]:.5f}\n"  # noqa: RUF001
             f"Amplitude:   {popt[1]:.5f}\n"
             f"Gauss range: {gauss_range}\n"
-            "--------------------------"
+            "--------------------------",
         )
 
         logger.info(f"gauss_range {popt[0]} {gauss_range}")
@@ -142,7 +144,7 @@ class ProcessFitPeakStage(AProcessPeakStage):
         logger.info(
             "\n+++ ProcessFitPeakStage Completed +++\n"
             f"Subtracted Gaussian approx (σ={popt[0]:.5f}, A={popt[1]:.5f})\n"
-            "+++++++++++++++++++++++++++++++++++++"
+            "+++++++++++++++++++++++++++++++++++++",
         )
 
         return (
