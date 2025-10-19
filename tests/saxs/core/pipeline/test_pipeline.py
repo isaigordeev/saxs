@@ -11,7 +11,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.condition.chaining_condition import (
     ChainingPeakCondition,
 )
@@ -35,8 +35,8 @@ from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
 @pytest.fixture
 def saxs_sample():
     """Minimal SAXSSample for testing."""
-    from saxs.saxs.core.data.sample import SAXSSample
-    from saxs.saxs.core.data.sample_objects import (
+    from saxs.saxs.core.types.sample import SAXSSample
+    from saxs.saxs.core.types.sample_objects import (
         AbstractSampleMetadata,
         Intensity,
         IntensityError,
@@ -90,8 +90,8 @@ def multi_mock_stages():
 
 @pytest.fixture
 def init_sample():
-    from saxs.saxs.core.data.sample import SAXSSample
-    from saxs.saxs.core.data.sample_objects import (
+    from saxs.saxs.core.types.sample import SAXSSample
+    from saxs.saxs.core.types.sample_objects import (
         AbstractSampleMetadata,
         Intensity,
         IntensityError,
@@ -279,7 +279,9 @@ class TestPipeline:
         assert isinstance(pipeline.scheduler, BaseScheduler)
         assert list(pipeline.scheduler._queue) == [mock_stage]
 
-    def test_pipeline_with_stages_class_method_multiple_calls(self, mock_stage):
+    def test_pipeline_with_stages_class_method_multiple_calls(
+        self, mock_stage
+    ):
         stage2 = Mock()
         pipeline1 = Pipeline.with_stages(mock_stage)
         pipeline2 = Pipeline.with_stages(mock_stage, stage2)

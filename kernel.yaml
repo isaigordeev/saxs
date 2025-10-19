@@ -33,7 +33,7 @@ stages:
     stage_cls: ProcessFitPeakStage
     policy_id: fit_policy
 
-pipeline:
+execution_order:
   - cut
   - filter
   - background

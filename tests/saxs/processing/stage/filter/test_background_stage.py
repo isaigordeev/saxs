@@ -11,8 +11,8 @@ from unittest.mock import Mock, patch
 import numpy as np
 import pytest
 
-from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.data.sample_objects import (
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
     IntensityError,
@@ -51,7 +51,9 @@ class TestBackgroundStage:
         stage = BackgroundStage()
 
         assert hasattr(stage, "metadata")
-        assert stage.metadata.values["_background_func"] == background_hyberbole
+        assert (
+            stage.metadata.values["_background_func"] == background_hyberbole
+        )
         assert "_background_coef" in stage.metadata.unwrap()
 
     def test_background_stage_creation_with_custom_function(self):

@@ -13,14 +13,16 @@ import numpy as np
 import pytest
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.data.sample_objects import (
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
     IntensityError,
     QValues,
 )
-from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
+from saxs.saxs.core.pipeline.condition.abstract_condition import (
+    SampleCondition,
+)
 from saxs.saxs.core.pipeline.condition.chaining_condition import (
     ChainingPeakCondition,
 )
@@ -118,7 +120,10 @@ class TestFindAllPeaksStage:
     ):
         """Test FindAllPeaksStage process method with basic functionality."""
         # Mock find_peaks to return known peaks
-        mock_find_peaks.return_value = (np.array([4]), {"peak_heights": [30.0]})
+        mock_find_peaks.return_value = (
+            np.array([4]),
+            {"peak_heights": [30.0]},
+        )
 
         result = find_peaks_stage.process(sample_data)
 
@@ -177,7 +182,10 @@ class TestFindAllPeaksStage:
         self, mock_find_peaks, sample_data, find_peaks_stage
     ):
         """Test that FindAllPeaksStage preserves other sample data."""
-        mock_find_peaks.return_value = (np.array([4]), {"peak_heights": [30.0]})
+        mock_find_peaks.return_value = (
+            np.array([4]),
+            {"peak_heights": [30.0]},
+        )
 
         result = find_peaks_stage.process(sample_data)
 
@@ -212,7 +220,10 @@ class TestFindAllPeaksStage:
     ):
         """Test FindAllPeaksStage with different peak configurations."""
         # Test with single peak
-        mock_find_peaks.return_value = (np.array([4]), {"peak_heights": [30.0]})
+        mock_find_peaks.return_value = (
+            np.array([4]),
+            {"peak_heights": [30.0]},
+        )
         result1 = find_peaks_stage.process(sample_data)
         assert len(result1.get_metadata_dict()["peaks"]) == 1
 
@@ -234,7 +245,9 @@ class TestFindAllPeaksStage:
         with pytest.raises(ValueError, match="Peak detection failed"):
             find_peaks_stage.process(sample_data)
 
-    def test_find_peaks_stage_process_with_minimal_data(self, find_peaks_stage):
+    def test_find_peaks_stage_process_with_minimal_data(
+        self, find_peaks_stage
+    ):
         """Test FindAllPeaksStage with minimal sample data."""
         q_values = np.array([0.1, 0.2])
         intensity = np.array([10.0, 8.0])

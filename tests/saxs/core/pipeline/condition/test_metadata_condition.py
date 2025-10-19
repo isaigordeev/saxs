@@ -8,7 +8,7 @@ Tests for metadata_condition.py module.
 
 import pytest
 
-from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.pipeline.condition.metadata_condition import (
     MetadataCondition,
 )
@@ -76,7 +76,9 @@ class TestMetadataCondition:
 
     def test_metadata_condition_evaluate_with_none_values(self):
         """Test evaluate method with None values."""
-        condition = MetadataCondition(key="optional_field", expected_value=None)
+        condition = MetadataCondition(
+            key="optional_field", expected_value=None
+        )
 
         # Test with None value
         sample_none = AbstractSampleMetadata({"optional_field": None})
@@ -176,7 +178,9 @@ class TestMetadataCondition:
         condition_pressure = MetadataCondition(
             key="pressure", expected_value=1.0
         )
-        condition_type = MetadataCondition(key="type", expected_value="protein")
+        condition_type = MetadataCondition(
+            key="type", expected_value="protein"
+        )
 
         # Test with sample that matches all conditions
         sample_all_match = AbstractSampleMetadata(
@@ -197,4 +201,3 @@ class TestMetadataCondition:
         assert condition_temp.evaluate(sample_partial_match) is True
         assert condition_pressure.evaluate(sample_partial_match) is False
         assert condition_type.evaluate(sample_partial_match) is True
-

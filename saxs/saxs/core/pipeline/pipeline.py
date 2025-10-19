@@ -13,7 +13,7 @@ Pipeline
     Manages execution of a sequence of stages using a scheduler.
 """
 
-from saxs.saxs.core.data.sample import SAXSSample
+from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,
 )

@@ -10,8 +10,8 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from saxs.saxs.core.data.abstract_data import AData, BaseDataType
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.abstract_data import AData, BaseDataType
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
 class TestAbstractStageMetadata:

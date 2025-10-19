@@ -8,7 +8,7 @@ Tests for threshold_condition.py module.
 
 import pytest
 
-from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.pipeline.condition.threshold_condition import (
     ThresholdCondition,
 )
@@ -201,4 +201,3 @@ class TestThresholdCondition:
         assert condition_intensity.evaluate(sample_partial_pass) is False
         assert condition_temperature.evaluate(sample_partial_pass) is True
         assert condition_pressure.evaluate(sample_partial_pass) is False
-

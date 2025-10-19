@@ -4,14 +4,13 @@
 
 
 from dataclasses import dataclass, field
-from typing import Any, Dict
 
 from saxs.saxs.core.types.abstract_data import BaseDataType
 
 
 @dataclass(frozen=True)
 class AbstractSchedulerMetadata(BaseDataType):
-    values: Dict[str, Any] = field(default_factory=dict)
+    values: dict[str, any] = field(default_factory=dict)
 
     def describe(self) -> str:
         return (

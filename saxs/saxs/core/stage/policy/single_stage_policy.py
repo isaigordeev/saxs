@@ -1,7 +1,7 @@
 from typing import List, Type
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,

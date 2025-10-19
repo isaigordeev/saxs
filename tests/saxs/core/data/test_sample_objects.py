@@ -12,8 +12,8 @@ from dataclasses import FrozenInstanceError
 import numpy as np
 import pytest
 
-from saxs.saxs.core.data.abstract_data import BaseDataType
-from saxs.saxs.core.data.sample_objects import (
+from saxs.saxs.core.types.abstract_data import BaseDataType
+from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
     IntensityError,

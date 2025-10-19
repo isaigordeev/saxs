@@ -22,8 +22,8 @@ from collections import deque
 from typing import TYPE_CHECKING
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.data.scheduler_objects import AbstractSchedulerMetadata
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,

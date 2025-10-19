@@ -11,9 +11,11 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from saxs.saxs.core.data.sample_objects import AbstractSampleMetadata
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
-from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
+from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.pipeline.condition.abstract_condition import (
+    SampleCondition,
+)
 from saxs.saxs.core.stage.abstract_cond_stage import AbstractConditionalStage
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
@@ -21,8 +23,8 @@ from saxs.saxs.core.stage.abstract_stage import AbstractStage
 @pytest.fixture
 def saxs_sample():
     """Minimal SAXSSample for testing."""
-    from saxs.saxs.core.data.sample import SAXSSample
-    from saxs.saxs.core.data.sample_objects import (
+    from saxs.saxs.core.types.sample import SAXSSample
+    from saxs.saxs.core.types.sample_objects import (
         Intensity,
         IntensityError,
         QValues,

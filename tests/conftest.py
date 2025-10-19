@@ -11,14 +11,14 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
-from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.data.sample_objects import (
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
     IntensityError,
     QValues,
 )
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
@@ -93,7 +93,9 @@ def saxs_sample_minimal(q_values, intensity):
 @pytest.fixture
 def stage_metadata():
     """Create AbstractStageMetadata for testing."""
-    return AbstractStageMetadata({"stage_name": "test_stage", "version": "1.0"})
+    return AbstractStageMetadata(
+        {"stage_name": "test_stage", "version": "1.0"}
+    )
 
 
 @pytest.fixture

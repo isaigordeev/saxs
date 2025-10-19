@@ -3,20 +3,16 @@
 #
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Dict, Optional, Tuple
+from typing import Optional
 
-from saxs.saxs.core.data.sample import SAXSSample
-from saxs.saxs.core.data.stage_objects import AbstractStageMetadata
-from saxs.saxs.core.pipeline.condition.abstract_condition import (
-    SampleCondition,
-)
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
 class AbstractStage(ABC):
     metadata: "AbstractStageMetadata"
 
-    def __init__(self, metadata: Optional[AbstractStageMetadata] = None):
+    def __init__(self, metadata: AbstractStageMetadata | None = None):
         self.metadata = metadata if metadata else AbstractStageMetadata()
 
     def process(self, sample_data: SAXSSample):
@@ -34,13 +30,13 @@ class AbstractStage(ABC):
     @abstractmethod
     def _process(
         self, sample_data: SAXSSample
-    ) -> Tuple["SAXSSample", Optional[Dict]]:
+    ) -> tuple["SAXSSample", Optional[dict]]:
         """Override in subclass. Return (updated_sample,
         optional_metadata_dict)."""
         raise NotImplementedError
 
     def handle_metadata(
-        self, sample: "SAXSSample", metadata: Optional[Dict]
+        self, sample: "SAXSSample", metadata: Optional[dict]
     ) -> "SAXSSample":
         """
         Default metadata handler: updates both sample and stage metadata.
