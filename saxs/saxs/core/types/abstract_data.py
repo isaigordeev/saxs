@@ -4,7 +4,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -17,8 +17,8 @@ class AData(ABC):
 # --- Base wrapper for array-like data ---
 @dataclass(frozen=True)
 class BaseDataType:
-    values: Optional[Any] = None
+    values: Any | None = None
 
-    def unwrap(self) -> Optional[Any]:
+    def unwrap(self) -> Any | None:
         """Return the underlying NumPy array (or None if missing)."""
         return self.values

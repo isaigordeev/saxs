@@ -21,8 +21,8 @@ class ApplicationManager(Application):
         self.custom_output_directory = custom_output_directory
 
         self.peak_classification = (
-            True if self.peak_kernel is not None else False
+            self.peak_kernel is not None
         )
         self.phase_classification = (
-            True if self.phase_kernel is not None else False
+            self.phase_kernel is not None
         )

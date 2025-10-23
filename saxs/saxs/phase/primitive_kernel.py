@@ -14,8 +14,8 @@ class PrimitivePhaseKernel(AbstractPhaseKernel):
         self.default_preprocessing_q()
         return self.first_peaks_comparison()
 
-    def first_peaks_comparison(self):
+    def first_peaks_comparison(self) -> None:
         for i in range(self.phases_number):
             self.distances[i] = calculate_first_peaks(
-                self.phases_coefficients[i], self.preprocessed_q
+                self.phases_coefficients[i], self.preprocessed_q,
             )

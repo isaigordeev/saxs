@@ -6,7 +6,6 @@
 from dataclasses import dataclass
 
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
-from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
@@ -17,7 +16,6 @@ class AbstractStageApprovalRequest:
     The position (next/end) is determined by the Scheduler/Pipeline.
     """
 
-    pass
 
 
 @dataclass(frozen=True)

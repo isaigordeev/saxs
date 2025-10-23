@@ -2,24 +2,30 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 from saxs.logging.logger import logger
-from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.condition.constant_true_condition import (
     TrueCondition,
 )
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractRequestingStage,
 )
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.processing.functions import gauss, parabole
 from scipy.optimize import curve_fit
+
+if TYPE_CHECKING:
+    from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
+        ChainingPolicy,
+    )
 
 
 class AProcessPeakStage(AbstractRequestingStage):
@@ -56,7 +62,7 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         def current_peak_parabole(x, sigma, ampl):
             return parabole(
-                x, current_q_state[current_peak_index], sigma, ampl
+                x, current_q_state[current_peak_index], sigma, ampl,
             )
 
         def current_peak_gauss(x, sigma, ampl):
@@ -72,13 +78,11 @@ class ProcessFitPeakStage(AProcessPeakStage):
             f"Fit range:  [{left_range}, {right_range}]\n"
             f"delta_q:    {delta_q}\n"
             f"max_I:      {max_intensity}\n"
-            "========================================="
+            "=========================================",
         )
 
         left_range = (
-            current_peak_index - self.fit_range
-            if current_peak_index - self.fit_range >= 0
-            else 0
+            max(current_peak_index - self.fit_range, 0)
         )
 
         right_range = current_peak_index + self.fit_range
@@ -106,14 +110,12 @@ class ProcessFitPeakStage(AProcessPeakStage):
         logger.info(f"gauss_range {popt[0]} {gauss_range}")
 
         left_range = (
-            current_peak_index - gauss_range
-            if current_peak_index - gauss_range >= 0
-            else 0
+            max(current_peak_index - gauss_range, 0)
         )
 
         right_range = current_peak_index + gauss_range
 
-        popt, pcov = curve_fit(
+        popt, _pcov = curve_fit(
             f=current_peak_gauss,
             xdata=current_q_state[left_range:right_range],
             ydata=current_intensity_state[left_range:right_range],
@@ -126,11 +128,11 @@ class ProcessFitPeakStage(AProcessPeakStage):
             f"Refined range: [{left_range}, {right_range}]\n"
             f"Refined σ:     {popt[0]:.5f}\n"
             f"Refined ampl:  {popt[1]:.5f}\n"
-            "========================================="
+            "=========================================",
         )
 
         _current_gauss_approximation = current_peak_gauss(
-            current_q_state, popt[0], popt[1]
+            current_q_state, popt[0], popt[1],
         )
 
         new_intensity_state = (

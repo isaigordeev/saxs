@@ -12,5 +12,4 @@ kernel = SimpleKernel(scheduler=scheduler)
 
 q, i, di = data_reader.read_data()
 _sample = data_reader.create_sample(q, i, di)
-print(_sample)
 _ = kernel.run(_sample)

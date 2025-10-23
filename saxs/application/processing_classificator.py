@@ -16,8 +16,8 @@ class AbstractApplication(ABC):
     executing_path = os.getcwd()
 
     __slots__ = (
-        "current_session",
         "current_date_session",
+        "current_session",
         "current_time",
     )
 
@@ -28,7 +28,7 @@ class AbstractApplication(ABC):
             self.current_session = AbstractApplication.current_root_session
 
         current_date = str(self.current_session.today().date())
-        self.current_date_session = "{}/".format(current_date)
+        self.current_date_session = f"{current_date}/"
         self.current_time = self.current_session.strftime("%H:%M:%S")
 
 
@@ -40,8 +40,7 @@ class Application(AbstractApplication):
     _default_peak_data_path = None
 
     def __new__(cls, *args, **kwargs):
-        instance = super().__new__(cls)
-        return instance
+        return super().__new__(cls)
 
     def __init__(self, current_session=None, custom_output_directory=None):
         super().__init__(current_session)
@@ -51,31 +50,32 @@ class Application(AbstractApplication):
 
         Application._default_peak_data_path = os.path.join(
             self._current_results_dir_session,
-            "{}.json".format(self.current_time),
+            f"{self.current_time}.json",
         )
 
-    def set_output_directories(self):
+    def set_output_directories(self) -> None:
         if self.custom_output_directory is not None:
             Application._results_dir = os.path.join(
-                self.custom_output_directory, ANALYSE_DIR
+                self.custom_output_directory, ANALYSE_DIR,
             )
         else:
             Application._results_dir = os.path.join(
-                self.executing_path, ANALYSE_DIR
+                self.executing_path, ANALYSE_DIR,
             )
 
         if Application._results_dir is None:
-            raise NotADirectoryError("Root output directory error")
+            msg = "Root output directory error"
+            raise NotADirectoryError(msg)
 
         Application._result_plots_dir = os.path.join(
-            Application._results_dir, ANALYSE_DIR_SESSIONS
+            Application._results_dir, ANALYSE_DIR_SESSIONS,
         )
         # print(Application._result_plots_dir)
         Application._total_results_dir_ = os.path.join(
-            Application._results_dir, ANALYSE_DIR_SESSIONS_RESULTS
+            Application._results_dir, ANALYSE_DIR_SESSIONS_RESULTS,
         )
         Application._current_results_dir_session = os.path.join(
-            Application._total_results_dir_, super().current_date_session
+            Application._total_results_dir_, super().current_date_session,
         )
 
         if not os.path.exists(Application._results_dir):
@@ -90,7 +90,7 @@ class Application(AbstractApplication):
 
 @dataclass
 class ApplicationClassificator(
-    Application
+    Application,
 ):  # TODO another abstract class for classificator application
     # _data_directory = None
 

@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 
 import yaml
 
@@ -8,7 +7,6 @@ from saxs.saxs.core.kernel.core.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 
 @dataclass
@@ -24,7 +22,7 @@ class DeclarativePipeline:
 
     @classmethod
     def from_yaml(cls, yaml_str: str) -> "DeclarativePipeline":
-        with open(yaml_str, "r") as f:
+        with open(yaml_str) as f:
             data = yaml.safe_load(f)
 
         # Parse policies
@@ -40,7 +38,7 @@ class DeclarativePipeline:
             )
 
             policy_spec_buffer.register(
-                _policy_decl_spec["id"], _policy_decl_spec_obj
+                _policy_decl_spec["id"], _policy_decl_spec_obj,
             )
 
         # Parse stages without order will link later

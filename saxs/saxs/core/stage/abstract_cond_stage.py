@@ -4,7 +4,6 @@
 
 
 from abc import abstractmethod
-from typing import Optional
 
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
     SampleCondition,
@@ -19,7 +18,7 @@ from saxs.saxs.core.stage.request.abst_request import StageRequest
 
 class AbstractConditionalStage(AbstractStage):
     def __init__(
-        self, chaining_stage: AbstractStage, condition: SampleCondition
+        self, chaining_stage: AbstractStage, condition: SampleCondition,
     ):
         self.chaining_stage = chaining_stage
         self.condition = condition
@@ -29,7 +28,7 @@ class AbstractConditionalStage(AbstractStage):
             return []
         if self.condition.evaluate(self.metadata):
             state_to_inject = self.chaining_stage(
-                self.chaining_stage, self.condition
+                self.chaining_stage, self.condition,
             )
             return [StageApprovalRequest(state_to_inject, self.metadata)]
         return []

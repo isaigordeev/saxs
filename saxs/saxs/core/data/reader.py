@@ -9,9 +9,9 @@ import pandas as pd
 
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
-    QValues,
     Intensity,
     IntensityError,
+    QValues,
 )
 
 

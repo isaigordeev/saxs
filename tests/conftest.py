@@ -2,15 +2,16 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-"""
-Pytest configuration and shared fixtures for SAXS testing.
-"""
+"""Pytest configuration and shared fixtures for SAXS testing."""
 
 from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
-
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    StageApprovalRequest,
+)
+from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
@@ -19,10 +20,6 @@ from saxs.saxs.core.types.sample_objects import (
     QValues,
 )
 from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageApprovalRequest,
-)
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
 
 @pytest.fixture
@@ -94,7 +91,7 @@ def saxs_sample_minimal(q_values, intensity):
 def stage_metadata():
     """Create AbstractStageMetadata for testing."""
     return AbstractStageMetadata(
-        {"stage_name": "test_stage", "version": "1.0"}
+        {"stage_name": "test_stage", "version": "1.0"},
     )
 
 
@@ -105,7 +102,7 @@ def mock_stage():
     intensity = Intensity()
     q_values = QValues()
     stage._process.return_value = SAXSSample(
-        q_values=q_values, intensity=intensity
+        q_values=q_values, intensity=intensity,
     )  # fake sample if needed
     stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
     return stage
@@ -138,5 +135,5 @@ def complex_metadata():
             "exposure_time": 1.0,
             "frames": 100,
             "flux": 1e12,
-        }
+        },
     )

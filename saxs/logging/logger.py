@@ -7,7 +7,7 @@ class PrettyLogger(logging.Logger):
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name, level)
 
-    def info(self, msg, *args, **kwargs):
+    def info(self, msg, *args, **kwargs) -> None:
         # Automatically wrap messages with separators and newlines
         if "sample" in kwargs:
             sample = kwargs.pop("sample")
@@ -28,8 +28,7 @@ logging.basicConfig(
 
 def get_logger(name: str) -> logging.Logger:
     """Return a PrettyLogger named after the module."""
-    logger = logging.getLogger(name)
-    return logger
+    return logging.getLogger(name)
 
 
 logger = get_logger("application logger")

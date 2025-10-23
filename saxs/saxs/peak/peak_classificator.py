@@ -70,11 +70,11 @@ class DefaultPeakApplication(PeakApplication):
         self.cutting_noisy_by_default()
         self.simple_background()
 
-    def setting_state(self):
+    def setting_state(self) -> None:
         self.difference = self.I_cut_background_reduced
         self.difference_start = self.I_cut_background_reduced
 
-    def cutting_noisy_by_default(self):
+    def cutting_noisy_by_default(self) -> None:
         self.cut_point = np.argmax(self.raw > START)
         self.q_cut, self.I_cut = (
             self.q[self.cut_point :],
@@ -84,7 +84,7 @@ class DefaultPeakApplication(PeakApplication):
 
         self.max_I = np.max(self.I_cut)
 
-    def simple_background(self):
+    def simple_background(self) -> None:
         popt, pcov = curve_fit(
             f=background_hyberbole,
             xdata=self.q_cut,
@@ -98,17 +98,17 @@ class DefaultPeakApplication(PeakApplication):
         self.pcov_background = pcov
 
         self.background = background_hyberbole(
-            self.q_cut, self.popt_background[0], self.popt_background[1]
+            self.q_cut, self.popt_background[0], self.popt_background[1],
         )
         # self.I_background_filtered = self.I - BACKGROUND_COEF * self.saxs_model
         self.I_cut_background_reduced = (
             self.I_cut - BACKGROUND_COEF * self.background
         )
 
-    def filtering(self):
+    def filtering(self) -> None:
         if self.gauss:
             self.I_background_reduced = np.concatenate(
-                (np.zeros(self.cut_point), self.I_cut_background_reduced)
+                (np.zeros(self.cut_point), self.I_cut_background_reduced),
             )
 
             # y = self.I_cut_background_reduced
@@ -136,14 +136,11 @@ class DefaultPeakApplication(PeakApplication):
             plt.show()
 
             self.I_background_reduced = np.concatenate(
-                (np.zeros(self.cut_point), self.I_cut_background_reduced)
+                (np.zeros(self.cut_point), self.I_cut_background_reduced),
             )
             peaks, _ = find_peaks(
-                self.I_background_reduced, height=1, prominence=1
+                self.I_background_reduced, height=1, prominence=1,
             )
-            print(_["left_bases"])
-            print(_["right_bases"])
-            print(peaks)
             plt.plot(self.q, self.I_background_reduced)
             plt.plot(
                 self.q[_["right_bases"][0]],
@@ -157,24 +154,24 @@ class DefaultPeakApplication(PeakApplication):
             # self.start_loss = np.mean((self.difference_start - self.total_fit) ** 2)
 
     def noisy_parts_detection(self):
-        peaks, properties = find_peaks(
-            self.I_background_reduced, height=1, prominence=1
+        _peaks, properties = find_peaks(
+            self.I_background_reduced, height=1, prominence=1,
         )
         return properties["right_bases"][0]
 
-    def denoising(self):
+    def denoising(self) -> None:
         noisy_indice = self.noisy_parts_detection()
 
         # noisy_part = np.ones(noisy_indice)
         noisy_part = moving_average(
-            self.I_background_reduced[:noisy_indice], 10
+            self.I_background_reduced[:noisy_indice], 10,
         )
 
         # noiseless_part = medfilt(self.I_background_reduced[noisy_indice:], 3)
         noiseless_part = self.I_background_reduced[noisy_indice:]
 
         self.I_denoised = medfilt(
-            np.concatenate((noisy_part, noiseless_part)), 3
+            np.concatenate((noisy_part, noiseless_part)), 3,
         )
         # self.I_filt = medfilt(good_smoothed_without_loss, 3)
 
@@ -189,9 +186,8 @@ class DefaultPeakApplication(PeakApplication):
         # plt.plot(self.q[noisy_indice:], noiseless_part)
         # plt.show()
 
-    def prefiltering_(self):
+    def prefiltering_(self) -> None:
         noisy_indices = self.noisy_parts_detection()
-        print(noisy_indices)
         first_part = medfilt(self.I[: max(noisy_indices)], 3)
         first_part = savgol_filter(self.I[: max(noisy_indices)], 15, 4, deriv=0)
 
@@ -199,7 +195,6 @@ class DefaultPeakApplication(PeakApplication):
 
         # first_part = gaussian_filter(self.I[:max(noisy_indices)], sigma=10)
         # first_part = medfilt(first_part, 3)
-        print("FILTERING {}".format(self.filename))
 
         sec_part = medfilt(self.I[max(noisy_indices) :], 3)
         good_smoothed_without_loss = np.concatenate((first_part, sec_part))
@@ -208,7 +203,7 @@ class DefaultPeakApplication(PeakApplication):
 
         self.I_filt = medfilt(good_smoothed_without_loss, 3)
 
-    def background_reduction(self):
+    def background_reduction(self) -> None:
         # self.I_filt = self.prefiltering()
 
         # self.I_filt = self.I_filt[i:]
@@ -217,7 +212,7 @@ class DefaultPeakApplication(PeakApplication):
         self.total_fit = self.zeros
         self.peaks_plots = np.zeros((20, len(self.q)))
 
-        popt, pcov = curve_fit(
+        popt, _pcov = curve_fit(
             f=background_hyberbole,
             xdata=self.q,
             # ydata=self.I,
@@ -228,7 +223,7 @@ class DefaultPeakApplication(PeakApplication):
 
         self.popt_background = popt
         self.background = background_hyberbole(
-            self.q, self.popt_background[0], self.popt_background[1]
+            self.q, self.popt_background[0], self.popt_background[1],
         )
         # self.I_background_filtered = self.I - BACKGROUND_COEF * self.saxs_model
         self.I_cut_background_reduced = (
@@ -238,7 +233,7 @@ class DefaultPeakApplication(PeakApplication):
         # self.difference = savgol_filter(I - background_coef * self.saxs_model, 15, 4, deriv=0)
         # self.start_difference = savgol_filter(I - background_coef * self.saxs_model, 15, 4, deriv=0)
 
-    def custom_filtering(self):
+    def custom_filtering(self) -> None:
         y = self.I_cut_background_reduced
         self.smoothed_I = moving_average(y, WINDOWSIZE)
 
@@ -249,7 +244,7 @@ class DefaultPeakApplication(PeakApplication):
 
         for sigma in sigma_values:
             smoothed_difference = gaussian_filter(
-                self.I_cut_background_reduced, sigma=sigma, truncate=4.0
+                self.I_cut_background_reduced, sigma=sigma, truncate=4.0,
             )
 
             metric = np.mean(np.square(smoothed_difference - self.smoothed_I))
@@ -263,13 +258,13 @@ class DefaultPeakApplication(PeakApplication):
 
         plt.clf()
         self.difference_start = gaussian_filter(
-            self.I_cut_background_reduced, sigma=best_sigma, truncate=4.0
+            self.I_cut_background_reduced, sigma=best_sigma, truncate=4.0,
         )
         self.difference = gaussian_filter(
-            self.I_cut_background_reduced, sigma=best_sigma, truncate=4.0
+            self.I_cut_background_reduced, sigma=best_sigma, truncate=4.0,
         )
 
-    def custom_filtering_(self):
+    def custom_filtering_(self) -> None:
         smoothed_data = medfilt(self.I_background_reduced, 3)
 
         plt.plot(self.I_background_reduced)
@@ -277,7 +272,7 @@ class DefaultPeakApplication(PeakApplication):
         plt.show()
         plt.clf()
 
-    def background_plot(self):
+    def background_plot(self) -> None:
         plt.clf()
         plt.plot(
             self.q,
@@ -298,7 +293,7 @@ class DefaultPeakApplication(PeakApplication):
             self.file_analyse_dir
             + "/00_background_raw_"
             + self.filename
-            + ".pdf"
+            + ".pdf",
         )
 
         plt.clf()
@@ -315,10 +310,10 @@ class DefaultPeakApplication(PeakApplication):
             self.file_analyse_dir
             + "/01_background_filtered_"
             + self.filename
-            + ".pdf"
+            + ".pdf",
         )
 
-    def peak_searching(self, height=0, distance=5, prominence=0.1):
+    def peak_searching(self, height=0, distance=5, prominence=0.1) -> None:
         self.peaks, self.peaks_data = find_peaks(
             self.difference,
             height=height,
@@ -330,27 +325,27 @@ class DefaultPeakApplication(PeakApplication):
         # if self.peaks.size == 0:
         # print(self.peaks_data)
 
-    def peak_verifying(self, i):
+    def peak_verifying(self, i) -> bool | None:
         if len(self.peaks) > i:
             if self.peaks[i] in self.peak_previous:
                 #     self.peaks = np.delete(self.peaks, *np.where(self.peaks == self.peak_previous))
                 # self.peak_widths = peak_widths(self.difference, self.peaks, rel_height=0.6)
                 return True
+        return None
 
-    def custom_peak_fitting_with_parabole(self, i):
+    def custom_peak_fitting_with_parabole(self, i) -> None:
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
                 left_base = abs(
-                    self.peaks[i] - self.peaks_data["left_bases"][i]
+                    self.peaks[i] - self.peaks_data["left_bases"][i],
                 )
                 right_base = abs(
-                    self.peaks[i] - self.peaks_data["right_bases"][i]
+                    self.peaks[i] - self.peaks_data["right_bases"][i],
                 )
                 delta = min(left_base, right_base) / 2
                 start_delta = delta
 
                 delta = 3
-                print(left_base, right_base, "bases")
                 # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
                 # period2 = self.peaks[i] + int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
 
@@ -363,7 +358,6 @@ class DefaultPeakApplication(PeakApplication):
                 period1 = int(self.peaks[i] - delta)
                 period2 = int(self.peaks[i] + delta)
 
-                print(period1, period2, "perods")
 
                 def current_peak_parabole(x, sigma, ampl):
                     return parabole(x, self.q[self.peaks[i]], sigma, ampl)
@@ -376,14 +370,12 @@ class DefaultPeakApplication(PeakApplication):
                     sigma=self.dI[period1:period2],
                 )
 
-                print(popt)
-                print(pcov)
 
                 period2 = int(self.peaks[i] + start_delta)
                 period1 = int(self.peaks[i] - start_delta)
 
                 current_parabole = current_peak_parabole(
-                    self.q, popt[0], popt[1]
+                    self.q, popt[0], popt[1],
                 )[period1:period2]
                 plt.clf()
                 plt.plot(self.q[period1:period2], current_parabole)
@@ -394,8 +386,7 @@ class DefaultPeakApplication(PeakApplication):
                 )
                 plt.plot(self.q, self.I_cut_background_reduced)
                 plt.title(f"{popt},{np.sqrt(np.diag(pcov))}")
-                print({popt[0] / self.delta_q})
-                plt.savefig(("heap/parabole_" + str(self.peak_number) + ".png"))
+                plt.savefig("heap/parabole_" + str(self.peak_number) + ".png")
 
                 # return gauss(self.q, popt[0], popt[1]), \
                 #     period1, period2, i, \
@@ -406,10 +397,10 @@ class DefaultPeakApplication(PeakApplication):
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
                 left_base = abs(
-                    self.peaks[i] - self.peaks_data["left_bases"][i]
+                    self.peaks[i] - self.peaks_data["left_bases"][i],
                 )
                 right_base = abs(
-                    self.peaks[i] - self.peaks_data["right_bases"][i]
+                    self.peaks[i] - self.peaks_data["right_bases"][i],
                 )
                 delta = min(left_base, right_base)
                 # period1 = self.peaks[i] - int(width_factor * SIGMA_FITTING * self.peak_widths[0][i])
@@ -421,7 +412,7 @@ class DefaultPeakApplication(PeakApplication):
 
                 def gauss(x, ampl, sigma):
                     return ampl * np.exp(
-                        -((x - self.q[self.peaks[i]]) ** 2) / (sigma**2)
+                        -((x - self.q[self.peaks[i]]) ** 2) / (sigma**2),
                     )
 
                 y = self.I_cut_background_reduced
@@ -468,8 +459,8 @@ class DefaultPeakApplication(PeakApplication):
                         metric = self.resolution * np.mean(
                             np.square(
                                 smoothed_difference[period1:period2]
-                                - self.difference[period1:period2]
-                            )
+                                - self.difference[period1:period2],
+                            ),
                         ) - (1 - self.resolution) * np.sqrt(delta**2)
                         # print("Changer res")
 
@@ -490,7 +481,7 @@ class DefaultPeakApplication(PeakApplication):
                 period1 = int(self.peaks[i] - self.best_delta)
                 period2 = int(self.peaks[i] + self.best_delta)
 
-                popt, pcov = curve_fit(
+                popt, _pcov = curve_fit(
                     f=gauss,
                     xdata=self.q[period1:period2],
                     ydata=self.difference[period1:period2],
@@ -531,6 +522,7 @@ class DefaultPeakApplication(PeakApplication):
                 )
         else:
             pass
+        return None
 
     def peak_fitting(self, i, width_factor=1):
         if np.size(self.peaks) != 0:
@@ -585,8 +577,9 @@ class DefaultPeakApplication(PeakApplication):
                     self.peaks[i],
                     perr,
                 )
+        return None
 
-    def peak_substraction(self, i):
+    def peak_substraction(self, i) -> int | None:
         self.peak_empty = False
 
         # self.custom_peak_fitting_with_parabole(i)
@@ -594,7 +587,6 @@ class DefaultPeakApplication(PeakApplication):
 
         if peak is None:
             self.peak_empty = True
-            print("peak error empty")
             return 0
 
         # while peak[9][1] / peak[7] > 0.2:
@@ -610,7 +602,7 @@ class DefaultPeakApplication(PeakApplication):
         valid_zone = np.arange(-5, 6, 1)  # TODO
         for x in valid_zone:
             self.peak_previous = np.append(
-                self.peak_previous, self.peaks[i] + x
+                self.peak_previous, self.peaks[i] + x,
             )
 
         self.peaks_analysed = np.append(self.peaks_analysed, (peak[4], peak[5]))
@@ -628,12 +620,13 @@ class DefaultPeakApplication(PeakApplication):
         self.filtering_negative()
         self.stage_plot()
         self.peak_number += 1
+        return None
         # self.peaks_boundaries = np.append(self.peaks_boundaries, (peak[0], peak[1]))
 
-    def filtering_negative(self):
+    def filtering_negative(self) -> None:
         self.difference = np.maximum(self.difference, 0)
 
-    def stage_plot(self):
+    def stage_plot(self) -> None:
         plt.clf()
         plt.plot(
             self.q,
@@ -671,10 +664,10 @@ class DefaultPeakApplication(PeakApplication):
             + self.filename
             + "_peak:"
             + str(self.peak_number)
-            + ".pdf"
+            + ".pdf",
         )
 
-    def state_plot(self):
+    def state_plot(self) -> None:
         plt.clf()
         plt.plot(
             self.q,
@@ -698,10 +691,10 @@ class DefaultPeakApplication(PeakApplication):
             + self.filename
             + "_peak_num:"
             + str(self.peak_number)
-            + ".pdf"
+            + ".pdf",
         )
 
-    def result_plot(self):
+    def result_plot(self) -> None:
         plt.clf()
         self.peaks_detected = self.peaks_detected.astype(int)
 
@@ -727,7 +720,7 @@ class DefaultPeakApplication(PeakApplication):
         plt.plot(self.q, self.total_fit, linewidth=2, label="total")
         plt.legend()
         plt.savefig(
-            self.file_analyse_dir + "/10_result_" + self.filename + ".pdf"
+            self.file_analyse_dir + "/10_result_" + self.filename + ".pdf",
         )
 
         plt.clf()
@@ -741,7 +734,7 @@ class DefaultPeakApplication(PeakApplication):
         plt.plot(self.q, np.zeros(len(self.q)), label="zero_level")
         plt.legend()
         plt.savefig(
-            self.file_analyse_dir + "/11_result_raw_" + self.filename + ".pdf"
+            self.file_analyse_dir + "/11_result_raw_" + self.filename + ".pdf",
         )
 
         # plt.clf()
@@ -751,7 +744,7 @@ class DefaultPeakApplication(PeakApplication):
         # plt.legend()
         # plt.savefig(self.file_analyse_dir + '/11_result_raw_' + self.file + '.pdf')
 
-    def peak_processing(self, number_peak=INFINITY, get=False):
+    def peak_processing(self, number_peak=INFINITY, get=False) -> None:
         current_peak = 0
         while len(self.peaks) > -1 and number_peak > 0:
             # self.custom_peak_searching()
@@ -771,16 +764,15 @@ class DefaultPeakApplication(PeakApplication):
         y = np.zeros_like(x)
         number = 0
         for i in range(0, len(params), 3):
-            mean, amplitude, std_dev = params[i : i + 3]
+            _mean, amplitude, std_dev = params[i : i + 3]
             y += amplitude * np.exp(
-                -(((x - self.peaks_analysed_q[number]) / std_dev) ** 2)
+                -(((x - self.peaks_analysed_q[number]) / std_dev) ** 2),
             )
             number += 1
         return y
 
-    def sum_total_fit(self):
+    def sum_total_fit(self) -> None:
         if len(self.params) != 0:
-            print(self.params)
 
             def loss_function(params):
                 # y_pred = gaussian_sum(self.q, *params)
@@ -798,12 +790,12 @@ class DefaultPeakApplication(PeakApplication):
             plt.title(str(sorted(self.params.tolist()[1::3])))
             plt.plot(self.q, self.I_cut_background_reduced, "g--", label="raw")
             plt.plot(
-                self.q, y_fit, "r-", label="found " + str(self.peak_number)
+                self.q, y_fit, "r-", label="found " + str(self.peak_number),
             )
 
             for x in self.peaks_x:
                 plt.axvline(
-                    x, color="red", linestyle="--", label="Vertical Line"
+                    x, color="red", linestyle="--", label="Vertical Line",
                 )
 
             plt.legend()
@@ -814,13 +806,13 @@ class DefaultPeakApplication(PeakApplication):
                 self.file_analyse_dir
                 + "/xx_total_fit_"
                 + self.filename
-                + ".pdf"
+                + ".pdf",
             )
             # plt.show()
 
         else:
             plt.plot(
-                self.q, self.I_cut_background_reduced, "g--", label="not found"
+                self.q, self.I_cut_background_reduced, "g--", label="not found",
             )
             plt.legend()
             plt.xlabel("x")
@@ -829,7 +821,7 @@ class DefaultPeakApplication(PeakApplication):
                 self.file_analyse_dir
                 + "/xx_not_found_"
                 + self.filename
-                + ".pdf"
+                + ".pdf",
             )
 
     def gathering(self):

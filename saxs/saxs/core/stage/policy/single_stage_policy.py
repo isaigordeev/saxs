@@ -104,7 +104,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
 
         logger.info(
             f"\n{'=' * 30}\n[{self.__class__.__name__}] Evaluating condition '{self.condition.__class__.__name__}' "
-            f"for stage '{_eval_metadata}' with metadata: {_eval_metadata.values}\n{'=' * 30}"
+            f"for stage '{_eval_metadata}' with metadata: {_eval_metadata.values}\n{'=' * 30}",
         )
 
         if self.condition.evaluate(eval_metadata=_eval_metadata):
@@ -128,6 +128,6 @@ class SingleStageChainingPolicy(ChainingPolicy):
             ]
 
         logger.info(
-            f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition failed → No stage injected for '{self.pending_stages}'\n{'=' * 30}"
+            f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition failed → No stage injected for '{self.pending_stages}'\n{'=' * 30}",
         )
         return []

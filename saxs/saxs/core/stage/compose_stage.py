@@ -1,9 +1,8 @@
-from typing import Dict, List, Optional, Type
 
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
 class CompositeRequstingStage(AbstractRequestingStage):
@@ -14,12 +13,12 @@ class CompositeRequstingStage(AbstractRequestingStage):
 
     def __init__(
         self,
-        main_stage_cls: Type[AbstractStage],
-        main_kwargs: Optional[Dict] = None,
-        before: Optional[List[Type[AbstractStage]]] = None,
-        after: Optional[List[Type[AbstractStage]]] = None,
-        policy: Optional[ChainingPolicy] = None,
-        metadata: Optional[AbstractStageMetadata] = None,
+        main_stage_cls: type[AbstractStage],
+        main_kwargs: dict | None = None,
+        before: list[type[AbstractStage]] | None = None,
+        after: list[type[AbstractStage]] | None = None,
+        policy: ChainingPolicy | None = None,
+        metadata: AbstractStageMetadata | None = None,
     ):
         super().__init__(metadata)
         self.main_kwargs = main_kwargs or {}
@@ -39,10 +38,10 @@ class CompositeRequstingStage(AbstractRequestingStage):
     def build(self):
         return self._build()
 
-    def _build(self):
+    def _build(self) -> None:
         # Instantiate main stage
         self.main_stage = self.main_stage_cls(
-            policy=self.policy, **self.main_kwargs
+            policy=self.policy, **self.main_kwargs,
         )
 
         # Instantiate before/after stages

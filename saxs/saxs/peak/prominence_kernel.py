@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.signal import find_peaks, medfilt
 
-from saxs.saxs.processing.functions import moving_average
 from saxs.saxs.peak.default_kernel import DefaultPeakKernel
+from saxs.saxs.processing.functions import moving_average
 
 
 class ProminencePeakKernel(DefaultPeakKernel):
@@ -31,7 +31,7 @@ class ProminencePeakKernel(DefaultPeakKernel):
 
         self.peaks = None
 
-    def preprocessing(self):
+    def preprocessing(self) -> None:
         self.default_preprocessing()
         self.detecting_relevant_noisy()
 
@@ -39,36 +39,36 @@ class ProminencePeakKernel(DefaultPeakKernel):
         # print(len(self.current_I_state))
         # print(len(self.dI))
 
-    def filtering(self):
+    def filtering(self) -> None:
         self.filtering_decomposition()
 
-    def detecting_relevant_noisy(self):
+    def detecting_relevant_noisy(self) -> None:
         self.peaks, self.props = find_peaks(
-            self.current_I_state, height=1, prominence=1
+            self.current_I_state, height=1, prominence=1,
         )
         if len(self.props["right_bases"]) > 0:
             self.noisy_relevant_cut_point = self.props["right_bases"][0]
         else:
             self.noisy_relevant_cut_point = 100
 
-    def filtering_decomposition(self):
+    def filtering_decomposition(self) -> None:
         # noisy_part = np.ones(noisy_indice)
         self.detecting_relevant_noisy()
 
         noisy_part = moving_average(
-            self.current_I_state[: self.noisy_relevant_cut_point], 10
+            self.current_I_state[: self.noisy_relevant_cut_point], 10,
         )
 
         # noiseless_part = medfilt(self.I_background_reduced[noisy_indice:], 3)
         noiseless_part = self.current_I_state[self.noisy_relevant_cut_point :]
 
         self.current_I_state = medfilt(
-            np.concatenate((noisy_part, noiseless_part)), 3
+            np.concatenate((noisy_part, noiseless_part)), 3,
         )
 
         self.total_fit = np.zeros_like(self.current_I_state)
 
-    def search_peaks(self, height=0.5, prominence=0.3, distance=10):
+    def search_peaks(self, height=0.5, prominence=0.3, distance=10) -> None:
         self.peaks, self.props = find_peaks(
             self.current_I_state,
             height=height,
@@ -84,7 +84,7 @@ class ProminencePeakKernel(DefaultPeakKernel):
         # self.current_state_plot()
         # self.peaks_plots()
 
-    def custom_sample_postprocessing(self):
+    def custom_sample_postprocessing(self) -> None:
         pass
 
         # background reduction

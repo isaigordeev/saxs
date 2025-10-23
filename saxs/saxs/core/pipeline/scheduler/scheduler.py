@@ -137,7 +137,7 @@ class BaseScheduler(AbstractScheduler):
 
             logger.info(
                 f"\n{'=' * 30}\n[Scheduler] Step {step}: Running stage {stage}'{stage_name}'"
-                f" on sample '{sample}'\n{'=' * 30}"
+                f" on sample '{sample}'\n{'=' * 30}",
             )
 
             # Process stage
@@ -156,7 +156,7 @@ class BaseScheduler(AbstractScheduler):
                 )
             else:
                 logger.info(
-                    f"\n[Scheduler] Stage '{stage_name}' generated no requests.\n"
+                    f"\n[Scheduler] Stage '{stage_name}' generated no requests.\n",
                 )
 
             for req in requests:
@@ -165,11 +165,11 @@ class BaseScheduler(AbstractScheduler):
                     queue.append(req.stage)
                     self.handle_scheduler_meta(req.metadata)
                     logger.info(
-                        f"\n[Scheduler] Request {req} approved → Stage '{req_stage_name}' appended to queue."
+                        f"\n[Scheduler] Request {req} approved → Stage '{req_stage_name}' appended to queue.",
                     )
                 else:
                     logger.info(
-                        f"\n[Scheduler] Request {req} rejected → Stage '{req_stage_name}' not appended."
+                        f"\n[Scheduler] Request {req} rejected → Stage '{req_stage_name}' not appended.",
                     )
 
             step += 1

@@ -30,16 +30,16 @@ def ratio_data(i, data: np.array) -> np.array:
 
 class PhaseApplication(ApplicationClassificator):
     __slots__ = (
+        "data",
         "phases",
         "phases_coefficients",
-        "phases_directory",
-        "data",
-        "phases_number",
         "phases_dict",
+        "phases_directory",
+        "phases_number",
     )
 
     def __init__(
-        self, data_directory, kernel, phases_directory=DEFAULT_PHASES_PATH
+        self, data_directory, kernel, phases_directory=DEFAULT_PHASES_PATH,
     ):
         super().__init__(data_directory)
 
@@ -59,9 +59,9 @@ class PhaseApplication(ApplicationClassificator):
         self.set_phases()
         self.load_peak_data()
 
-    def set_phases(self):
+    def set_phases(self) -> None:
         with open(
-            self.phases_directory, "r"
+            self.phases_directory,
         ) as file:  # NOTE make it better with string formatting
             self.phases = json.load(file)
 
@@ -76,17 +76,17 @@ class PhaseApplication(ApplicationClassificator):
         for i, phase in enumerate(self.phases.keys()):
             self.phases_dict[i] = phase
 
-    def load_peak_data(self):
-        with open(self.data_directory, "r") as f:
+    def load_peak_data(self) -> None:
+        with open(self.data_directory) as f:
             self.data = json.load(f)
 
-    def write_phase_data(self):  # TODO MAKE STATIC
+    def write_phase_data(self) -> None:  # TODO MAKE STATIC
         # with open('{}.json'.format(self._current_results_dir_session), 'r') as f:
         #     directory_data = json.load(f)
         with open(self.data_directory, "w") as f:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
-    def phase_classification_run(self):
+    def phase_classification_run(self) -> None:
         self.samples = self.data.keys()
         for sample in self.samples:
             # sample = '{}{}'.format(sample_name, sample_ext)

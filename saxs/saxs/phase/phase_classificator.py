@@ -23,7 +23,7 @@ class AbstractPhaseKernel:
     def __call__(self, *args, **kwargs):
         return self.phase_classification()
 
-    def set_directories(self, sample_name):
+    def set_directories(self, sample_name) -> None:
         self.filename_analyse_dir_phases = (
             "../" + ANALYSE_DIR_SESSIONS + sample_name + "/phases"
         )
@@ -31,7 +31,7 @@ class AbstractPhaseKernel:
         if not os.path.exists(self.filename_analyse_dir_phases):
             os.mkdir(self.filename_analyse_dir_phases)
 
-    def default_preprocessing_q(self):
+    def default_preprocessing_q(self) -> None:
         self.preprocessed_q = self.analyzed_q / self.analyzed_q[0]
         self.preprocessed_q = self.preprocessed_q[1:]
 
@@ -41,21 +41,18 @@ class AbstractPhaseKernel:
 
         if self.analyzed_q is None:
             return "blanc"
-        elif len(self.analyzed_q) > 1:
+        if len(self.analyzed_q) > 1:
             self.phase_processing()
 
-            print("DIST ", self.distances)
-            print(self.phases_dict[np.argmax(self.distances)])
             return self.phases_dict[np.argmax(self.distances)]
-        elif len(self.analyzed_q) == 1:
+        if len(self.analyzed_q) == 1:
             return "lamellar"
-        else:
-            return "blanc"
+        return "blanc"
 
-    def phase_processing(self):
+    def phase_processing(self) -> None:
         pass
 
-    def read_sample_data(self):
+    def read_sample_data(self) -> None:
         if self.data[self.sample]["q"] is not None:
             self.analyzed_q = self.data[self.sample]["q"]
             self.analyzed_q = np.array(self.analyzed_q)

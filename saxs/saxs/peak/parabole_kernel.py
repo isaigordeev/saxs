@@ -35,10 +35,10 @@ class ParabolePeakKernel(ProminencePeakKernel):
         self.peaks_processed = np.array([])
         self.peak_params = np.array([])  # mean, amlitude, std
 
-    def negative_reduction(self):
+    def negative_reduction(self) -> None:
         self.current_I_state = np.maximum(self.current_I_state, 0)
 
-    def parabole_peak_fitting(self, i):
+    def parabole_peak_fitting(self, i) -> None:
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
                 # left_base = abs(self.peaks[i] - self.props['left_bases'][i])
@@ -54,10 +54,10 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
                 def current_peak_parabole(x, sigma, ampl):
                     return parabole(
-                        x, self.current_q_state[self.peaks[i]], sigma, ampl
+                        x, self.current_q_state[self.peaks[i]], sigma, ampl,
                     )
 
-                popt, pcov = curve_fit(
+                popt, _pcov = curve_fit(
                     f=current_peak_parabole,
                     xdata=self.current_q_state[period1:period2],
                     ydata=self.current_I_state[period1:period2],
@@ -68,8 +68,8 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 period2 = int(self.peaks[i] + start_delta)
                 period1 = int(self.peaks[i] - start_delta)
 
-                current_parabole = current_peak_parabole(
-                    self.current_q_state, popt[0], popt[1]
+                current_peak_parabole(
+                    self.current_q_state, popt[0], popt[1],
                 )
                 # plt.clf()
                 # plt.plot(self.current_q_state, self.current_I_state)
@@ -94,7 +94,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 self.parabole_number += 1
                 self.parabole_popt_for_gauss[self.peaks[i]] = popt
 
-    def gauss_peak_fitting_minimize(self, i):
+    def gauss_peak_fitting_minimize(self, i) -> None:
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
                 delta = (
@@ -123,7 +123,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
                             y_pred[period1:period2]
                             - self.I_background_filtered[period1:period2]
                         )
-                        ** 2
+                        ** 2,
                     )
 
                 result = minimize(
@@ -134,7 +134,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 fitted_params = result.x
 
                 self.peak_params = np.append(
-                    self.peak_params, self.current_q_state[self.peaks[i]]
+                    self.peak_params, self.current_q_state[self.peaks[i]],
                 )
                 self.peak_params = np.append(self.peak_params, fitted_params[1])
                 self.peak_params = np.append(self.peak_params, fitted_params[0])
@@ -169,7 +169,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
                 self.gaussian_peak_number += 1
 
-    def gauss_peak_fitting_curve_fit(self, i):
+    def gauss_peak_fitting_curve_fit(self, i) -> None:
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
                 delta = (
@@ -182,19 +182,18 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 period1 = int(self.peaks[i] - delta)
                 period2 = int(self.peaks[i] + delta)
 
-                if period1 < 0:
-                    period1 = 0
+                period1 = max(period1, 0)
                 if period2 >= len(self.peaks):
                     period1 = len(self.peaks) - 1
 
                 def current_peak_gauss(x, sigma, ampl):
                     return gauss(
-                        x, self.current_q_state[self.peaks[i]], sigma, ampl
+                        x, self.current_q_state[self.peaks[i]], sigma, ampl,
                     )
 
                 # print("y_data", self.current_I_state)
 
-                popt, pcov = curve_fit(
+                popt, _pcov = curve_fit(
                     f=current_peak_gauss,
                     xdata=self.current_q_state[period1:period2],
                     ydata=self.current_I_state[period1:period2],
@@ -203,11 +202,11 @@ class ParabolePeakKernel(ProminencePeakKernel):
                 )
 
                 self.current_gauss = current_peak_gauss(
-                    self.current_q_state, popt[0], popt[1]
+                    self.current_q_state, popt[0], popt[1],
                 )
 
                 self.peak_params = np.append(
-                    self.peak_params, self.current_q_state[self.peaks[i]]
+                    self.peak_params, self.current_q_state[self.peaks[i]],
                 )
                 self.peak_params = np.append(self.peak_params, popt[1])
                 self.peak_params = np.append(self.peak_params, popt[0])
@@ -235,17 +234,17 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
                 self.gaussian_peak_number += 1
 
-    def gaussian_peak_reduction(self, i):
+    def gaussian_peak_reduction(self, i) -> None:
         self.current_I_state -= self.current_gauss
         self.total_fit += self.current_gauss
         self.peaks_processed = np.append(self.peaks_processed, self.peaks[i])
 
     def search_peaks(
-        self, height=1.5, prominence=0.3
-    ):  # TODO Optimal parameteres?
+        self, height=1.5, prominence=0.3,
+    ) -> None:  # TODO Optimal parameteres?
         self.sequential_search_peaks(height, prominence)
 
-    def sequential_search_peaks(self, height, prominence):
+    def sequential_search_peaks(self, height, prominence) -> None:
         peak_counter = 0
 
         while True:
@@ -262,7 +261,7 @@ class ParabolePeakKernel(ProminencePeakKernel):
 
         self.peaks = self.peaks_processed.astype(int)
 
-    def relevant_search_peaks(self):
+    def relevant_search_peaks(self) -> None:
         pass
 
 
@@ -293,7 +292,7 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
         self.y_final_fit = None
 
     @classmethod
-    def define_signature(cls):
+    def define_signature(cls) -> None:
         cls.str_type = "RobustParabolePeakKernel"
 
     def gaussian_sum(self, x, *params):
@@ -309,7 +308,7 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
 
     # def gaussian_sum_and_background(self, x, *params):
 
-    def sum_gaussian_total_fit(self):
+    def sum_gaussian_total_fit(self) -> None:
         if len(self.peaks) != 0 and len(self.peak_params) != 0:
 
             def loss_function(params):
@@ -323,20 +322,19 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
             fitted_params = result.x
             self.fitted_peak_params = fitted_params
             self.y_final_fit = self.gaussian_sum(
-                self.current_q_state, *fitted_params
+                self.current_q_state, *fitted_params,
             )
             # print("fit", self.fitted_peak_params)
 
             # self.robust_parabole_peak_kernel_plot()
             self.final_peaks = sorted(self.fitted_peak_params[::3])
 
-    def postprocessing(self):
+    def postprocessing(self) -> None:
         # print(self.peak_params)
         self.sum_gaussian_total_fit()
 
     def gathering(self) -> dict:
         peak_number = len(self.peaks) if self.peaks is not None else -1
-        print("peak found: ", peak_number)
 
         return {
             "peak kernel method": self.class_info(),
@@ -357,7 +355,7 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
             # 'loss_ratio': self.final_loss / self.start_loss
         }
 
-    def robust_parabole_peak_kernel_plot(self):
+    def robust_parabole_peak_kernel_plot(self) -> None:
         plt.clf()
         plt.plot(
             self.current_q_state,
@@ -372,13 +370,11 @@ class RobustParabolePeakKernel(ParabolePeakKernel):
             label="unfiltered cut background",
         )
         plt.plot(
-            self.current_q_state, self.y_final_fit, color="r", label="final fit"
+            self.current_q_state, self.y_final_fit, color="r", label="final fit",
         )
 
         plt.legend()
 
         plt.savefig(
-            "{}/robust_parabole_peak_kernel_plot.pdf".format(
-                self.file_analysis_dir
-            )
+            f"{self.file_analysis_dir}/robust_parabole_peak_kernel_plot.pdf",
         )

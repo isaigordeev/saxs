@@ -2,24 +2,13 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-"""
-Tests for scheduler.py module.
-"""
+"""Tests for scheduler.py module."""
 
 from collections import deque
 from unittest.mock import Mock
 
 import numpy as np
 import pytest
-
-from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.sample_objects import (
-    AbstractSampleMetadata,
-    Intensity,
-    IntensityError,
-    QValues,
-)
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
@@ -31,6 +20,14 @@ from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,
     BaseScheduler,
 )
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample_objects import (
+    AbstractSampleMetadata,
+    Intensity,
+    IntensityError,
+    QValues,
+)
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
 # ----------------
@@ -44,7 +41,7 @@ def saxs_sample():
     err = IntensityError(np.array([0.01, 0.02, 0.03]))
     meta = AbstractSampleMetadata({"source": "test"})
     return SAXSSample(
-        q_values=q, intensity=i, intensity_error=err, metadata=meta
+        q_values=q, intensity=i, intensity_error=err, metadata=meta,
     )
 
 
@@ -54,7 +51,7 @@ def mock_stage(saxs_sample):
     stage = Mock()
     stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
     stage.process = Mock(
-        return_value=saxs_sample
+        return_value=saxs_sample,
     )  # you can set return_value in each test
     stage.request_stage.return_value = []  # no new stages by default
     return stage
@@ -66,17 +63,17 @@ def mock_stage(saxs_sample):
 class TestAbstractScheduler:
     """Test cases for AbstractScheduler abstract base class."""
 
-    def test_abstract_scheduler_is_abstract(self):
+    def test_abstract_scheduler_is_abstract(self) -> None:
         """Test that AbstractScheduler cannot be instantiated directly."""
         with pytest.raises(TypeError):
             AbstractScheduler()
 
-    def test_abstract_scheduler_has_run_method(self):
+    def test_abstract_scheduler_has_run_method(self) -> None:
         """Test that AbstractScheduler has the abstract run method."""
         assert hasattr(AbstractScheduler, "run")
-        assert callable(getattr(AbstractScheduler, "run"))
+        assert callable(AbstractScheduler.run)
 
-    def test_abstract_scheduler_initialization(self):
+    def test_abstract_scheduler_initialization(self) -> None:
         """Test AbstractScheduler initialization with concrete implementation."""
 
         class ConcreteScheduler(AbstractScheduler):
@@ -93,7 +90,7 @@ class TestAbstractScheduler:
         scheduler_with_stages = ConcreteScheduler(init_stages=mock_stages)
         assert list(scheduler_with_stages._queue) == mock_stages
 
-    def test_abstract_scheduler_with_custom_insertion_policy(self):
+    def test_abstract_scheduler_with_custom_insertion_policy(self) -> None:
         """Test AbstractScheduler with custom insertion policy."""
 
         class ConcreteScheduler(AbstractScheduler):
@@ -108,14 +105,14 @@ class TestAbstractScheduler:
 class TestBaseScheduler:
     """Test cases for BaseScheduler class."""
 
-    def test_base_scheduler_creation(self):
+    def test_base_scheduler_creation(self) -> None:
         """Test creating BaseScheduler."""
         scheduler = BaseScheduler()
         assert isinstance(scheduler, AbstractScheduler)
         assert isinstance(scheduler._queue, deque)
         assert len(scheduler._queue) == 0
 
-    def test_base_scheduler_creation_with_stages(self, mock_stage):
+    def test_base_scheduler_creation_with_stages(self, mock_stage) -> None:
         """Test creating BaseScheduler with initial stages."""
         stages = [mock_stage, mock_stage]
         scheduler = BaseScheduler(init_stages=stages)
@@ -123,14 +120,14 @@ class TestBaseScheduler:
         assert len(scheduler._queue) == 2
         assert list(scheduler._queue) == stages
 
-    def test_base_scheduler_creation_with_custom_policy(self):
+    def test_base_scheduler_creation_with_custom_policy(self) -> None:
         """Test creating BaseScheduler with custom insertion policy."""
         custom_policy = NeverInsertPolicy()
         scheduler = BaseScheduler(insertion_policy=custom_policy)
 
         assert scheduler._insertion_policy == custom_policy
 
-    def test_base_scheduler_run_with_no_stages(self, saxs_sample):
+    def test_base_scheduler_run_with_no_stages(self, saxs_sample) -> None:
         """Test BaseScheduler run with no stages."""
         scheduler = BaseScheduler()
         result = scheduler.run(saxs_sample)
@@ -139,8 +136,8 @@ class TestBaseScheduler:
         assert result == saxs_sample
 
     def test_base_scheduler_run_with_single_stage(
-        self, saxs_sample, mock_stage
-    ):
+        self, saxs_sample, mock_stage,
+    ) -> None:
         """Test BaseScheduler run with single stage."""
         # Mock the stage's process method
 
@@ -151,12 +148,11 @@ class TestBaseScheduler:
         mock_stage.process.assert_called_once_with(saxs_sample)
         assert result
         assert result == saxs_sample
-        print("dodf", result)
         assert result.metadata.unwrap().get("source") == "test"
 
     def test_base_scheduler_run_with_multiple_stages(
-        self, saxs_sample, mock_stage
-    ):
+        self, saxs_sample, mock_stage,
+    ) -> None:
         """Test BaseScheduler run with multiple stages."""
         # Create mock stages
         import copy
@@ -180,7 +176,7 @@ class TestBaseScheduler:
         stage3.process.assert_called_once_with(modified_sample)
         assert result == modified_sample
 
-    def test_base_scheduler_run_with_stage_requests(self, saxs_sample):
+    def test_base_scheduler_run_with_stage_requests(self, saxs_sample) -> None:
         """Test BaseScheduler run with stages that request additional stages."""
         # Create mock stages
         stage1 = Mock()
@@ -190,7 +186,7 @@ class TestBaseScheduler:
         # Set up stage requests
         stage_metadata = AbstractStageMetadata({"type": "additional"})
         stage_request = StageApprovalRequest(
-            stage=additional_stage, metadata=stage_metadata
+            stage=additional_stage, metadata=stage_metadata,
         )
 
         stage1.request_stage.return_value = [stage_request]
@@ -212,8 +208,8 @@ class TestBaseScheduler:
         assert result == saxs_sample
 
     def test_base_scheduler_run_with_insertion_policy_rejection(
-        self, saxs_sample
-    ):
+        self, saxs_sample,
+    ) -> None:
         """Test BaseScheduler run when insertion policy rejects requests."""
         # Create mock stages
         stage1 = Mock()
@@ -222,7 +218,7 @@ class TestBaseScheduler:
         # Set up stage request
         stage_metadata = AbstractStageMetadata({"type": "additional"})
         stage_request = StageApprovalRequest(
-            stage=additional_stage, metadata=stage_metadata
+            stage=additional_stage, metadata=stage_metadata,
         )
 
         stage1.request_stage.return_value = [stage_request]
@@ -230,7 +226,7 @@ class TestBaseScheduler:
 
         # Use NeverInsertPolicy to reject all requests
         scheduler = BaseScheduler(
-            init_stages=[stage1], insertion_policy=NeverInsertPolicy()
+            init_stages=[stage1], insertion_policy=NeverInsertPolicy(),
         )
         result = scheduler.run(saxs_sample)
 
@@ -239,7 +235,7 @@ class TestBaseScheduler:
         additional_stage.process.assert_not_called()
         assert result == saxs_sample
 
-    def test_base_scheduler_run_with_multiple_requests(self, saxs_sample):
+    def test_base_scheduler_run_with_multiple_requests(self, saxs_sample) -> None:
         """Test BaseScheduler run with multiple stage requests."""
         # Create mock stages
         stage1 = Mock()
@@ -250,10 +246,10 @@ class TestBaseScheduler:
         stage_metadata1 = AbstractStageMetadata({"type": "additional1"})
         stage_metadata2 = AbstractStageMetadata({"type": "additional2"})
         stage_request1 = StageApprovalRequest(
-            stage=additional_stage1, metadata=stage_metadata1
+            stage=additional_stage1, metadata=stage_metadata1,
         )
         stage_request2 = StageApprovalRequest(
-            stage=additional_stage2, metadata=stage_metadata2
+            stage=additional_stage2, metadata=stage_metadata2,
         )
 
         stage1.request_stage.return_value = [stage_request1, stage_request2]
@@ -274,7 +270,7 @@ class TestBaseScheduler:
         additional_stage2.process.assert_called_once_with(saxs_sample)
         assert result == saxs_sample
 
-    def test_base_scheduler_run_with_nested_requests(self, saxs_sample):
+    def test_base_scheduler_run_with_nested_requests(self, saxs_sample) -> None:
         """Test BaseScheduler run with nested stage requests."""
         # Create mock stages
         stage1 = Mock()
@@ -285,10 +281,10 @@ class TestBaseScheduler:
         stage_metadata1 = AbstractStageMetadata({"type": "additional1"})
         stage_metadata2 = AbstractStageMetadata({"type": "additional2"})
         stage_request1 = StageApprovalRequest(
-            stage=additional_stage1, metadata=stage_metadata1
+            stage=additional_stage1, metadata=stage_metadata1,
         )
         stage_request2 = StageApprovalRequest(
-            stage=additional_stage2, metadata=stage_metadata2
+            stage=additional_stage2, metadata=stage_metadata2,
         )
 
         stage1.request_stage.return_value = [stage_request1]
@@ -310,8 +306,8 @@ class TestBaseScheduler:
         assert result == saxs_sample
 
     def test_base_scheduler_run_with_stage_exception(
-        self, saxs_sample, mock_stage
-    ):
+        self, saxs_sample, mock_stage,
+    ) -> None:
         """Test BaseScheduler run when a stage raises an exception."""
         # Mock stage to raise exception
         mock_stage.process.side_effect = ValueError("Stage processing failed")
@@ -323,8 +319,8 @@ class TestBaseScheduler:
             scheduler.run(saxs_sample)
 
     def test_base_scheduler_run_with_empty_stage_requests(
-        self, saxs_sample, mock_stage
-    ):
+        self, saxs_sample, mock_stage,
+    ) -> None:
         """Test BaseScheduler run when stage returns empty requests."""
         scheduler = BaseScheduler(init_stages=[mock_stage])
         result = scheduler.run(saxs_sample)
@@ -334,8 +330,8 @@ class TestBaseScheduler:
         assert result == saxs_sample
 
     def test_base_scheduler_run_with_none_stage_requests(
-        self, saxs_sample, mock_stage
-    ):
+        self, saxs_sample, mock_stage,
+    ) -> None:
         """Test BaseScheduler run when stage returns None for requests."""
         scheduler = BaseScheduler(init_stages=[mock_stage])
 
@@ -347,7 +343,7 @@ class TestBaseScheduler:
         except (AttributeError, TypeError):
             pytest.skip("None stage requests handling not implemented")
 
-    def test_base_scheduler_queue_management(self, saxs_sample):
+    def test_base_scheduler_queue_management(self, saxs_sample) -> None:
         """Test BaseScheduler queue management during execution."""
         # Create mock stages
         stage1 = Mock()
@@ -357,7 +353,7 @@ class TestBaseScheduler:
         # Set up stage request
         stage_metadata = AbstractStageMetadata({"type": "additional"})
         stage_request = StageApprovalRequest(
-            stage=additional_stage, metadata=stage_metadata
+            stage=additional_stage, metadata=stage_metadata,
         )
 
         stage1.request_stage.return_value = [stage_request]

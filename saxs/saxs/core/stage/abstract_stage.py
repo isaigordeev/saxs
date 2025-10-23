@@ -3,7 +3,6 @@
 #
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
@@ -23,18 +22,18 @@ class AbstractStage(ABC):
         result, metadata = self._process(sample_data)
 
         # Delegate metadata management to hook
-        result = self.handle_metadata(result, metadata)
+        return self.handle_metadata(result, metadata)
 
-        return result
 
     @abstractmethod
     def _process(self, sample_data: SAXSSample) -> tuple["SAXSSample"]:
         """Override in subclass. Return (updated_sample,
-        optional_metadata_dict)."""
+        optional_metadata_dict).
+        """
         raise NotImplementedError
 
     def handle_metadata(
-        self, sample: "SAXSSample", metadata: Optional[dict]
+        self, sample: "SAXSSample", metadata: dict | None,
     ) -> "SAXSSample":
         """
         Default metadata handler: updates both sample and stage metadata.

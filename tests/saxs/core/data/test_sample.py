@@ -2,15 +2,12 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-"""
-Tests for sample.py module.
-"""
+"""Tests for sample.py module."""
 
 from dataclasses import FrozenInstanceError
 
 import numpy as np
 import pytest
-
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
     Intensity,
@@ -22,7 +19,7 @@ from saxs.saxs.core.types.sample_objects import (
 class TestSAXSSample:
     """Test cases for SAXSSample class."""
 
-    def test_saxs_sample_creation_minimal(self, q_values, intensity):
+    def test_saxs_sample_creation_minimal(self, q_values, intensity) -> None:
         """Test creating SAXSSample with minimal required fields."""
         sample = SAXSSample(q_values=q_values, intensity=intensity)
 
@@ -32,8 +29,8 @@ class TestSAXSSample:
         assert sample.metadata.unwrap() == {}
 
     def test_saxs_sample_creation_complete(
-        self, q_values, intensity, intensity_error, metadata
-    ):
+        self, q_values, intensity, intensity_error, metadata,
+    ) -> None:
         """Test creating SAXSSample with all fields."""
         sample = SAXSSample(
             q_values=q_values,
@@ -47,14 +44,14 @@ class TestSAXSSample:
         assert sample.intensity_error == intensity_error
         assert sample.metadata == metadata
 
-    def test_saxs_sample_immutable(self, q_values, intensity):
+    def test_saxs_sample_immutable(self, q_values, intensity) -> None:
         """Test that SAXSSample is immutable."""
         sample = SAXSSample(q_values=q_values, intensity=intensity)
 
         with pytest.raises(FrozenInstanceError):
             sample.q_values = QValues(np.array([1, 2, 3]))
 
-    def test_saxs_sample_getters(self, saxs_sample):
+    def test_saxs_sample_getters(self, saxs_sample) -> None:
         """Test all getter methods."""
         sample = saxs_sample
 
@@ -64,7 +61,7 @@ class TestSAXSSample:
         assert sample.get_intensity_error() == sample.intensity_error
         assert sample.get_metadata() == sample.metadata
 
-    def test_saxs_sample_array_getters(self, saxs_sample):
+    def test_saxs_sample_array_getters(self, saxs_sample) -> None:
         """Test array unwrap getter methods."""
         sample = saxs_sample
 
@@ -76,16 +73,16 @@ class TestSAXSSample:
 
         np.testing.assert_array_equal(q_array, sample.q_values.unwrap())
         np.testing.assert_array_equal(
-            intensity_array, sample.intensity.unwrap()
+            intensity_array, sample.intensity.unwrap(),
         )
         np.testing.assert_array_equal(
-            error_array, sample.intensity_error.unwrap()
+            error_array, sample.intensity_error.unwrap(),
         )
         assert metadata_dict == sample.metadata.unwrap()
 
     def test_saxs_sample_array_getters_with_none_error(
-        self, q_values, intensity
-    ):
+        self, q_values, intensity,
+    ) -> None:
         """Test array getters when intensity_error is None."""
         sample = SAXSSample(q_values=q_values, intensity=intensity)
 
@@ -96,12 +93,12 @@ class TestSAXSSample:
 
         np.testing.assert_array_equal(q_array, sample.get_q_values().unwrap())
         np.testing.assert_array_equal(
-            intensity_array, sample.get_intensity().unwrap()
+            intensity_array, sample.get_intensity().unwrap(),
         )
         assert error_array is None
         assert metadata_dict == {}
 
-    def test_saxs_sample_setters(self, q_values, intensity):
+    def test_saxs_sample_setters(self, q_values, intensity) -> None:
         """Test setter methods return new instances."""
         sample = SAXSSample(q_values=q_values, intensity=intensity)
 
@@ -119,10 +116,10 @@ class TestSAXSSample:
 
         assert new_sample2 is not sample  # Different instance
         np.testing.assert_array_equal(
-            new_sample2.get_intensity_array(), new_intensity
+            new_sample2.get_intensity_array(), new_intensity,
         )
         assert not np.array_equal(
-            sample.get_intensity_array(), new_intensity
+            sample.get_intensity_array(), new_intensity,
         )  # Original unchanged
 
         # Test set_intensity_error
@@ -131,18 +128,18 @@ class TestSAXSSample:
 
         assert new_sample3 is not sample  # Different instance
         np.testing.assert_array_equal(
-            new_sample3.get_intensity_error_array(), new_error
+            new_sample3.get_intensity_error_array(), new_error,
         )
         assert sample.get_intensity_error() is None  # Original unchanged
 
-    def test_saxs_sample_set_intensity_error_none(self, saxs_sample):
+    def test_saxs_sample_set_intensity_error_none(self, saxs_sample) -> None:
         """Test setting intensity_error to None."""
         new_sample = saxs_sample.set_intensity_error(None)
 
         assert new_sample is not saxs_sample
         assert new_sample.get_intensity_error() is None
 
-    def test_saxs_sample_chaining_setters(self, q_values, intensity):
+    def test_saxs_sample_chaining_setters(self, q_values, intensity) -> None:
         """Test chaining setter methods."""
         sample = SAXSSample(q_values=q_values, intensity=intensity)
 
@@ -159,13 +156,13 @@ class TestSAXSSample:
 
         np.testing.assert_array_equal(new_sample.get_q_values_array(), new_q)
         np.testing.assert_array_equal(
-            new_sample.get_intensity_array(), new_intensity
+            new_sample.get_intensity_array(), new_intensity,
         )
         np.testing.assert_array_equal(
-            new_sample.get_intensity_error_array(), new_error
+            new_sample.get_intensity_error_array(), new_error,
         )
 
-    def test_saxs_sample_with_different_array_sizes(self):
+    def test_saxs_sample_with_different_array_sizes(self) -> None:
         """Test SAXSSample with different array sizes."""
         q_data = np.array([0.1, 0.2, 0.3])
         intensity_data = np.array([100.0, 200.0, 300.0])
@@ -181,19 +178,19 @@ class TestSAXSSample:
         assert len(sample.get_intensity_array()) == 3
         assert len(sample.get_intensity_error_array()) == 3
 
-    def test_saxs_sample_with_empty_arrays(self):
+    def test_saxs_sample_with_empty_arrays(self) -> None:
         """Test SAXSSample with empty arrays."""
         q_data = np.array([])
         intensity_data = np.array([])
 
         sample = SAXSSample(
-            q_values=QValues(q_data), intensity=Intensity(intensity_data)
+            q_values=QValues(q_data), intensity=Intensity(intensity_data),
         )
 
         assert len(sample.get_q_values_array()) == 0
         assert len(sample.get_intensity_array()) == 0
 
-    def test_saxs_sample_equality(self, q_values, intensity):
+    def test_saxs_sample_equality(self, q_values, intensity) -> None:
         """Test SAXSSample equality comparison."""
         sample1 = SAXSSample(q_values=q_values, intensity=intensity)
         sample2 = SAXSSample(q_values=q_values, intensity=intensity)
@@ -207,7 +204,7 @@ class TestSAXSSample:
 
         assert sample1 != sample3
 
-    def test_saxs_sample_describe(self, q_values, intensity):
+    def test_saxs_sample_describe(self, q_values, intensity) -> None:
         """Test SAXSSample describe method from AData."""
         sample = SAXSSample(q_values=q_values, intensity=intensity)
 

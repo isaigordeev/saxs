@@ -125,6 +125,6 @@ class SpecCompiler:
             pipeline_decl.policy_decl_specs,
         )
         runtime_stages = self.build_stage_specs(
-            pipeline_decl.stage_decl_specs, runtime_policies
+            pipeline_decl.stage_decl_specs, runtime_policies,
         )
         return runtime_stages, runtime_policies

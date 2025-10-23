@@ -2,8 +2,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 from saxs.application.settings_processing import BACKGROUND_COEF, START
-from saxs.saxs.processing.functions import background_hyberbole
 from saxs.saxs.peak.abstract_kernel import AbstractPeakKernel
+from saxs.saxs.processing.functions import background_hyberbole
 
 
 class DefaultPeakKernel(AbstractPeakKernel):
@@ -36,15 +36,15 @@ class DefaultPeakKernel(AbstractPeakKernel):
         self.noisy_relevant_cut_point = 0
         self.noisy_irrelevant_cut_point = 0
 
-    def background_reduction(self):
+    def background_reduction(self) -> None:
         self.default_background_reduction()
 
-    def preprocessing(self):
+    def preprocessing(self) -> None:
         self.default_preprocessing()
 
     def default_background_reduction(
-        self, background_function=background_hyberbole
-    ):
+        self, background_function=background_hyberbole,
+    ) -> None:
         # self.peaks_plots = np.zeros((20, len(self.q)))
 
         popt, pcov = curve_fit(
@@ -70,10 +70,10 @@ class DefaultPeakKernel(AbstractPeakKernel):
 
         self.I_background_filtered = self.current_I_state
 
-    def default_preprocessing(self):
+    def default_preprocessing(self) -> None:
         self.cutting_irrelevant_noisy()
 
-    def cutting_irrelevant_noisy(self):
+    def cutting_irrelevant_noisy(self) -> None:
         self.noisy_irrelevant_cut_point = np.argmax(self.q_raw > START)
         self.current_q_state, self.current_I_state = (
             self.q_raw[self.noisy_irrelevant_cut_point :],
