@@ -100,20 +100,22 @@ class SingleStageChainingPolicy(ChainingPolicy):
             )
             return []
 
-        _eval_metadata = stage_metadata.eval_metadata
+        _eval_metadata = stage_metadata.condition_eval_metadata
 
         logger.info(
             f"\n{'=' * 30}\n[{self.__class__.__name__}] Evaluating condition '{self.condition.__class__.__name__}' "
             f"for stage '{_eval_metadata}' with metadata: {_eval_metadata.values}\n{'=' * 30}"
         )
 
-        if self.condition.evaluate(_eval_metadata):
-            _pass_metadata = stage_metadata.pass_metadata
+        if self.condition.evaluate(metadata=_eval_metadata):
+            _pass_metadata = stage_metadata.sample_metadata
             _scheduler_metadata = stage_metadata.scheduler_metadata
 
             logger.info(
-                f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition passed → Injecting stage "
-                f"'{self.next_stage_cls.__name__}' with metadata: {_pass_metadata.values}\n{'=' * 30}"
+                f"\n{'=' * 30}\n[{self.__class__.__name__}] "
+                "Condition passed -> Injecting stage "
+                f"'{self.next_stage_cls.__name__}' with metadata:"
+                " {_pass_metadata.values}\n{'=' * 30}",
             )
 
             single_requested_stage_cls: AbstractStage = self.next_stage_cls[0]

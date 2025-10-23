@@ -6,7 +6,9 @@
 from abc import abstractmethod
 from typing import Optional
 
-from saxs.saxs.core.pipeline.condition.abstract_condition import SampleCondition
+from saxs.saxs.core.pipeline.condition.abstract_condition import (
+    SampleCondition,
+)
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
@@ -34,7 +36,7 @@ class AbstractConditionalStage(AbstractStage):
 
 
 class AbstractRequestingStage(AbstractStage):
-    def __init__(self, metadata, policy: Optional[ChainingPolicy] = None):
+    def __init__(self, metadata, policy: ChainingPolicy | None = None):
         self.policy = policy
         super().__init__(metadata)
 
@@ -56,7 +58,8 @@ class AbstractRequestingStage(AbstractStage):
     @classmethod
     def default_policy(cls) -> "ChainingPolicy":
         """Override in subclasses to provide a fallback policy.
-        By default, returns ChainingPolicy (injects nothing)."""
+        By default, returns ChainingPolicy (injects nothing).
+        """
         return ChainingPolicy()
 
     @abstractmethod
