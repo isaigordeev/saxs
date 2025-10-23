@@ -74,4 +74,6 @@ class PolicySpec:
     policy_cls: type[ChainingPolicy]
     condition: type[StageCondition]
     condition_kwargs: dict[str, Any]
-    next_stage_ids: list[PolicySpecId] | None = None
+    pending_stages: list[StageSpecId] | None = (
+        None  # or default types and not vars
+    )
