@@ -28,9 +28,7 @@ class AbstractStage(ABC):
         return result
 
     @abstractmethod
-    def _process(
-        self, sample_data: SAXSSample
-    ) -> tuple["SAXSSample", Optional[dict]]:
+    def _process(self, sample_data: SAXSSample) -> tuple["SAXSSample"]:
         """Override in subclass. Return (updated_sample,
         optional_metadata_dict)."""
         raise NotImplementedError

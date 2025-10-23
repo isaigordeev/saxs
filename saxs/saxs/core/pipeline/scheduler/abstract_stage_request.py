@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
 @dataclass(frozen=True)
@@ -22,4 +23,4 @@ class AbstractStageApprovalRequest:
 @dataclass(frozen=True)
 class StageApprovalRequest(AbstractStageApprovalRequest):
     stage: AbstractStage
-    metadata: AbstractSchedulerMetadata
+    metadata: AbstractStageMetadata

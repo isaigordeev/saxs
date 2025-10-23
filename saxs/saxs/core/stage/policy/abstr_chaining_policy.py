@@ -1,21 +1,26 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
-from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageApprovalRequest,
-)
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.request.abst_request import StageRequest
+
+if TYPE_CHECKING:
+    from saxs.saxs.core.pipeline.condition.abstract_condition import (
+        StageCondition,
+    )
+    from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+        StageApprovalRequest,
+    )
 
 
 class ChainingPolicy(ABC):
     def __init__(
         self,
         condition: "StageCondition",
-        next_stage_cls: list[AbstractStage],
+        pending_stages: list[AbstractStage],
     ):
         self.condition = condition
-        self.next_stage_cls: list[AbstractStage] = next_stage_cls
+        self.pending_stages: list[AbstractStage] = pending_stages
 
     @abstractmethod
     def request(

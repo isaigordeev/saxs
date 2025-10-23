@@ -46,7 +46,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
     def __new__(
         cls,
         condition: "StageCondition",  # noqa: ARG004
-        next_stage_cls: list[AbstractStage],
+        pending_stages: list[AbstractStage],
     ):
         """
         Allocate a new instance and validate input.
@@ -65,10 +65,10 @@ class SingleStageChainingPolicy(ChainingPolicy):
             If more than one next stage is provided.
         """
         # Validate before object allocation
-        if len(next_stage_cls) > 1:
+        if len(pending_stages) > 1:
             msg = (
                 f"{cls.__name__} expects at most one next stage, "
-                f"got {len(next_stage_cls)}"
+                f"got {len(pending_stages)}"
             )
             raise ValueError(msg)
 
@@ -107,29 +107,27 @@ class SingleStageChainingPolicy(ChainingPolicy):
             f"for stage '{_eval_metadata}' with metadata: {_eval_metadata.values}\n{'=' * 30}"
         )
 
-        if self.condition.evaluate(metadata=_eval_metadata):
+        if self.condition.evaluate(eval_metadata=_eval_metadata):
             _pass_metadata = stage_metadata.sample_metadata
             _scheduler_metadata = stage_metadata.scheduler_metadata
+
+            _pending_stage: AbstractStage = self.pending_stages[-1]
 
             logger.info(
                 f"\n{'=' * 30}\n[{self.__class__.__name__}] "
                 "Condition passed -> Injecting stage "
-                f"'{self.next_stage_cls.__name__}' with metadata:"
+                f"'{_pending_stage.__class__.__name__}' with metadata:"
                 " {_pass_metadata.values}\n{'=' * 30}",
             )
 
-            single_requested_stage_cls: AbstractStage = self.next_stage_cls[0]
-
             return [
                 StageApprovalRequest(
-                    single_requested_stage_cls(
-                        metadata=_pass_metadata,
-                    ),
-                    _scheduler_metadata,
+                    stage=_pending_stage,
+                    metadata=_pass_metadata,
                 ),
             ]
 
         logger.info(
-            f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition failed → No stage injected for '{self.next_stage_cls}'\n{'=' * 30}"
+            f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition failed → No stage injected for '{self.pending_stages}'\n{'=' * 30}"
         )
         return []

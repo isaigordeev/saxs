@@ -41,7 +41,7 @@ class FindAllPeaksStage(AbstractRequestingStage):
 
         return SingleStageChainingPolicy(
             condition=ChainingPeakCondition("peaks"),
-            next_stage_cls=ProcessFitPeakStage,
+            pending_stages=ProcessFitPeakStage,
         )
 
     def _process(self, sample_data):
