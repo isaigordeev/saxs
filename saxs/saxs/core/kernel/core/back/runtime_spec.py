@@ -25,6 +25,9 @@ from saxs.saxs.core.stage.abstract_stage import (
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
+StageSpecId = str
+PolicySpecId = str
+
 
 @dataclass
 class StageSpec:
@@ -44,13 +47,13 @@ class StageSpec:
         this stage.
     """
 
-    id: str
+    id: StageSpecId
     stage_cls: type[AbstractStage]
     kwargs: dict[str, Any] | None = None
     metadata: AbstractStageMetadata | None = None
-    policy_id: str | None = None
-    before: list[str] | None = None
-    after: list[str] | None = None
+    policy_id: PolicySpecId | None = None
+    before: list[StageSpecId] | None = None
+    after: list[StageSpecId] | None = None
 
 
 @dataclass
@@ -67,8 +70,8 @@ class PolicySpec:
         this policy connects to.
     """
 
-    id: str
+    id: PolicySpecId
     policy_cls: type[ChainingPolicy]
     condition: type[StageCondition]
     condition_kwargs: dict[str, Any]
-    next_stage_ids: list[str] | None = None
+    next_stage_ids: list[PolicySpecId] | None = None
