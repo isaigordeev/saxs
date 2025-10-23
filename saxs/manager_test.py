@@ -5,7 +5,7 @@ from saxs.saxs.peak.parabole_kernel import (
 from saxs.saxs.phase.default_kernel import DefaultPhaseKernel
 
 
-def test_manager_runs_without_error():
+def test_manager_runs_without_error() -> None:
     """
     Test that the Manager runs the processing pipeline.
 
@@ -20,6 +20,6 @@ def test_manager_runs_without_error():
     )
 
     # Call the processing pipeline
-    manager_instance = manager()
+    manager()
     # Check that result is a dictionary (based on AbstractPeakKernel.gat
     # hering)

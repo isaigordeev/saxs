@@ -27,7 +27,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
         self.data = {}
         self.mask_factor = 0
 
-    def peak_searching(self, height=0, distance=5, prominence=0.1):
+    def peak_searching(self, height=0, distance=5, prominence=0.1) -> None:
         self.peaks, self.peaks_data = find_peaks(
             self.difference,
             height=height,  # for sample
@@ -46,8 +46,9 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                 #     self.peaks = np.delete(self.peaks, *np.where(self.peaks == self.peak_previous))
                 # self.peak_widths = peak_widths(self.difference, self.peaks, rel_height=0.6)
                 return True
+        return None
 
-    def custom_peak_fitting_with_parabole(self, i):
+    def custom_peak_fitting_with_parabole(self, i) -> None:
         if len(self.peaks) > i:
             if np.size(self.peaks) != 0:
                 # left_base = abs(self.peaks[i] - self.peaks_data['left_bases'][i])
@@ -111,7 +112,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                     # print(new_delta, 'new delta')
 
                     smoothed_difference = current_peak_parabole(
-                        self.q, popt1[0], popt1[1]
+                        self.q, popt1[0], popt1[1],
                     )
 
                     # fixed_metric
@@ -121,8 +122,8 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                     metric = np.mean(
                         np.square(
                             smoothed_difference[period1_fix:period2_fix]
-                            - self.difference_start[period1_fix:period2_fix]
-                        )
+                            - self.difference_start[period1_fix:period2_fix],
+                        ),
                     ) / (delta)
 
                     # plt.clf()
@@ -151,7 +152,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                 # print(start_delta, 'best delta')
 
                 current_parabole = current_peak_parabole(
-                    self.q, popt[0], popt[1]
+                    self.q, popt[0], popt[1],
                 )[period1:period2]
                 plt.clf()
                 plt.plot(self.q, self.I_cut_background_reduced)
@@ -162,7 +163,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                 )
                 # plt.plot(self.q, smoothed_y, label='smooth gen')
                 plt.plot(
-                    self.q[period1:period2], current_parabole, label="smooth"
+                    self.q[period1:period2], current_parabole, label="smooth",
                 )
                 # plt.plot(self.q[period1:period2], current_parabole, 'x')
                 plt.legend()
@@ -170,7 +171,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                 # print({popt[0]/self.delta_q})
                 # plt.savefig(('heap/parabole_' + str(p_num) + '.png'))
                 plt.savefig(
-                    ("heap/parabole_" + str(self.ppeak_number) + ".pdf")
+                    "heap/parabole_" + str(self.ppeak_number) + ".pdf",
                 )
 
                 self.ppeak_number += 1
@@ -200,9 +201,6 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
             def gauss(x, c, b):
                 return c * np.exp(-((x - self.q[self.peaks[i]]) ** 2) / (b**2))
 
-            print(self.peaks[i])
-            print(delta)
-            print(self.difference[period1:period2])
             if period1 != period2:
                 popt, pcov = curve_fit(
                     f=gauss,
@@ -247,8 +245,9 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                     self.peaks[i],
                     perr,
                 )
+        return None
 
-    def peak_substraction(self, i):
+    def peak_substraction(self, i) -> int | None:
         self.peak_empty = False
 
         self.custom_peak_fitting_with_parabole(i)
@@ -256,7 +255,6 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
 
         if peak is None:
             self.peak_empty = True
-            print("peak error empty")
             return 0
 
         # while peak[9][1] / peak[7] > 0.2:
@@ -272,7 +270,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
         valid_zone = np.arange(-5, 6, 1)  # TODO
         for x in valid_zone:
             self.peak_previous = np.append(
-                self.peak_previous, self.peaks[i] + x
+                self.peak_previous, self.peaks[i] + x,
             )
 
         self.peaks_analysed = np.append(self.peaks_analysed, (peak[4], peak[5]))
@@ -290,9 +288,10 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
         self.filtering_negative()
         self.stage_plot()
         self.peak_number += 1
+        return None
         # self.peaks_boundaries = np.append(self.peaks_boundaries, (peak[0], peak[1]))
 
-    def stage_plot(self):
+    def stage_plot(self) -> None:
         plt.clf()
         plt.plot(
             self.q,
@@ -330,10 +329,10 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
             + self.filename
             + "_peak:"
             + str(self.peak_number)
-            + ".pdf"
+            + ".pdf",
         )
 
-    def result_plot(self):
+    def result_plot(self) -> None:
         plt.clf()
         self.peaks_detected = self.peaks_detected.astype(int)
 
@@ -359,7 +358,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
         plt.plot(self.q, self.total_fit, linewidth=2, label="total")
         plt.legend()
         plt.savefig(
-            self.file_analyse_dir + "/10_result_" + self.filename + ".pdf"
+            self.file_analyse_dir + "/10_result_" + self.filename + ".pdf",
         )
 
         plt.clf()
@@ -373,7 +372,7 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
         plt.plot(self.q, np.zeros(len(self.q)), label="zero_level")
         plt.legend()
         plt.savefig(
-            self.file_analyse_dir + "/11_result_raw_" + self.filename + ".pdf"
+            self.file_analyse_dir + "/11_result_raw_" + self.filename + ".pdf",
         )
 
         # plt.clf()
@@ -383,11 +382,11 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
         # plt.legend()
         # plt.savefig(self.file_analyse_dir + '/11_result_raw_' + self.file + '.pdf')
 
-    def peak_processing(self, number_peak=INFINITY, get=False):
+    def peak_processing(self, number_peak=INFINITY, get=False) -> None:
         while number_peak > 0:
             current_peak = 0
             self.peak_searching(
-                height=0, prominence=PROMINENCE, distance=10
+                height=0, prominence=PROMINENCE, distance=10,
             )  # TODO good parameters and metric of suspicious peaks
             if len(self.peaks) != 0:
                 while len(self.peaks) > current_peak and number_peak > 0:
@@ -405,16 +404,15 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
         y = np.zeros_like(x)
         number = 0
         for i in range(0, len(params), 3):
-            mean, amplitude, std_dev = params[i : i + 3]
+            _mean, amplitude, std_dev = params[i : i + 3]
             y += amplitude * np.exp(
-                -(((x - self.peaks_analysed_q[number]) / std_dev) ** 2)
+                -(((x - self.peaks_analysed_q[number]) / std_dev) ** 2),
             )
             number += 1
         return y
 
-    def sum_total_fit(self):
+    def sum_total_fit(self) -> None:
         if len(self.params) != 0:
-            print(self.params)
 
             def loss_function(params):
                 # y_pred = gaussian_sum(self.q, *params)
@@ -432,12 +430,12 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
             plt.title(str(sorted(self.params.tolist()[1::3])))
             plt.plot(self.q, self.I_cut_background_reduced, "g--", label="raw")
             plt.plot(
-                self.q, y_fit, "r-", label="found " + str(self.peak_number)
+                self.q, y_fit, "r-", label="found " + str(self.peak_number),
             )
 
             for x in self.peaks_x:
                 plt.axvline(
-                    x, color="red", linestyle="--", label="Vertical Line"
+                    x, color="red", linestyle="--", label="Vertical Line",
                 )
 
             plt.legend()
@@ -448,13 +446,13 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                 self.file_analyse_dir
                 + "/xx_total_fit_"
                 + self.filename
-                + ".pdf"
+                + ".pdf",
             )
             # plt.show()
 
         else:
             plt.plot(
-                self.q, self.I_cut_background_reduced, "g--", label="not found"
+                self.q, self.I_cut_background_reduced, "g--", label="not found",
             )
             plt.legend()
             plt.xlabel("x")
@@ -463,10 +461,10 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
                 self.file_analyse_dir
                 + "/xx_not_found_"
                 + self.filename
-                + ".pdf"
+                + ".pdf",
             )
 
-    def postprocessing(self):
+    def postprocessing(self) -> None:
         to_delete = []
 
         self.peaks_analysed_q = sorted(self.peaks_analysed_q)
@@ -498,10 +496,9 @@ class PDefaultPeakClassificator(DefaultPeakApplication):
         # dI = self.dI[self.peaks_detected][sorted_indices_q]
         # peaks_detected = self.peaks_detected[sorted_indices_q]
         np.sum(self.total_fit - self.I_cut_background_reduced) / np.sum(
-            self.I_cut_background_reduced
+            self.I_cut_background_reduced,
         )
         # print(error, 'Error')
-        print("WRITING {}".format(self.filename))
         return {
             "peak_number": self.peak_number,
             "q": q.tolist(),

@@ -2,16 +2,13 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-"""
-Tests for functions.py module.
-"""
+"""Tests for functions.py module."""
 
 import time
 from unittest.mock import patch
 
 import numpy as np
 import pytest
-
 from saxs.saxs.processing.functions import (
     background_exponent,
     background_hyberbole,
@@ -26,7 +23,7 @@ from saxs.saxs.processing.functions import (
 class TestBackgroundFunctions:
     """Test cases for background fitting functions."""
 
-    def test_background_exponent_basic(self):
+    def test_background_exponent_basic(self) -> None:
         """Test background_exponent function with basic inputs."""
         x = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
         a, b = 2.0, 1.5
@@ -42,7 +39,7 @@ class TestBackgroundFunctions:
         assert isinstance(result2, np.ndarray)
         assert len(result2) == len(x)
 
-    def test_background_exponent_edge_cases(self):
+    def test_background_exponent_edge_cases(self) -> None:
         """Test background_exponent with edge cases."""
         # Test with single value
         x = np.array([1.0])
@@ -60,7 +57,7 @@ class TestBackgroundFunctions:
         expected = np.array([np.exp(-1.0), 1.0, np.exp(1.0)])
         np.testing.assert_array_almost_equal(result, expected)
 
-    def test_background_hyberbole_basic(self):
+    def test_background_hyberbole_basic(self) -> None:
         """Test background_hyberbole function with basic inputs."""
         x = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
         a, b = 2.0, 1.5
@@ -76,7 +73,7 @@ class TestBackgroundFunctions:
         assert isinstance(result2, np.ndarray)
         assert len(result2) == len(x)
 
-    def test_background_hyberbole_edge_cases(self):
+    def test_background_hyberbole_edge_cases(self) -> None:
         """Test background_hyberbole with edge cases."""
         # Test with single value
         x = np.array([1.0])
@@ -89,7 +86,7 @@ class TestBackgroundFunctions:
         expected = np.array([4.0, 1.0, 0.25])
         np.testing.assert_array_almost_equal(result, expected)
 
-    def test_background_hyberbole_zero_handling(self):
+    def test_background_hyberbole_zero_handling(self) -> None:
         """Test background_hyberbole with zero and negative values."""
         # Test with zero (should cause division by zero)
         x = np.array([0.0, 0.1, 0.2])
@@ -105,7 +102,7 @@ class TestBackgroundFunctions:
 class TestGaussianFunctions:
     """Test cases for Gaussian-related functions."""
 
-    def test_gauss_basic(self):
+    def test_gauss_basic(self) -> None:
         """Test gauss function with basic inputs."""
         x = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         mu, sigma, ampl = 2.0, 1.0, 1.0
@@ -120,7 +117,7 @@ class TestGaussianFunctions:
         peak_idx = np.argmax(result)
         assert abs(x[peak_idx] - mu) < 0.1  # Should be close to mu
 
-    def test_gauss_parameters(self):
+    def test_gauss_parameters(self) -> None:
         """Test gauss function with different parameters."""
         x = np.linspace(-5, 5, 100)
 
@@ -136,10 +133,10 @@ class TestGaussianFunctions:
         # Test with different amplitudes
         result3 = gauss(x, 0.0, 1.0, 2.0)
         assert np.max(result3) > np.max(
-            result1
+            result1,
         )  # Higher amplitude should give higher peak
 
-    def test_gauss_edge_cases(self):
+    def test_gauss_edge_cases(self) -> None:
         """Test gauss function with edge cases."""
         x = np.array([0.0])
         mu, sigma, ampl = 0.0, 1.0, 1.0
@@ -151,7 +148,7 @@ class TestGaussianFunctions:
         result2 = gauss(x, 0.0, 0.01, 1.0)
         assert result2[0] == ampl
 
-    def test_gaussian_sum_basic(self):
+    def test_gaussian_sum_basic(self) -> None:
         """Test gaussian_sum function with basic inputs."""
         x = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         params = [1.0, 1.0, 1.0, 3.0, 0.5, 0.5]  # Two Gaussians
@@ -162,7 +159,7 @@ class TestGaussianFunctions:
         assert len(result) == len(x)
         assert np.all(result >= 0)  # Should be non-negative
 
-    def test_gaussian_sum_parameter_validation(self):
+    def test_gaussian_sum_parameter_validation(self) -> None:
         """Test gaussian_sum with different parameter counts."""
         x = np.array([0.0, 1.0, 2.0])
 
@@ -179,9 +176,9 @@ class TestGaussianFunctions:
         # Test with invalid parameter count (should work but may give unexpected results)
         params3 = [1.0, 1.0]  # Only 2 parameters
         with pytest.raises(ValueError):
-            result3 = gaussian_sum(x, *params3)
+            gaussian_sum(x, *params3)
 
-    def test_gaussian_sum_empty_params(self):
+    def test_gaussian_sum_empty_params(self) -> None:
         """Test gaussian_sum with empty parameters."""
         x = np.array([0.0, 1.0, 2.0])
 
@@ -194,7 +191,7 @@ class TestGaussianFunctions:
 class TestParaboleFunction:
     """Test cases for parabole function."""
 
-    def test_parabole_basic(self):
+    def test_parabole_basic(self) -> None:
         """Test parabole function with basic inputs."""
         x = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         mu, sigma, ampl = 2.0, 1.0, 1.0
@@ -208,7 +205,7 @@ class TestParaboleFunction:
         peak_idx = np.argmax(result)
         assert abs(x[peak_idx] - mu) < 0.1  # Should be close to mu
 
-    def test_parabole_parameters(self):
+    def test_parabole_parameters(self) -> None:
         """Test parabole function with different parameters."""
         x = np.linspace(-2, 2, 100)
 
@@ -221,7 +218,7 @@ class TestParaboleFunction:
         assert len(result1) == len(x)
         assert len(result2) == len(x)
 
-    def test_parabole_edge_cases(self):
+    def test_parabole_edge_cases(self) -> None:
         """Test parabole function with edge cases."""
         x = np.array([0.0])
         mu, sigma, ampl = 0.0, 1.0, 1.0
@@ -237,7 +234,7 @@ class TestParaboleFunction:
 class TestMovingAverageFunction:
     """Test cases for moving_average function."""
 
-    def test_moving_average_basic(self):
+    def test_moving_average_basic(self) -> None:
         """Test moving_average function with basic inputs."""
         data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         window_size = 3
@@ -250,7 +247,7 @@ class TestMovingAverageFunction:
         # Check that the result is smoothed
         assert np.all(result >= 0)  # Should be non-negative for positive input
 
-    def test_moving_average_window_sizes(self):
+    def test_moving_average_window_sizes(self) -> None:
         """Test moving_average with different window sizes."""
         data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
@@ -268,7 +265,7 @@ class TestMovingAverageFunction:
         assert isinstance(result3, np.ndarray)
         assert len(result3) == len(data)
 
-    def test_moving_average_edge_cases(self):
+    def test_moving_average_edge_cases(self) -> None:
         """Test moving_average with edge cases."""
         # Test with single element
         data = np.array([5])
@@ -281,7 +278,7 @@ class TestMovingAverageFunction:
         assert isinstance(result, np.ndarray)
         assert len(result) == 2
 
-    def test_moving_average_constant_data(self):
+    def test_moving_average_constant_data(self) -> None:
         """Test moving_average with constant data."""
         data = np.array([5, 5, 5, 5, 5])
         result = moving_average(data, 3)
@@ -290,7 +287,7 @@ class TestMovingAverageFunction:
         # Should return the same constant value
         np.testing.assert_array_almost_equal(result, expected)
 
-    def test_moving_average_negative_values(self):
+    def test_moving_average_negative_values(self) -> None:
         """Test moving_average with negative values."""
         data = np.array([-1, -2, -3, -4, -5])
         result = moving_average(data, 3)
@@ -303,7 +300,7 @@ class TestMovingAverageFunction:
 class TestTimerDecorator:
     """Test cases for timer_decorator function."""
 
-    def test_timer_decorator_basic(self):
+    def test_timer_decorator_basic(self) -> None:
         """Test timer_decorator with a basic function."""
 
         @timer_decorator
@@ -313,7 +310,7 @@ class TestTimerDecorator:
         result = test_func(5)
         assert result == 10
 
-    def test_timer_decorator_with_print(self):
+    def test_timer_decorator_with_print(self) -> None:
         """Test timer_decorator with print output."""
 
         @timer_decorator
@@ -330,7 +327,7 @@ class TestTimerDecorator:
             assert "test_func" in call_args
             assert "executed in" in call_args
 
-    def test_timer_decorator_preserves_function_metadata(self):
+    def test_timer_decorator_preserves_function_metadata(self) -> None:
         """Test that timer_decorator preserves function metadata."""
 
         @timer_decorator
@@ -342,7 +339,7 @@ class TestTimerDecorator:
         assert test_func.__name__ == "test_func"
         assert test_func.__doc__ == "Test function docstring."
 
-    def test_timer_decorator_with_args_and_kwargs(self):
+    def test_timer_decorator_with_args_and_kwargs(self) -> None:
         """Test timer_decorator with functions that take args and kwargs."""
 
         @timer_decorator
@@ -352,13 +349,14 @@ class TestTimerDecorator:
         result = test_func(1, y=3, z=4)
         assert result == 8
 
-    def test_timer_decorator_with_exception(self):
+    def test_timer_decorator_with_exception(self) -> None:
         """Test timer_decorator with functions that raise exceptions."""
 
         @timer_decorator
         def test_func(x):
             if x < 0:
-                raise ValueError("Negative value")
+                msg = "Negative value"
+                raise ValueError(msg)
             return x * 2
 
         # Test normal case
@@ -373,7 +371,7 @@ class TestTimerDecorator:
 class TestFunctionIntegration:
     """Integration tests for processing functions."""
 
-    def test_background_functions_comparison(self):
+    def test_background_functions_comparison(self) -> None:
         """Test that different background functions give different results."""
         x = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
 
@@ -387,7 +385,7 @@ class TestFunctionIntegration:
         assert np.all(result_exp > 0)
         assert np.all(result_hyp > 0)
 
-    def test_gaussian_functions_consistency(self):
+    def test_gaussian_functions_consistency(self) -> None:
         """Test consistency between gauss and gaussian_sum functions."""
         x = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
 
@@ -399,7 +397,7 @@ class TestFunctionIntegration:
 
         np.testing.assert_array_almost_equal(result1, result2)
 
-    def test_smoothing_effect_of_moving_average(self):
+    def test_smoothing_effect_of_moving_average(self) -> None:
         """Test that moving_average actually smooths the data."""
         # Create noisy data
         x = np.linspace(0, 10, 100)
@@ -414,7 +412,7 @@ class TestFunctionIntegration:
 
         assert smoothed_std < original_std
 
-    def test_function_parameter_ranges(self):
+    def test_function_parameter_ranges(self) -> None:
         """Test functions with various parameter ranges."""
         x = np.linspace(0.1, 5.0, 50)
 

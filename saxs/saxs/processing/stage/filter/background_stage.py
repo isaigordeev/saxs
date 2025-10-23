@@ -1,10 +1,9 @@
-from scipy.optimize import curve_fit
-
 from saxs.application.settings_processing import BACKGROUND_COEF
 from saxs.logging.logger import logger
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.processing.functions import background_hyberbole
+from scipy.optimize import curve_fit
 
 
 class BackgroundStage(AbstractStage):
@@ -13,7 +12,7 @@ class BackgroundStage(AbstractStage):
             values={
                 "_background_func": _background_func,
                 "_background_coef": BACKGROUND_COEF,
-            }
+            },
         )
 
     def _process(self, stage_data):
@@ -31,11 +30,11 @@ class BackgroundStage(AbstractStage):
             f"Q range:       [{min(q_vals)}, {max(q_vals)}]\n"
             f"Intensity:     [{min(intensity)}, {max(intensity)}]\n"
             f"Error:         [{min(error)}, {max(error)}]\n"
-            f"============================="
+            f"=============================",
         )
 
         # Fit background
-        popt, pcov = curve_fit(
+        popt, _pcov = curve_fit(
             f=_background_func,
             xdata=q_vals,
             ydata=intensity,
@@ -46,7 +45,7 @@ class BackgroundStage(AbstractStage):
         # Log fitted parameters
         logger.info(
             f"\nFitted background parameters:\n"
-            f"a = {popt[0]:.4f}, b = {popt[1]:.4f}"
+            f"a = {popt[0]:.4f}, b = {popt[1]:.4f}",
         )
 
         # Subtract background
@@ -61,7 +60,7 @@ class BackgroundStage(AbstractStage):
             f"Q range:                 [{min(q_vals)}, {max(q_vals)}]\n"
             f"Intensity range:         [{min(intensity_subtracted)}, {max(intensity_subtracted)}]\n"
             f"Background values:       [{min(background)}, {max(background)}]\n"
-            f"============================="
+            f"=============================",
         )
 
         return stage_data.set_intensity(intensity_subtracted), None

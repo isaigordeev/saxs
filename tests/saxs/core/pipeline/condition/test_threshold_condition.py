@@ -2,29 +2,26 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-"""
-Tests for threshold_condition.py module.
-"""
+"""Tests for threshold_condition.py module."""
 
 import pytest
-
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.pipeline.condition.threshold_condition import (
     ThresholdCondition,
 )
+from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 
 
 class TestThresholdCondition:
     """Test cases for ThresholdCondition class."""
 
-    def test_threshold_condition_creation(self):
+    def test_threshold_condition_creation(self) -> None:
         """Test creating ThresholdCondition with key and threshold."""
         condition = ThresholdCondition(key="intensity", threshold=100.0)
 
         assert condition.key == "intensity"
         assert condition.threshold == 100.0
 
-    def test_threshold_condition_evaluate_above_threshold(self):
+    def test_threshold_condition_evaluate_above_threshold(self) -> None:
         """Test evaluate method with value above threshold."""
         condition = ThresholdCondition(key="intensity", threshold=100.0)
 
@@ -40,7 +37,7 @@ class TestThresholdCondition:
         sample_below = AbstractSampleMetadata({"intensity": 50.0})
         assert condition.evaluate(sample_below) is False
 
-    def test_threshold_condition_evaluate_missing_key(self):
+    def test_threshold_condition_evaluate_missing_key(self) -> None:
         """Test evaluate method when key is missing from metadata."""
         condition = ThresholdCondition(key="temperature", threshold=20.0)
 
@@ -52,7 +49,7 @@ class TestThresholdCondition:
         sample_empty = AbstractSampleMetadata()
         assert condition.evaluate(sample_empty) is False  # 0 > 20.0 is False
 
-    def test_threshold_condition_evaluate_with_different_numeric_types(self):
+    def test_threshold_condition_evaluate_with_different_numeric_types(self) -> None:
         """Test evaluate method with different numeric types."""
         condition = ThresholdCondition(key="value", threshold=10.0)
 
@@ -70,7 +67,7 @@ class TestThresholdCondition:
         sample_float_below = AbstractSampleMetadata({"value": 5.5})
         assert condition.evaluate(sample_float_below) is False
 
-    def test_threshold_condition_evaluate_with_negative_values(self):
+    def test_threshold_condition_evaluate_with_negative_values(self) -> None:
         """Test evaluate method with negative values."""
         condition = ThresholdCondition(key="value", threshold=-10.0)
 
@@ -84,7 +81,7 @@ class TestThresholdCondition:
             condition.evaluate(sample_below) is False
         )  # -15.0 > -10.0 is False
 
-    def test_threshold_condition_evaluate_with_zero_threshold(self):
+    def test_threshold_condition_evaluate_with_zero_threshold(self) -> None:
         """Test evaluate method with zero threshold."""
         condition = ThresholdCondition(key="value", threshold=0.0)
 
@@ -102,7 +99,7 @@ class TestThresholdCondition:
             condition.evaluate(sample_negative) is False
         )  # -1.0 > 0.0 is False
 
-    def test_threshold_condition_evaluate_with_non_numeric_values(self):
+    def test_threshold_condition_evaluate_with_non_numeric_values(self) -> None:
         """Test evaluate method with non-numeric values."""
         condition = ThresholdCondition(key="value", threshold=10.0)
 
@@ -124,7 +121,7 @@ class TestThresholdCondition:
         except (TypeError, ValueError):
             pytest.skip("Boolean comparison not supported or raises error")
 
-    def test_threshold_condition_evaluate_with_very_large_values(self):
+    def test_threshold_condition_evaluate_with_very_large_values(self) -> None:
         """Test evaluate method with very large values."""
         condition = ThresholdCondition(key="value", threshold=1e6)
 
@@ -136,7 +133,7 @@ class TestThresholdCondition:
         sample_small = AbstractSampleMetadata({"value": 5e5})
         assert condition.evaluate(sample_small) is False
 
-    def test_threshold_condition_evaluate_with_very_small_values(self):
+    def test_threshold_condition_evaluate_with_very_small_values(self) -> None:
         """Test evaluate method with very small values."""
         condition = ThresholdCondition(key="value", threshold=1e-6)
 
@@ -148,7 +145,7 @@ class TestThresholdCondition:
         sample_below = AbstractSampleMetadata({"value": 5e-7})
         assert condition.evaluate(sample_below) is False
 
-    def test_threshold_condition_evaluate_float_precision(self):
+    def test_threshold_condition_evaluate_float_precision(self) -> None:
         """Test evaluate method with float precision issues."""
         condition = ThresholdCondition(key="value", threshold=0.1)
 
@@ -159,7 +156,7 @@ class TestThresholdCondition:
         assert isinstance(result, bool)
         # The exact result depends on floating point precision
 
-    def test_threshold_condition_evaluate_with_none_value(self):
+    def test_threshold_condition_evaluate_with_none_value(self) -> None:
         """Test evaluate method with None value."""
         condition = ThresholdCondition(key="value", threshold=10.0)
 
@@ -172,19 +169,19 @@ class TestThresholdCondition:
         except (TypeError, ValueError):
             pytest.skip("None value handling not supported or raises error")
 
-    def test_threshold_condition_multiple_conditions(self):
+    def test_threshold_condition_multiple_conditions(self) -> None:
         """Test using multiple ThresholdCondition instances."""
         condition_intensity = ThresholdCondition(
-            key="intensity", threshold=100.0
+            key="intensity", threshold=100.0,
         )
         condition_temperature = ThresholdCondition(
-            key="temperature", threshold=20.0
+            key="temperature", threshold=20.0,
         )
         condition_pressure = ThresholdCondition(key="pressure", threshold=1.0)
 
         # Test with sample that passes all conditions
         sample_all_pass = AbstractSampleMetadata(
-            {"intensity": 150.0, "temperature": 25.0, "pressure": 2.0}
+            {"intensity": 150.0, "temperature": 25.0, "pressure": 2.0},
         )
         assert condition_intensity.evaluate(sample_all_pass) is True
         assert condition_temperature.evaluate(sample_all_pass) is True
@@ -196,7 +193,7 @@ class TestThresholdCondition:
                 "intensity": 50.0,  # Below threshold
                 "temperature": 25.0,  # Above threshold
                 "pressure": 0.5,  # Below threshold
-            }
+            },
         )
         assert condition_intensity.evaluate(sample_partial_pass) is False
         assert condition_temperature.evaluate(sample_partial_pass) is True

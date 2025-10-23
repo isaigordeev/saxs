@@ -4,7 +4,7 @@
 
 
 from dataclasses import dataclass, field, replace
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import numpy as np
 
@@ -25,7 +25,7 @@ class SAXSSample(AData):
     intensity: Intensity
     intensity_error: IntensityError = None
     metadata: AbstractSampleMetadata = field(
-        default_factory=AbstractSampleMetadata
+        default_factory=AbstractSampleMetadata,
     )
 
     # --- Getters ---
@@ -66,7 +66,7 @@ class SAXSSample(AData):
         return replace(self, intensity=Intensity(intensity_array))
 
     def set_intensity_error(
-        self, error_array: Optional[np.ndarray]
+        self, error_array: np.ndarray | None,
     ) -> "SAXSSample":
         """Set intensity_error from raw ndarray (or None)."""
         return replace(
@@ -76,22 +76,22 @@ class SAXSSample(AData):
             else None,
         )
 
-    def set_metadata_dict(self, metadata_dict: Dict[str, Any]) -> "SAXSSample":
+    def set_metadata_dict(self, metadata_dict: dict[str, Any]) -> "SAXSSample":
         """Set metadata from raw dictionary."""
         return replace(
-            self, metadata=AbstractSampleMetadata(values=metadata_dict)
+            self, metadata=AbstractSampleMetadata(values=metadata_dict),
         )
 
     def append_metadata_dict(
-        self, new_metadata: Dict[str, Any]
+        self, new_metadata: dict[str, Any],
     ) -> "SAXSSample":
         merged = AbstractSampleMetadata(
-            {**self.get_metadata_dict(), **new_metadata}
+            {**self.get_metadata_dict(), **new_metadata},
         )
         return replace(self, metadata=merged)
 
     def set_metadata(
-        self, new_metadata: AbstractSampleMetadata
+        self, new_metadata: AbstractSampleMetadata,
     ) -> "SAXSSample":
         return replace(self, metadata=new_metadata)
 
@@ -108,7 +108,7 @@ class SAXSSample(AData):
 
         # Compare intensity
         if not np.array_equal(
-            self.intensity.unwrap(), other.intensity.unwrap()
+            self.intensity.unwrap(), other.intensity.unwrap(),
         ):
             return False
 
@@ -120,17 +120,13 @@ class SAXSSample(AData):
         if (
             self.intensity_error is not None
             and other.intensity_error is not None
+        ) and not np.array_equal(
+            self.intensity_error.unwrap(), other.intensity_error.unwrap(),
         ):
-            if not np.array_equal(
-                self.intensity_error.unwrap(), other.intensity_error.unwrap()
-            ):
-                return False
-
-        # Compare metadata dictionaries
-        if self.metadata.unwrap() != other.metadata.unwrap():
             return False
 
-        return True
+        # Compare metadata dictionaries
+        return self.metadata.unwrap() == other.metadata.unwrap()
 
     def __str__(self) -> str:
         q_len = len(self.q_values.unwrap()) if self.q_values else 0

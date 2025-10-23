@@ -2,13 +2,9 @@
 # Created by Isai GORDEEV on 19/09/2025.
 #
 
-"""
-Tests for insertion_policy.py module.
-"""
+"""Tests for insertion_policy.py module."""
 
 import pytest
-
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
@@ -19,31 +15,32 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     NeverInsertPolicy,
     SaturationInsertPolicy,
 )
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
 class TestInsertionPolicy:
     """Test cases for InsertionPolicy abstract base class."""
 
-    def test_insertion_policy_is_abstract(self):
+    def test_insertion_policy_is_abstract(self) -> None:
         """Test that InsertionPolicy cannot be instantiated directly."""
         with pytest.raises(TypeError):
             InsertionPolicy()
 
-    def test_insertion_policy_has_call_method(self):
+    def test_insertion_policy_has_call_method(self) -> None:
         """Test that InsertionPolicy has the abstract __call__ method."""
-        assert hasattr(InsertionPolicy, "__call__")
-        assert callable(getattr(InsertionPolicy, "__call__"))
+        assert callable(InsertionPolicy)
+        assert callable(InsertionPolicy.__call__)
 
 
 class TestAlwaysInsertPolicy:
     """Test cases for AlwaysInsertPolicy class."""
 
-    def test_always_insert_policy_creation(self):
+    def test_always_insert_policy_creation(self) -> None:
         """Test creating AlwaysInsertPolicy."""
         policy = AlwaysInsertPolicy()
         assert isinstance(policy, InsertionPolicy)
 
-    def test_always_insert_policy_always_returns_true(self, stage_request):
+    def test_always_insert_policy_always_returns_true(self, stage_request) -> None:
         """Test that AlwaysInsertPolicy always returns True."""
         policy = AlwaysInsertPolicy()
 
@@ -58,7 +55,7 @@ class TestAlwaysInsertPolicy:
         different_request = StageApprovalRequest(stage=None, metadata=metadata)
         assert policy(different_request) is True
 
-    def test_always_insert_policy_with_multiple_requests(self, stage_request):
+    def test_always_insert_policy_with_multiple_requests(self, stage_request) -> None:
         """Test AlwaysInsertPolicy with multiple requests."""
         policy = AlwaysInsertPolicy()
 
@@ -73,12 +70,12 @@ class TestAlwaysInsertPolicy:
 class TestNeverInsertPolicy:
     """Test cases for NeverInsertPolicy class."""
 
-    def test_never_insert_policy_creation(self):
+    def test_never_insert_policy_creation(self) -> None:
         """Test creating NeverInsertPolicy."""
         policy = NeverInsertPolicy()
         assert isinstance(policy, InsertionPolicy)
 
-    def test_never_insert_policy_always_returns_false(self, stage_request):
+    def test_never_insert_policy_always_returns_false(self, stage_request) -> None:
         """Test that NeverInsertPolicy always returns False."""
         policy = NeverInsertPolicy()
 
@@ -93,7 +90,7 @@ class TestNeverInsertPolicy:
         different_request = StageApprovalRequest(stage=None, metadata=metadata)
         assert policy(different_request) is False
 
-    def test_never_insert_policy_with_multiple_requests(self, stage_request):
+    def test_never_insert_policy_with_multiple_requests(self, stage_request) -> None:
         """Test NeverInsertPolicy with multiple requests."""
         policy = NeverInsertPolicy()
 
@@ -108,19 +105,19 @@ class TestNeverInsertPolicy:
 class TestSaturationInsertPolicy:
     """Test cases for SaturationInsertPolicy class."""
 
-    def test_saturation_insert_policy_creation(self):
+    def test_saturation_insert_policy_creation(self) -> None:
         """Test creating SaturationInsertPolicy."""
         policy = SaturationInsertPolicy()
         assert isinstance(policy, InsertionPolicy)
         assert hasattr(policy, "_calls")
         assert hasattr(policy, "_saturation")
 
-    def test_saturation_insert_policy_default_saturation(self):
+    def test_saturation_insert_policy_default_saturation(self) -> None:
         """Test SaturationInsertPolicy with default saturation value."""
         policy = SaturationInsertPolicy()
         assert policy._saturation == 6
 
-    def test_saturation_insert_policy_behavior(self, stage_request):
+    def test_saturation_insert_policy_behavior(self, stage_request) -> None:
         """Test SaturationInsertPolicy behavior up to saturation."""
         policy = SaturationInsertPolicy()
 
@@ -134,7 +131,7 @@ class TestSaturationInsertPolicy:
             assert policy(stage_request) is False
             assert policy._calls == policy._saturation
 
-    def test_saturation_insert_policy_reset_behavior(self, stage_request):
+    def test_saturation_insert_policy_reset_behavior(self, stage_request) -> None:
         """Test that SaturationInsertPolicy maintains state across calls."""
         policy = SaturationInsertPolicy()
 
@@ -149,7 +146,7 @@ class TestSaturationInsertPolicy:
         new_policy = SaturationInsertPolicy()
         assert new_policy(stage_request) is True
 
-    def test_saturation_insert_policy_with_different_requests(self):
+    def test_saturation_insert_policy_with_different_requests(self) -> None:
         """Test SaturationInsertPolicy with different request types."""
         saturation_point = 6
         policy = SaturationInsertPolicy(saturation_point)
@@ -176,24 +173,24 @@ class TestSaturationInsertPolicy:
 class TestMetadataKeyPolicy:
     """Test cases for MetadataKeyPolicy class."""
 
-    def test_metadata_key_policy_creation(self):
+    def test_metadata_key_policy_creation(self) -> None:
         """Test creating MetadataKeyPolicy with key."""
         policy = MetadataKeyPolicy(key="required_key")
         assert isinstance(policy, InsertionPolicy)
         assert policy.key == "required_key"
 
-    def test_metadata_key_policy_with_present_key(self, stage_request):
+    def test_metadata_key_policy_with_present_key(self, stage_request) -> None:
         """Test MetadataKeyPolicy when required key is present."""
         # Create request with required key
         metadata = AbstractStageMetadata(
-            {"required_key": "value", "other_key": "other_value"}
+            {"required_key": "value", "other_key": "other_value"},
         )
         request = StageApprovalRequest(stage=None, metadata=metadata)
 
         policy = MetadataKeyPolicy(key="required_key")
         assert policy(request) is True
 
-    def test_metadata_key_policy_with_missing_key(self, stage_request):
+    def test_metadata_key_policy_with_missing_key(self, stage_request) -> None:
         """Test MetadataKeyPolicy when required key is missing."""
         # Create request without required key
         metadata = AbstractStageMetadata({"other_key": "other_value"})
@@ -202,7 +199,7 @@ class TestMetadataKeyPolicy:
         policy = MetadataKeyPolicy(key="required_key")
         assert policy(request) is False
 
-    def test_metadata_key_policy_with_empty_metadata(self):
+    def test_metadata_key_policy_with_empty_metadata(self) -> None:
         """Test MetadataKeyPolicy with empty metadata."""
         metadata = AbstractStageMetadata()
         request = StageApprovalRequest(stage=None, metadata=metadata)
@@ -210,7 +207,7 @@ class TestMetadataKeyPolicy:
         policy = MetadataKeyPolicy(key="any_key")
         assert policy(request) is False
 
-    def test_metadata_key_policy_with_none_value(self):
+    def test_metadata_key_policy_with_none_value(self) -> None:
         """Test MetadataKeyPolicy when key exists but value is None."""
         metadata = AbstractStageMetadata({"required_key": None})
         request = StageApprovalRequest(stage=None, metadata=metadata)
@@ -219,10 +216,10 @@ class TestMetadataKeyPolicy:
         # Should return True because key exists, regardless of value
         assert policy(request) is True
 
-    def test_metadata_key_policy_with_different_key_names(self):
+    def test_metadata_key_policy_with_different_key_names(self) -> None:
         """Test MetadataKeyPolicy with different key names."""
         metadata = AbstractStageMetadata(
-            {"stage_type": "filter", "priority": "high", "enabled": True}
+            {"stage_type": "filter", "priority": "high", "enabled": True},
         )
         request = StageApprovalRequest(stage=None, metadata=metadata)
 
@@ -239,7 +236,7 @@ class TestMetadataKeyPolicy:
         policy4 = MetadataKeyPolicy(key="missing_key")
         assert policy4(request) is False
 
-    def test_metadata_key_policy_case_sensitivity(self):
+    def test_metadata_key_policy_case_sensitivity(self) -> None:
         """Test MetadataKeyPolicy with case-sensitive key matching."""
         metadata = AbstractStageMetadata({"StageType": "filter"})
         request = StageApprovalRequest(stage=None, metadata=metadata)
@@ -252,12 +249,12 @@ class TestMetadataKeyPolicy:
         policy_different = MetadataKeyPolicy(key="stagetype")
         assert policy_different(request) is False
 
-    def test_metadata_key_policy_with_nested_keys(self):
+    def test_metadata_key_policy_with_nested_keys(self) -> None:
         """Test MetadataKeyPolicy with nested key structures."""
         # Note: This test assumes the metadata structure supports nested access
         # If the actual implementation doesn't support this, this test should be adjusted
         metadata = AbstractStageMetadata(
-            {"config": {"stage": {"type": "filter"}}}
+            {"config": {"stage": {"type": "filter"}}},
         )
         request = StageApprovalRequest(stage=None, metadata=metadata)
 
@@ -274,10 +271,10 @@ class TestMetadataKeyPolicy:
             # If nested access isn't supported, that's also valid
             pytest.skip("Nested key access not supported")
 
-    def test_metadata_key_policy_multiple_instances(self):
+    def test_metadata_key_policy_multiple_instances(self) -> None:
         """Test using multiple MetadataKeyPolicy instances."""
         metadata = AbstractStageMetadata(
-            {"stage_type": "filter", "priority": "high", "enabled": True}
+            {"stage_type": "filter", "priority": "high", "enabled": True},
         )
         request = StageApprovalRequest(stage=None, metadata=metadata)
 

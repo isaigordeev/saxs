@@ -2,14 +2,8 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-"""
-Tests for chaining_condition.py module.
-"""
+"""Tests for chaining_condition.py module."""
 
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
-from saxs.saxs.core.pipeline.condition.chaining_condition import (
-    ChainingPeakCondition,
-)
 
 
 class TestChainingPeakCondition:

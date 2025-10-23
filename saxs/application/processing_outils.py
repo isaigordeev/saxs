@@ -23,7 +23,6 @@ def get_filenames_without_ext(folder_path):
 
 def load_generated_data(phase):
     data = np.load(f"../saxs_generated_data/P_{phase.lower()}.npy")
-    print(data.shape)
     data_3d = data[:, :, :, 0]
     data_1d = []
     for i in data_3d:
@@ -38,7 +37,7 @@ def load_generated_data(phase):
     return data_1d, data_3d, exp_data, q
 
 
-def write_generated_data_to_csv(q, I, filename):
+def write_generated_data_to_csv(q, I, filename) -> None:
     csv_file = filename
 
     data = np.array([q, I], dtype=object)
@@ -48,12 +47,11 @@ def write_generated_data_to_csv(q, I, filename):
 
         writer.writerows(data)
 
-    print(f"Data written to {csv_file} successfully.")
 
 
 def read_data(data_dir_file):
     # print(data_dir_file)
-    data_name_dir, extension = os.path.splitext(data_dir_file)
+    _data_name_dir, extension = os.path.splitext(data_dir_file)
 
     if extension == ".csv":
         data = pd.read_csv(data_dir_file, sep=",")
@@ -64,13 +62,13 @@ def read_data(data_dir_file):
             I = np.array(data.iloc[:, 1])
             dI = np.array(data.iloc[:, 2])
             return q, I, dI
-        elif data.shape[1] == 2:
+        if data.shape[1] == 2:
             q = np.array(data.iloc[:, 0])
             I = np.array(data.iloc[:, 1])
             return q, I, None
-        else:
-            raise AttributeError("Input is insufficient")
-    elif extension == ".npy":  # synthetic test_processing_data
+        msg = "Input is insufficient"
+        raise AttributeError(msg)
+    if extension == ".npy":  # synthetic test_processing_data
         assert "processed" in data_dir_file
         data = np.load(data_dir_file)
         data_3d = data[:, :, :, 0]
@@ -91,11 +89,10 @@ def read_I(data_dir_file, EXTENSION):
     data = pd.read_csv(data_dir_file + EXTENSION, sep=",")
     data = data.apply(pd.to_numeric, errors="coerce")
     data = data.dropna()
-    I = np.array(data.iloc[:, 0])
-    return I
+    return np.array(data.iloc[:, 0])
 
 
-def background_plot(q, I):
+def background_plot(q, I) -> None:
     plt.clf()
     plt.plot(q, I, "bo", linewidth=0.5, label="raw_data")
     plt.show()
@@ -104,10 +101,9 @@ def background_plot(q, I):
 
 def calculate_absolute_difference(sequence, target):
     sequence = sequence[: len(target)]
-    absolute_difference = np.sum(
-        [1 / abs(x - y) for x, y in zip(sequence, target)]
+    return np.sum(
+        [1 / abs(x - y) for x, y in zip(sequence, target, strict=False)],
     )
-    return absolute_difference
 
 
 def calculate_first_peaks(sequence, target):
@@ -115,9 +111,7 @@ def calculate_first_peaks(sequence, target):
         sequence = sequence[: len(target)]
         absolute_difference = abs(sequence[0] - target[0])
         return 1 / absolute_difference
-    else:
-        print("Can not be classified")
-        return None
+    return None
 
 
 # I, _, __, q = load_generated_data('cubic')

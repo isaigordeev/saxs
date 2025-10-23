@@ -1,10 +1,11 @@
 import time
 
-from .application import ApplicationManager
 from saxs.saxs.peak.abstract_kernel import AbstractPeakKernel
 from saxs.saxs.peak.peak_application import PeakApplication
 from saxs.saxs.phase.phase_application import PhaseApplication
 from saxs.saxs.phase.phase_classificator import AbstractPhaseKernel
+
+from .application import ApplicationManager
 
 time_start1 = time.time()
 
@@ -43,12 +44,12 @@ class Manager(ApplicationManager):
     def __call__(self):
         if self.peak_classification:
             self.peak_application_instance = PeakApplication(
-                self.peak_data_path, self.peak_kernel
+                self.peak_data_path, self.peak_kernel,
             )
             self.peak_application_instance.peak_classification_run()
 
         if self.phase_classification:
             self.phase_application_instance = PhaseApplication(
-                self.phase_data_directory, self.phase_kernel
+                self.phase_data_directory, self.phase_kernel,
             )
             self.phase_application_instance.phase_classification_run()

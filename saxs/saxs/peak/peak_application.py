@@ -42,13 +42,13 @@ class PeakApplication(ApplicationClassificator):
             name, extension = os.path.splitext(filename)
             self.samples = [(name, extension)]
 
-    def find_files_in_directory(self):
+    def find_files_in_directory(self) -> None:
         self.samples = get_filenames_without_ext(self.data_directory)
 
-    def set_output_peak_directories(self, filename):  # TODO MAKE STATIC
+    def set_output_peak_directories(self, filename) -> None:  # TODO MAKE STATIC
         self.file_analysis_dir = os.path.join(self._result_plots_dir, filename)
         self.file_analysis_dir_peaks = os.path.join(
-            self.file_analysis_dir, "peaks"
+            self.file_analysis_dir, "peaks",
         )
 
         if not os.path.exists(self.file_analysis_dir):
@@ -56,16 +56,15 @@ class PeakApplication(ApplicationClassificator):
         if not os.path.exists(self.file_analysis_dir_peaks):
             os.mkdir(self.file_analysis_dir_peaks)
 
-    def write_peaks_data(self):  # TODO MAKE STATIC
+    def write_peaks_data(self) -> None:  # TODO MAKE STATIC
         # with open('{}.json'.format(self._current_results_dir_session), 'r') as f:
         #     directory_data = json.load(f)
         with open(self._default_peak_data_path, "w") as f:
             json.dump(self.data, f, indent=4, separators=(",", ": "))
 
-    def peak_classification_run(self):
+    def peak_classification_run(self) -> None:
         for sample_name, sample_ext in self.samples:
-            sample = "{}{}".format(sample_name, sample_ext)  # TODO what is it?
-            print(sample)
+            sample = f"{sample_name}{sample_ext}"  # TODO what is it?
 
             if self.write_data:
                 self.set_output_peak_directories(sample)
@@ -92,7 +91,6 @@ class PeakApplication(ApplicationClassificator):
 
                 self.data[sample] = self.peak_classificator()
             except Exception as e:
-                print(f"Error processing sample {sample}: {e}")
                 self.data[sample] = {"error": e}
 
         if self.write_data:  # TODO per file design arch?

@@ -3,9 +3,8 @@
 #
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
 class CutStage(AbstractStage):
@@ -35,7 +34,7 @@ class CutStage(AbstractStage):
             f"Q range (after):  [{min(q_values_cut)}, {max(q_values_cut)}]\n"
             f"Intensity range:  [{min(intensity_cut)}, {max(intensity_cut)}]\n"
             f"Error range:      [{min(error_cut)}, {max(error_cut)}]\n"
-            f"============================="
+            f"=============================",
         )
 
         return _preprocessed_stage_data, None

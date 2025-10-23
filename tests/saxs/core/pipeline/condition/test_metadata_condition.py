@@ -2,9 +2,7 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-"""
-Tests for metadata_condition.py module.
-"""
+"""Tests for metadata_condition.py module."""
 
 import pytest
 from saxs.saxs.core.pipeline.condition.metadata_condition import (
@@ -16,14 +14,14 @@ from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 class TestMetadataCondition:
     """Test cases for MetadataCondition class."""
 
-    def test_metadata_condition_creation(self):
+    def test_metadata_condition_creation(self) -> None:
         """Test creating MetadataCondition with key and expected value."""
         condition = MetadataCondition(key="temperature", expected_value=25.0)
 
         assert condition.key == "temperature"
         assert condition.expected_value == 25.0
 
-    def test_metadata_condition_evaluate_exact_match(self):
+    def test_metadata_condition_evaluate_exact_match(self) -> None:
         """Test evaluate method with exact match."""
         condition = MetadataCondition(key="temperature", expected_value=25.0)
 
@@ -35,7 +33,7 @@ class TestMetadataCondition:
         sample_no_match = AbstractSampleMetadata({"temperature": 30.0})
         assert condition.evaluate(sample_no_match) is False
 
-    def test_metadata_condition_evaluate_missing_key(self):
+    def test_metadata_condition_evaluate_missing_key(self) -> None:
         """Test evaluate method when key is missing from metadata."""
         condition = MetadataCondition(key="pressure", expected_value=1.0)
 
@@ -47,7 +45,7 @@ class TestMetadataCondition:
         sample_empty = AbstractSampleMetadata()
         assert condition.evaluate(sample_empty) is False
 
-    def test_metadata_condition_evaluate_with_different_types(self):
+    def test_metadata_condition_evaluate_with_different_types(self) -> None:
         """Test evaluate method with different value types."""
         # Test with string values
         condition_str = MetadataCondition(key="type", expected_value="protein")
@@ -73,10 +71,10 @@ class TestMetadataCondition:
         sample_bool_different = AbstractSampleMetadata({"enabled": False})
         assert condition_bool.evaluate(sample_bool_different) is False
 
-    def test_metadata_condition_evaluate_with_none_values(self):
+    def test_metadata_condition_evaluate_with_none_values(self) -> None:
         """Test evaluate method with None values."""
         condition = MetadataCondition(
-            key="optional_field", expected_value=None
+            key="optional_field", expected_value=None,
         )
 
         # Test with None value
@@ -91,12 +89,12 @@ class TestMetadataCondition:
         sample_value = AbstractSampleMetadata({"optional_field": "some_value"})
         assert condition.evaluate(sample_value) is False
 
-    def test_metadata_condition_evaluate_with_complex_values(self):
+    def test_metadata_condition_evaluate_with_complex_values(self) -> None:
         """Test evaluate method with complex value types."""
         # Test with list values
         expected_list = [1, 2, 3]
         condition_list = MetadataCondition(
-            key="values", expected_value=expected_list
+            key="values", expected_value=expected_list,
         )
         sample_list = AbstractSampleMetadata({"values": [1, 2, 3]})
         assert condition_list.evaluate(sample_list) is True
@@ -107,28 +105,28 @@ class TestMetadataCondition:
         # Test with dictionary values
         expected_dict = {"inner": "value", "number": 42}
         condition_dict = MetadataCondition(
-            key="config", expected_value=expected_dict
+            key="config", expected_value=expected_dict,
         )
         sample_dict = AbstractSampleMetadata(
-            {"config": {"inner": "value", "number": 42}}
+            {"config": {"inner": "value", "number": 42}},
         )
         assert condition_dict.evaluate(sample_dict) is True
 
         sample_dict_different = AbstractSampleMetadata(
-            {"config": {"different": "value"}}
+            {"config": {"different": "value"}},
         )
         assert condition_dict.evaluate(sample_dict_different) is False
 
-    def test_metadata_condition_evaluate_with_nested_metadata(self):
+    def test_metadata_condition_evaluate_with_nested_metadata(self) -> None:
         """Test evaluate method with nested metadata structure."""
         condition = MetadataCondition(
-            key="experiment.temperature", expected_value=25.0
+            key="experiment.temperature", expected_value=25.0,
         )
 
         # Note: This test assumes the metadata structure supports nested access
         # If the actual implementation doesn't support this, this test should be adjusted
         sample_nested = AbstractSampleMetadata(
-            {"experiment": {"temperature": 25.0, "pressure": 1.0}}
+            {"experiment": {"temperature": 25.0, "pressure": 1.0}},
         )
 
         # This will likely fail if nested access isn't supported
@@ -142,7 +140,7 @@ class TestMetadataCondition:
             # The test documents this limitation
             pytest.skip("Nested metadata access not supported")
 
-    def test_metadata_condition_evaluate_case_sensitivity(self):
+    def test_metadata_condition_evaluate_case_sensitivity(self) -> None:
         """Test evaluate method with case-sensitive string matching."""
         condition = MetadataCondition(key="type", expected_value="Protein")
 
@@ -154,7 +152,7 @@ class TestMetadataCondition:
         sample_different_case = AbstractSampleMetadata({"type": "protein"})
         assert condition.evaluate(sample_different_case) is False
 
-    def test_metadata_condition_evaluate_float_precision(self):
+    def test_metadata_condition_evaluate_float_precision(self) -> None:
         """Test evaluate method with float precision."""
         condition = MetadataCondition(key="value", expected_value=0.1)
 
@@ -169,21 +167,21 @@ class TestMetadataCondition:
         result = condition.evaluate(sample_close)
         assert isinstance(result, bool)
 
-    def test_metadata_condition_multiple_conditions(self):
+    def test_metadata_condition_multiple_conditions(self) -> None:
         """Test using multiple MetadataCondition instances."""
         condition_temp = MetadataCondition(
-            key="temperature", expected_value=25.0
+            key="temperature", expected_value=25.0,
         )
         condition_pressure = MetadataCondition(
-            key="pressure", expected_value=1.0
+            key="pressure", expected_value=1.0,
         )
         condition_type = MetadataCondition(
-            key="type", expected_value="protein"
+            key="type", expected_value="protein",
         )
 
         # Test with sample that matches all conditions
         sample_all_match = AbstractSampleMetadata(
-            {"temperature": 25.0, "pressure": 1.0, "type": "protein"}
+            {"temperature": 25.0, "pressure": 1.0, "type": "protein"},
         )
         assert condition_temp.evaluate(sample_all_match) is True
         assert condition_pressure.evaluate(sample_all_match) is True
@@ -195,7 +193,7 @@ class TestMetadataCondition:
                 "temperature": 25.0,
                 "pressure": 2.0,  # Different value
                 "type": "protein",
-            }
+            },
         )
         assert condition_temp.evaluate(sample_partial_match) is True
         assert condition_pressure.evaluate(sample_partial_match) is False

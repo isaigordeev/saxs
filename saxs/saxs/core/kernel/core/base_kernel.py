@@ -20,7 +20,6 @@ BaseKernel
 
 from typing import TYPE_CHECKING
 
-from saxs.logging.logger import logger
 from saxs.saxs.core.kernel.core.abstract_kernel import (
     AbstractKernel,
 )

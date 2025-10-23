@@ -25,7 +25,7 @@ def ratio_data(i, data: np.array) -> np.array:
 
 class Phases:
     def __init__(
-        self, filename, current_session, phases, class_names, data: dict
+        self, filename, current_session, phases, class_names, data: dict,
     ):
         self.q_normalized_ratio = np.array([])
         self.alignement_dict = {}
@@ -70,12 +70,12 @@ class Phases:
             self.phases_coeffs[i] = ratio_data(0, x)
             i += 1
 
-    def preset_plot(self):
+    def preset_plot(self) -> None:
         plt.clf()
         # print(PROMINENCE, self.I / np.max(self.I))
         # print(self.ratio_data(np.array(self.q)))
         plt.plot(
-            self.q, self.I, "x", linewidth=0.5, label="data_without_background"
+            self.q, self.I, "x", linewidth=0.5, label="data_without_background",
         )
         plt.plot(
             self.q,
@@ -92,16 +92,16 @@ class Phases:
             + self.file
             + "ratios_all_detected"
             + str(len(self.q_normalized_ratio) + 1)
-            + ".pdf"
+            + ".pdf",
         )
 
-    def phase_plot(self):
+    def phase_plot(self) -> None:
         plt.clf()
         plt.plot(self.q, self.zeros, label="zero_level")
         plt.legend()
         plt.savefig(self.file_analyse_dir + "/phases_" + self.file + ".pdf")
 
-    def treshhold_filtering(self):
+    def treshhold_filtering(self) -> None:
         treshhold = 1.1 * PROMINENCE * np.average(self.I)
         errors = []
 
@@ -111,9 +111,8 @@ class Phases:
 
         self.q = np.delete(self.q, errors)
         self.I = np.delete(self.I, errors)
-        print("Deleted: ", len(errors))
 
-    def data_preparing(self):
+    def data_preparing(self) -> None:
         self.sorted_indices_I = np.argsort(self.I)
         self.sorted_indices_I_start = self.sorted_indices_I
         self.q_normalized_ratio = ratio_data(0, np.sqrt(self.q))
@@ -122,7 +121,6 @@ class Phases:
             if x < 1.5 * PROMINENCE * np.average(self.I):
                 self.suspicious_peaks += 1
 
-        print("suspects ", self.suspicious_peaks)
 
         for x in range(len(self.phases_coeffs)):
             if len(self.q) < len(self.phases_coeffs[x]):
@@ -134,17 +132,16 @@ class Phases:
 
     def score_func(self, f, coeffs):
         distance, path = f(
-            coeffs, self.q_analyzed, dist=lambda x, y: abs(x - y)
+            coeffs, self.q_analyzed, dist=lambda x, y: abs(x - y),
         )
         return distance, path
 
-    def analyze(self):
+    def analyze(self) -> None:
         for x in self.phases_coeffs:
             self.alignement_dict[len(self.q_analyzed)] = np.append(
                 self.alignement_dict[len(self.q_analyzed)],
                 self.score_func(fastdtw, x)[0],
             )
-        print(self.alignement_dict, "dict")
 
     def gathering(self):
         softmin = nn.Softmin(dim=0)
@@ -152,14 +149,14 @@ class Phases:
             np.argmin(self.alignement_dict[len(self.q)])
         ]
         self.data["distribution"] = softmin(
-            torch.tensor(self.alignement_dict[len(self.q)], dtype=torch.float32)
+            torch.tensor(self.alignement_dict[len(self.q)], dtype=torch.float32),
         ).tolist()
         return self.data
 
 
 class Fastdw(Phases):
     def __init__(
-        self, filename, current_session, phases, class_names, data: dict
+        self, filename, current_session, phases, class_names, data: dict,
     ):
         super().__init__(filename, current_session, phases, class_names, data)
         self.q_normalized_ratio = np.array([])
@@ -205,12 +202,12 @@ class Fastdw(Phases):
             self.phases_coeffs[i] = ratio_data(0, x)
             i += 1
 
-    def preset_plot(self):
+    def preset_plot(self) -> None:
         plt.clf()
         # print(PROMINENCE, self.I / np.max(self.I))
         # print(self.ratio_data(np.array(self.q)))
         plt.plot(
-            self.q, self.I, "x", linewidth=0.5, label="data_without_background"
+            self.q, self.I, "x", linewidth=0.5, label="data_without_background",
         )
         plt.plot(
             self.q,
@@ -227,16 +224,16 @@ class Fastdw(Phases):
             + self.file
             + "ratios_all_detected"
             + str(len(self.q_normalized_ratio) + 1)
-            + ".pdf"
+            + ".pdf",
         )
 
-    def phase_plot(self):
+    def phase_plot(self) -> None:
         plt.clf()
         plt.plot(self.q, self.zeros, label="zero_level")
         plt.legend()
         plt.savefig(self.file_analyse_dir + "/phases_" + self.file + ".pdf")
 
-    def treshhold_filtering(self):
+    def treshhold_filtering(self) -> None:
         treshhold = 1.1 * PROMINENCE * np.average(self.I)
         errors = []
 
@@ -246,9 +243,8 @@ class Fastdw(Phases):
 
         self.q = np.delete(self.q, errors)
         self.I = np.delete(self.I, errors)
-        print("Deleted: ", len(errors))
 
-    def data_preparing(self):
+    def data_preparing(self) -> None:
         self.sorted_indices_I = np.argsort(self.I)
         self.sorted_indices_I_start = self.sorted_indices_I
         self.q_normalized_ratio = ratio_data(0, np.sqrt(self.q))
@@ -257,7 +253,6 @@ class Fastdw(Phases):
             if x < 1.5 * PROMINENCE * np.average(self.I):
                 self.suspicious_peaks += 1
 
-        print("suspects ", self.suspicious_peaks)
 
         for x in range(len(self.phases_coeffs)):
             if len(self.q) < len(self.phases_coeffs[x]):
@@ -269,22 +264,21 @@ class Fastdw(Phases):
 
     def score_func(self, f, coeffs):
         distance, path = f(
-            coeffs, self.q_analyzed, dist=lambda x, y: abs(x - y)
+            coeffs, self.q_analyzed, dist=lambda x, y: abs(x - y),
         )
         return distance, path
 
-    def analyze(self):
+    def analyze(self) -> None:
         self.alignement_dict[len(self.q_analyzed)] = np.array([])
         for x in self.phases_coeffs:
             self.alignement_dict[len(self.q_analyzed)] = np.append(
                 self.alignement_dict[len(self.q_analyzed)],
                 self.score_func(fastdtw, x)[0],
             )
-        print(self.alignement_dict, "dict")
 
-    def reduction(self):
+    def reduction(self) -> None:
         self.q_normalized_ratio = np.delete(
-            self.q_normalized_ratio, self.sorted_indices_I[0] - 1
+            self.q_normalized_ratio, self.sorted_indices_I[0] - 1,
         )
 
         self.I_analyzed = np.delete(self.I_analyzed, self.sorted_indices_I[0])
@@ -295,10 +289,10 @@ class Fastdw(Phases):
 
         self.sorted_indices_I = np.delete(self.sorted_indices_I, [0])
 
-    def alignement(self):
+    def alignement(self) -> None:
         plt.figure(figsize=(12, 12))
         self.analyze()
-        for i in range(self.suspicious_peaks):
+        for _i in range(self.suspicious_peaks):
             self.analyze()
             plt.clf()
             for k in range(1, len(self.phases_coeffs) + 1):
@@ -316,14 +310,14 @@ class Fastdw(Phases):
                 )
                 plt.title(
                     self.class_names[k - 1]
-                    + f"peak_nums: {len(self.q_normalized_ratio)}"
+                    + f"peak_nums: {len(self.q_normalized_ratio)}",
                 )
                 plt.legend()
                 plt.xlabel("peak_number")
                 plt.ylabel("ratio")
                 plt.suptitle(
                     f"The phase is {self.class_names[np.argmin(self.alignement_dict[len(self.q_analyzed)])]} with \
-                 {np.min(self.alignement_dict[len(self.q_analyzed)])} diff dist"
+                 {np.min(self.alignement_dict[len(self.q_analyzed)])} diff dist",
                 )
                 # for i, j in self.alignement_dict[len(self.q)][1]:
                 #     plt.plot([i, j], [self.phases_coeffs[i], self.q[j]], color='gray')
@@ -333,19 +327,18 @@ class Fastdw(Phases):
                 + self.file
                 + "_peak_num_"
                 + str(len(self.q_normalized_ratio) + 1)
-                + ".pdf"
+                + ".pdf",
             )
             self.reduction()
 
     def gathering(self):
         softmin = nn.Softmin(dim=0)
-        print(self.sorted_indices_I_start)
         # self.test_processing_data['phase'] = self.class_names[np.argmin(self.alignement_dict[len(self.q)])]
         self.data["phase"] = self.class_names[
             np.argmin(self.alignement_dict[len(self.q)])
         ]
         self.data["distribution"] = softmin(
-            torch.tensor(self.alignement_dict[len(self.q)], dtype=torch.float32)
+            torch.tensor(self.alignement_dict[len(self.q)], dtype=torch.float32),
         ).tolist()
         self.data["peaks_without_suspicious"] = self.sorted_indices_I_start[
             self.suspicious_peaks :

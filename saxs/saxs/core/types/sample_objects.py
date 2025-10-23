@@ -4,7 +4,7 @@
 
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any
 
 import numpy as np
 
@@ -23,9 +23,9 @@ class Intensity(BaseDataType):
 
 @dataclass(frozen=True)
 class IntensityError(BaseDataType):
-    values: Optional[np.ndarray] = None  # optional
+    values: np.ndarray | None = None  # optional
 
 
 @dataclass(frozen=True)
 class AbstractSampleMetadata(BaseDataType):
-    values: Dict[str, Any] = field(default_factory=dict)
+    values: dict[str, Any] = field(default_factory=dict)

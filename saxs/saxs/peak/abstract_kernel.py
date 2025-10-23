@@ -65,7 +65,7 @@ class AbstractPeakKernel:
         self.data_path, self.filename = os.path.split(data_dir)
         self.file_analysis_dir = file_analysis_dir
         self.file_analysis_dir_peaks = os.path.join(
-            self.file_analysis_dir, "peaks/"
+            self.file_analysis_dir, "peaks/",
         )
         self.q_raw, self.I_raw, self.dI = read_data(self.data_dir)
 
@@ -107,22 +107,21 @@ class AbstractPeakKernel:
         return self.gathering()
 
     def __str__(self):
-        print(self.short_str_type)
         return "".join(self.short_str_type)
 
-    def custom_sample_postprocessing(self):
+    def custom_sample_postprocessing(self) -> None:
         pass
 
-    def custom_sample_preprocessing(self):
+    def custom_sample_preprocessing(self) -> None:
         pass
 
-    def current_state_plot(self):
+    def current_state_plot(self) -> None:
         plt.clf()
         plt.plot(
-            self.current_q_state, self.current_I_state, label="current_state"
+            self.current_q_state, self.current_I_state, label="current_state",
         )
 
-    def initial_state_plot(self):
+    def initial_state_plot(self) -> None:
         plt.clf()
         plt.plot(self.q_raw, self.I_raw, label="raw_plot")
         plt.plot(
@@ -131,20 +130,20 @@ class AbstractPeakKernel:
             label="starting_state",
         )
         plt.legend()
-        plt.savefig("{}/starting_state.pdf".format(self.file_analysis_dir))
+        plt.savefig(f"{self.file_analysis_dir}/starting_state.pdf")
 
-    def raw_plot(self):
+    def raw_plot(self) -> None:
         plt.clf()
         plt.plot(self.q_raw, self.I_raw, label="raw_plot")
         plt.plot(self.q_raw, self.zero_level, label="zero_level")
 
         plt.legend()
-        plt.savefig("{}/raw_state.pdf".format(self.file_analysis_dir))
+        plt.savefig(f"{self.file_analysis_dir}/raw_state.pdf")
 
-    def peaks_plots(self):
+    def peaks_plots(self) -> None:
         plt.clf()
         plt.plot(
-            self.current_q_state, self.current_I_state, label="current_state"
+            self.current_q_state, self.current_I_state, label="current_state",
         )
         plt.plot(
             self.current_q_state[self.peaks],
@@ -154,9 +153,9 @@ class AbstractPeakKernel:
         )
         plt.plot(self.q_raw, self.zero_level, label="zero_level")
         plt.legend()
-        plt.savefig("{}/peaks_plot.pdf".format(self.file_analysis_dir))
+        plt.savefig(f"{self.file_analysis_dir}/peaks_plot.pdf")
 
-    def final_plot(self):
+    def final_plot(self) -> None:
         plt.clf()
         plt.plot(self.q_raw, self.I_raw, label="raw_plot")
         plt.plot(
@@ -167,9 +166,9 @@ class AbstractPeakKernel:
         )
         plt.plot(self.q_raw, self.zero_level, label="zero_level")
         plt.legend()
-        plt.savefig("{}/final_plot.pdf".format(self.file_analysis_dir))
+        plt.savefig(f"{self.file_analysis_dir}/final_plot.pdf")
 
-    def extended_peaks_plots(self):
+    def extended_peaks_plots(self) -> None:
         plt.clf()
         plt.plot(
             self.current_q_state[self.peaks],
@@ -179,7 +178,7 @@ class AbstractPeakKernel:
         )
         plt.legend()
 
-    def background_plot(self):
+    def background_plot(self) -> None:
         plt.clf()
         if self.q_cut is not None and self.I_cut is not None:
             plt.plot(self.q_cut, self.I_cut, label="starting_state")
@@ -199,9 +198,9 @@ class AbstractPeakKernel:
 
         plt.plot(self.q_raw, self.zero_level, label="zero_level")
         plt.legend()
-        plt.savefig("{}/background_state.pdf".format(self.file_analysis_dir))
+        plt.savefig(f"{self.file_analysis_dir}/background_state.pdf")
 
-    def filtering_plot(self):
+    def filtering_plot(self) -> None:
         plt.clf()
         plt.plot(
             self.current_q_state,
@@ -217,28 +216,28 @@ class AbstractPeakKernel:
 
         plt.legend()
 
-        plt.savefig("{}/filtered_state.pdf".format(self.file_analysis_dir))
+        plt.savefig(f"{self.file_analysis_dir}/filtered_state.pdf")
 
-    def preprocessing(self):
+    def preprocessing(self) -> None:
         # self.I_filt = self.I_filt[i:]
         pass
 
-    def postprocessing(self):
+    def postprocessing(self) -> None:
         pass
 
-    def filtering(self):
+    def filtering(self) -> None:
         pass
 
-    def background_reduction(self):
+    def background_reduction(self) -> None:
         pass
 
-    def search_peaks(self, *args):
+    def search_peaks(self, *args) -> None:
         pass
 
     def gathering(self) -> dict:
         pass
 
-    def sample_processing(self):
+    def sample_processing(self) -> None:
         # self.raw_plot()
 
         if self.is_preprocessing:

@@ -2,15 +2,12 @@
 # Created by Isai GORDEEV on 20/09/2025.
 #
 
-"""
-Tests for background_stage.py module.
-"""
+"""Tests for background_stage.py module."""
 
 from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
-
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
@@ -46,7 +43,7 @@ def background_stage():
 class TestBackgroundStage:
     """Test cases for BackgroundStage class."""
 
-    def test_background_stage_creation(self):
+    def test_background_stage_creation(self) -> None:
         """Test creating BackgroundStage with default parameters."""
         stage = BackgroundStage()
 
@@ -56,21 +53,21 @@ class TestBackgroundStage:
         )
         assert "_background_coef" in stage.metadata.unwrap()
 
-    def test_background_stage_creation_with_custom_function(self):
+    def test_background_stage_creation_with_custom_function(self) -> None:
         """Test creating BackgroundStage with custom background function."""
         custom_func = Mock()
         stage = BackgroundStage(_background_func=custom_func)
 
         assert stage.metadata.values["_background_func"] == custom_func
 
-    def test_background_stage_inheritance(self):
+    def test_background_stage_inheritance(self) -> None:
         """Test that BackgroundStage inherits from AbstractStage."""
         stage = BackgroundStage()
         from saxs.saxs.core.stage.abstract_stage import AbstractStage
 
         assert isinstance(stage, AbstractStage)
 
-    def test_background_stage_metadata_structure(self, background_stage):
+    def test_background_stage_metadata_structure(self, background_stage) -> None:
         """Test BackgroundStage metadata structure."""
         values = background_stage.metadata.unwrap()
 
@@ -81,8 +78,8 @@ class TestBackgroundStage:
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_basic(
-        self, mock_curve_fit, sample_data, background_stage
-    ):
+        self, mock_curve_fit, sample_data, background_stage,
+    ) -> None:
         """Test BackgroundStage process method with basic functionality."""
         # Mock curve_fit to return known parameters
         mock_curve_fit.return_value = (
@@ -103,16 +100,16 @@ class TestBackgroundStage:
         call_args = mock_curve_fit.call_args
         assert call_args[1]["f"] == background_hyberbole
         np.testing.assert_array_equal(
-            call_args[1]["xdata"], sample_data.get_q_values_array()
+            call_args[1]["xdata"], sample_data.get_q_values_array(),
         )
         np.testing.assert_array_equal(
-            call_args[1]["ydata"], sample_data.get_intensity_array()
+            call_args[1]["ydata"], sample_data.get_intensity_array(),
         )
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_with_error_handling(
-        self, mock_curve_fit, sample_data, background_stage
-    ):
+        self, mock_curve_fit, sample_data, background_stage,
+    ) -> None:
         """Test BackgroundStage process method with curve_fit errors."""
         # Mock curve_fit to raise an exception
         mock_curve_fit.side_effect = RuntimeError("Fitting failed")
@@ -121,10 +118,9 @@ class TestBackgroundStage:
             background_stage.process(sample_data)
 
     def test_background_stage_process_intensity_modification(
-        self, sample_data, background_stage
-    ):
+        self, sample_data, background_stage,
+    ) -> None:
         """Test that BackgroundStage modifies intensity correctly."""
-
         original_intensity = sample_data.get_intensity_array()
         result = background_stage.process(sample_data)
 
@@ -139,8 +135,8 @@ class TestBackgroundStage:
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_preserves_other_data(
-        self, mock_curve_fit, sample_data, background_stage
-    ):
+        self, mock_curve_fit, sample_data, background_stage,
+    ) -> None:
         """Test that BackgroundStage preserves other sample data."""
         # Mock curve_fit to return known parameters
         mock_curve_fit.return_value = (
@@ -152,7 +148,7 @@ class TestBackgroundStage:
 
         # Q values should be preserved
         np.testing.assert_array_equal(
-            result.get_q_values_array(), sample_data.get_q_values_array()
+            result.get_q_values_array(), sample_data.get_q_values_array(),
         )
 
         # Intensity error should be preserved
@@ -166,8 +162,8 @@ class TestBackgroundStage:
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_with_different_parameters(
-        self, mock_curve_fit, sample_data
-    ):
+        self, mock_curve_fit, sample_data,
+    ) -> None:
         """Test BackgroundStage with different curve_fit parameters."""
         # Mock curve_fit to return different parameters
         mock_curve_fit.return_value = (
@@ -182,19 +178,19 @@ class TestBackgroundStage:
         assert isinstance(result, SAXSSample)
         mock_curve_fit.assert_called_once()
 
-    def test_background_stage_process_with_minimal_data(self):
+    def test_background_stage_process_with_minimal_data(self) -> None:
         """Test BackgroundStage with minimal sample data."""
         q_values = np.array([0.1, 0.2])
         intensity = np.array([10.0, 8.0])
 
         sample = SAXSSample(
-            q_values=QValues(q_values), intensity=Intensity(intensity)
+            q_values=QValues(q_values), intensity=Intensity(intensity),
         )
 
         stage = BackgroundStage()
 
         with patch(
-            "saxs.saxs.processing.stage.filter.background_stage.curve_fit"
+            "saxs.saxs.processing.stage.filter.background_stage.curve_fit",
         ) as mock_curve_fit:
             mock_curve_fit.return_value = (
                 np.array([1.0, 1.0]),
@@ -207,7 +203,7 @@ class TestBackgroundStage:
             assert len(result.get_q_values_array()) == 2
             assert len(result.get_intensity_array()) == 2
 
-    def test_background_stage_process_with_none_error(self):
+    def test_background_stage_process_with_none_error(self) -> None:
         """Test BackgroundStage with sample that has None intensity error."""
         q_values = np.array([0.1, 0.2, 0.3])
         intensity = np.array([10.0, 8.0, 6.0])
@@ -221,7 +217,7 @@ class TestBackgroundStage:
         stage = BackgroundStage()
 
         with patch(
-            "saxs.saxs.processing.stage.filter.background_stage.curve_fit"
+            "saxs.saxs.processing.stage.filter.background_stage.curve_fit",
         ) as mock_curve_fit:
             mock_curve_fit.return_value = (
                 np.array([1.0, 1.0]),
@@ -236,8 +232,8 @@ class TestBackgroundStage:
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_curve_fit_parameters(
-        self, mock_curve_fit, sample_data, background_stage
-    ):
+        self, mock_curve_fit, sample_data, background_stage,
+    ) -> None:
         """Test that curve_fit is called with correct parameters."""
         mock_curve_fit.return_value = (
             np.array([2.0, 1.5]),
@@ -255,8 +251,8 @@ class TestBackgroundStage:
         )  # Should use intensity error as sigma
 
     def test_background_stage_process_with_custom_background_function(
-        self, sample_data
-    ):
+        self, sample_data,
+    ) -> None:
         """Test BackgroundStage with custom background function."""
         custom_func = Mock()
         custom_func.return_value = np.array([1.0, 1.0, 1.0, 1.0, 1.0])
@@ -264,7 +260,7 @@ class TestBackgroundStage:
         stage = BackgroundStage(_background_func=custom_func)
 
         with patch(
-            "saxs.saxs.processing.stage.filter.background_stage.curve_fit"
+            "saxs.saxs.processing.stage.filter.background_stage.curve_fit",
         ) as mock_curve_fit:
             mock_curve_fit.return_value = (
                 np.array([1.0, 1.0]),
@@ -279,11 +275,11 @@ class TestBackgroundStage:
             assert call_args[1]["f"] == custom_func
 
     def test_background_stage_process_metadata_access(
-        self, sample_data, background_stage
-    ):
+        self, sample_data, background_stage,
+    ) -> None:
         """Test that BackgroundStage accesses metadata correctly."""
         with patch(
-            "saxs.saxs.processing.stage.filter.background_stage.curve_fit"
+            "saxs.saxs.processing.stage.filter.background_stage.curve_fit",
         ) as mock_curve_fit:
             mock_curve_fit.return_value = (
                 np.array([2.0, 1.5]),
