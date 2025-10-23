@@ -39,7 +39,7 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         return SingleStageChainingPolicy(
             condition=TrueCondition(),
-            next_stage_cls=FindAllPeaksStage,
+            pending_stages=FindAllPeaksStage,
         )
 
     def _process(self, sample_data: SAXSSample):

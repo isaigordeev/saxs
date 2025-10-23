@@ -6,7 +6,7 @@ from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 class SampleCondition(ABC):
     @abstractmethod
-    def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+    def evaluate(self, eval_metadata: AbstractSampleMetadata) -> bool:
         """Predicat for sample approval.
 
         Return True if the condition passes for
@@ -16,7 +16,7 @@ class SampleCondition(ABC):
 
 class StageCondition(ABC):
     @abstractmethod
-    def evaluate(self, metadata: AbstractStageMetadata) -> bool:
+    def evaluate(self, eval_metadata: AbstractStageMetadata) -> bool:
         """Predicat for stage approval.
 
         Return True if the condition passes for the

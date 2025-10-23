@@ -22,13 +22,13 @@ from collections import deque
 from typing import TYPE_CHECKING
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
 )
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
@@ -144,7 +144,7 @@ class BaseScheduler(AbstractScheduler):
             sample = stage.process(sample)
 
             logger.info(
-                f"\n[Scheduler] Stage '{stage_name}' completed. Sample metadata: {sample.get_metadata_dict()}\n"
+                f"\n[Scheduler] Stage '{stage_name}' completed. Sample metadata: {sample.get_metadata_dict()}\n",
             )
 
             # Collect new stage requests
@@ -161,7 +161,7 @@ class BaseScheduler(AbstractScheduler):
 
             for req in requests:
                 req_stage_name = req.stage.__class__.__name__
-                if self._insertion_policy(req):  # policy decides
+                if self._insertion_policy(req):  # scheduler policy decides
                     queue.append(req.stage)
                     self.handle_scheduler_meta(req.metadata)
                     logger.info(
@@ -175,7 +175,7 @@ class BaseScheduler(AbstractScheduler):
             step += 1
 
         logger.info(
-            f"\n{'=' * 30}\n[Scheduler] Pipeline completed. Final sample metadata: {sample.get_metadata_dict()}\nFinal scheduler metadata: {self._metadata}\n{'=' * 30}"
+            f"\n{'=' * 30}\n[Scheduler] Pipeline completed. Final sample metadata: {sample.get_metadata_dict()}\nFinal scheduler metadata: {self._metadata}\n{'=' * 30}",
         )
         return sample
 

@@ -12,5 +12,5 @@ class ChainingPeakCondition(StageCondition):
     def __init__(self, key: str):
         self.key = key
 
-    def evaluate(self, metadata: AbstractStageMetadata) -> bool:
-        return len(metadata.unwrap().get(self.key)) > 0
+    def evaluate(self, eval_metadata: AbstractStageMetadata) -> bool:
+        return len(eval_metadata.unwrap().get(self.key)) > 0

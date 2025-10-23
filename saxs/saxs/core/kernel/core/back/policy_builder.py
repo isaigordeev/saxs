@@ -34,7 +34,7 @@ class PolicyBuilder:
         _kwargs: dict[str, Any] = {}
 
         _kwargs["condition"] = PolicyBuilder.build_condition(_policy_spec)
-        _kwargs["next_stage_cls"] = _policy_spec.next_stage_ids
+        _kwargs["pending_stages"] = _policy_spec.pending_stages
 
         return _kwargs
 

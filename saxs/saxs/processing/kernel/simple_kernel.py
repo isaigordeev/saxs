@@ -55,7 +55,7 @@ class SimpleKernel(BaseKernel):
     flow based on stage-specific conditions.
 
     Inherits
-    -------
+    --------
     BaseKernel
         Provides the base orchestration for building and executing
         pipelines.
@@ -91,14 +91,14 @@ class SimpleKernel(BaseKernel):
             policy_cls=SingleStageChainingPolicy,
             condition=ChainingPeakCondition,
             condition_kwargs={"key": "peaks"},
-            next_stage_ids=["process_fit_peak"],
+            pending_stages=["process_fit_peak"],
         )
         fit_policy = PolicySpec(
             id="fit_policy",
             policy_cls=SingleStageChainingPolicy,
             condition=TrueCondition,
             condition_kwargs={},
-            next_stage_ids=["find_peaks"],
+            pending_stages=["find_peaks"],
         )
 
         _kernel_registry.register_policy(peaks_policy)
