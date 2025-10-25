@@ -19,7 +19,7 @@ from saxs.saxs.core.types.abstract_data import BaseDataType
 DictSchema = TypeVar("DictSchema")
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class AbstractStageMetadata(BaseDataType[DictSchema], Generic[DictSchema]):
     """
     Represents metadata associated with a SAXS pipeline stage.

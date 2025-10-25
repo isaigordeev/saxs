@@ -1,18 +1,45 @@
-"""Data reading utilities for SAXS project."""
+"""
+Module: saxs.io.data_reader.
+
+Data reading utilities for the SAXS project.
+
+This module provides the `DataReader` class, which supports reading
+numerical scattering data from CSV files and constructing
+`SAXSSample` objects from the loaded arrays.
+
+The expected CSV structure is either:
+- Two columns: q-values, intensity
+- Three columns: q-values, intensity, intensity error
+
+Examples
+--------
+>>> reader = DataReader("example_data.csv")
+>>> q, i, di = reader.read_data()
+>>> sample = reader.create_sample(q, i, di)
+"""
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 
-from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample import (
+    SAXSSample,
+    SAXSSampleDict,
+    SAXSSampleKeys,
+)
 from saxs.saxs.core.types.sample_objects import (
+    AbstractSampleMetadata,
     Intensity,
     IntensityError,
     QValues,
 )
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 
 class DataReader:
@@ -26,10 +53,31 @@ class DataReader:
     def read_data(
         self,
     ):
-        """Read sample.
+        """
+        Read numeric SAXS data from a CSV file.
 
-        Read data from the file path and return columns
-        as NumPy arrays.
+        The CSV file is expected to have at least two numeric
+        columns:
+        - First column: q-values.
+        - Second column: intensities.
+        - Third column (optional): intensity errors.
+
+        Non-numeric entries are automatically coerced to NaN and
+        removed from the dataset.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray, np.ndarray | None]
+            A tuple containing:
+            - q : q-values array.
+            - i : intensity array.
+            - di : intensity-error array, or None if absent.
+
+        Raises
+        ------
+        ValueError
+            If the file extension is not `.csv` or contains
+            fewer than two numeric columns.
         """
         extension: str = self.file_path.suffix.lower()
         if extension != ".csv":
@@ -58,8 +106,43 @@ class DataReader:
         msg = "CSV file must contain at least two columns."
         raise ValueError(msg)
 
-    def create_sample(self, q, i, di):
+    def create_sample(
+        self,
+        q: NDArray[np.float64],
+        i: NDArray[np.float64],
+        di: NDArray[np.float64],
+    ):
+        """
+        Construct a `SAXSSample` object from raw q, i, and di.
+
+        Parameters
+        ----------
+        q : NDArray[np.float64]
+            Array of q-values.
+        i : NDArray[np.float64]
+            Array of intensities.
+        di : NDArray[np.float64] | None
+            Array of intensity errors, or None if unavailable.
+
+        Returns
+        -------
+        SAXSSample
+            A fully constructed SAXSSample instance ready for
+            processing.
+        """
         _q = QValues(q)
         _i = Intensity(i)
         _di = IntensityError(di)
-        return SAXSSample(q_values=_q, intensity=_i, intensity_error=_di)
+
+        _value = SAXSSampleDict(
+            {
+                SAXSSampleKeys.Q_VALUES.value: _q,
+                SAXSSampleKeys.INTENSITY.value: _i,
+                SAXSSampleKeys.INTENSITY_ERROR.value: _di,
+                SAXSSampleKeys.METADATA.value: AbstractSampleMetadata(
+                    {},
+                ),  # optional if metadata needed
+            },
+        )
+
+        return SAXSSample(_value)
