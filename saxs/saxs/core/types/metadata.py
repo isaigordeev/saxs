@@ -24,11 +24,10 @@ class FlowMetadataDict(TypedDict, total=False):
     """
 
     sample_name: str
-    peaks: list[int]
 
 
 @dataclass(frozen=False)
-class FlowMetadata(BaseDataType):
+class FlowMetadata(BaseDataType[FlowMetadataDict]):
     """
     Immutable container for flow experiment metadata.
 
@@ -38,5 +37,3 @@ class FlowMetadata(BaseDataType):
         experiment. Uses a TypedDict to provide type hints and
         optional keys.
     """
-
-    values: FlowMetadataDict = field(default=FlowMetadataDict())
