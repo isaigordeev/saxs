@@ -1,49 +1,74 @@
-#
-# Created by Isai GORDEEV on 20/09/2025.
-#
+"""
+Module: AbstractRequestingStage.
 
+This module defines the `AbstractRequestingStage` base class, which
+extends `AbstractStage` to support stage approval requests in a
+pipeline.
+
+The `AbstractRequestingStage` class provides a framework for
+generating requests that can be processed according to
+a chaining policy (`ChainingPolicy`).
+Subclasses must implement methods to define a default policy and
+create specific stage requests (`StageRequest`).
+
+Key Classes:
+    - AbstractRequestingStage: Base class for stages capable of
+    requesting downstream approval stages.
+"""
 
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
-from saxs.saxs.core.pipeline.condition.abstract_condition import (
-    SampleCondition,
-)
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageApprovalRequest,
-)
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
-
-class AbstractConditionalStage(AbstractStage):
-    def __init__(
-        self, chaining_stage: AbstractStage, condition: SampleCondition,
-    ):
-        self.chaining_stage = chaining_stage
-        self.condition = condition
-
-    def request_stage(self):
-        if not self.condition:
-            return []
-        if self.condition.evaluate(self.metadata):
-            state_to_inject = self.chaining_stage(
-                self.chaining_stage, self.condition,
-            )
-            return [StageApprovalRequest(state_to_inject, self.metadata)]
-        return []
+if TYPE_CHECKING:
+    from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+        StageApprovalRequest,
+    )
 
 
 class AbstractRequestingStage(AbstractStage):
-    def __init__(self, metadata, policy: ChainingPolicy | None = None):
+    """
+    Base class for stages that can generate stage approval requests.
+
+    This class extends `AbstractStage` and provides a mechanism for
+    requesting subsequent stages via a chaining policy. Subclasses
+    must define a default policy and the logic for creating stage
+    requests.
+
+    Attributes
+    ----------
+        policy (ChainingPolicy | None): The policy used to handle
+        stage requests.
+    """
+
+    def __init__(
+        self,
+        metadata: AbstractStageMetadata,
+        policy: ChainingPolicy | None = None,
+    ):
         self.policy = policy
         super().__init__(metadata)
 
-    def request_stage(self):
+    def request_stage(self) -> list["StageApprovalRequest"]:
+        """
+        Generate stage approval requests according to the policy.
+
+        If no policy is set, the default policy provided by
+        `default_policy()` will be used. If the policy or generated
+        request is empty, an empty list is returned.
+
+        Returns
+        -------
+            list[StageApprovalRequest]: A list of stage approval
+            requests.
+        """
         if self.policy is None:
             default = self.default_policy()
-            if issubclass(default.__class__, ChainingPolicy):
-                self.policy = default
+            self.policy = default
 
         if not self.policy:
             return []
@@ -54,13 +79,30 @@ class AbstractRequestingStage(AbstractStage):
 
         return self.policy.request(_request)
 
-    @classmethod
-    def default_policy(cls) -> "ChainingPolicy":
-        """Override in subclasses to provide a fallback policy.
-        By default, returns ChainingPolicy (injects nothing).
+    @abstractmethod
+    def default_policy(self) -> "ChainingPolicy":
         """
-        return ChainingPolicy()
+        Provide the default chaining policy for this stage.
+
+        Subclasses should override this method to supply a fallback
+        policy when no explicit policy is set. By default, returns
+        a policy that does not inject any requests.
+
+        Returns
+        -------
+            ChainingPolicy: The default chaining policy.
+        """
 
     @abstractmethod
     def create_request(self) -> StageRequest:
-        pass
+        """
+        Create a stage request for the current stage.
+
+        Subclasses must implement this method to define the logic
+        for generating a `StageRequest` object, which will later be
+        passed to the chaining policy.
+
+        Returns
+        -------
+            StageRequest: The generated stage request.
+        """
