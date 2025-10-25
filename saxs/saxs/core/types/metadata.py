@@ -27,7 +27,7 @@ class FlowMetadataDict(TypedDict, total=False):
     peaks: list[int]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class FlowMetadata(BaseDataType):
     """
     Immutable container for flow experiment metadata.

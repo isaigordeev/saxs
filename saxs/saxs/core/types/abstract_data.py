@@ -18,7 +18,7 @@ from typing import Generic, TypeVar
 T = TypeVar("T")
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class BaseDataType(Generic[T]):
     """
     Generic, immutable data wrapper for scientific data objects.
@@ -34,9 +34,9 @@ class BaseDataType(Generic[T]):
         None if the data object is uninitialized.
     """
 
-    values: T | None = None
+    value: T
 
-    def unwrap(self) -> T | None:
+    def unwrap(self) -> T:
         """
         Return the underlying data object.
 
@@ -45,4 +45,4 @@ class BaseDataType(Generic[T]):
             T | None: The wrapped data (e.g., NumPy array, dict) or
             None if no data is present.
         """
-        return self.values
+        return self.value
