@@ -95,6 +95,7 @@ extend-select = [
 ignore = [
     "RUF100", # custom new lines with \
     "ANN204",
+    "UP007",
 ]
 
 [tool.ruff.lint.pydocstyle]
