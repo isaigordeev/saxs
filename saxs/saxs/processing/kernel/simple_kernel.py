@@ -35,8 +35,10 @@ from saxs.saxs.core.pipeline.condition.constant_true_condition import (
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
-from saxs.saxs.processing.stage.filter.cut_stage import CutStage
+from saxs.saxs.processing.stage.background.background import (
+    BackgroundStage,
+)
+from saxs.saxs.processing.stage.cut.cut import CutStage
 from saxs.saxs.processing.stage.filter.filter_stage import FilterStage
 from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
 from saxs.saxs.processing.stage.peak.process_peak_stage import (

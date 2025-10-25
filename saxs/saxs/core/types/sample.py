@@ -1,14 +1,23 @@
-#
-# Created by Isai GORDEEV on 19/09/2025.
-#
+"""
+Module: saxs_sample_typed.
 
+Defines SAXS sample objects using TypedDict with builder-style
+setters.
 
-from dataclasses import dataclass, field, replace
-from typing import Any, Optional
+This module provides a TypedDict-based version of SAXSSample,
+representing a small-angle X-ray scattering (SAXS) sample with
+q-values, intensity, optional intensity error, and associated
+metadata. The builder-style methods allow creating modified copies
+of the sample while keeping the original data intact.
+"""
+
+from enum import Enum
+from typing import Any, TypedDict, Union
 
 import numpy as np
+from numpy.typing import NDArray
 
-from saxs.saxs.core.types.abstract_data import AData
+from saxs.saxs.core.types.abstract_data import BaseDataType
 from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
@@ -17,129 +26,176 @@ from saxs.saxs.core.types.sample_objects import (
 )
 
 
-@dataclass(frozen=True)
-class SAXSSample(AData):
-    """Immutable SAXS sample with typed fields and builder-style setters."""
+class SAXSSampleKeys(Enum):
+    Q_VALUES = "q_values"
+    INTENSITY = "intensity"
+    INTENSITY_ERROR = "intensity_error"
+    METADATA = "metadata"
+
+
+class SAXSSampleDict(TypedDict):
+    """
+    TypedDict representing a SAXS sample.
+
+    Attributes
+    ----------
+        q_values (QValues): The q-values of the sample.
+        intensity (Intensity): The measured intensities.
+        intensity_error (Optional[IntensityError]): Optional
+        measurement errors.
+        metadata (AbstractSampleMetadata): Metadata associated with
+        the sample.
+    """
 
     q_values: QValues
     intensity: Intensity
-    intensity_error: IntensityError = None
-    metadata: AbstractSampleMetadata = field(
-        default_factory=AbstractSampleMetadata,
-    )
+    intensity_error: IntensityError
+    metadata: AbstractSampleMetadata
 
+
+SAXSSampleArrayValue = Union[
+    QValues,
+    Intensity,
+    IntensityError,
+]
+
+SAXSSampleValue = Union[AbstractSampleMetadata, SAXSSampleArrayValue]
+
+
+class SAXSSample(BaseDataType[SAXSSampleDict]):
     # --- Getters ---
-    def get_q_values(self) -> "QValues":
-        return self.q_values
+    def get_q_values(self) -> NDArray[np.float64]:
+        """Return the raw q-values array from the sample."""
+        _sample: SAXSSampleDict = self.unwrap()
+        _q_values: QValues = _sample.get("q_values")
+        return _q_values.unwrap()
 
-    def get_intensity(self) -> "Intensity":
-        return self.intensity
+    def get_intensity(self) -> NDArray[np.float64]:
+        """Return the raw intensity array from the sample."""
+        _sample: SAXSSampleDict = self.unwrap()
+        _intensity: Intensity = _sample.get("intensity")
+        return _intensity.unwrap()
 
-    def get_intensity_error(self) -> Optional["IntensityError"]:
-        return self.intensity_error
+    def get_intensity_error(self) -> NDArray[np.float64] | None:
+        """Return the raw intensity error array, or None if missing."""  # noqa: W505
+        _sample: SAXSSampleDict = self.unwrap()
+        _error: IntensityError | None = _sample.get("intensity_error")
+        return _error.unwrap() if _error else None
 
-    def get_metadata(self) -> "AbstractSampleMetadata":
-        return self.metadata
+    def get_metadata(self) -> AbstractSampleMetadata:
+        """Return the metadata dict."""
+        _sample: SAXSSampleDict = self.unwrap()
+        return _sample.get("metadata")
 
-    # --- Raw data getters (via unwrap) ---
-    def get_q_values_array(self):
-        return self.q_values.unwrap()
+    # --- Immutable Setters ---
 
-    def get_intensity_array(self):
-        return self.intensity.unwrap()
+    def set_q_values(self, q_array: NDArray[np.float64]) -> "SAXSSample":
+        return SAXSSample(
+            {
+                **self.unwrap(),
+                "q_values": QValues(q_array),
+            },
+        )
 
-    def get_intensity_error_array(self):
-        return self.intensity_error.unwrap() if self.intensity_error else None
-
-    def get_metadata_dict(self):
-        return self.metadata.unwrap()
-
-    # Setter-style methods
-    # --- Raw data setters ---
-
-    def set_q_values(self, q_array: np.ndarray) -> "SAXSSample":
-        """Set q_values from raw ndarray."""
-        return replace(self, q_values=QValues(q_array))
-
-    def set_intensity(self, intensity_array: np.ndarray) -> "SAXSSample":
-        """Set intensity from raw ndarray."""
-        return replace(self, intensity=Intensity(intensity_array))
+    def set_intensity(
+        self,
+        intensity_array: NDArray[np.float64],
+    ) -> "SAXSSample":
+        return SAXSSample(
+            {
+                **self.unwrap(),
+                "intensity": Intensity(intensity_array),
+            },
+        )
 
     def set_intensity_error(
-        self, error_array: np.ndarray | None,
+        self,
+        error_array: NDArray[np.float64] | None,
     ) -> "SAXSSample":
-        """Set intensity_error from raw ndarray (or None)."""
-        return replace(
-            self,
-            intensity_error=IntensityError(error_array)
-            if error_array is not None
-            else None,
+        return SAXSSample(
+            {
+                **self.unwrap(),
+                "intensity_error": IntensityError(error_array)
+                if error_array is not None
+                else None,
+            },
         )
 
-    def set_metadata_dict(self, metadata_dict: dict[str, Any]) -> "SAXSSample":
-        """Set metadata from raw dictionary."""
-        return replace(
-            self, metadata=AbstractSampleMetadata(values=metadata_dict),
-        )
-
-    def append_metadata_dict(
-        self, new_metadata: dict[str, Any],
+    def set_metadata_dict(
+        self,
+        metadata_dict: AbstractSampleMetadata,
     ) -> "SAXSSample":
-        merged = AbstractSampleMetadata(
-            {**self.get_metadata_dict(), **new_metadata},
+        return SAXSSample(
+            {
+                **self.unwrap(),
+                "metadata": metadata_dict,
+            },
         )
-        return replace(self, metadata=merged)
 
-    def set_metadata(
-        self, new_metadata: AbstractSampleMetadata,
+    def set_new_sample(
+        self,
+        _new_sample_dict: SAXSSampleDict,
     ) -> "SAXSSample":
-        return replace(self, metadata=new_metadata)
-
-    def describe(self) -> str:
-        return "SAXS Sample"
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, SAXSSample):
-            return False
-
-        # Compare q_values
-        if not np.array_equal(self.q_values.unwrap(), other.q_values.unwrap()):
-            return False
-
-        # Compare intensity
-        if not np.array_equal(
-            self.intensity.unwrap(), other.intensity.unwrap(),
-        ):
-            return False
-
-        # Compare intensity_error
-        if self.intensity_error is None and other.intensity_error is not None:
-            return False
-        if self.intensity_error is not None and other.intensity_error is None:
-            return False
-        if (
-            self.intensity_error is not None
-            and other.intensity_error is not None
-        ) and not np.array_equal(
-            self.intensity_error.unwrap(), other.intensity_error.unwrap(),
-        ):
-            return False
-
-        # Compare metadata dictionaries
-        return self.metadata.unwrap() == other.metadata.unwrap()
-
-    def __str__(self) -> str:
-        q_len = len(self.q_values.unwrap()) if self.q_values else 0
-        i_len = len(self.intensity.unwrap()) if self.intensity else 0
-        err_len = (
-            len(self.intensity_error.unwrap()) if self.intensity_error else 0
+        return SAXSSample(
+            {
+                **_new_sample_dict,
+            },
         )
-        meta_keys = (
-            list(self.metadata.unwrap().keys()) if self.metadata else []
+
+    def update_new_sample(
+        self,
+        _sample_dict_to_append: SAXSSampleDict,
+    ) -> "SAXSSample":
+        return SAXSSample(
+            {
+                **self.unwrap(),
+                **_sample_dict_to_append,
+            },
         )
-        return (
-            f"SAXSSample(q_values={q_len} points, "
-            f"intensity={i_len} points, "
-            f"intensity_error={err_len} points, "
-            f"metadata_keys={meta_keys})"
-        )
+
+    # --- Dict-style Access ---
+
+    def __getitem__(
+        self,
+        key: SAXSSampleKeys,
+    ) -> dict[str, Any] | NDArray[np.float64] | None:
+        """Allow dict-like access: sample['q_values']."""
+        _sample: SAXSSampleDict = self.unwrap()
+        _value: SAXSSampleValue = _sample[key.value]
+        return _value.unwrap()
+
+    def __setitem__(self, key: SAXSSampleKeys, value: NDArray[np.float64]):
+        """Setter dict.
+
+        Allow dict-like mutation: sample['q_values'] = QValues(...)
+        This returns a new immutable SAXSSample
+        (does modify in-place).
+        """
+        _sample: SAXSSampleDict = self.unwrap()
+        if key is SAXSSampleKeys.Q_VALUES:
+            _sample[key.value] = QValues(value)
+        elif key is SAXSSampleKeys.INTENSITY:
+            _sample[key.value] = Intensity(value)
+        elif key is SAXSSampleKeys.INTENSITY_ERROR:
+            _sample[key.value] = IntensityError(value)
+        else:
+            msg = f"Invalid SAXSSample key: {key}. Only array like keys \
+                    supported"
+            raise KeyError(msg)
+
+    def __contains__(self, key: str) -> bool:
+        """Support `'key' in sample` syntax."""
+        return key in self.unwrap()
+
+    def __iter__(self):
+        """Iterate over keys."""
+        return iter(self.unwrap())
+
+    def keys(self):
+        return self.unwrap().keys()
+
+    def values(self):
+        return self.unwrap().values()
+
+    def items(self):
+        return self.unwrap().items()
