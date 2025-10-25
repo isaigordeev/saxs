@@ -16,7 +16,9 @@ from saxs.saxs.core.types.sample_objects import (
     QValues,
 )
 from saxs.saxs.processing.functions import background_hyberbole
-from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
+from saxs.saxs.processing.stage.background.background import (
+    BackgroundStage,
+)
 
 
 @pytest.fixture
@@ -48,9 +50,7 @@ class TestBackgroundStage:
         stage = BackgroundStage()
 
         assert hasattr(stage, "metadata")
-        assert (
-            stage.metadata.values["_background_func"] == background_hyberbole
-        )
+        assert stage.metadata.value["_background_func"] == background_hyberbole
         assert "_background_coef" in stage.metadata.unwrap()
 
     def test_background_stage_creation_with_custom_function(self) -> None:
@@ -58,7 +58,7 @@ class TestBackgroundStage:
         custom_func = Mock()
         stage = BackgroundStage(_background_func=custom_func)
 
-        assert stage.metadata.values["_background_func"] == custom_func
+        assert stage.metadata.value["_background_func"] == custom_func
 
     def test_background_stage_inheritance(self) -> None:
         """Test that BackgroundStage inherits from AbstractStage."""
@@ -67,7 +67,10 @@ class TestBackgroundStage:
 
         assert isinstance(stage, AbstractStage)
 
-    def test_background_stage_metadata_structure(self, background_stage) -> None:
+    def test_background_stage_metadata_structure(
+        self,
+        background_stage,
+    ) -> None:
         """Test BackgroundStage metadata structure."""
         values = background_stage.metadata.unwrap()
 
@@ -78,7 +81,10 @@ class TestBackgroundStage:
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_basic(
-        self, mock_curve_fit, sample_data, background_stage,
+        self,
+        mock_curve_fit,
+        sample_data,
+        background_stage,
     ) -> None:
         """Test BackgroundStage process method with basic functionality."""
         # Mock curve_fit to return known parameters
@@ -100,15 +106,20 @@ class TestBackgroundStage:
         call_args = mock_curve_fit.call_args
         assert call_args[1]["f"] == background_hyberbole
         np.testing.assert_array_equal(
-            call_args[1]["xdata"], sample_data.get_q_values_array(),
+            call_args[1]["xdata"],
+            sample_data.get_q_values_array(),
         )
         np.testing.assert_array_equal(
-            call_args[1]["ydata"], sample_data.get_intensity_array(),
+            call_args[1]["ydata"],
+            sample_data.get_intensity_array(),
         )
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_with_error_handling(
-        self, mock_curve_fit, sample_data, background_stage,
+        self,
+        mock_curve_fit,
+        sample_data,
+        background_stage,
     ) -> None:
         """Test BackgroundStage process method with curve_fit errors."""
         # Mock curve_fit to raise an exception
@@ -118,7 +129,9 @@ class TestBackgroundStage:
             background_stage.process(sample_data)
 
     def test_background_stage_process_intensity_modification(
-        self, sample_data, background_stage,
+        self,
+        sample_data,
+        background_stage,
     ) -> None:
         """Test that BackgroundStage modifies intensity correctly."""
         original_intensity = sample_data.get_intensity_array()
@@ -135,7 +148,10 @@ class TestBackgroundStage:
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_preserves_other_data(
-        self, mock_curve_fit, sample_data, background_stage,
+        self,
+        mock_curve_fit,
+        sample_data,
+        background_stage,
     ) -> None:
         """Test that BackgroundStage preserves other sample data."""
         # Mock curve_fit to return known parameters
@@ -148,7 +164,8 @@ class TestBackgroundStage:
 
         # Q values should be preserved
         np.testing.assert_array_equal(
-            result.get_q_values_array(), sample_data.get_q_values_array(),
+            result.get_q_values_array(),
+            sample_data.get_q_values_array(),
         )
 
         # Intensity error should be preserved
@@ -162,7 +179,9 @@ class TestBackgroundStage:
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_with_different_parameters(
-        self, mock_curve_fit, sample_data,
+        self,
+        mock_curve_fit,
+        sample_data,
     ) -> None:
         """Test BackgroundStage with different curve_fit parameters."""
         # Mock curve_fit to return different parameters
@@ -184,7 +203,8 @@ class TestBackgroundStage:
         intensity = np.array([10.0, 8.0])
 
         sample = SAXSSample(
-            q_values=QValues(q_values), intensity=Intensity(intensity),
+            q_values=QValues(q_values),
+            intensity=Intensity(intensity),
         )
 
         stage = BackgroundStage()
@@ -232,7 +252,10 @@ class TestBackgroundStage:
 
     @patch("saxs.saxs.processing.stage.filter.background_stage.curve_fit")
     def test_background_stage_process_curve_fit_parameters(
-        self, mock_curve_fit, sample_data, background_stage,
+        self,
+        mock_curve_fit,
+        sample_data,
+        background_stage,
     ) -> None:
         """Test that curve_fit is called with correct parameters."""
         mock_curve_fit.return_value = (
@@ -251,7 +274,8 @@ class TestBackgroundStage:
         )  # Should use intensity error as sigma
 
     def test_background_stage_process_with_custom_background_function(
-        self, sample_data,
+        self,
+        sample_data,
     ) -> None:
         """Test BackgroundStage with custom background function."""
         custom_func = Mock()
@@ -275,7 +299,9 @@ class TestBackgroundStage:
             assert call_args[1]["f"] == custom_func
 
     def test_background_stage_process_metadata_access(
-        self, sample_data, background_stage,
+        self,
+        sample_data,
+        background_stage,
     ) -> None:
         """Test that BackgroundStage accesses metadata correctly."""
         with patch(
