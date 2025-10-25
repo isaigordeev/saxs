@@ -38,7 +38,8 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
     @classmethod
     def default_policy(cls) -> "ChainingPolicy":
-        # This default policy will automatically inject NextStage if Condition is true
+        # This default policy will automatically inject NextStage if
+        #  Condition is true
         from saxs.saxs.processing.stage.peak.find_peak_stage import (
             FindAllPeaksStage,
         )
@@ -62,7 +63,10 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         def current_peak_parabole(x, sigma, ampl):
             return parabole(
-                x, current_q_state[current_peak_index], sigma, ampl,
+                x,
+                current_q_state[current_peak_index],
+                sigma,
+                ampl,
             )
 
         def current_peak_gauss(x, sigma, ampl):
@@ -81,9 +85,7 @@ class ProcessFitPeakStage(AProcessPeakStage):
             "=========================================",
         )
 
-        left_range = (
-            max(current_peak_index - self.fit_range, 0)
-        )
+        left_range = max(current_peak_index - self.fit_range, 0)
 
         right_range = current_peak_index + self.fit_range
 
@@ -109,9 +111,7 @@ class ProcessFitPeakStage(AProcessPeakStage):
 
         logger.info(f"gauss_range {popt[0]} {gauss_range}")
 
-        left_range = (
-            max(current_peak_index - gauss_range, 0)
-        )
+        left_range = max(current_peak_index - gauss_range, 0)
 
         right_range = current_peak_index + gauss_range
 
@@ -132,7 +132,9 @@ class ProcessFitPeakStage(AProcessPeakStage):
         )
 
         _current_gauss_approximation = current_peak_gauss(
-            current_q_state, popt[0], popt[1],
+            current_q_state,
+            popt[0],
+            popt[1],
         )
 
         new_intensity_state = (

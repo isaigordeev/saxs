@@ -9,7 +9,7 @@ from scipy.optimize import curve_fit
 class BackgroundStage(AbstractStage):
     def __init__(self, _background_func=background_hyberbole):
         self.metadata = AbstractStageMetadata(
-            values={
+            value={
                 "_background_func": _background_func,
                 "_background_coef": BACKGROUND_COEF,
             },
