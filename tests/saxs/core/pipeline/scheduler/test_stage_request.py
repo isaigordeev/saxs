@@ -54,7 +54,8 @@ class TestStageRequest:
     def test_stage_request_creation(self, mock_stage, stage_metadata) -> None:
         """Test creating StageRequest with stage and metadata."""
         request = StageApprovalRequest(
-            stage=mock_stage, metadata=stage_metadata,
+            stage=mock_stage,
+            metadata=stage_metadata,
         )
 
         assert request.stage == mock_stage
@@ -70,7 +71,8 @@ class TestStageRequest:
     def test_stage_request_immutable(self, mock_stage, stage_metadata) -> None:
         """Test that StageRequest is immutable."""
         request = StageApprovalRequest(
-            stage=mock_stage, metadata=stage_metadata,
+            stage=mock_stage,
+            metadata=stage_metadata,
         )
 
         # Should not be able to modify attributes
@@ -83,10 +85,12 @@ class TestStageRequest:
     def test_stage_request_equality(self, mock_stage, stage_metadata) -> None:
         """Test StageRequest equality comparison."""
         request1 = StageApprovalRequest(
-            stage=mock_stage, metadata=stage_metadata,
+            stage=mock_stage,
+            metadata=stage_metadata,
         )
         request2 = StageApprovalRequest(
-            stage=mock_stage, metadata=stage_metadata,
+            stage=mock_stage,
+            metadata=stage_metadata,
         )
 
         # Same stage and metadata should be equal
@@ -95,11 +99,14 @@ class TestStageRequest:
         # Different metadata should not be equal
         different_metadata = AbstractStageMetadata({"different": "value"})
         request3 = StageApprovalRequest(
-            stage=mock_stage, metadata=different_metadata,
+            stage=mock_stage,
+            metadata=different_metadata,
         )
         assert request1 != request3
 
-    def test_stage_request_with_different_stage_types(self, stage_metadata) -> None:
+    def test_stage_request_with_different_stage_types(
+        self, stage_metadata,
+    ) -> None:
         """Test StageRequest with different stage types."""
 
         # Create different mock stages
@@ -145,28 +152,33 @@ class TestStageRequest:
         )
 
         request = StageApprovalRequest(
-            stage=mock_stage, metadata=complex_metadata,
+            stage=mock_stage,
+            metadata=complex_metadata,
         )
 
         assert request.stage == mock_stage
         assert request.metadata == complex_metadata
-        assert request.metadata.values["stage_info"]["name"] == "test_stage"
+        assert request.metadata.value["stage_info"]["name"] == "test_stage"
 
     def test_stage_request_with_empty_metadata(self, mock_stage) -> None:
         """Test StageRequest with empty metadata."""
         empty_metadata = AbstractStageMetadata()
         request = StageApprovalRequest(
-            stage=mock_stage, metadata=empty_metadata,
+            stage=mock_stage,
+            metadata=empty_metadata,
         )
 
         assert request.stage == mock_stage
         assert request.metadata == empty_metadata
-        assert len(request.metadata.values) == 0
+        assert len(request.metadata.value) == 0
 
-    def test_stage_request_inheritance(self, mock_stage, stage_metadata) -> None:
+    def test_stage_request_inheritance(
+        self, mock_stage, stage_metadata,
+    ) -> None:
         """Test that StageRequest inherits from AbstractStageRequest."""
         request = StageApprovalRequest(
-            stage=mock_stage, metadata=stage_metadata,
+            stage=mock_stage,
+            metadata=stage_metadata,
         )
         assert isinstance(request, AbstractStageApprovalRequest)
 
@@ -179,11 +191,14 @@ class TestStageRequest:
         assert request == StageApprovalRequest(stage=None, metadata=None)
 
     def test_stage_request_serialization_compatibility(
-        self, mock_stage, stage_metadata,
+        self,
+        mock_stage,
+        stage_metadata,
     ) -> None:
         """Test StageRequest for serialization compatibility."""
         request = StageApprovalRequest(
-            stage=mock_stage, metadata=stage_metadata,
+            stage=mock_stage,
+            metadata=stage_metadata,
         )
 
         # Should be able to access attributes for serialization
@@ -197,7 +212,9 @@ class TestStageRequest:
         new_request = StageApprovalRequest(stage=stage, metadata=metadata)
         assert new_request == request
 
-    def test_stage_request_with_various_metadata_types(self, mock_stage) -> None:
+    def test_stage_request_with_various_metadata_types(
+        self, mock_stage,
+    ) -> None:
         """Test StageRequest with various metadata value types."""
         metadata = AbstractStageMetadata(
             {
@@ -213,10 +230,10 @@ class TestStageRequest:
 
         request = StageApprovalRequest(stage=mock_stage, metadata=metadata)
 
-        assert request.metadata.values["string"] == "test"
-        assert request.metadata.values["int"] == 42
-        assert request.metadata.values["float"] == 3.14
-        assert request.metadata.values["bool"] is True
-        assert request.metadata.values["list"] == [1, 2, 3]
-        assert request.metadata.values["dict"] == {"inner": "value"}
-        assert request.metadata.values["none"] is None
+        assert request.metadata.value["string"] == "test"
+        assert request.metadata.value["int"] == 42
+        assert request.metadata.value["float"] == 3.14
+        assert request.metadata.value["bool"] is True
+        assert request.metadata.value["list"] == [1, 2, 3]
+        assert request.metadata.value["dict"] == {"inner": "value"}
+        assert request.metadata.value["none"] is None

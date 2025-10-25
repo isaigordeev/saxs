@@ -15,7 +15,7 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 from saxs.saxs.core.types.metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
@@ -25,6 +25,9 @@ if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
         StageApprovalRequest,
     )
+
+
+DictSchema = TypeVar("DictSchema")
 
 
 class AbstractStage(ABC):
@@ -42,9 +45,10 @@ class AbstractStage(ABC):
         stage.
     """
 
-    metadata: "AbstractStageMetadata"
-
-    def __init__(self, metadata: AbstractStageMetadata | None = None):
+    def __init__(
+        self,
+        metadata: AbstractStageMetadata[DictSchema] | None = None,
+    ):
         """
         Initialize the stage with optional metadata.
 
@@ -54,12 +58,14 @@ class AbstractStage(ABC):
                 If None, an empty AbstractStageMetadata object is
                 created.
         """
-        self.metadata = metadata if metadata else AbstractStageMetadata()
+        self.metadata = (
+            metadata if metadata else AbstractStageMetadata(value={})
+        )
 
     def process(
         self,
-        sample_data: SAXSSample,
-        metadata: FlowMetadata,
+        sample: SAXSSample,
+        flow_metadata: FlowMetadata,
     ) -> tuple["SAXSSample", "FlowMetadata"]:
         """
         Public method to process sample data with metadata.
@@ -77,18 +83,18 @@ class AbstractStage(ABC):
             tuple[SAXSSample, FlowMetadata]: Processed sample and
             updated metadata.
         """
-        result, metadata = self._process(sample_data, metadata)
+        result, flow_metadata = self._process(sample, flow_metadata)
 
         # Delegate metadata management to hook
-        self.handle_metadata(result, metadata)
+        self.handle_metadata(result, flow_metadata)
 
-        return result, metadata
+        return result, flow_metadata
 
     @abstractmethod
     def _process(
         self,
-        sample_data: SAXSSample,
-        metadata: FlowMetadata,
+        sample: SAXSSample,
+        flow_metadata: FlowMetadata,
     ) -> tuple["SAXSSample", "FlowMetadata"]:
         """
         Abstract method to implement the processing logic.
@@ -111,7 +117,7 @@ class AbstractStage(ABC):
     def handle_metadata(
         self,
         _sample: "SAXSSample",
-        _metadata: "FlowMetadata",
+        _flow_metadata: "FlowMetadata",
     ) -> "SAXSSample":
         """Manage metadata updates after processing.
 
@@ -128,7 +134,7 @@ class AbstractStage(ABC):
         -------
             SAXSSample: Sample data, potentially updated.
         """
-        _ = _metadata
+        _ = _flow_metadata
         return _sample
 
     def request_stage(self) -> list["StageApprovalRequest"]:

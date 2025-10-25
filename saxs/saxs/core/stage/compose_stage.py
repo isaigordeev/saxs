@@ -1,4 +1,3 @@
-
 from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
@@ -6,9 +5,11 @@ from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
 class CompositeRequstingStage(AbstractRequestingStage):
-    """
-    Wraps a main stage class and optional 'before' and 'after' stage classes.
-    All stages are instantiated when the CompositeStage is created.
+    """CompositeRequstingStage.
+
+    Wraps a main stage class and optional 'before' and 'after' stage
+    classes. All stages are instantiated when the CompositeStage
+    is created.
     """
 
     def __init__(
@@ -41,7 +42,8 @@ class CompositeRequstingStage(AbstractRequestingStage):
     def _build(self) -> None:
         # Instantiate main stage
         self.main_stage = self.main_stage_cls(
-            policy=self.policy, **self.main_kwargs,
+            policy=self.policy,
+            **self.main_kwargs,
         )
 
         # Instantiate before/after stages
