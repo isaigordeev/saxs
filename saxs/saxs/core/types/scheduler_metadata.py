@@ -4,22 +4,24 @@
 
 
 from dataclasses import field
-from enum import Enum
-from typing import TypedDict
 
-from saxs.saxs.core.types.abstract_data import TBaseDataType
+from saxs.saxs.core.types.metadata import (
+    AbstractMetadata,
+    EMetadataSchemaKeys,
+    MetadataSchemaDict,
+)
 
 
-class ESchedulerMetadataDictKeys(Enum):
+class ESchedulerMetadataDictKeys(EMetadataSchemaKeys):
     PROCESSED = "processed"
     PEAKS = "peaks"
 
 
-class SchedulerMetadataDict(TypedDict):
+class SchedulerMetadataDict(MetadataSchemaDict):
     processed: int
 
 
-class AbstractSchedulerMetadata(TBaseDataType[SchedulerMetadataDict]):
+class AbstractSchedulerMetadata(AbstractMetadata[SchedulerMetadataDict]):
     value: SchedulerMetadataDict = field(
         default_factory=lambda: {
             ESchedulerMetadataDictKeys.PROCESSED.value: 0,
