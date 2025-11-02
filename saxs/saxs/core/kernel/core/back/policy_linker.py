@@ -13,7 +13,7 @@ processing pipeline based on previously built stages.
 
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 
@@ -29,7 +29,7 @@ class PolicyLinker:
     @staticmethod
     def link(
         policy_specs: Buffer[PolicySpec],
-        stage_instances: Buffer[AbstractStage],
+        stage_instances: Buffer[IAbstractStage],
         policy_instances: Buffer[ChainingPolicy],
     ) -> Buffer[ChainingPolicy]:
         """
@@ -68,7 +68,7 @@ class PolicyLinker:
                 continue
 
             # Resolve next stages
-            next_stages: list[AbstractStage] = []
+            next_stages: list[IAbstractStage] = []
 
             for next_id in _policy_spec.pending_stages:
                 _stage = stage_instances.get(next_id)

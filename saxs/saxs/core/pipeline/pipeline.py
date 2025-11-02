@@ -16,7 +16,7 @@ Pipeline
 from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,
 )
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
 
@@ -42,7 +42,7 @@ class Pipeline:
 
     def __init__(
         self,
-        init_stages: list[AbstractStage],
+        init_stages: list[IAbstractStage],
         scheduler: AbstractScheduler,
     ):
         """Initialize the pipeline with stages and a scheduler.
@@ -61,7 +61,7 @@ class Pipeline:
     @classmethod
     def with_stages(
         cls,
-        stages: list[AbstractStage],
+        stages: list[IAbstractStage],
         scheduler: AbstractScheduler,
     ) -> "Pipeline":
         """Class method to create a pipeline with initial stages.

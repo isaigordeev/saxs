@@ -17,8 +17,7 @@ CutStage : AbstractStage
 """
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
-from saxs.saxs.core.types.metadata import FlowMetadata
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.sample import (
     ESAXSSampleKeys,
     SAXSSample,
@@ -29,7 +28,7 @@ from saxs.saxs.processing.stage.cut.types import (
 )
 
 
-class CutStage(AbstractStage):
+class CutStage(IAbstractStage):
     """
     SAXS processing stage that trims data arrays.
 
@@ -64,8 +63,7 @@ class CutStage(AbstractStage):
     def _process(
         self,
         sample: SAXSSample,
-        flow_metadata: FlowMetadata,
-    ) -> tuple["SAXSSample", "FlowMetadata"]:
+    ) -> "SAXSSample":
         cut_point = self.metadata.get_cut_point()
 
         # Cut the data
@@ -88,4 +86,4 @@ class CutStage(AbstractStage):
             f"=============================",
         )
 
-        return sample, flow_metadata
+        return sample

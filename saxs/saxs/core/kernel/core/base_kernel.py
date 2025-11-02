@@ -25,7 +25,7 @@ from saxs.saxs.core.kernel.core.abstract_kernel import (
 )
 from saxs.saxs.core.kernel.core.back.kernel_compiler import BaseCompiler
 from saxs.saxs.core.pipeline.pipeline import Pipeline
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.sample import SAXSSample
 
 if TYPE_CHECKING:
@@ -61,7 +61,7 @@ class BaseKernel(AbstractKernel):
 
         _comp = BaseCompiler()
 
-        self.stage_buffer: Buffer[AbstractStage]
+        self.stage_buffer: Buffer[IAbstractStage]
         self.policy_buffer: Buffer[ChainingPolicy]
 
         self.stage_buffer, self.policy_buffer = _comp.build(
@@ -79,7 +79,7 @@ class BaseKernel(AbstractKernel):
     def _get_initial_stage(
         self,
         _execution_order: list[str],
-    ) -> list[AbstractStage]:
+    ) -> list[IAbstractStage]:
         """Get init stages ordered.
 
         Retrieve the initial stages in order from the compiled stage
@@ -97,7 +97,7 @@ class BaseKernel(AbstractKernel):
             A list of stage instances corresponding to the provided
             execution order.
         """
-        _initial_stages: list[AbstractStage] = []
+        _initial_stages: list[IAbstractStage] = []
 
         for _stage_id in _execution_order:
             _stage = self.stage_buffer.get(_stage_id)

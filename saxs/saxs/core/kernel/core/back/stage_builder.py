@@ -2,7 +2,7 @@ from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.runtime_spec import StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractRequestingStage,
-    AbstractStage,
+    IAbstractStage,
 )
 
 
@@ -14,9 +14,9 @@ class StageBuilder:
     """
 
     @staticmethod
-    def build(stage_specs: Buffer[StageSpec]) -> Buffer[AbstractStage]:
+    def build(stage_specs: Buffer[StageSpec]) -> Buffer[IAbstractStage]:
         """Return a dict: stage_id -> stage_instance."""
-        stage_instances: Buffer[AbstractStage] = Buffer[AbstractStage]()
+        stage_instances: Buffer[IAbstractStage] = Buffer[IAbstractStage]()
 
         for stage_spec in stage_specs.values():
             kwargs = stage_spec.kwargs or {}

@@ -16,7 +16,7 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 from scipy.signal import find_peaks
 
 if TYPE_CHECKING:
@@ -27,7 +27,9 @@ if TYPE_CHECKING:
 
 class FindAllPeaksStage(AbstractRequestingStage):
     def __init__(
-        self, metadata, policy: SingleStageChainingPolicy | None = None,
+        self,
+        metadata,
+        policy: SingleStageChainingPolicy | None = None,
     ):
         super().__init__(metadata, policy)
 
@@ -76,7 +78,7 @@ class FindAllPeaksStage(AbstractRequestingStage):
         if _current_peak_index == -1:
             return None
 
-        pass_metadata = AbstractStageMetadata(
+        pass_metadata = TAbstractStageMetadata(
             {"current_peak_index": (_current_peak_index)},
         )  # first peak
         eval_metadata = self.metadata

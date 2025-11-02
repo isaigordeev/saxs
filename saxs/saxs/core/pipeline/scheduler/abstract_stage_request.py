@@ -4,8 +4,8 @@
 from dataclasses import dataclass
 from typing import Any
 
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 
 @dataclass(frozen=True)
@@ -37,5 +37,5 @@ class StageApprovalRequest(AbstractStageApprovalRequest):
         interface.
     """
 
-    stage: AbstractStage
-    metadata: AbstractStageMetadata[dict[str, Any]]
+    stage: IAbstractStage
+    metadata: TAbstractStageMetadata[dict[str, Any]]

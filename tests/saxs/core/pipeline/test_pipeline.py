@@ -19,7 +19,7 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     SaturationInsertPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
 from saxs.saxs.processing.stage.filter.cut_stage import CutStage
 from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
@@ -45,7 +45,10 @@ def saxs_sample():
     err = IntensityError([0.01, 0.02, 0.03])
     meta = AbstractSampleMetadata({"source": "test"})
     return SAXSSample(
-        q_values=q, intensity=i, intensity_error=err, metadata=meta,
+        q_values=q,
+        intensity=i,
+        intensity_error=err,
+        metadata=meta,
     )
 
 
@@ -53,7 +56,7 @@ def saxs_sample():
 def mock_stage():
     """Fixture for a simple mock stage."""
     stage = Mock()
-    stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
+    stage.metadata = TAbstractStageMetadata({"name": "mock_stage"})
     stage.process = Mock()
     stage.request_stage.return_value = []
     return stage
@@ -63,17 +66,17 @@ def mock_stage():
 def multi_mock_stages():
     """Fixture returning a list of multiple mock stages."""
     stage1 = Mock()
-    stage1.metadata = AbstractStageMetadata({"name": "stage1"})
+    stage1.metadata = TAbstractStageMetadata({"name": "stage1"})
     stage1.process = Mock()
     stage1.request_stage.return_value = []
 
     stage2 = Mock()
-    stage2.metadata = AbstractStageMetadata({"name": "stage2"})
+    stage2.metadata = TAbstractStageMetadata({"name": "stage2"})
     stage2.process = Mock()
     stage2.request_stage.return_value = []
 
     stage3 = Mock()
-    stage3.metadata = AbstractStageMetadata({"name": "stage3"})
+    stage3.metadata = TAbstractStageMetadata({"name": "stage3"})
     stage3.process = Mock()
     stage3.request_stage.return_value = []
 
@@ -103,7 +106,10 @@ def init_sample():
 
     meta = AbstractSampleMetadata({"source": "test"})
     return SAXSSample(
-        q_values=q, intensity=i, intensity_error=err, metadata=meta,
+        q_values=q,
+        intensity=i,
+        intensity_error=err,
+        metadata=meta,
     )
 
 
@@ -173,7 +179,8 @@ class TestPipeline:
         assert pipeline.scheduler._queue == deque([])
 
     def test_pipeline_with_stages_class_method_custom_scheduler(
-        self, mock_stage,
+        self,
+        mock_stage,
     ) -> None:
         custom_scheduler = Mock()
         pipeline = Pipeline.with_stages(mock_stage, scheduler=custom_scheduler)
@@ -185,7 +192,9 @@ class TestPipeline:
         result = pipeline.run(saxs_sample)
         assert result == saxs_sample
 
-    def test_pipeline_run_with_single_stage(self, saxs_sample, mock_stage) -> None:
+    def test_pipeline_run_with_single_stage(
+        self, saxs_sample, mock_stage,
+    ) -> None:
         mock_stage.process.return_value = saxs_sample
         pipeline = Pipeline(init_stages=[mock_stage])
         result = pipeline.run(saxs_sample)
@@ -193,7 +202,9 @@ class TestPipeline:
         assert result == saxs_sample
 
     def test_pipeline_run_with_multiple_stages(
-        self, saxs_sample, multi_mock_stages,
+        self,
+        saxs_sample,
+        multi_mock_stages,
     ) -> None:
         stage1, stage2, stage3 = multi_mock_stages
         modified_sample = saxs_sample.set_q_values([0.1, 0.2, 0.3])
@@ -209,11 +220,14 @@ class TestPipeline:
         stage3.process.assert_called_once_with(modified_sample)
         assert result == modified_sample
 
-    def test_pipeline_run_with_custom_scheduler(self, saxs_sample, mock_stage) -> None:
+    def test_pipeline_run_with_custom_scheduler(
+        self, saxs_sample, mock_stage,
+    ) -> None:
         custom_scheduler = Mock()
         custom_scheduler.run.return_value = saxs_sample
         pipeline = Pipeline(
-            init_stages=[mock_stage], scheduler=custom_scheduler,
+            init_stages=[mock_stage],
+            scheduler=custom_scheduler,
         )
         result = pipeline.run(saxs_sample)
         custom_scheduler.run.assert_called_once_with(saxs_sample)
@@ -224,7 +238,7 @@ class TestPipeline:
         additional_stage = Mock()
         stage_request = StageApprovalRequest(
             stage=additional_stage,
-            metadata=AbstractStageMetadata({"type": "additional"}),
+            metadata=TAbstractStageMetadata({"type": "additional"}),
         )
         stage1.request_stage.return_value = [stage_request]
 
@@ -239,24 +253,32 @@ class TestPipeline:
         assert result == saxs_sample
 
     def test_pipeline_run_with_scheduler_exception(
-        self, saxs_sample, mock_stage,
+        self,
+        saxs_sample,
+        mock_stage,
     ) -> None:
         custom_scheduler = Mock()
         custom_scheduler.run.side_effect = ValueError("Scheduler failed")
         pipeline = Pipeline(
-            init_stages=[mock_stage], scheduler=custom_scheduler,
+            init_stages=[mock_stage],
+            scheduler=custom_scheduler,
         )
         with pytest.raises(ValueError, match="Scheduler failed"):
             pipeline.run(saxs_sample)
 
-    def test_pipeline_run_with_stage_exception(self, saxs_sample, mock_stage) -> None:
+    def test_pipeline_run_with_stage_exception(
+        self, saxs_sample, mock_stage,
+    ) -> None:
         mock_stage.process.side_effect = ValueError("Stage processing failed")
         pipeline = Pipeline(init_stages=[mock_stage])
         with pytest.raises(ValueError, match="Stage processing failed"):
             pipeline.run(saxs_sample)
 
     def test_pipeline_with_different_sample_types(
-        self, q_values, intensity, mock_stage,
+        self,
+        q_values,
+        intensity,
+        mock_stage,
     ) -> None:
         pass
 
@@ -276,7 +298,8 @@ class TestPipeline:
         assert list(pipeline.scheduler._queue) == [mock_stage]
 
     def test_pipeline_with_stages_class_method_multiple_calls(
-        self, mock_stage,
+        self,
+        mock_stage,
     ) -> None:
         stage2 = Mock()
         pipeline1 = Pipeline.with_stages(mock_stage)

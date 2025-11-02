@@ -63,9 +63,9 @@ class TestBackgroundStage:
     def test_background_stage_inheritance(self) -> None:
         """Test that BackgroundStage inherits from AbstractStage."""
         stage = BackgroundStage()
-        from saxs.saxs.core.stage.abstract_stage import AbstractStage
+        from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 
-        assert isinstance(stage, AbstractStage)
+        assert isinstance(stage, IAbstractStage)
 
     def test_background_stage_metadata_structure(
         self,

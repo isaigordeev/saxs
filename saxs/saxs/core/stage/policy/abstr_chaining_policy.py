@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 
 if TYPE_CHECKING:
@@ -17,10 +17,10 @@ class ChainingPolicy(ABC):
     def __init__(
         self,
         condition: "StageCondition",
-        pending_stages: list[AbstractStage],
+        pending_stages: list[IAbstractStage],
     ):
         self.condition = condition
-        self.pending_stages: list[AbstractStage] = pending_stages
+        self.pending_stages: list[IAbstractStage] = pending_stages
 
     @abstractmethod
     def request(

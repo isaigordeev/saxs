@@ -133,7 +133,7 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
             {
                 **self.unwrap(),
                 ESAXSSampleKeys.INTENSITY_ERROR.value: IntensityError(
-                    error_array
+                    error_array,
                 ),
             },
         )

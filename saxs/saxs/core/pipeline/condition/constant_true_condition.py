@@ -5,9 +5,9 @@
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
 )
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 
 class TrueCondition(StageCondition):
-    def evaluate(self, metadata: AbstractStageMetadata) -> bool:  # noqa: ARG002
+    def evaluate(self, metadata: TAbstractStageMetadata) -> bool:  # noqa: ARG002
         return True

@@ -1,7 +1,7 @@
 from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 
 class CompositeRequstingStage(AbstractRequestingStage):
@@ -14,12 +14,12 @@ class CompositeRequstingStage(AbstractRequestingStage):
 
     def __init__(
         self,
-        main_stage_cls: type[AbstractStage],
+        main_stage_cls: type[IAbstractStage],
         main_kwargs: dict | None = None,
-        before: list[type[AbstractStage]] | None = None,
-        after: list[type[AbstractStage]] | None = None,
+        before: list[type[IAbstractStage]] | None = None,
+        after: list[type[IAbstractStage]] | None = None,
         policy: ChainingPolicy | None = None,
-        metadata: AbstractStageMetadata | None = None,
+        metadata: TAbstractStageMetadata | None = None,
     ):
         super().__init__(metadata)
         self.main_kwargs = main_kwargs or {}

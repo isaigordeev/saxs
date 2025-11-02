@@ -15,7 +15,7 @@ from saxs.logging.logger import logger
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 
@@ -46,7 +46,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
     def __new__(
         cls,
         condition: "StageCondition",  # noqa: ARG004
-        pending_stages: list[AbstractStage],
+        pending_stages: list[IAbstractStage],
     ):
         """
         Allocate a new instance and validate input.
@@ -111,7 +111,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
             _pass_metadata = stage_metadata.sample_metadata
             _scheduler_metadata = stage_metadata.scheduler_metadata
 
-            _pending_stage: AbstractStage = self.pending_stages[-1]
+            _pending_stage: IAbstractStage = self.pending_stages[-1]
 
             logger.info(
                 f"\n{'=' * 30}\n[{self.__class__.__name__}] "
