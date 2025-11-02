@@ -1,0 +1,44 @@
+#!/bin/bash
+# commit-msg: enforce <type>(<scope>): message pattern (scope optional)
+
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+echo "=============================================================="
+echo "COMMIT-MSG CHECK: Enforcing '<type>(<scope>): message' pattern"
+echo "--------------------------------------------------------------"
+
+# Allowed commit types
+TYPES="chore|feat|fix|docs|refactor|test|style|perf|ci|build"
+
+# Regex pattern: scope is optional
+PATTERN="^($TYPES)(\([a-zA-Z0-9_-]+\))?: .+"
+
+if ! [[ "$COMMIT_MSG" =~ $PATTERN ]]; then
+    echo "ERROR: Commit message must follow the pattern '<type>(<scope>): message'. Scope is optional."
+    echo
+    echo "Allowed types and their meanings:"
+    echo "  feat      - a new feature or functionality"
+    echo "  fix       - a bug fix or correction"
+    echo "  docs      - documentation updates or improvements"
+    echo "  style     - code style changes (no logic impact)"
+    echo "  refactor  - code refactoring or restructuring"
+    echo "  perf      - performance optimizations"
+    echo "  test      - adding or improving tests"
+    echo "  build     - changes to build scripts or dependencies"
+    echo "  ci        - continuous integration or pipeline configuration"
+    echo "  chore     - maintenance tasks (e.g., formatting, cleanup)"
+    echo
+    echo "Examples:"
+    echo "  feat(api): add user authentication"
+    echo "  fix: correct intensity normalization"
+    echo "  chore: update dependencies"
+    echo
+    echo "Commit aborted."
+    echo "=============================================================="
+    exit 1
+fi
+
+echo "Commit message format valid."
+echo "=============================================================="
+exit 0
