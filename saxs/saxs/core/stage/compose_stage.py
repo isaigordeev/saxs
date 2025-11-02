@@ -1,10 +1,10 @@
-from saxs.saxs.core.stage.abstract_cond_stage import AbstractRequestingStage
+from saxs.saxs.core.stage.abstract_cond_stage import IAbstractRequestingStage
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
-class CompositeRequstingStage(AbstractRequestingStage):
+class CompositeRequstingStage(IAbstractRequestingStage):
     """CompositeRequstingStage.
 
     Wraps a main stage class and optional 'before' and 'after' stage
@@ -52,6 +52,6 @@ class CompositeRequstingStage(AbstractRequestingStage):
 
     def request_stage(self):
         """Delegate request to main stage if it is requesting."""
-        if isinstance(self.main_stage, AbstractRequestingStage):
+        if isinstance(self.main_stage, IAbstractRequestingStage):
             return self.main_stage.request_stage()
         return []

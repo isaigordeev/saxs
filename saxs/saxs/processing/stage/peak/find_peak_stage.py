@@ -2,12 +2,16 @@
 
 from typing import TYPE_CHECKING
 
+from scipy.signal import (  # pyright: ignore[reportMissingTypeStubs]
+    find_peaks,  # # pyright: ignore[reportUnknownVariableType]
+)
+
 from saxs.logging.logger import logger
 from saxs.saxs.core.pipeline.condition.chaining_condition import (
     ChainingPeakCondition,
 )
 from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractRequestingStage,
+    IAbstractRequestingStage,
 )
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
@@ -15,7 +19,6 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
-from scipy.signal import find_peaks
 
 if TYPE_CHECKING:
     from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
@@ -23,7 +26,7 @@ if TYPE_CHECKING:
     )
 
 
-class FindAllPeaksStage(AbstractRequestingStage):
+class FindAllPeaksStage(IAbstractRequestingStage):
     def __init__(
         self,
         metadata,

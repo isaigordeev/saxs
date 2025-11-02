@@ -1,7 +1,7 @@
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.runtime_spec import StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractRequestingStage,
+    IAbstractRequestingStage,
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
@@ -21,7 +21,7 @@ class StageLinker:
         policy_instances: Buffer[ChainingPolicy],
     ) -> Buffer[IAbstractStage]:
         for _stage_spec in stage_specs.values():
-            if not issubclass(_stage_spec.stage_cls, AbstractRequestingStage):
+            if not issubclass(_stage_spec.stage_cls, IAbstractRequestingStage):
                 continue
 
             _current_policy_id = _stage_spec.policy_id
@@ -29,7 +29,7 @@ class StageLinker:
             if not _current_policy_id:
                 continue
 
-            _stage: AbstractRequestingStage = stage_instances.get(
+            _stage: IAbstractRequestingStage = stage_instances.get(
                 _stage_spec.id_,
             )
 

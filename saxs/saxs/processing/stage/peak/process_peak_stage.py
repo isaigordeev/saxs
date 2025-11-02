@@ -8,7 +8,7 @@ from saxs.saxs.core.pipeline.condition.constant_true_condition import (
     TrueCondition,
 )
 from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractRequestingStage,
+    IAbstractRequestingStage,
 )
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     )
 
 
-class AProcessPeakStage(AbstractRequestingStage):
+class AProcessPeakStage(IAbstractRequestingStage):
     def _process(self, sample_data):
         return sample_data, None
 

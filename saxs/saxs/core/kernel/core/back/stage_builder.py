@@ -1,7 +1,7 @@
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.runtime_spec import StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
-    AbstractRequestingStage,
+    IAbstractRequestingStage,
     IAbstractStage,
 )
 
@@ -21,7 +21,7 @@ class StageBuilder:
         for stage_spec in stage_specs.values():
             kwargs = stage_spec.kwargs or {}
 
-            if issubclass(stage_spec.stage_cls, AbstractRequestingStage):
+            if issubclass(stage_spec.stage_cls, IAbstractRequestingStage):
                 instance = stage_spec.stage_cls(metadata=kwargs, policy=None)
             else:
                 instance = stage_spec.stage_cls(**kwargs)

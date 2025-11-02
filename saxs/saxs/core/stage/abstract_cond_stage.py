@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     )
 
 
-class AbstractRequestingStage(IAbstractStage):
+class IAbstractRequestingStage(IAbstractStage):
     """
     Base class for stages that can generate stage approval requests.
 
