@@ -1,7 +1,4 @@
-#
-# Created by Isai GORDEEV on 20/09/2025.
-#
-
+# Created by Isai Gordeev on 20/09/2025.
 
 """Tests for sample_objects.py module."""
 

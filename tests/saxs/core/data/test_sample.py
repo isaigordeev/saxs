@@ -1,6 +1,4 @@
-#
-# Created by Isai GORDEEV on 20/09/2025.
-#
+# Created by Isai Gordeev on 20/09/2025.
 
 """Tests for sample.py module."""
 
@@ -29,7 +27,11 @@ class TestSAXSSample:
         assert sample.metadata.unwrap() == {}
 
     def test_saxs_sample_creation_complete(
-        self, q_values, intensity, intensity_error, metadata,
+        self,
+        q_values,
+        intensity,
+        intensity_error,
+        metadata,
     ) -> None:
         """Test creating SAXSSample with all fields."""
         sample = SAXSSample(
@@ -73,15 +75,19 @@ class TestSAXSSample:
 
         np.testing.assert_array_equal(q_array, sample.q_values.unwrap())
         np.testing.assert_array_equal(
-            intensity_array, sample.intensity.unwrap(),
+            intensity_array,
+            sample.intensity.unwrap(),
         )
         np.testing.assert_array_equal(
-            error_array, sample.intensity_error.unwrap(),
+            error_array,
+            sample.intensity_error.unwrap(),
         )
         assert metadata_dict == sample.metadata.unwrap()
 
     def test_saxs_sample_array_getters_with_none_error(
-        self, q_values, intensity,
+        self,
+        q_values,
+        intensity,
     ) -> None:
         """Test array getters when intensity_error is None."""
         sample = SAXSSample(q_values=q_values, intensity=intensity)
@@ -93,7 +99,8 @@ class TestSAXSSample:
 
         np.testing.assert_array_equal(q_array, sample.get_q_values().unwrap())
         np.testing.assert_array_equal(
-            intensity_array, sample.get_intensity().unwrap(),
+            intensity_array,
+            sample.get_intensity().unwrap(),
         )
         assert error_array is None
         assert metadata_dict == {}
@@ -116,10 +123,12 @@ class TestSAXSSample:
 
         assert new_sample2 is not sample  # Different instance
         np.testing.assert_array_equal(
-            new_sample2.get_intensity_array(), new_intensity,
+            new_sample2.get_intensity_array(),
+            new_intensity,
         )
         assert not np.array_equal(
-            sample.get_intensity_array(), new_intensity,
+            sample.get_intensity_array(),
+            new_intensity,
         )  # Original unchanged
 
         # Test set_intensity_error
@@ -128,7 +137,8 @@ class TestSAXSSample:
 
         assert new_sample3 is not sample  # Different instance
         np.testing.assert_array_equal(
-            new_sample3.get_intensity_error_array(), new_error,
+            new_sample3.get_intensity_error_array(),
+            new_error,
         )
         assert sample.get_intensity_error() is None  # Original unchanged
 
@@ -156,10 +166,12 @@ class TestSAXSSample:
 
         np.testing.assert_array_equal(new_sample.get_q_values_array(), new_q)
         np.testing.assert_array_equal(
-            new_sample.get_intensity_array(), new_intensity,
+            new_sample.get_intensity_array(),
+            new_intensity,
         )
         np.testing.assert_array_equal(
-            new_sample.get_intensity_error_array(), new_error,
+            new_sample.get_intensity_error_array(),
+            new_error,
         )
 
     def test_saxs_sample_with_different_array_sizes(self) -> None:
@@ -184,7 +196,8 @@ class TestSAXSSample:
         intensity_data = np.array([])
 
         sample = SAXSSample(
-            q_values=QValues(q_data), intensity=Intensity(intensity_data),
+            q_values=QValues(q_data),
+            intensity=Intensity(intensity_data),
         )
 
         assert len(sample.get_q_values_array()) == 0

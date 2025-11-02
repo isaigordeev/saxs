@@ -1,6 +1,4 @@
-#
-# Created by Isai GORDEEV on 20/09/2025.
-#
+# Created by Isai Gordeev on 20/09/2025.
 
 """Tests for threshold_condition.py module."""
 
@@ -49,7 +47,9 @@ class TestThresholdCondition:
         sample_empty = AbstractSampleMetadata()
         assert condition.evaluate(sample_empty) is False  # 0 > 20.0 is False
 
-    def test_threshold_condition_evaluate_with_different_numeric_types(self) -> None:
+    def test_threshold_condition_evaluate_with_different_numeric_types(
+        self,
+    ) -> None:
         """Test evaluate method with different numeric types."""
         condition = ThresholdCondition(key="value", threshold=10.0)
 
@@ -99,7 +99,9 @@ class TestThresholdCondition:
             condition.evaluate(sample_negative) is False
         )  # -1.0 > 0.0 is False
 
-    def test_threshold_condition_evaluate_with_non_numeric_values(self) -> None:
+    def test_threshold_condition_evaluate_with_non_numeric_values(
+        self,
+    ) -> None:
         """Test evaluate method with non-numeric values."""
         condition = ThresholdCondition(key="value", threshold=10.0)
 
@@ -172,10 +174,12 @@ class TestThresholdCondition:
     def test_threshold_condition_multiple_conditions(self) -> None:
         """Test using multiple ThresholdCondition instances."""
         condition_intensity = ThresholdCondition(
-            key="intensity", threshold=100.0,
+            key="intensity",
+            threshold=100.0,
         )
         condition_temperature = ThresholdCondition(
-            key="temperature", threshold=20.0,
+            key="temperature",
+            threshold=20.0,
         )
         condition_pressure = ThresholdCondition(key="pressure", threshold=1.0)
 
