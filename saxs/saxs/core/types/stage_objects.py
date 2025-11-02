@@ -14,14 +14,14 @@ between processing components.
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from saxs.saxs.core.types.abstract_data import BaseDataType
+from saxs.saxs.core.types.abstract_data import TBaseDataType
 
 TStageMetadataDictSchema = TypeVar("TStageMetadataDictSchema")
 
 
 @dataclass(frozen=False)
 class TAbstractStageMetadata(
-    BaseDataType[TStageMetadataDictSchema],
+    TBaseDataType[TStageMetadataDictSchema],
     Generic[TStageMetadataDictSchema],
 ):
     """

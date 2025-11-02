@@ -7,7 +7,7 @@
 from dataclasses import FrozenInstanceError
 
 import pytest
-from saxs.saxs.core.types.abstract_data import BaseDataType
+from saxs.saxs.core.types.abstract_data import TBaseDataType
 from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 
@@ -68,7 +68,7 @@ class TestAbstractStageMetadata:
     def test_stage_metadata_inheritance(self) -> None:
         """Test that AbstractStageMetadata inherits from AData."""
         metadata = TAbstractStageMetadata(value={"key": "value"})
-        assert isinstance(metadata, BaseDataType)
+        assert isinstance(metadata, TBaseDataType)
 
     def test_stage_metadata_with_various_types(self) -> None:
         """Test AbstractStageMetadata with various value types."""

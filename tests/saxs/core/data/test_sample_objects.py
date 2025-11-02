@@ -9,7 +9,7 @@ from dataclasses import FrozenInstanceError
 
 import numpy as np
 import pytest
-from saxs.saxs.core.types.abstract_data import BaseDataType
+from saxs.saxs.core.types.abstract_data import TBaseDataType
 from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
@@ -24,30 +24,30 @@ class TestBaseArrayWrapper:
     def test_base_array_wrapper_creation(self) -> None:
         """Test creating BaseArrayWrapper with and without values."""
         # With values
-        wrapper = BaseDataType(value=np.array([1, 2, 3]))
+        wrapper = TBaseDataType(value=np.array([1, 2, 3]))
         assert wrapper.value is not None
         np.testing.assert_array_equal(wrapper.value, np.array([1, 2, 3]))
 
         # Without values
-        wrapper_empty = BaseDataType()
+        wrapper_empty = TBaseDataType()
         assert wrapper_empty.value is None
 
     def test_base_array_wrapper_unwrap(self) -> None:
         """Test the unwrap method."""
         values = np.array([1, 2, 3, 4, 5])
-        wrapper = BaseDataType(value=values)
+        wrapper = TBaseDataType(value=values)
 
         unwrapped = wrapper.unwrap()
         assert unwrapped is not None
         np.testing.assert_array_equal(unwrapped, values)
 
         # Test with None values
-        wrapper_empty = BaseDataType()
+        wrapper_empty = TBaseDataType()
         assert wrapper_empty.unwrap() is None
 
     def test_base_array_wrapper_immutable(self) -> None:
         """Test that BaseArrayWrapper is immutable."""
-        wrapper = BaseDataType(value=np.array([1, 2, 3]))
+        wrapper = TBaseDataType(value=np.array([1, 2, 3]))
 
         with pytest.raises(FrozenInstanceError):
             wrapper.value = np.array([4, 5, 6])
@@ -233,4 +233,4 @@ class TestAbstractSampleMetadata:
     def test_metadata_inheritance(self) -> None:
         """Test that AbstractSampleMetadata inherits from BaseArrayWrapper."""
         metadata = AbstractSampleMetadata(value={"key": "value"})
-        assert isinstance(metadata, BaseDataType)
+        assert isinstance(metadata, TBaseDataType)
