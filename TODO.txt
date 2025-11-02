@@ -27,6 +27,7 @@ milestones
 - o default variable stages for compiler
 - o change metadata flow
 - o request handler for scheduler
+- o allow None for I errors
 
 - ± in-place operations?
 - ± instance or class injections?
