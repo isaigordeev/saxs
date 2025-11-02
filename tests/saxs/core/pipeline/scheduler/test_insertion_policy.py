@@ -15,7 +15,7 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     NeverInsertPolicy,
     SaturationInsertPolicy,
 )
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 class TestInsertionPolicy:
@@ -41,7 +41,8 @@ class TestAlwaysInsertPolicy:
         assert isinstance(policy, InsertionPolicy)
 
     def test_always_insert_policy_always_returns_true(
-        self, stage_request,
+        self,
+        stage_request,
     ) -> None:
         """Test that AlwaysInsertPolicy always returns True."""
         policy = AlwaysInsertPolicy()
@@ -58,7 +59,8 @@ class TestAlwaysInsertPolicy:
         assert policy(different_request) is True
 
     def test_always_insert_policy_with_multiple_requests(
-        self, stage_request,
+        self,
+        stage_request,
     ) -> None:
         """Test AlwaysInsertPolicy with multiple requests."""
         policy = AlwaysInsertPolicy()
@@ -80,7 +82,8 @@ class TestNeverInsertPolicy:
         assert isinstance(policy, InsertionPolicy)
 
     def test_never_insert_policy_always_returns_false(
-        self, stage_request,
+        self,
+        stage_request,
     ) -> None:
         """Test that NeverInsertPolicy always returns False."""
         policy = NeverInsertPolicy()
@@ -97,7 +100,8 @@ class TestNeverInsertPolicy:
         assert policy(different_request) is False
 
     def test_never_insert_policy_with_multiple_requests(
-        self, stage_request,
+        self,
+        stage_request,
     ) -> None:
         """Test NeverInsertPolicy with multiple requests."""
         policy = NeverInsertPolicy()
@@ -140,7 +144,8 @@ class TestSaturationInsertPolicy:
             assert policy._calls == policy._saturation
 
     def test_saturation_insert_policy_reset_behavior(
-        self, stage_request,
+        self,
+        stage_request,
     ) -> None:
         """Test that SaturationInsertPolicy maintains state across calls."""
         policy = SaturationInsertPolicy()

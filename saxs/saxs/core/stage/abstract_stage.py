@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from saxs.saxs.core.types.metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (

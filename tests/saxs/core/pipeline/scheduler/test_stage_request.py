@@ -12,7 +12,7 @@ from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 class TestAbstractStageRequest:

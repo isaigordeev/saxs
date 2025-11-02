@@ -27,7 +27,7 @@ from saxs.saxs.core.types.sample_objects import (
     IntensityError,
     QValues,
 )
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 # ----------------
@@ -247,7 +247,8 @@ class TestBaseScheduler:
         assert result == saxs_sample
 
     def test_base_scheduler_run_with_multiple_requests(
-        self, saxs_sample,
+        self,
+        saxs_sample,
     ) -> None:
         """Test BaseScheduler run with multiple stage requests."""
         # Create mock stages
@@ -286,7 +287,8 @@ class TestBaseScheduler:
         assert result == saxs_sample
 
     def test_base_scheduler_run_with_nested_requests(
-        self, saxs_sample,
+        self,
+        saxs_sample,
     ) -> None:
         """Test BaseScheduler run with nested stage requests."""
         # Create mock stages

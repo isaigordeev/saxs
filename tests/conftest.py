@@ -19,7 +19,7 @@ from saxs.saxs.core.types.sample_objects import (
     IntensityError,
     QValues,
 )
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 @pytest.fixture

@@ -19,7 +19,7 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     SaturationInsertPolicy,
 )
 from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
 from saxs.saxs.processing.stage.filter.cut_stage import CutStage
 from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
@@ -193,7 +193,9 @@ class TestPipeline:
         assert result == saxs_sample
 
     def test_pipeline_run_with_single_stage(
-        self, saxs_sample, mock_stage,
+        self,
+        saxs_sample,
+        mock_stage,
     ) -> None:
         mock_stage.process.return_value = saxs_sample
         pipeline = Pipeline(init_stages=[mock_stage])
@@ -221,7 +223,9 @@ class TestPipeline:
         assert result == modified_sample
 
     def test_pipeline_run_with_custom_scheduler(
-        self, saxs_sample, mock_stage,
+        self,
+        saxs_sample,
+        mock_stage,
     ) -> None:
         custom_scheduler = Mock()
         custom_scheduler.run.return_value = saxs_sample
@@ -267,7 +271,9 @@ class TestPipeline:
             pipeline.run(saxs_sample)
 
     def test_pipeline_run_with_stage_exception(
-        self, saxs_sample, mock_stage,
+        self,
+        saxs_sample,
+        mock_stage,
     ) -> None:
         mock_stage.process.side_effect = ValueError("Stage processing failed")
         pipeline = Pipeline(init_stages=[mock_stage])
