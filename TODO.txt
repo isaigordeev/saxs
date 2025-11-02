@@ -21,7 +21,8 @@ milestones
     process releases gil
 - o request handler for scheduler
 - o allow None for I errors
-- o lambda for state factory in injections? (or inject from cache)
+- ! lambda for state factory in injections?
+    (or inject from cache)
 - o metaclass for logging
 - o replace python function calculation in processing
     by c++ ones (~.)
@@ -31,6 +32,9 @@ milestones
 - o pydantic for gluing metadata between stages
 - o compatible with windows? 
 - o keep one instance of eval schema and create a simple base one 
+- o unwire TStageMetadata from Condition class
+- o new Metadata type for eval in the condition
+- o new Metadata type for approval in the scheduler
 
 - ± shoud we encapsulate generic metadata type into a stage?
 
