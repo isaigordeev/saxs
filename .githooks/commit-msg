@@ -9,7 +9,7 @@ echo "COMMIT-MSG CHECK: Enforcing '<type>(<scope>): message' pattern"
 echo "--------------------------------------------------------------"
 
 # Allowed commit types
-TYPES="chore|feat|fix|docs|ref|test|style|perf|ci|build"
+TYPES="chore|feat|fix|docs|fmt|test|style|perf|ci|build"
 
 # Regex pattern: scope is optional
 PATTERN="^($TYPES)(\([a-zA-Z0-9_-]+\))?: .+"
@@ -22,7 +22,7 @@ if ! [[ "$COMMIT_MSG" =~ $PATTERN ]]; then
     echo "  fix       - a bug fix or correction"
     echo "  docs      - documentation updates or improvements"
     echo "  style     - code style changes (no logic impact)"
-    echo "  ref       - code refactoring or restructuring"
+    echo "  fmt       - code refactoring or restructuring"
     echo "  perf      - performance optimizations"
     echo "  test      - adding or improving tests"
     echo "  build     - changes to build scripts or dependencies"
