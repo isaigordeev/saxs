@@ -17,7 +17,7 @@ from typing import Any, TypedDict, Union
 import numpy as np
 from numpy.typing import NDArray
 
-from saxs.saxs.core.types.abstract_data import BaseDataType
+from saxs.saxs.core.types.abstract_data import TBaseDataType
 from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
     Intensity,
@@ -77,7 +77,7 @@ SAXSSampleArrayValue = Union[
 SAXSSampleValue = Union[AbstractSampleMetadata, SAXSSampleArrayValue]
 
 
-class SAXSSample(BaseDataType[SAXSSampleDict]):
+class SAXSSample(TBaseDataType[SAXSSampleDict]):
     # --- Getters ---
     def get_q_values(self) -> NDArray[np.float64]:
         """Return the raw q-values array from the sample."""

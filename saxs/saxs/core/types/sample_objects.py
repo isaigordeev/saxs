@@ -26,11 +26,11 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from saxs.saxs.core.types.abstract_data import BaseDataType
+from saxs.saxs.core.types.abstract_data import TBaseDataType
 
 
 @dataclass(frozen=False)
-class QValues(BaseDataType[NDArray[np.float64]]):
+class QValues(TBaseDataType[NDArray[np.float64]]):
     """
     Represents the scattering vector magnitudes (q-values).
 
@@ -42,7 +42,7 @@ class QValues(BaseDataType[NDArray[np.float64]]):
 
 
 @dataclass(frozen=False)
-class Intensity(BaseDataType[NDArray[np.float64]]):
+class Intensity(TBaseDataType[NDArray[np.float64]]):
     """
     Represents the measured SAXS intensity data.
 
@@ -54,7 +54,7 @@ class Intensity(BaseDataType[NDArray[np.float64]]):
 
 
 @dataclass(frozen=False)
-class IntensityError(BaseDataType[NDArray[np.float64] | None]):
+class IntensityError(TBaseDataType[NDArray[np.float64] | None]):
     """
     Represents the measurement errors of intensity data.
 
@@ -67,7 +67,7 @@ class IntensityError(BaseDataType[NDArray[np.float64] | None]):
 
 
 @dataclass(frozen=False)
-class AbstractSampleMetadata(BaseDataType[dict[str, Any]]):
+class AbstractSampleMetadata(TBaseDataType[dict[str, Any]]):
     """
     Represents metadata associated with a SAXS sample.
 
