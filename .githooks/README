@@ -1,0 +1,49 @@
+GIT HOOKS & GPG SIGNING SETUP
+
+FOL setup local Git hooks and enable GPG-signed commits.
+
+---
+
+## Make Git hooks executable
+
+<!-- chmod +x .githooks/pre-commit -->
+
+<!-- chmod +x .githooks/pre-push -->
+
+chmod +x .githooks/commit-msg
+
+Tell Git to use the local hooks directory:
+
+git config core.hooksPath .githooks
+
+---
+
+## Enable GPG commit signing
+
+Set your GPG key (replace <key-id> with your actual key ID):
+
+git config --global user.signingkey <key-id>
+
+git config --global commit.gpgsign true
+
+Check your available GPG keys:
+
+gpg --list-secret-keys --keyid-format LONG
+
+Example output:
+
+sec rsa4096/ABCD1234EF567890 2024-05-12 [SC] uid
+
+[ultimate] Isai Gordeev
+[isai@example.com](mailto:isai@example.com) sub
+rsa4096/XYZ1234567890ABC 2024-05-12 [E]
+
+Use the key after the slash (/) as <key-id> in the command above.
+
+---
+
+## Verify hooks and signing
+
+Commit normally and check that commits are signed:
+
+---
