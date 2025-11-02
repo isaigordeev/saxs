@@ -44,7 +44,7 @@ class ESAXSSampleKeys(Enum):
 
     Q_VALUES = "q_values"
     INTENSITY = "intensity"
-    INTENSITY_ERROR = "intensity_error"
+    INTENSITY_ERROR = "intensity_err"
     METADATA = "metadata"
 
 
@@ -64,7 +64,7 @@ class SAXSSampleDict(TypedDict):
 
     q_values: QValues
     intensity: Intensity
-    intensity_error: IntensityError
+    intensity_err: IntensityError
     metadata: AbstractSampleMetadata
 
 
@@ -82,25 +82,27 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
     def get_q_values(self) -> NDArray[np.float64]:
         """Return the raw q-values array from the sample."""
         _sample: SAXSSampleDict = self.unwrap()
-        _q_values: QValues = _sample.get("q_values")
+        _q_values: QValues = _sample.get(ESAXSSampleKeys.Q_VALUES.value)
         return _q_values.unwrap()
 
     def get_intensity(self) -> NDArray[np.float64]:
         """Return the raw intensity array from the sample."""
         _sample: SAXSSampleDict = self.unwrap()
-        _intensity: Intensity = _sample.get("intensity")
+        _intensity: Intensity = _sample.get(ESAXSSampleKeys.INTENSITY.value)
         return _intensity.unwrap()
 
     def get_intensity_error(self) -> NDArray[np.float64] | None:
         """Return the raw intensity error array, or None if missing."""  # noqa: W505
         _sample: SAXSSampleDict = self.unwrap()
-        _error: IntensityError | None = _sample.get("intensity_error")
+        _error: IntensityError | None = _sample.get(
+            ESAXSSampleKeys.INTENSITY_ERROR.value,
+        )
         return _error.unwrap() if _error else None
 
     def get_metadata(self) -> AbstractSampleMetadata:
         """Return the metadata dict."""
         _sample: SAXSSampleDict = self.unwrap()
-        return _sample.get("metadata")
+        return _sample.get(ESAXSSampleKeys.METADATA.value)
 
     # --- Immutable Setters ---
 
@@ -108,7 +110,7 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
         return SAXSSample(
             {
                 **self.unwrap(),
-                "q_values": QValues(q_array),
+                ESAXSSampleKeys.Q_VALUES.value: QValues(q_array),
             },
         )
 
@@ -119,7 +121,7 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
         return SAXSSample(
             {
                 **self.unwrap(),
-                "intensity": Intensity(intensity_array),
+                ESAXSSampleKeys.INTENSITY.value: Intensity(intensity_array),
             },
         )
 
@@ -130,9 +132,9 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
         return SAXSSample(
             {
                 **self.unwrap(),
-                "intensity_error": IntensityError(error_array)
-                if error_array is not None
-                else None,
+                ESAXSSampleKeys.INTENSITY_ERROR.value: IntensityError(
+                    error_array
+                ),
             },
         )
 
@@ -143,7 +145,7 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
         return SAXSSample(
             {
                 **self.unwrap(),
-                "metadata": metadata_dict,
+                ESAXSSampleKeys.METADATA.value: metadata_dict,
             },
         )
 
@@ -180,7 +182,7 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
         return _value.unwrap()
 
     def __setitem__(self, key: ESAXSSampleKeys, _value: NDArray[np.float64]):
-        """Setter dict.
+        """Setter dict for array like data in the sample.
 
         Allow dict-like mutation: sample['q_values'] = QValues(...)
         This returns a new immutable SAXSSample
