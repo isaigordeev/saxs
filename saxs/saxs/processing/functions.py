@@ -1,4 +1,7 @@
-"""Simple funcs."""
+"""Simple funcs.
+
+Simple functions.
+"""  # noqa: EXE002
 
 import numpy as np
 from numpy.typing import NDArray
