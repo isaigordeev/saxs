@@ -13,13 +13,18 @@ from saxs.saxs.core.pipeline.condition.chaining_condition import (
 from saxs.saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
+from saxs.saxs.core.stage.abstract_stage import TStageMetadata
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
-from saxs.saxs.processing.stage.peak.types import PeakFindStageMetadata
+from saxs.saxs.processing.stage.peak.types import (
+    PeakFindStageMetadata,
+    PeakProcessStageMetadata,
+)
 
 if TYPE_CHECKING:
     from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
@@ -31,7 +36,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     def __init__(
         self,
         metadata: PeakFindStageMetadata,
-        policy: SingleStageChainingPolicy,
+        policy: SingleStageChainingPolicy[PeakFindStageMetadata],
     ):
         super().__init__(metadata, policy)
 
@@ -67,7 +72,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             f"===========================",
         )
 
-        return sample_data, {"peaks": peaks_indices}
+        return sample, {"peaks": peaks_indices}
 
     def create_request(self) -> StageRequest:
         _current_peak_index = (

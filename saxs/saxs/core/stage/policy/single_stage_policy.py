@@ -17,15 +17,23 @@ from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
-from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.core.stage.request.abst_request import (
+    StageRequest,
+    TEvalMetadataDict,
+)
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.condition.abstract_condition import (
         StageCondition,
     )
 
+from saxs.saxs.core.stage.abstract_stage import TStageMetadata
 
-class SingleStageChainingPolicy(ChainingPolicy):
+#  probably there we need to unwire
+#  TStageMetadata from TStageMetadata
+
+
+class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
     """
     Single-stage chaining policy.
 
@@ -46,7 +54,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
     def __new__(
         cls,
         condition: "StageCondition",  # noqa: ARG004
-        pending_stages: list[IAbstractStage],
+        pending_stages: list[IAbstractStage[TStageMetadata]],
     ):
         """
         Allocate a new instance and validate input.
@@ -56,8 +64,8 @@ class SingleStageChainingPolicy(ChainingPolicy):
         condition : StageCondition
             Condition used to determine stage injection.
         next_stage_cls : list of AbstractStage
-            List containing the next stage class. Must contain at most
-            one element.
+            List containing the next stage class. Must contain at
+            most one element.
 
         Raises
         ------
@@ -76,10 +84,10 @@ class SingleStageChainingPolicy(ChainingPolicy):
 
     def request(
         self,
-        stage_metadata: StageRequest,
-    ) -> list["StageApprovalRequest"]:
+        stage_metadata: StageRequest[TEvalMetadataDict],
+    ) -> list[StageApprovalRequest[TStageMetadata]]:
         """
-        Evaluate the condition and return a stage request if allowed.
+        Evaluate the condition and return a stage request.
 
         Parameters
         ----------

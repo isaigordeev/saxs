@@ -58,7 +58,7 @@ class IAbstractRequestingStage(
     def __init__(
         self,
         metadata: TAbstractStageMetadata[TMetadataSchemaDict],
-        policy: ChainingPolicy | None = None,
+        policy: ChainingPolicy[TStageMetadata],
     ):
         self.policy = policy
         super().__init__(metadata)

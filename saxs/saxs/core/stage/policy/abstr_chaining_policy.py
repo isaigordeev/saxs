@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Generic, TypedDict
 
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 
 if TYPE_CHECKING:
@@ -17,14 +17,16 @@ class EvalSchemaDict(TypedDict, total=False):
     """Abstract eval dictionary schema."""
 
 
-class ChainingPolicy(ABC):
+class ChainingPolicy(ABC, Generic[TStageMetadata]):
     def __init__(
         self,
         condition: "StageCondition",
-        pending_stages: list[IAbstractStage],
+        pending_stages: list[IAbstractStage[TStageMetadata]],
     ):
         self.condition = condition
-        self.pending_stages: list[IAbstractStage] = pending_stages
+        self.pending_stages: list[IAbstractStage[TStageMetadata]] = (
+            pending_stages
+        )
 
     @abstractmethod
     def request(

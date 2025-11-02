@@ -1,11 +1,10 @@
-# # Created by Isai GORDEEV on 20/09/2025.  #
+# Created by Isai GORDEEV on 20/09/2025.
 
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Generic
 
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
 
 
 @dataclass(frozen=True)
@@ -17,7 +16,10 @@ class AbstractStageApprovalRequest:
 
 
 @dataclass(frozen=True)
-class StageApprovalRequest(AbstractStageApprovalRequest):
+class StageApprovalRequest(
+    AbstractStageApprovalRequest,
+    Generic[TStageMetadata],
+):
     """Concrete implementation of a stage approval request.
 
     This class represents a request to add a new stage to the
@@ -37,5 +39,5 @@ class StageApprovalRequest(AbstractStageApprovalRequest):
         interface.
     """
 
-    stage: IAbstractStage
-    metadata: TAbstractStageMetadata[dict[str, Any]]
+    stage: IAbstractStage[TStageMetadata]
+    metadata: TStageMetadata  # approval must have different type
