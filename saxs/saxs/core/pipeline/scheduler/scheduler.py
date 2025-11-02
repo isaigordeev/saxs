@@ -19,7 +19,7 @@ BaseScheduler
 
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from saxs.logging.logger import logger
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
@@ -27,8 +27,13 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     InsertionPolicy,
 )
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.types.metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
+from saxs.saxs.core.types.scheduler_objects import (
+    AbstractSchedulerMetadata,
+    ESchedulerMetadataDictKeys,
+)
+from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
@@ -54,7 +59,7 @@ class AbstractScheduler(ABC):
         Policy controlling how new stages are added to the queue.
     """
 
-    _metadata = AbstractSchedulerMetadata()
+    _metadata: AbstractSchedulerMetadata
 
     def __init__(
         self,
@@ -69,7 +74,11 @@ class AbstractScheduler(ABC):
         self._insertion_policy = insertion_policy or AlwaysInsertPolicy()
 
     @abstractmethod
-    def run(self, init_sample: SAXSSample) -> SAXSSample:
+    def run(
+        self,
+        init_sample: SAXSSample,
+        init_flow_metadata: FlowMetadata,
+    ) -> SAXSSample:
         """Run the scheduler pipeline.
 
         Parameters
@@ -109,7 +118,11 @@ class BaseScheduler(AbstractScheduler):
     for most SAXS data processing pipelines.
     """
 
-    def run(self, init_sample: SAXSSample) -> SAXSSample:
+    def run(
+        self,
+        init_sample: SAXSSample,
+        init_flow_metadata: FlowMetadata,
+    ) -> SAXSSample:
         """Execute all stages in the scheduler sequentially.
 
         Each stage processes the sample and may generate one or more
@@ -126,25 +139,32 @@ class BaseScheduler(AbstractScheduler):
             The final processed sample after all stages complete.
         """
         queue = self._queue
-        sample = init_sample
+
+        _sample = init_sample
+        _flow_metadata = init_flow_metadata
         step = 1
 
         logger.info(f"\n{'=' * 30}\n[Scheduler] Queue: {queue}'\n{'=' * 30}")
 
         while queue:
-            stage = queue.popleft()
+            stage: AbstractStage = queue.popleft()
             stage_name = stage.__class__.__name__
 
             logger.info(
-                f"\n{'=' * 30}\n[Scheduler] Step {step}: Running stage {stage}'{stage_name}'"
-                f" on sample '{sample}'\n{'=' * 30}",
+                f"\n{'=' * 30}\n[Scheduler] Step {step}:",
+                f" Running stage {stage.__class__}"
+                f" on sample '{_sample.__class__}'\n{'=' * 30}",
             )
 
             # Process stage
-            sample = stage.process(sample)
+            _sample, _flow_metadata = stage.process(
+                sample=_sample,
+                flow_metadata=_flow_metadata,
+            )
 
             logger.info(
-                f"\n[Scheduler] Stage '{stage_name}' completed. Sample metadata: {sample.get_metadata_dict()}\n",
+                f"\n[Scheduler] Stage '{stage_name}' completed.",
+                f"Sample metadata: {_sample.__class__}\n",
             )
 
             # Collect new stage requests
@@ -152,36 +172,41 @@ class BaseScheduler(AbstractScheduler):
 
             if requests:
                 logger.info(
-                    f"\n[Scheduler] Stage '{stage_name}' generated {len(requests)} request(s).",
+                    f"\n[Scheduler] Stage '{stage_name}' generated",
+                    f" {len(requests)} request(s).",
                 )
             else:
                 logger.info(
-                    f"\n[Scheduler] Stage '{stage_name}' generated no requests.\n",
+                    f"\n[Scheduler] Stage '{stage_name}' generated",
+                    " no requests.\n",
                 )
 
             for req in requests:
                 req_stage_name = req.stage.__class__.__name__
                 if self._insertion_policy(req):  # scheduler policy decides
                     queue.append(req.stage)
-                    self.handle_scheduler_meta(req.metadata)
                     logger.info(
-                        f"\n[Scheduler] Request {req} approved → Stage '{req_stage_name}' appended to queue.",
+                        f"\n[Scheduler] Request {req} approved → Stage '",
+                        f"{req_stage_name}' appended to queue.",
                     )
                 else:
                     logger.info(
-                        f"\n[Scheduler] Request {req} rejected → Stage '{req_stage_name}' not appended.",
+                        f"\n[Scheduler] Request {req} rejected → Stage':",
+                        f"{req_stage_name}' not appended.",
                     )
 
             step += 1
 
         logger.info(
-            f"\n{'=' * 30}\n[Scheduler] Pipeline completed. Final sample metadata: {sample.get_metadata_dict()}\nFinal scheduler metadata: {self._metadata}\n{'=' * 30}",
+            f"\n{'=' * 30}\n[Scheduler] Pipeline completed.",
+            f"Final sample metadata: {_sample.__dict__}",
+            f"Final scheduler, metadata: {self._metadata}\n{'=' * 30}",
         )
-        return sample
+        return _sample
 
-    def handle_scheduler_meta(
+    def handle_metadata_request(
         self,
-        new_scheduler_metadata: AbstractSchedulerMetadata,
+        _metadata: AbstractStageMetadata[dict[str, Any]],
     ) -> None:
         """Update scheduler metadata based on new stage metadata.
 
@@ -195,10 +220,10 @@ class BaseScheduler(AbstractScheduler):
             Metadata produced by a stage to update the scheduler
             state.
         """
-        if not new_scheduler_metadata.unwrap():
+        if not _metadata.unwrap():
             return
 
-        curr_peak = new_scheduler_metadata.unwrap().get(
+        curr_peak = _metadata.unwrap().get(
             "current_peak_index",
             -1,
         )
@@ -208,8 +233,11 @@ class BaseScheduler(AbstractScheduler):
 
         if not self._metadata.unwrap():
             self._metadata = AbstractSchedulerMetadata(
-                {"peaks": 1, "processed": [curr_peak]},
+                {
+                    ESchedulerMetadataDictKeys.PROCESSED.value: 1,
+                },
             )
         else:
-            self._metadata.unwrap()["peaks"] += 1
-            self._metadata.unwrap()["processed"].append(curr_peak)
+            self._metadata.unwrap()[
+                ESchedulerMetadataDictKeys.PROCESSED.value
+            ] += 1
