@@ -16,17 +16,17 @@ class KernelRegistry:
 
     def register_stage(self, stage: StageSpec) -> None:
         """Register stage."""
-        if self.stage_specs.contains(stage.id):
-            msg = f"Stage ID '{stage.id}' is already registered."
+        if self.stage_specs.contains(stage.id_):
+            msg = f"Stage ID '{stage.id_}' is already registered."
             raise KeyError(msg)
-        self.stage_specs.register(stage.id, stage)
+        self.stage_specs.register(stage.id_, stage)
         self.execution_order.append(
-            stage.id,
+            stage.id_,
         )  # Memorize the order of registration
 
     def register_policy(self, policy: PolicySpec) -> None:
         """Register policy."""
-        self.policy_specs.register(policy.id, policy)
+        self.policy_specs.register(policy.id_, policy)
 
     def pipeline(
         self,

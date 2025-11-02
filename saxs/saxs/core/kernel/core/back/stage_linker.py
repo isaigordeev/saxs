@@ -30,7 +30,7 @@ class StageLinker:
                 continue
 
             _stage: AbstractRequestingStage = stage_instances.get(
-                _stage_spec.id,
+                _stage_spec.id_,
             )
 
             _policy = policy_instances.get(_current_policy_id)

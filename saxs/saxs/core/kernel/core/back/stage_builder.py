@@ -26,6 +26,6 @@ class StageBuilder:
             else:
                 instance = stage_spec.stage_cls(**kwargs)
 
-            stage_instances.register(stage_spec.id, instance)
+            stage_instances.register(stage_spec.id_, instance)
 
         return stage_instances

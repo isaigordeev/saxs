@@ -27,7 +27,7 @@ from typing import TypedDict
 from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
 
 
-class CutStageMetadataDictKeys(Enum):
+class ECutStageMetadataDictKeys(Enum):
     """Enum of keys used in CutStageMetadataDict."""
 
     CUT_POINT = "cut_point"
@@ -63,7 +63,7 @@ class CutStageMetadata(AbstractStageMetadata[CutStageMetadataDict]):
     """
 
     value: CutStageMetadataDict = field(
-        default_factory=lambda: {CutStageMetadataDictKeys.CUT_POINT.value: 0},
+        default_factory=lambda: {ECutStageMetadataDictKeys.CUT_POINT.value: 0},
     )
 
     def get_cut_point(self) -> int:
@@ -76,4 +76,4 @@ class CutStageMetadata(AbstractStageMetadata[CutStageMetadataDict]):
             The cut point index from metadata, defaulting to 0
             if not set.
         """
-        return self.unwrap().get(CutStageMetadataDictKeys.CUT_POINT.value, 0)
+        return self.unwrap().get(ECutStageMetadataDictKeys.CUT_POINT.value, 0)

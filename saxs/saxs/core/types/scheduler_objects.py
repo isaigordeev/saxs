@@ -3,15 +3,28 @@
 #
 
 
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import field
+from enum import Enum
+from typing import TypedDict
 
 from saxs.saxs.core.types.abstract_data import BaseDataType
 
 
-@dataclass(frozen=False)
-class AbstractSchedulerMetadata(BaseDataType[dict[str, Any]]):
-    value: dict[str, Any] = field(default_factory=dict[str, Any])
+class ESchedulerMetadataDictKeys(Enum):
+    PROCESSED = "processed"
+    PEAKS = "peaks"
+
+
+class SchedulerMetadataDict(TypedDict):
+    processed: int
+
+
+class AbstractSchedulerMetadata(BaseDataType[SchedulerMetadataDict]):
+    value: SchedulerMetadataDict = field(
+        default_factory=lambda: {
+            ESchedulerMetadataDictKeys.PROCESSED.value: 0,
+        },
+    )
 
     def describe(self) -> str:
         """Describe method."""

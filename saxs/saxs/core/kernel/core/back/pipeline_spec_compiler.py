@@ -64,7 +64,7 @@ class SpecCompiler:
             )
 
             policy = PolicySpec(
-                id=policy_decl_spec.id,
+                id_=policy_decl_spec.id,
                 policy_cls=policy_cls,
                 condition=_condition,
                 next_stage_ids=next_stage_ids,
@@ -97,7 +97,7 @@ class SpecCompiler:
             )
 
             stage_spec = StageSpec(
-                id=stage_decl_spec.id,
+                id_=stage_decl_spec.id,
                 stage_cls=stage_cls,
                 kwargs=stage_decl_spec.kwargs or {},
                 policy_id=policy_id,
@@ -125,6 +125,7 @@ class SpecCompiler:
             pipeline_decl.policy_decl_specs,
         )
         runtime_stages = self.build_stage_specs(
-            pipeline_decl.stage_decl_specs, runtime_policies,
+            pipeline_decl.stage_decl_specs,
+            runtime_policies,
         )
         return runtime_stages, runtime_policies

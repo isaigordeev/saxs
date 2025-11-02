@@ -25,7 +25,7 @@ class PolicyBuilder:
             kwargs = PolicyBuilder.build_policy_kwargs(policy_spec)
             instance = policy_spec.policy_cls(**kwargs)
 
-            policy_instances.register(policy_spec.id, instance)
+            policy_instances.register(policy_spec.id_, instance)
 
         return policy_instances
 

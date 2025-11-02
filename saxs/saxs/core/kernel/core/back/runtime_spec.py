@@ -47,10 +47,10 @@ class StageSpec:
         this stage.
     """
 
-    id: StageSpecId
+    id_: StageSpecId
     stage_cls: type[AbstractStage]
     kwargs: dict[str, Any] | None = None
-    metadata: AbstractStageMetadata | None = None
+    metadata: AbstractStageMetadata[dict[str, Any]] | None = None
     policy_id: PolicySpecId | None = None
     before: list[StageSpecId] | None = None
     after: list[StageSpecId] | None = None
@@ -70,7 +70,7 @@ class PolicySpec:
         this policy connects to.
     """
 
-    id: PolicySpecId
+    id_: PolicySpecId
     policy_cls: type[ChainingPolicy]
     condition: type[StageCondition]
     condition_kwargs: dict[str, Any]
