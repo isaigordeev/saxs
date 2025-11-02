@@ -8,12 +8,87 @@ container.
 """
 
 from dataclasses import dataclass
-from typing import TypedDict
+from enum import Enum
+from typing import Any, TypedDict
 
-from saxs.saxs.core.types.abstract_data import BaseDataType
+from saxs.saxs.core.types.abstract_data import TBaseDataType
 
 
-class FlowMetadataDict(TypedDict, total=False):
+class TMetadataSchemaKeys(Enum):
+    """Abstract metadata Schema."""
+
+
+class TMetadataSchemaDict(TypedDict, total=False):
+    """Abstract dictionary schema."""
+
+
+MetadataValueType = list[Any] | int
+
+
+class AbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
+    """Set a value for a specific metadata key.
+
+    This allows dict-like assignment on the sample:
+
+    ```python
+    sample['q_values'] = QValues(...)
+    ```
+
+    The underlying data is updated immutably, returning a new
+    SAXSSample if necessary, though this method does not modify
+    the current instance in-place.
+
+    Parameters
+    ----------
+    key : TMetadataSchemaKeys
+        The key identifying the metadata array to update.
+    value : MetadataValueType
+        The new value to assign to the metadata key.
+
+    Raises
+    ------
+    KeyError
+        If the provided key is not a valid array-like metadata key.
+    TypeError
+        If the value type is incompatible with the expected
+        metadata value type.
+    """
+
+    def __setitem__(self, key: TMetadataSchemaKeys, value: MetadataValueType):
+        """Setter dict for array like data in the sample.
+
+        Allow dict-like mutation: sample['q_values'] = QValues(...)
+        This returns a new immutable SAXSSample
+        (does modify in-place).
+        """
+        try:
+            _value = self.unwrap()
+        except AttributeError as e:
+            msg = (
+                "Failed to unwrap AbstractMetadata instance. "
+                "Ensure the object is properly initialized."
+            )
+            raise RuntimeError(msg) from e
+
+        # Attempt to set the value
+        try:
+            _value[key.value] = value
+        except KeyError:
+            valid_keys = [k.value for k in TMetadataSchemaKeys]
+            msg = (
+                f"Invalid metadata key: {key}. "
+                f"Supported keys are: {valid_keys}."
+            )
+            raise KeyError(msg) from None
+        except TypeError as e:
+            msg = (
+                f"Invalid type for value assigned to key {key}. "
+                f"Expected MetadataValueType, got {type(value).__name__}."
+            )
+            raise TypeError(msg) from e
+
+
+class FlowMetadataDict(TMetadataSchemaDict, total=False):
     """
     Type-safe dictionary for flow metadata.
 
@@ -27,7 +102,7 @@ class FlowMetadataDict(TypedDict, total=False):
 
 
 @dataclass(frozen=False)
-class FlowMetadata(BaseDataType[FlowMetadataDict]):
+class FlowMetadata(TBaseDataType[FlowMetadataDict]):
     """
     Immutable container for flow experiment metadata.
 

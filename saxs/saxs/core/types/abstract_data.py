@@ -19,7 +19,7 @@ T = TypeVar("T")
 
 
 @dataclass(frozen=False)
-class BaseDataType(Generic[T]):
+class TBaseDataType(Generic[T]):
     """
     Generic, immutable data wrapper for scientific data objects.
 
