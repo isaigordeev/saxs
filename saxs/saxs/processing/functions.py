@@ -1,9 +1,4 @@
-"""simple funcs."""
-
-import time
-from collections.abc import Callable
-from functools import wraps
-from typing import Any
+"""Simple funcs."""
 
 import numpy as np
 from numpy.typing import NDArray
@@ -163,28 +158,3 @@ def moving_average(
     """
     window = np.ones(window_size) / window_size
     return np.convolve(data, window, mode="same")  # pyright: ignore[reportReturnType]
-
-
-def timer_decorator(func):
-    """
-    Decorate to time a function execution.
-
-    Parameters
-    ----------
-    func : callable
-        function to time
-
-    Returns
-    -------
-    callable
-        wrapped function with timing
-    """
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        time.time()
-        result = func(*args, **kwargs)
-        time.time()
-        return result
-
-    return wrapper
