@@ -16,11 +16,14 @@ from typing import Generic, TypeVar
 
 from saxs.saxs.core.types.abstract_data import BaseDataType
 
-DictSchema = TypeVar("DictSchema")
+TStageMetadataDictSchema = TypeVar("TStageMetadataDictSchema")
 
 
 @dataclass(frozen=False)
-class AbstractStageMetadata(BaseDataType[DictSchema], Generic[DictSchema]):
+class TAbstractStageMetadata(
+    BaseDataType[TStageMetadataDictSchema],
+    Generic[TStageMetadataDictSchema],
+):
     """
     Represents metadata associated with a SAXS pipeline stage.
 

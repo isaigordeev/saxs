@@ -64,7 +64,7 @@ from saxs.saxs.core.kernel.core.front.declarative_specs import (
     StageDeclSpec,
 )
 from saxs.saxs.core.kernel.core.front.parser import DeclarativePipeline
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
     ChainingPolicy,
 )
@@ -85,7 +85,7 @@ class BaseCompiler:
         self,
         stage_specs: Buffer[StageSpec],
         policy_specs: Buffer[PolicySpec],
-    ) -> tuple[Buffer[AbstractStage], Buffer[ChainingPolicy]]:
+    ) -> tuple[Buffer[IAbstractStage], Buffer[ChainingPolicy]]:
         """
         Build and link stage and policy instances.
 
@@ -116,7 +116,9 @@ class BaseCompiler:
         - The returned instances are fully linked and ready for
         execution in the SAXS processing pipeline.
         """
-        stage_instance: Buffer[AbstractStage] = StageBuilder.build(stage_specs)
+        stage_instance: Buffer[IAbstractStage] = StageBuilder.build(
+            stage_specs,
+        )
         policy_instance: Buffer[ChainingPolicy] = PolicyBuilder.build(
             policy_specs,
         )
@@ -126,7 +128,7 @@ class BaseCompiler:
             stage_instance,
             policy_instance,
         )
-        linked_stage_instance: Buffer[AbstractStage] = StageLinker.link(
+        linked_stage_instance: Buffer[IAbstractStage] = StageLinker.link(
             stage_specs,
             stage_instance,
             policy_instance,
@@ -155,7 +157,7 @@ class YamlCompiler(BaseCompiler):
         self,
         stage_decl_specs: Buffer[StageDeclSpec],
         policy_decl_specs: Buffer[PolicyDeclSpec],
-    ) -> tuple[Buffer[AbstractStage], Buffer[ChainingPolicy]]:
+    ) -> tuple[Buffer[IAbstractStage], Buffer[ChainingPolicy]]:
         """
         Build and link stage and policy instances.
 

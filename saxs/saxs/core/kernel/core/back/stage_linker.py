@@ -3,7 +3,7 @@ from saxs.saxs.core.kernel.core.back.runtime_spec import StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (
     AbstractRequestingStage,
 )
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
 
@@ -17,9 +17,9 @@ class StageLinker:
     @staticmethod
     def link(
         stage_specs: Buffer[StageSpec],
-        stage_instances: Buffer[AbstractStage],
+        stage_instances: Buffer[IAbstractStage],
         policy_instances: Buffer[ChainingPolicy],
-    ) -> Buffer[AbstractStage]:
+    ) -> Buffer[IAbstractStage]:
         for _stage_spec in stage_specs.values():
             if not issubclass(_stage_spec.stage_cls, AbstractRequestingStage):
                 continue

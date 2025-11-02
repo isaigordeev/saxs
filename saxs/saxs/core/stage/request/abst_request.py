@@ -25,7 +25,7 @@ from dataclasses import dataclass
 
 from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 
 @dataclass(frozen=True)
@@ -69,6 +69,6 @@ class StageRequest(AbstractStageRequest):
         policies.
     """
 
-    condition_eval_metadata: AbstractStageMetadata
+    condition_eval_metadata: TAbstractStageMetadata
     sample_metadata: AbstractSampleMetadata
     scheduler_metadata: AbstractSchedulerMetadata

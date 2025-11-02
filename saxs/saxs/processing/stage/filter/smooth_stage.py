@@ -1,8 +1,8 @@
 import numpy as np
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 
 
-class SmoothStage(AbstractStage):
+class SmoothStage(IAbstractStage):
     def _process(self, stage_data):
         intensity = stage_data.get_intensity_array()
 

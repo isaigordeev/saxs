@@ -5,12 +5,12 @@
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
 )
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 
 class ChainingPeakCondition(StageCondition):
     def __init__(self, key: str):
         self.key = key
 
-    def evaluate(self, eval_metadata: AbstractStageMetadata) -> bool:
+    def evaluate(self, eval_metadata: TAbstractStageMetadata) -> bool:
         return len(eval_metadata.unwrap().get(self.key)) > 0

@@ -20,8 +20,8 @@ from typing import Any
 
 from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
 from saxs.saxs.core.stage.abstract_stage import (
-    AbstractStage,
-    AbstractStageMetadata,
+    IAbstractStage,
+    TAbstractStageMetadata,
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 
@@ -48,9 +48,9 @@ class StageSpec:
     """
 
     id_: StageSpecId
-    stage_cls: type[AbstractStage]
+    stage_cls: type[IAbstractStage]
     kwargs: dict[str, Any] | None = None
-    metadata: AbstractStageMetadata[dict[str, Any]] | None = None
+    metadata: TAbstractStageMetadata[dict[str, Any]] | None = None
     policy_id: PolicySpecId | None = None
     before: list[StageSpecId] | None = None
     after: list[StageSpecId] | None = None

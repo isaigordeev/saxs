@@ -11,8 +11,8 @@ from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     AbstractStageApprovalRequest,
     StageApprovalRequest,
 )
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 
 class TestAbstractStageRequest:
@@ -97,7 +97,7 @@ class TestStageRequest:
         assert request1 == request2
 
         # Different metadata should not be equal
-        different_metadata = AbstractStageMetadata({"different": "value"})
+        different_metadata = TAbstractStageMetadata({"different": "value"})
         request3 = StageApprovalRequest(
             stage=mock_stage,
             metadata=different_metadata,
@@ -105,16 +105,17 @@ class TestStageRequest:
         assert request1 != request3
 
     def test_stage_request_with_different_stage_types(
-        self, stage_metadata,
+        self,
+        stage_metadata,
     ) -> None:
         """Test StageRequest with different stage types."""
 
         # Create different mock stages
-        class MockStage1(AbstractStage):
+        class MockStage1(IAbstractStage):
             def _process(self, stage_data):
                 return stage_data
 
-        class MockStage2(AbstractStage):
+        class MockStage2(IAbstractStage):
             def _process(self, stage_data):
                 return stage_data
 
@@ -129,8 +130,8 @@ class TestStageRequest:
 
     def test_stage_request_with_different_metadata(self, mock_stage) -> None:
         """Test StageRequest with different metadata."""
-        metadata1 = AbstractStageMetadata({"key1": "value1"})
-        metadata2 = AbstractStageMetadata({"key2": "value2"})
+        metadata1 = TAbstractStageMetadata({"key1": "value1"})
+        metadata2 = TAbstractStageMetadata({"key2": "value2"})
 
         request1 = StageApprovalRequest(stage=mock_stage, metadata=metadata1)
         request2 = StageApprovalRequest(stage=mock_stage, metadata=metadata2)
@@ -140,7 +141,7 @@ class TestStageRequest:
 
     def test_stage_request_with_complex_metadata(self, mock_stage) -> None:
         """Test StageRequest with complex metadata structures."""
-        complex_metadata = AbstractStageMetadata(
+        complex_metadata = TAbstractStageMetadata(
             {
                 "stage_info": {"name": "test_stage", "version": "1.0"},
                 "parameters": {"threshold": 0.5, "method": "gaussian"},
@@ -162,7 +163,7 @@ class TestStageRequest:
 
     def test_stage_request_with_empty_metadata(self, mock_stage) -> None:
         """Test StageRequest with empty metadata."""
-        empty_metadata = AbstractStageMetadata()
+        empty_metadata = TAbstractStageMetadata()
         request = StageApprovalRequest(
             stage=mock_stage,
             metadata=empty_metadata,
@@ -173,7 +174,9 @@ class TestStageRequest:
         assert len(request.metadata.value) == 0
 
     def test_stage_request_inheritance(
-        self, mock_stage, stage_metadata,
+        self,
+        mock_stage,
+        stage_metadata,
     ) -> None:
         """Test that StageRequest inherits from AbstractStageRequest."""
         request = StageApprovalRequest(
@@ -213,10 +216,11 @@ class TestStageRequest:
         assert new_request == request
 
     def test_stage_request_with_various_metadata_types(
-        self, mock_stage,
+        self,
+        mock_stage,
     ) -> None:
         """Test StageRequest with various metadata value types."""
-        metadata = AbstractStageMetadata(
+        metadata = TAbstractStageMetadata(
             {
                 "string": "test",
                 "int": 42,

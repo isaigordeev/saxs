@@ -18,7 +18,7 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 from saxs.saxs.processing.functions import gauss, parabole
 from scipy.optimize import curve_fit
 
@@ -160,7 +160,7 @@ class ProcessFitPeakStage(AProcessPeakStage):
         )
 
     def create_request(self):
-        eval_metadata = AbstractStageMetadata()
-        pass_metadata = AbstractStageMetadata()
+        eval_metadata = TAbstractStageMetadata()
+        pass_metadata = TAbstractStageMetadata()
         scheduler_metadata = AbstractSchedulerMetadata(self.metadata.unwrap())
         return StageRequest(eval_metadata, pass_metadata, scheduler_metadata)

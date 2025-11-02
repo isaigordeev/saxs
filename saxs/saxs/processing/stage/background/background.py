@@ -1,14 +1,14 @@
 from saxs.application.settings_processing import BACKGROUND_COEF
 from saxs.logging.logger import logger
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 from saxs.saxs.processing.functions import background_hyberbole
 from scipy.optimize import curve_fit
 
 
-class BackgroundStage(AbstractStage):
+class BackgroundStage(IAbstractStage):
     def __init__(self, _background_func=background_hyberbole):
-        self.metadata = AbstractStageMetadata(
+        self.metadata = TAbstractStageMetadata(
             value={
                 "_background_func": _background_func,
                 "_background_coef": BACKGROUND_COEF,

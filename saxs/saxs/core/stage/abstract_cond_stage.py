@@ -19,10 +19,10 @@ Key Classes:
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import StageRequest
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     )
 
 
-class AbstractRequestingStage(AbstractStage):
+class AbstractRequestingStage(IAbstractStage):
     """
     Base class for stages that can generate stage approval requests.
 
@@ -47,7 +47,7 @@ class AbstractRequestingStage(AbstractStage):
 
     def __init__(
         self,
-        metadata: AbstractStageMetadata,
+        metadata: TAbstractStageMetadata,
         policy: ChainingPolicy | None = None,
     ):
         self.policy = policy

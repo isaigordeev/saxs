@@ -11,7 +11,7 @@ import pytest
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
@@ -19,7 +19,7 @@ from saxs.saxs.core.types.sample_objects import (
     IntensityError,
     QValues,
 )
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 
 @pytest.fixture
@@ -90,21 +90,22 @@ def saxs_sample_minimal(q_values, intensity):
 @pytest.fixture
 def stage_metadata():
     """Create AbstractStageMetadata for testing."""
-    return AbstractStageMetadata(
+    return TAbstractStageMetadata(
         {"stage_name": "test_stage", "version": "1.0"},
     )
 
 
 @pytest.fixture
 def mock_stage():
-    stage = MagicMock(spec=AbstractStage)
+    stage = MagicMock(spec=IAbstractStage)
     stage.request_stage.return_value = []
     intensity = Intensity()
     q_values = QValues()
     stage._process.return_value = SAXSSample(
-        q_values=q_values, intensity=intensity,
+        q_values=q_values,
+        intensity=intensity,
     )  # fake sample if needed
-    stage.metadata = AbstractStageMetadata({"name": "mock_stage"})
+    stage.metadata = TAbstractStageMetadata({"name": "mock_stage"})
     return stage
 
 

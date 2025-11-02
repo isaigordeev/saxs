@@ -26,14 +26,14 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
 )
-from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_objects import (
     AbstractSchedulerMetadata,
     ESchedulerMetadataDictKeys,
 )
-from saxs.saxs.core.types.stage_objects import AbstractStageMetadata
+from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
@@ -63,7 +63,7 @@ class AbstractScheduler(ABC):
 
     def __init__(
         self,
-        init_stages: list[AbstractStage] | None = None,
+        init_stages: list[IAbstractStage] | None = None,
         insertion_policy: InsertionPolicy | None = None,
     ):
         logger.info(
@@ -94,7 +94,7 @@ class AbstractScheduler(ABC):
 
     def enqueue_initial_stages(
         self,
-        initial_stages: list[AbstractStage],
+        initial_stages: list[IAbstractStage],
     ) -> None:
         """Add initial stages to the processing queue.
 
@@ -147,7 +147,7 @@ class BaseScheduler(AbstractScheduler):
         logger.info(f"\n{'=' * 30}\n[Scheduler] Queue: {queue}'\n{'=' * 30}")
 
         while queue:
-            stage: AbstractStage = queue.popleft()
+            stage: IAbstractStage = queue.popleft()
             stage_name = stage.__class__.__name__
 
             logger.info(
@@ -206,7 +206,7 @@ class BaseScheduler(AbstractScheduler):
 
     def handle_metadata_request(
         self,
-        _metadata: AbstractStageMetadata[dict[str, Any]],
+        _metadata: TAbstractStageMetadata[dict[str, Any]],
     ) -> None:
         """Update scheduler metadata based on new stage metadata.
 
