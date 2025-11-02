@@ -14,7 +14,7 @@ from saxs.saxs.core.pipeline.condition.abstract_condition import (
 from saxs.saxs.core.stage.abstract_cond_stage import AbstractConditionalStage
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 @pytest.fixture
@@ -179,7 +179,9 @@ class TestAbstractConditionalStage:
     """Tests for AbstractConditionalStage."""
 
     def test_creation_with_concrete_subclass(
-        self, mock_stage, saxs_sample,
+        self,
+        mock_stage,
+        saxs_sample,
     ) -> None:
         from saxs.saxs.core.pipeline.condition.abstract_condition import (
             SampleCondition,
@@ -215,7 +217,8 @@ class TestAbstractConditionalStageAdvanced:
     """Tests for AbstractConditionalStage with real condition logic."""
 
     def test_conditional_stage_runs_only_if_condition_true(
-        self, saxs_sample,
+        self,
+        saxs_sample,
     ) -> None:
         # Threshold lower than max intensity → condition True
         condition = MaxIntensityCondition(threshold=1.5)
@@ -236,7 +239,8 @@ class TestAbstractConditionalStageAdvanced:
         assert len(requests) == 1
 
     def test_conditional_stage_skips_if_condition_false(
-        self, saxs_sample,
+        self,
+        saxs_sample,
     ) -> None:
         # Threshold higher than max intensity → condition False
         condition = MaxIntensityCondition(threshold=10.0)

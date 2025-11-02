@@ -7,22 +7,23 @@ keys and a frozen dataclass to wrap the metadata in an immutable
 container.
 """
 
-from dataclasses import dataclass
 from enum import Enum
-from typing import Any, TypedDict
+from typing import Any, TypedDict, TypeVar
 
 from saxs.saxs.core.types.abstract_data import TBaseDataType
 
 
-class TMetadataSchemaKeys(Enum):
+class EMetadataSchemaKeys(Enum):
     """Abstract metadata Schema."""
 
 
-class TMetadataSchemaDict(TypedDict, total=False):
+class MetadataSchemaDict(TypedDict, total=False):
     """Abstract dictionary schema."""
 
 
 MetadataValueType = list[Any] | int
+
+TMetadataSchemaDict = TypeVar("TMetadataSchemaDict", bound=MetadataSchemaDict)
 
 
 class AbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
@@ -54,7 +55,7 @@ class AbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
         metadata value type.
     """
 
-    def __setitem__(self, key: TMetadataSchemaKeys, value: MetadataValueType):
+    def __setitem__(self, key: EMetadataSchemaKeys, value: MetadataValueType):
         """Setter dict for array like data in the sample.
 
         Allow dict-like mutation: sample['q_values'] = QValues(...)
@@ -74,7 +75,7 @@ class AbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
         try:
             _value[key.value] = value
         except KeyError:
-            valid_keys = [k.value for k in TMetadataSchemaKeys]
+            valid_keys = [k.value for k in EMetadataSchemaKeys]
             msg = (
                 f"Invalid metadata key: {key}. "
                 f"Supported keys are: {valid_keys}."
@@ -86,29 +87,3 @@ class AbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
                 f"Expected MetadataValueType, got {type(value).__name__}."
             )
             raise TypeError(msg) from e
-
-
-class FlowMetadataDict(TMetadataSchemaDict, total=False):
-    """
-    Type-safe dictionary for flow metadata.
-
-    Keys:
-        sample_name (str, optional): The name of the sample.
-        peaks (list[int], optional): List of peak positions detected
-        in the experiment.
-    """
-
-    sample_name: str
-
-
-@dataclass(frozen=False)
-class FlowMetadata(TBaseDataType[FlowMetadataDict]):
-    """
-    Immutable container for flow experiment metadata.
-
-    Attributes
-    ----------
-        values (FlowMetadataDict): Metadata values for a flow
-        experiment. Uses a TypedDict to provide type hints and
-        optional keys.
-    """
