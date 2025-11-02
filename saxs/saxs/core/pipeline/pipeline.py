@@ -17,6 +17,7 @@ from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,
 )
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
+from saxs.saxs.core.types.metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
 
 
@@ -106,4 +107,10 @@ class Pipeline:
             pipeline have completed.
         """
         self.scheduler.enqueue_initial_stages(self.init_stages)
-        return self.scheduler.run(init_sample)
+
+        return self.scheduler.run(
+            init_sample=init_sample,
+            init_flow_metadata=FlowMetadata(
+                value={},
+            ),  # defaut dict without name
+        )
