@@ -1,3 +1,15 @@
+"""
+Module: background.
+
+This module defines the `BackgroundStage` class for SAXS data
+processing. It provides functionality to fit and subtract a
+background from intensity data using a user-defined or default
+background function.
+
+The module relies on `scipy.optimize.curve_fit` for fitting and
+supports logging of intermediate and final processing states.
+"""
+
 from collections.abc import Callable
 
 import numpy as np
@@ -18,6 +30,26 @@ from saxs.saxs.processing.stage.background.types import (
 
 
 class BackgroundStage(IAbstractStage):
+    """
+    Stage to fit and subtract background from SAXS intensity data.
+
+    This stage uses a callable background function to model the
+    background and subtract it from the measured intensities.
+    Metadata is stored to keep track of the background function
+    and its associated coefficient.
+
+    Parameters
+    ----------
+    _background_func : Callable[..., NDArray[np.float64]], optional
+        Function to model the background. Defaults to
+        `background_hyperbole`.
+
+    Attributes
+    ----------
+    metadata : BackgroundStageMetadata
+        Metadata storing the background function and coefficient.
+    """
+
     def __init__(
         self,
         _background_func: Callable[
@@ -33,6 +65,21 @@ class BackgroundStage(IAbstractStage):
         )
 
     def _process(self, sample: SAXSSample) -> SAXSSample:
+        """
+        Process a SAXS sample by fitting and subtracting background.
+
+        Parameters
+        ----------
+        sample : SAXSSample
+            SAXS sample containing q-values, intensity, intensity
+            error, and metadata.
+
+        Returns
+        -------
+        SAXSSample
+            A new SAXS sample with the background-subtracted
+            intensity.
+        """
         _background_func = self.metadata[EBackMetadataKeys.BACKGROUND_FUNC]
         _background_coef = self.metadata[EBackMetadataKeys.BACKGROUND_COEF]
 
@@ -86,6 +133,28 @@ class BackgroundStage(IAbstractStage):
         intensity: NDArray[np.float64],
         error: NDArray[np.float64],
     ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+        """
+        Fit the background function to intensity data.
+
+        Created for typing scipy function.
+
+        Parameters
+        ----------
+        _background_func : Callable[..., NDArray[np.float64]]
+            The background function to fit.
+        q_values : NDArray[np.float64]
+            Array of scattering vector values.
+        intensity : NDArray[np.float64]
+            Array of measured intensities.
+        error : NDArray[np.float64]
+            Array of intensity measurement errors.
+
+        Returns
+        -------
+        tuple[NDArray[np.float64], NDArray[np.float64]]
+            popt : Optimal parameters for the background function.
+            pcov : Covariance of the fitted parameters.
+        """
         res_: tuple[NDArray[np.float64], NDArray[np.float64]] = curve_fit(  # pyright: ignore[reportUnknownVariableType]
             f=_background_func,
             xdata=q_values,
