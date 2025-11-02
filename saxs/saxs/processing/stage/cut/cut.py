@@ -67,19 +67,21 @@ class CutStage(IAbstractStage):
         cut_point = self.metadata.get_cut_point()
 
         # Cut the data
-        q_values_cut = sample.get_q_values()[cut_point:]
-        intensity_cut = sample.get_intensity()[cut_point:]
+        q_values_cut = sample[ESAXSSampleKeys.Q_VALUES][cut_point:]
+        intensity_cut = sample[ESAXSSampleKeys.INTENSITY][cut_point:]
+        error_cut = sample[ESAXSSampleKeys.INTENSITY_ERROR][cut_point:]
 
         # Assign
         # (implement err intensity)
         sample[ESAXSSampleKeys.Q_VALUES] = q_values_cut
-        sample[ESAXSSampleKeys.INTENSITY] = q_values_cut
+        sample[ESAXSSampleKeys.INTENSITY] = intensity_cut
+        sample[ESAXSSampleKeys.INTENSITY_ERROR] = error_cut
 
         # Log input/output info
         logger.info(
             f"\n=== CutStage Processing ===\n"
             f"Cut point:        {cut_point}\n"
-            f"Input points:     {len(sample.get_q_values())}\n"
+            f"Input points:     {len(sample[ESAXSSampleKeys.Q_VALUES])}\n"
             f"Output points:    {len(q_values_cut)}\n"
             f"Q range (after):  [{min(q_values_cut)}, {max(q_values_cut)}]\n"
             f"Intensity range:  [{min(intensity_cut)}, {max(intensity_cut)}]\n"

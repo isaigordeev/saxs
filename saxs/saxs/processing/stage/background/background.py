@@ -98,7 +98,7 @@ class BackgroundStage(IAbstractStage):
         )
 
         # Fit background
-        popt, _ = self.curve_fit(_background_coef, q_vals, intensity, error)
+        popt, _ = self.curve_fit(_background_func, q_vals, intensity, error)
 
         # Log fitted parameters
         logger.info(
