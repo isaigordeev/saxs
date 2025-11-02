@@ -3,6 +3,8 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+from scipy.optimize import curve_fit
+
 from saxs.logging.logger import logger
 from saxs.saxs.core.pipeline.condition.constant_true_condition import (
     TrueCondition,
@@ -18,7 +20,6 @@ from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.functions import gauss, parabole
-from scipy.optimize import curve_fit
 
 if TYPE_CHECKING:
     from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
@@ -26,12 +27,7 @@ if TYPE_CHECKING:
     )
 
 
-class AProcessPeakStage(IAbstractRequestingStage):
-    def _process(self, sample_data):
-        return sample_data, None
-
-
-class ProcessFitPeakStage(AProcessPeakStage):
+class ProcessFitPeakStage(IAbstractRequestingStage):
     fit_range = 2
 
     @classmethod
