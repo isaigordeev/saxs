@@ -21,7 +21,7 @@ class MetadataSchemaDict(TypedDict, total=False):
     """Abstract dictionary schema."""
 
 
-MetadataValueType = list[Any] | int
+MetadataValueType = Any
 
 TMetadataSchemaDict = TypeVar("TMetadataSchemaDict", bound=MetadataSchemaDict)
 
@@ -54,6 +54,16 @@ class AbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
         If the value type is incompatible with the expected
         metadata value type.
     """
+
+    def __getitem__(self, key: EMetadataSchemaKeys) -> MetadataValueType:
+        """Get a metadata value by key."""
+        _value = self.unwrap()  # may raise AttributeError
+        try:
+            return _value[key.value]
+        except KeyError:
+            valid_keys = [k.value for k in EMetadataSchemaKeys]
+            msg = f"Invalid metadata key: {key}. Supported keys: {valid_keys}."
+            raise KeyError(msg) from None
 
     def __setitem__(self, key: EMetadataSchemaKeys, value: MetadataValueType):
         """Setter dict for array like data in the sample.
