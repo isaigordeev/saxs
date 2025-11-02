@@ -54,7 +54,7 @@ class Intensity(TBaseDataType[NDArray[np.float64]]):
 
 
 @dataclass(frozen=False)
-class IntensityError(TBaseDataType[NDArray[np.float64] | None]):
+class IntensityError(TBaseDataType[NDArray[np.float64]]):
     """
     Represents the measurement errors of intensity data.
 
