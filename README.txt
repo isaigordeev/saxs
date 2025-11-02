@@ -1,44 +1,49 @@
-# SAXS analyse
 
-Gaussian processing and transformer model for classification SAXS
-data
 
-for running
 
-choose peak and phase kernels (algorithms of classification) for
-your data and its paths to .csv files.
+milestones
+==========
 
-after call an instance of manager class.
 
-# todo
+- o open task
+- ± uncertain task 
+- (!) important
+- (~.) linked (with number of points)
+- x closed task
 
-- Replace deque.popleft() → use list + index to avoid function
-  call overhead.
-- Batch process samples → if stages can handle arrays, vectorize
-  NumPy operations.
-- Minimize Python object creation → reuse metadata, requests, and
-  temporary objects.
-- Use numba / JIT compilation → compile loops if Python overhead
-  dominates.
-- Parallelize independent stages → with ThreadPoolExecutor if
-  process releases GIL.
-- better scheduler metadata
-- better type hierachy (with more abstaction and more usefullness)
+---
 
-- default var stages for compiler
-- change metadata flow
+- o replace deque.popleft() → use list + index to avoid function
+    call overhead
+- o batch process samples → if stages can handle arrays, vectorize
+    numpy operations
+- o minimize python object creation → reuse metadata, requests,
+    and temporary objects
+- o use numba / jit compilation → compile loops if python overhead
+    dominates
+- o parallelize independent stages → with threadpoolexecutor if
+    process releases gil
+- o better scheduler metadata
+- o better type hierarchy (with more abstraction and usefulness)
 
-# ?
+- o default variable stages for compiler
+- o change metadata flow
+- o request handler for scheduler
 
-- inplace ops?
-- instance or class injections?
-- lambda for state factory in injections?
-- metaclass for logging
-- pydantic for gluing metadata between stages
-- replace python func calc in processing by cpp ones – pipeline
-  scheduler for peaks in order (map reduce like) for
-  multiprocessing
-- composite stage
-- new frontend yaml
-  - parser verifier
-- new backend with decl specs
+- ± in-place operations?
+- ± instance or class injections?
+- ± lambda for state factory in injections?
+- ± metaclass for logging
+- ± pydantic for gluing metadata between stages
+- ± replace python function calculation in processing
+    by c++ ones (~.)
+  - ± pipeline scheduler for peaks in order (map-reduce-like) for
+      multiprocessing (~.)
+- ± composite stage (~.)
+- ± new frontend yaml (~.)
+  - ± parser verifier (~.)
+- ± new backend with declaration specs (~.)
+
+
+closed
+======
