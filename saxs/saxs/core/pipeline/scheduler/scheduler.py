@@ -27,7 +27,7 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     InsertionPolicy,
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.metadata import FlowMetadata
+from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import (
     AbstractSchedulerMetadata,
@@ -238,6 +238,7 @@ class BaseScheduler(AbstractScheduler):
                 },
             )
         else:
-            self._metadata.unwrap()[
-                ESchedulerMetadataDictKeys.PROCESSED.value
-            ] += 1
+            processed = self._metadata[ESchedulerMetadataDictKeys.PROCESSED]
+            self._metadata[ESchedulerMetadataDictKeys.PROCESSED] = (
+                processed + 1
+            )

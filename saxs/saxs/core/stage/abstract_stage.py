@@ -17,7 +17,7 @@ Classes:
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, TypeVar
 
-from saxs.saxs.core.types.metadata import FlowMetadata
+from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
