@@ -7,7 +7,7 @@ keys and a frozen dataclass to wrap the metadata in an immutable
 container.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TypedDict
 
 from saxs.saxs.core.types.abstract_data import BaseDataType

@@ -26,7 +26,22 @@ from saxs.saxs.core.types.sample_objects import (
 )
 
 
-class SAXSSampleKeys(Enum):
+class ESAXSSampleKeys(Enum):
+    """SAXS Samle enum.
+
+    Enumeration of keys used to represent data fields in a
+    Small Angle X-ray Scattering (SAXS) sample.
+
+    Attributes
+    ----------
+        Q_VALUES: Key for the scattering vector (q) values array.
+        INTENSITY: Key for the array of intensity values
+        corresponding to each q value.
+        INTENSITY_ERROR: Key for the array of uncertainties or
+        errors in the intensity measurements.
+        METADATA: Key for any additional sample-related metadata.
+    """
+
     Q_VALUES = "q_values"
     INTENSITY = "intensity"
     INTENSITY_ERROR = "intensity_error"
@@ -157,14 +172,14 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
 
     def __getitem__(
         self,
-        key: SAXSSampleKeys,
+        key: ESAXSSampleKeys,
     ) -> dict[str, Any] | NDArray[np.float64] | None:
         """Allow dict-like access: sample['q_values']."""
         _sample: SAXSSampleDict = self.unwrap()
         _value: SAXSSampleValue = _sample[key.value]
         return _value.unwrap()
 
-    def __setitem__(self, key: SAXSSampleKeys, value: NDArray[np.float64]):
+    def __setitem__(self, key: ESAXSSampleKeys, _value: NDArray[np.float64]):
         """Setter dict.
 
         Allow dict-like mutation: sample['q_values'] = QValues(...)
@@ -172,12 +187,12 @@ class SAXSSample(BaseDataType[SAXSSampleDict]):
         (does modify in-place).
         """
         _sample: SAXSSampleDict = self.unwrap()
-        if key is SAXSSampleKeys.Q_VALUES:
-            _sample[key.value] = QValues(value)
-        elif key is SAXSSampleKeys.INTENSITY:
-            _sample[key.value] = Intensity(value)
-        elif key is SAXSSampleKeys.INTENSITY_ERROR:
-            _sample[key.value] = IntensityError(value)
+        if key is ESAXSSampleKeys.Q_VALUES:
+            _sample[key.value] = QValues(_value)
+        elif key is ESAXSSampleKeys.INTENSITY:
+            _sample[key.value] = Intensity(_value)
+        elif key is ESAXSSampleKeys.INTENSITY_ERROR:
+            _sample[key.value] = IntensityError(_value)
         else:
             msg = f"Invalid SAXSSample key: {key}. Only array like keys \
                     supported"

@@ -20,12 +20,12 @@ from saxs.logging.logger import logger
 from saxs.saxs.core.stage.abstract_stage import AbstractStage
 from saxs.saxs.core.types.metadata import FlowMetadata
 from saxs.saxs.core.types.sample import (
+    ESAXSSampleKeys,
     SAXSSample,
-    SAXSSampleKeys,
 )
 from saxs.saxs.processing.stage.cut.types import (
     CutStageMetadata,
-    CutStageMetadataDictKeys,
+    ECutStageMetadataDictKeys,
 )
 
 
@@ -58,7 +58,7 @@ class CutStage(AbstractStage):
 
     def __init__(self, cut_point: int = 100):
         self.metadata = CutStageMetadata(
-            value={CutStageMetadataDictKeys.CUT_POINT.value: cut_point},
+            value={ECutStageMetadataDictKeys.CUT_POINT.value: cut_point},
         )
 
     def _process(
@@ -74,8 +74,8 @@ class CutStage(AbstractStage):
 
         # Assign
         # (implement err intensity)
-        sample[SAXSSampleKeys.Q_VALUES] = q_values_cut
-        sample[SAXSSampleKeys.INTENSITY] = q_values_cut
+        sample[ESAXSSampleKeys.Q_VALUES] = q_values_cut
+        sample[ESAXSSampleKeys.INTENSITY] = q_values_cut
 
         # Log input/output info
         logger.info(

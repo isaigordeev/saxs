@@ -27,9 +27,9 @@ import numpy as np
 import pandas as pd
 
 from saxs.saxs.core.types.sample import (
+    ESAXSSampleKeys,
     SAXSSample,
     SAXSSampleDict,
-    SAXSSampleKeys,
 )
 from saxs.saxs.core.types.sample_objects import (
     AbstractSampleMetadata,
@@ -136,10 +136,10 @@ class DataReader:
 
         _value = SAXSSampleDict(
             {
-                SAXSSampleKeys.Q_VALUES.value: _q,
-                SAXSSampleKeys.INTENSITY.value: _i,
-                SAXSSampleKeys.INTENSITY_ERROR.value: _di,
-                SAXSSampleKeys.METADATA.value: AbstractSampleMetadata(
+                ESAXSSampleKeys.Q_VALUES.value: _q,
+                ESAXSSampleKeys.INTENSITY.value: _i,
+                ESAXSSampleKeys.INTENSITY_ERROR.value: _di,
+                ESAXSSampleKeys.METADATA.value: AbstractSampleMetadata(
                     {},
                 ),  # optional if metadata needed
             },

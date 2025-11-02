@@ -39,7 +39,7 @@ from saxs.saxs.processing.stage.background.background import (
     BackgroundStage,
 )
 from saxs.saxs.processing.stage.cut.cut import CutStage
-from saxs.saxs.processing.stage.filter.filter_stage import FilterStage
+from saxs.saxs.processing.stage.filter.filter import FilterStage
 from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
 from saxs.saxs.processing.stage.peak.process_peak_stage import (
     ProcessFitPeakStage,
@@ -89,14 +89,14 @@ class SimpleKernel(BaseKernel):
 
         # ---- Define policies ----
         peaks_policy = PolicySpec(
-            id="peaks_policy",
+            id_="peaks_policy",
             policy_cls=SingleStageChainingPolicy,
             condition=ChainingPeakCondition,
             condition_kwargs={"key": "peaks"},
             pending_stages=["process_fit_peak"],
         )
         fit_policy = PolicySpec(
-            id="fit_policy",
+            id_="fit_policy",
             policy_cls=SingleStageChainingPolicy,
             condition=TrueCondition,
             condition_kwargs={},
@@ -109,33 +109,33 @@ class SimpleKernel(BaseKernel):
         # ---- Define stages ----
         _kernel_registry.register_stage(
             StageSpec(
-                id="cut",
+                id_="cut",
                 stage_cls=CutStage,
                 kwargs={"cut_point": 200},
             ),
         )
         _kernel_registry.register_stage(
             StageSpec(
-                id="filter",
+                id_="filter",
                 stage_cls=FilterStage,
             ),
         )
         _kernel_registry.register_stage(
             StageSpec(
-                id="background",
+                id_="background",
                 stage_cls=BackgroundStage,
             ),
         )
         _kernel_registry.register_stage(
             StageSpec(
-                id="find_peaks",
+                id_="find_peaks",
                 stage_cls=FindAllPeaksStage,
                 policy_id="peaks_policy",
             ),
         )
         _kernel_registry.register_stage(
             StageSpec(
-                id="process_fit_peak",
+                id_="process_fit_peak",
                 stage_cls=ProcessFitPeakStage,
                 policy_id="fit_policy",
             ),
