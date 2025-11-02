@@ -1,49 +1,73 @@
 GIT HOOKS & GPG SIGNING SETUP
+==============================
 
-FOL setup local Git hooks and enable GPG-signed commits.
+A lightweight guide to set up local Git hooks and GPG-signed commits
+for secure and consistent workflows.
 
----
+This configuration ensures every commit follows the correct message
+format and is cryptographically signed.
 
-## Make Git hooks executable
+------------------------------------------------------------------------
+1. Make Git Hooks Executable
+------------------------------------------------------------------------
 
-<!-- chmod +x .githooks/pre-commit -->
+Enable executable permissions for your local Git hooks:
 
-<!-- chmod +x .githooks/pre-push -->
+    > chmod +x .githooks/commit-msg
+    # Optional:
+    # chmod +x .githooks/pre-commit
+    # chmod +x .githooks/pre-push
 
-chmod +x .githooks/commit-msg
+Tell Git to use your local .githooks directory:
 
-Tell Git to use the local hooks directory:
+    > git config core.hooksPath .githooks
 
-git config core.hooksPath .githooks
+------------------------------------------------------------------------
+2. Enable GPG Commit Signing
+------------------------------------------------------------------------
 
----
+a. Set your GPG key
 
-## Enable GPG commit signing
+List your available GPG keys:
 
-Set your GPG key (replace <key-id> with your actual key ID):
-
-git config --global user.signingkey <key-id>
-
-git config --global commit.gpgsign true
-
-Check your available GPG keys:
-
-gpg --list-secret-keys --keyid-format LONG
+    > gpg --list-secret-keys --keyid-format LONG
 
 Example output:
 
-sec rsa4096/ABCD1234EF567890 2024-05-12 [SC] uid
+    sec   rsa4096/ABCD1234EF567890 2024-05-12 [SC]
+          uid [ultimate] Isai Gordeev <isai@example.com>
+    sub   rsa4096/XYZ1234567890ABC 2024-05-12 [E]
 
-[ultimate] Isai Gordeev
-[isai@example.com](mailto:isai@example.com) sub
-rsa4096/XYZ1234567890ABC 2024-05-12 [E]
+Use the part after the slash (/) (e.g., ABCD1234EF567890) as your <key-id>.
 
-Use the key after the slash (/) as <key-id> in the command above.
+Then configure Git to use it:
 
----
+    > git config --global user.signingkey <key-id>
+    > git config --global commit.gpgsign true
 
-## Verify hooks and signing
+------------------------------------------------------------------------
+3. Verify Hooks and Signing
+------------------------------------------------------------------------
 
-Commit normally and check that commits are signed:
+Create a test commit:
 
----
+    > git commit -m "chore(setup): verify gpg signing"
+
+Then check that it’s properly signed:
+
+    > git log --show-signature -1
+ 
+Example output:
+
+    gpg: Signature made Fri  2 Nov 2025 11:42:21 AM UTC
+    gpg: Good signature from "Isai Gordeev <isai@gordeev.ru>" [ultimate]
+
+------------------------------------------------------------------------
+4. Done
+------------------------------------------------------------------------
+
+You now have:
+
+- Local Git hooks for consistent commit formatting
+- GPG-signed commits for verified authorship
+- A secure, professional Git setup ready for collaborative work
