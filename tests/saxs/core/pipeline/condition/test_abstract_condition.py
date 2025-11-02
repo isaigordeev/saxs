@@ -1,6 +1,4 @@
-#
-# Created by Isai GORDEEV on 20/09/2025.
-#
+# Created by Isai Gordeev on 20/09/2025.
 
 """Tests for abstract_condition.py module."""
 
@@ -61,7 +59,10 @@ class TestSampleCondition:
 
         class ComplexCondition(SampleCondition):
             def __init__(
-                self, min_value: float, max_value: float, required_keys: list,
+                self,
+                min_value: float,
+                max_value: float,
+                required_keys: list,
             ):
                 self.min_value = min_value
                 self.max_value = max_value
@@ -120,7 +121,8 @@ class TestSampleCondition:
                 self.base_threshold = base_threshold
 
             def evaluate(
-                self, sample_metadata: AbstractSampleMetadata,
+                self,
+                sample_metadata: AbstractSampleMetadata,
             ) -> bool:
                 return (
                     sample_metadata.unwrap().get("base_value", 0)
@@ -129,7 +131,9 @@ class TestSampleCondition:
 
         class ExtendedCondition(BaseCondition):
             def __init__(
-                self, base_threshold: float, extended_threshold: float,
+                self,
+                base_threshold: float,
+                extended_threshold: float,
             ):
                 super().__init__(base_threshold)
                 self.extended_threshold = extended_threshold
@@ -147,7 +151,8 @@ class TestSampleCondition:
                 )
 
         condition = ExtendedCondition(
-            base_threshold=10.0, extended_threshold=20.0,
+            base_threshold=10.0,
+            extended_threshold=20.0,
         )
 
         # Test with sample that passes both conditions

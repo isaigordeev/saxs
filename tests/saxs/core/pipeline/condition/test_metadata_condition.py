@@ -1,6 +1,4 @@
-#
-# Created by Isai GORDEEV on 20/09/2025.
-#
+# Created by Isai Gordeev on 20/09/2025.
 
 """Tests for metadata_condition.py module."""
 
@@ -74,7 +72,8 @@ class TestMetadataCondition:
     def test_metadata_condition_evaluate_with_none_values(self) -> None:
         """Test evaluate method with None values."""
         condition = MetadataCondition(
-            key="optional_field", expected_value=None,
+            key="optional_field",
+            expected_value=None,
         )
 
         # Test with None value
@@ -94,7 +93,8 @@ class TestMetadataCondition:
         # Test with list values
         expected_list = [1, 2, 3]
         condition_list = MetadataCondition(
-            key="values", expected_value=expected_list,
+            key="values",
+            expected_value=expected_list,
         )
         sample_list = AbstractSampleMetadata({"values": [1, 2, 3]})
         assert condition_list.evaluate(sample_list) is True
@@ -105,7 +105,8 @@ class TestMetadataCondition:
         # Test with dictionary values
         expected_dict = {"inner": "value", "number": 42}
         condition_dict = MetadataCondition(
-            key="config", expected_value=expected_dict,
+            key="config",
+            expected_value=expected_dict,
         )
         sample_dict = AbstractSampleMetadata(
             {"config": {"inner": "value", "number": 42}},
@@ -120,7 +121,8 @@ class TestMetadataCondition:
     def test_metadata_condition_evaluate_with_nested_metadata(self) -> None:
         """Test evaluate method with nested metadata structure."""
         condition = MetadataCondition(
-            key="experiment.temperature", expected_value=25.0,
+            key="experiment.temperature",
+            expected_value=25.0,
         )
 
         # Note: This test assumes the metadata structure supports nested access
@@ -170,13 +172,16 @@ class TestMetadataCondition:
     def test_metadata_condition_multiple_conditions(self) -> None:
         """Test using multiple MetadataCondition instances."""
         condition_temp = MetadataCondition(
-            key="temperature", expected_value=25.0,
+            key="temperature",
+            expected_value=25.0,
         )
         condition_pressure = MetadataCondition(
-            key="pressure", expected_value=1.0,
+            key="pressure",
+            expected_value=1.0,
         )
         condition_type = MetadataCondition(
-            key="type", expected_value="protein",
+            key="type",
+            expected_value="protein",
         )
 
         # Test with sample that matches all conditions
