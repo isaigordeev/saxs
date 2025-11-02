@@ -29,7 +29,7 @@ from saxs.saxs.processing.stage.background.types import (
 )
 
 
-class BackgroundStage(IAbstractStage):
+class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
     """
     Stage to fit and subtract background from SAXS intensity data.
 

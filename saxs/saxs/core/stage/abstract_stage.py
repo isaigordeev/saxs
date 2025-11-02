@@ -15,9 +15,10 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generic, TypedDict, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
+from saxs.saxs.core.types.metadata import TMetadataSchemaDict
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
@@ -27,17 +28,13 @@ if TYPE_CHECKING:
     )
 
 
-class AstractStageMetadataDict(TypedDict, total=False):
-    """Abstract dictionary schema."""
-
-
-TAbstractStageMetadataDict = TypeVar(
-    "TAbstractStageMetadataDict",
-    bound=AstractStageMetadataDict,
+TStageMetadata = TypeVar(
+    "TStageMetadata",
+    bound=TAbstractStageMetadata[Any],  # kind of bottleneck in templates
 )
 
 
-class IAbstractStage(ABC, Generic[TAbstractStageMetadataDict]):
+class IAbstractStage(ABC, Generic[TStageMetadata]):
     """
     Base class for a processing stage in a SAXS data pipeline.
 
@@ -54,8 +51,7 @@ class IAbstractStage(ABC, Generic[TAbstractStageMetadataDict]):
 
     def __init__(
         self,
-        metadata: TAbstractStageMetadata[TAbstractStageMetadataDict]
-        | None = None,
+        metadata: TAbstractStageMetadata[TMetadataSchemaDict] | None = None,
     ):
         """
         Initialize the stage with optional metadata.

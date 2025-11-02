@@ -17,14 +17,14 @@ Key Classes:
 """
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Generic, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from saxs.saxs.core.stage.abstract_stage import (
     IAbstractStage,
-    TAbstractStageMetadataDict,
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.core.types.metadata import TMetadataSchemaDict
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
@@ -33,13 +33,12 @@ if TYPE_CHECKING:
     )
 
 
-class EvalSchemaDict(TypedDict, total=False):
+class EvalSchemaDict(TypedDict, total=False):  # must be generic
     """Abstract eval dictionary schema."""
 
 
 class IAbstractRequestingStage(
-    IAbstractStage[TAbstractStageMetadataDict],
-    Generic[TAbstractStageMetadataDict],
+    IAbstractStage[TMetadataSchemaDict],
 ):
     """
     Base class for stages that can generate stage approval requests.
@@ -57,7 +56,7 @@ class IAbstractRequestingStage(
 
     def __init__(
         self,
-        metadata: TAbstractStageMetadata[TAbstractStageMetadataDict],
+        metadata: TAbstractStageMetadata[TMetadataSchemaDict],
         policy: ChainingPolicy | None = None,
     ):
         self.policy = policy

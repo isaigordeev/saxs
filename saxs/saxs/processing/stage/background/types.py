@@ -9,6 +9,7 @@ from saxs.saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
 )
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 class EBackMetadataKeys(EMetadataSchemaKeys):
@@ -33,7 +34,9 @@ class BackgroundStageMetadataDict(MetadataSchemaDict, total=False):
     background_coef: float
 
 
-class BackgroundStageMetadata(AbstractMetadata[BackgroundStageMetadataDict]):
+class BackgroundStageMetadata(
+    TAbstractStageMetadata[BackgroundStageMetadataDict],
+):
     """
     Metadata object representing the Cut stage configuration.
 

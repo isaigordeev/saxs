@@ -28,7 +28,7 @@ from saxs.saxs.processing.stage.cut.types import (
 )
 
 
-class CutStage(IAbstractStage):
+class CutStage(IAbstractStage[CutStageMetadata]):
     """
     SAXS processing stage that trims data arrays.
 

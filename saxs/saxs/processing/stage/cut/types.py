@@ -23,10 +23,10 @@ CutStageMetadata : AbstractStageMetadata
 from dataclasses import field
 
 from saxs.saxs.core.types.metadata import (
-    AbstractMetadata,
     EMetadataSchemaKeys,
     MetadataSchemaDict,
 )
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 class ECutStageMetadataDictKeys(EMetadataSchemaKeys):
@@ -49,7 +49,7 @@ class CutStageMetadataDict(MetadataSchemaDict, total=False):
     cut_point: int
 
 
-class CutStageMetadata(AbstractMetadata[CutStageMetadataDict]):
+class CutStageMetadata(TAbstractStageMetadata[CutStageMetadataDict]):
     """
     Metadata object representing the Cut stage configuration.
 

@@ -1,17 +1,17 @@
 from saxs.saxs.core.types.metadata import (
     EMetadataSchemaKeys,
+    MetadataSchemaDict,
 )
 from saxs.saxs.core.types.stage_metadata import (
-    StageSchemaDict,
     TAbstractStageMetadata,
 )
 
 
-class EBackMetadataKeys(EMetadataSchemaKeys):
+class EPeakFindMetadataKeys(EMetadataSchemaKeys):
     """Enum of keys used in PeakFindStageMetadataDict."""
 
 
-class PeakFindStageMetadataDict(StageSchemaDict, total=False):
+class PeakFindStageMetadataDict(MetadataSchemaDict, total=False):
     """
     Schema for Cut stage metadata.
 

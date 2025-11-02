@@ -11,19 +11,13 @@ timestamps) and are designed for safe, type-consistent propagation
 between processing components.
 """
 
-from typing import TypedDict, TypeVar
-
-from saxs.saxs.core.types.metadata import AbstractMetadata
-
-
-class StageSchemaDict(TypedDict, total=False):
-    """Abstract dictionary schema."""
+from saxs.saxs.core.types.metadata import (
+    AbstractMetadata,
+    TMetadataSchemaDict,
+)
 
 
-TStageMetadataDict = TypeVar("TStageMetadataDict", bound=StageSchemaDict)
-
-
-class TAbstractStageMetadata(AbstractMetadata[TStageMetadataDict]):
+class TAbstractStageMetadata(AbstractMetadata[TMetadataSchemaDict]):
     """
     Represents metadata associated with a SAXS pipeline stage.
 
