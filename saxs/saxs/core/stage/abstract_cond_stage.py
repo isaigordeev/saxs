@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, TypedDict
 
 from saxs.saxs.core.stage.abstract_stage import (
     IAbstractStage,
+    TStageMetadata,
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import StageRequest
@@ -38,7 +39,7 @@ class EvalSchemaDict(TypedDict, total=False):  # must be generic
 
 
 class IAbstractRequestingStage(
-    IAbstractStage[TMetadataSchemaDict],
+    IAbstractStage[TStageMetadata],
 ):
     """
     Base class for stages that can generate stage approval requests.

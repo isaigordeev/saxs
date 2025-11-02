@@ -37,8 +37,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
 
     @classmethod
     def default_policy(cls) -> "ChainingPolicy":
-        # This default policy will automatically inject NextStage if Condition is true
-        from saxs.saxs.processing.stage.peak.process_peak_stage import (
+        from saxs.saxs.processing.stage.peak.process_peak_stage import (  # noqa: PLC0415
             ProcessFitPeakStage,
         )
 
