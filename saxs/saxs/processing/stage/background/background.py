@@ -2,7 +2,9 @@ from collections.abc import Callable
 
 import numpy as np
 from numpy.typing import NDArray
-from scipy.optimize import curve_fit
+from scipy.optimize import (  # pyright: ignore[reportMissingTypeStubs]
+    curve_fit,  # pyright: ignore[reportUnknownVariableType]
+)
 
 from saxs.application.settings_processing import BACKGROUND_COEF
 from saxs.logging.logger import logger
@@ -49,13 +51,7 @@ class BackgroundStage(IAbstractStage):
         )
 
         # Fit background
-        popt, _pcov = curve_fit(
-            f=_background_func,
-            xdata=q_vals,
-            ydata=intensity,
-            p0=(3, 2),
-            sigma=error,
-        )
+        popt, _ = self.curve_fit(_background_coef, q_vals, intensity, error)
 
         # Log fitted parameters
         logger.info(
@@ -65,17 +61,39 @@ class BackgroundStage(IAbstractStage):
 
         # Subtract background
         background = _background_func(q_vals, *popt)
-        intensity_subtracted = intensity - _background_coef * background
+        _subtracted_intensity = intensity - _background_coef * background
 
         # Log post-processing state
         logger.info(
             f"\n=== BackgroundStage Output ===\n"
             f"Background coefficient: {_background_coef}\n"
-            f"Number of points:        {len(q_vals)}\n"
-            f"Q range:                 [{min(q_vals)}, {max(q_vals)}]\n"
-            f"Intensity range:         [{min(intensity_subtracted)}, {max(intensity_subtracted)}]\n"
-            f"Background values:       [{min(background)}, {max(background)}]\n"
+            f"Number of points:       {len(q_vals)}\n"
+            f"Q range:               [{min(q_vals)}, {max(q_vals)}]\n"
+            f"Intensity range:       [{min(_subtracted_intensity)},",
+            f"{max(_subtracted_intensity)}]\n"
+            f"Background values:     [{min(background)}, {max(background)}]\n"
             f"=============================",
         )
 
-        return sample.set_intensity(intensity_subtracted), None
+        sample[ESAXSSampleKeys.INTENSITY] = _subtracted_intensity
+
+        return sample
+
+    @staticmethod
+    def curve_fit(
+        _background_func: Callable[..., NDArray[np.float64]],
+        q_values: NDArray[np.float64],
+        intensity: NDArray[np.float64],
+        error: NDArray[np.float64],
+    ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+        res_: tuple[NDArray[np.float64], NDArray[np.float64]] = curve_fit(  # pyright: ignore[reportUnknownVariableType]
+            f=_background_func,
+            xdata=q_values,
+            ydata=intensity,
+            p0=(3, 2),
+            sigma=error,
+        )
+
+        popt, _pcov = res_  # pyright: ignore[reportUnknownVariableType]
+
+        return popt, _pcov  # pyright: ignore[reportUnknownVariableType]
