@@ -1,27 +1,42 @@
+from collections.abc import Callable
+
+import numpy as np
+from numpy.typing import NDArray
+from scipy.optimize import curve_fit
+
 from saxs.application.settings_processing import BACKGROUND_COEF
 from saxs.logging.logger import logger
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
-from saxs.saxs.processing.functions import background_hyberbole
-from scipy.optimize import curve_fit
+from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
+from saxs.saxs.processing.functions import background_hyperbole
+from saxs.saxs.processing.stage.background.types import (
+    BackgroundStageMetadata,
+    EBackMetadataKeys,
+)
 
 
 class BackgroundStage(IAbstractStage):
-    def __init__(self, _background_func=background_hyberbole):
-        self.metadata = TAbstractStageMetadata(
+    def __init__(
+        self,
+        _background_func: Callable[
+            ...,
+            NDArray[np.float64],
+        ] = background_hyperbole,
+    ):
+        self.metadata = BackgroundStageMetadata(
             value={
-                "_background_func": _background_func,
-                "_background_coef": BACKGROUND_COEF,
+                EBackMetadataKeys.BACKGROUND_FUNC.value: _background_func,
+                EBackMetadataKeys.BACKGROUND_COEF.value: BACKGROUND_COEF,
             },
         )
 
-    def _process(self, stage_data):
-        _background_func = self.metadata.unwrap().get("_background_func")
-        _background_coef = self.metadata.unwrap().get("_background_coef")
+    def _process(self, sample: SAXSSample) -> SAXSSample:
+        _background_func = self.metadata[EBackMetadataKeys.BACKGROUND_FUNC]
+        _background_coef = self.metadata[EBackMetadataKeys.BACKGROUND_COEF]
 
-        q_vals = stage_data.get_q_values_array()
-        intensity = stage_data.get_intensity_array()
-        error = stage_data.get_intensity_error_array()
+        q_vals = sample[ESAXSSampleKeys.Q_VALUES]
+        intensity = sample[ESAXSSampleKeys.INTENSITY]
+        error = sample[ESAXSSampleKeys.INTENSITY_ERROR]
 
         # Log input state
         logger.info(
@@ -63,4 +78,4 @@ class BackgroundStage(IAbstractStage):
             f"=============================",
         )
 
-        return stage_data.set_intensity(intensity_subtracted), None
+        return sample.set_intensity(intensity_subtracted), None
