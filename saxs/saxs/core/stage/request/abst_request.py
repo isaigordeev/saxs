@@ -22,8 +22,9 @@ StageRequest
 """
 
 from dataclasses import dataclass
+from typing import Generic, TypedDict, TypeVar
 
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
@@ -46,8 +47,14 @@ class AbstractStageRequest:
     """
 
 
-@dataclass(frozen=True)
-class StageRequest(AbstractStageRequest):
+class EvalSchemaDict(TypedDict, total=False):
+    """Abstract dictionary schema."""
+
+
+TEvalMetadataDict = TypeVar("TEvalMetadataDict", bound=EvalSchemaDict)
+
+
+class StageRequest(AbstractStageRequest, Generic[TEvalMetadataDict]):
     """
     Concrete request for adding a new stage to the pipeline.
 
@@ -60,7 +67,7 @@ class StageRequest(AbstractStageRequest):
     eval_metadata : AbstractStageMetadata
         Metadata describing the evaluation context of the stage
         that generated this request.
-    pass_metadata : AbstractStageMetadata
+    flow_metadata : FlowMetadata
         Metadata passed forward to the next stage for contextual
         processing.
     scheduler_metadata : AbstractSchedulerMetadata
@@ -69,6 +76,6 @@ class StageRequest(AbstractStageRequest):
         policies.
     """
 
-    condition_eval_metadata: TAbstractStageMetadata
-    sample_metadata: AbstractSampleMetadata
+    condition_eval_metadata: TAbstractStageMetadata[TEvalMetadataDict]
+    flow_metadata: FlowMetadata
     scheduler_metadata: AbstractSchedulerMetadata

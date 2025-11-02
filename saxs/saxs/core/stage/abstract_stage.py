@@ -15,7 +15,7 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypedDict, TypeVar
 
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
@@ -27,7 +27,14 @@ if TYPE_CHECKING:
     )
 
 
-TStageMetadataDictSchema = TypeVar("TStageMetadataDictSchema")
+class AstractStageSchemaDict(TypedDict, total=False):
+    """Abstract dictionary schema."""
+
+
+TAbstractStageMetadataDict = TypeVar(
+    "TAbstractStageMetadataDict",
+    bound=AstractStageSchemaDict,
+)
 
 
 class IAbstractStage(ABC):
@@ -47,7 +54,7 @@ class IAbstractStage(ABC):
 
     def __init__(
         self,
-        metadata: TAbstractStageMetadata[TStageMetadataDictSchema]
+        metadata: TAbstractStageMetadata[TAbstractStageMetadataDict]
         | None = None,
     ):
         """

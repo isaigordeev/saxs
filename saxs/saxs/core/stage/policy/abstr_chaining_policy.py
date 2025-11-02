@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypedDict
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.request.abst_request import StageRequest
@@ -11,6 +11,10 @@ if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
         StageApprovalRequest,
     )
+
+
+class EvalSchemaDict(TypedDict, total=False):
+    """Abstract eval dictionary schema."""
 
 
 class ChainingPolicy(ABC):
@@ -25,7 +29,7 @@ class ChainingPolicy(ABC):
     @abstractmethod
     def request(
         self,
-        request_metadata: StageRequest,
+        request_metadata: StageRequest[EvalSchemaDict],
     ) -> list["StageApprovalRequest"]:
         """Stage request method.
 
