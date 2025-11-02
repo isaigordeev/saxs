@@ -30,6 +30,9 @@ milestones
 - o composite stage (~.)
 - o pydantic for gluing metadata between stages
 - o compatible with windows? 
+- o keep one instance of eval schema and create a simple base one 
+
+- ± shoud we encapsulate generic metadata type into a stage?
 
 closed
 ======
