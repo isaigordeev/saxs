@@ -17,7 +17,7 @@ from saxs.saxs.core.pipeline.scheduler.scheduler import (
     AbstractScheduler,
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.metadata import FlowMetadata
+from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
 
 

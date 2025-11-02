@@ -1,7 +1,8 @@
+from collections.abc import Callable
 from dataclasses import field
-from typing import Any, Callable
 
 import numpy as np
+from numpy.typing import NDArray
 
 from saxs.saxs.core.types.metadata import (
     AbstractMetadata,

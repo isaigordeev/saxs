@@ -11,7 +11,7 @@ metadata. The builder-style methods allow creating modified copies
 of the sample while keeping the original data intact.
 """
 
-from _collections_abc import dict_items, dict_keys, dict_values
+from collections.abc import ItemsView, KeysView, ValuesView
 from enum import Enum
 from typing import TypedDict, Union
 
@@ -73,12 +73,6 @@ SAXSSampleArrayValue = Union[
     QValues,
     Intensity,
     IntensityError,
-]
-
-SAXSSampleArrayKey = Union[
-    ESAXSSampleKeys.Q_VALUES,
-    ESAXSSampleKeys.INTENSITY,
-    ESAXSSampleKeys.INTENSITY_ERROR,
 ]
 
 SAXSSampleValue = Union[AbstractSampleMetadata, SAXSSampleArrayValue]
@@ -165,14 +159,14 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
         """Iterate over keys."""
         return iter(self.unwrap())
 
-    def keys(self) -> dict_keys[str, object]:
+    def keys(self) -> KeysView[str]:
         """Expose dict keys."""
         return self.unwrap().keys()
 
-    def values(self) -> dict_values[str, object]:
+    def values(self) -> ValuesView[object]:
         """Expose dict values."""
         return self.unwrap().values()
 
-    def items(self) -> dict_items[str, object]:
+    def items(self) -> ItemsView[str, object]:
         """Expose dict items."""
         return self.unwrap().items()
