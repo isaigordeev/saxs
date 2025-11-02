@@ -17,8 +17,8 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.functions import gauss, parabole
 from scipy.optimize import curve_fit
 

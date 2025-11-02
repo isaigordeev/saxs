@@ -29,11 +29,11 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.scheduler_objects import (
+from saxs.saxs.core.types.scheduler_metadata import (
     AbstractSchedulerMetadata,
     ESchedulerMetadataDictKeys,
 )
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (

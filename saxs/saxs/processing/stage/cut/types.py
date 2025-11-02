@@ -24,7 +24,7 @@ from dataclasses import field
 from enum import Enum
 from typing import TypedDict
 
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 class ECutStageMetadataDictKeys(Enum):

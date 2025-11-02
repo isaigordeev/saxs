@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 @dataclass(frozen=True)

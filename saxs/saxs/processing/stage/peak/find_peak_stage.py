@@ -15,8 +15,8 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
-from saxs.saxs.core.types.scheduler_objects import AbstractSchedulerMetadata
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from scipy.signal import find_peaks
 
 if TYPE_CHECKING:

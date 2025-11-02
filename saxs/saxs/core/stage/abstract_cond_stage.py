@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import StageRequest
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (

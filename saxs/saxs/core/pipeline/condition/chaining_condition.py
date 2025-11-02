@@ -5,7 +5,7 @@
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
 )
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 class ChainingPeakCondition(StageCondition):

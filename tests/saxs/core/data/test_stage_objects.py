@@ -8,7 +8,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 from saxs.saxs.core.types.abstract_data import TBaseDataType
-from saxs.saxs.core.types.stage_objects import TAbstractStageMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 class TestAbstractStageMetadata:
