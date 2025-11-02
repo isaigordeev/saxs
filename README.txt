@@ -1,47 +1,5 @@
 
-milestones
-==========
+SAXS package
+============
 
-
-- o open task
-- ± uncertain task 
-- (!) important
-- (~.) linked (with number of points)
-- x closed task
-
----
-
-- o replace deque.popleft() → use list + index to avoid function
-    call overhead
-- o batch process samples → if stages can handle arrays, vectorize
-    numpy operations
-- o minimize python object creation → reuse metadata, requests,
-    and temporary objects
-- o use numba / jit compilation → compile loops if python overhead
-    dominates
-- o parallelize independent stages → with threadpoolexecutor if
-    process releases gil
-- o better scheduler metadata
-- o better type hierarchy (with more abstraction and usefulness)
-
-- o default variable stages for compiler
-- o change metadata flow
-- o request handler for scheduler
-
-- ± in-place operations?
-- ± instance or class injections?
-- ± lambda for state factory in injections?
-- ± metaclass for logging
-- ± pydantic for gluing metadata between stages
-- ± replace python function calculation in processing
-    by c++ ones (~.)
-  - ± pipeline scheduler for peaks in order (map-reduce-like) for
-      multiprocessing (~.)
-- ± composite stage (~.)
-- ± new frontend yaml (~.)
-  - ± parser verifier (~.)
-- ± new backend with declaration specs (~.)
-
-
-closed
-======
+do not forget to put githooks
