@@ -11,8 +11,9 @@ metadata. The builder-style methods allow creating modified copies
 of the sample while keeping the original data intact.
 """
 
+from _collections_abc import dict_items, dict_keys, dict_values
 from enum import Enum
-from typing import Any, TypedDict, Union
+from typing import TypedDict, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -74,112 +75,68 @@ SAXSSampleArrayValue = Union[
     IntensityError,
 ]
 
+SAXSSampleArrayKey = Union[
+    ESAXSSampleKeys.Q_VALUES,
+    ESAXSSampleKeys.INTENSITY,
+    ESAXSSampleKeys.INTENSITY_ERROR,
+]
+
 SAXSSampleValue = Union[AbstractSampleMetadata, SAXSSampleArrayValue]
 
 
 class SAXSSample(TBaseDataType[SAXSSampleDict]):
-    # --- Getters ---
-    def get_q_values(self) -> NDArray[np.float64]:
-        """Return the raw q-values array from the sample."""
-        _sample: SAXSSampleDict = self.unwrap()
-        _q_values: QValues = _sample.get(ESAXSSampleKeys.Q_VALUES.value)
-        return _q_values.unwrap()
+    """
+    Represents a Small-Angle X-ray Scattering (SAXS) sample.
 
-    def get_intensity(self) -> NDArray[np.float64]:
-        """Return the raw intensity array from the sample."""
-        _sample: SAXSSampleDict = self.unwrap()
-        _intensity: Intensity = _sample.get(ESAXSSampleKeys.INTENSITY.value)
-        return _intensity.unwrap()
+    This class provides a typed, dict-like interface to access and
+    manipulate SAXS sample data, including q-values, intensity,
+    optional intensity errors, and metadata. It is built on top
+    of `TBaseDataType` and `TypedDict` for type safety.
 
-    def get_intensity_error(self) -> NDArray[np.float64] | None:
-        """Return the raw intensity error array, or None if missing."""  # noqa: W505
-        _sample: SAXSSampleDict = self.unwrap()
-        _error: IntensityError | None = _sample.get(
-            ESAXSSampleKeys.INTENSITY_ERROR.value,
-        )
-        return _error.unwrap() if _error else None
+    Features
+    --------
+    - Dict-like access for array-like data using `__getitem__`
+      and `__setitem__`.
+    - Supports builder-style mutation: updates return new instances
+      or wrapped array types (QValues, Intensity, IntensityError).
+    - Provides convenience methods for iteration, containment
+      checks, and accessing keys, values, and items.
 
-    def get_metadata(self) -> AbstractSampleMetadata:
-        """Return the metadata dict."""
-        _sample: SAXSSampleDict = self.unwrap()
-        return _sample.get(ESAXSSampleKeys.METADATA.value)
+    Examples
+    --------
+    >>> sample = SAXSSample({
+    ...     "q_values": QValues(np.array([0.1, 0.2])),
+    ...     "intensity": Intensity(np.array([100.0, 150.0])),
+    ...     "intensity_err": IntensityError(np.array([5.0, 7.0])),
+    ...     "metadata": AbstractSampleMetadata()
+    ... })
+    >>> sample[ESAXSSampleKeys.Q_VALUES]
+    QValues(array([0.1, 0.2]))
+    >>> sample[ESAXSSampleKeys.INTENSITY] = np.array([110.0, 160.0])
 
-    # --- Immutable Setters ---
-
-    def set_q_values(self, q_array: NDArray[np.float64]) -> "SAXSSample":
-        return SAXSSample(
-            {
-                **self.unwrap(),
-                ESAXSSampleKeys.Q_VALUES.value: QValues(q_array),
-            },
-        )
-
-    def set_intensity(
-        self,
-        intensity_array: NDArray[np.float64],
-    ) -> "SAXSSample":
-        return SAXSSample(
-            {
-                **self.unwrap(),
-                ESAXSSampleKeys.INTENSITY.value: Intensity(intensity_array),
-            },
-        )
-
-    def set_intensity_error(
-        self,
-        error_array: NDArray[np.float64] | None,
-    ) -> "SAXSSample":
-        return SAXSSample(
-            {
-                **self.unwrap(),
-                ESAXSSampleKeys.INTENSITY_ERROR.value: IntensityError(
-                    error_array,
-                ),
-            },
-        )
-
-    def set_metadata_dict(
-        self,
-        metadata_dict: AbstractSampleMetadata,
-    ) -> "SAXSSample":
-        return SAXSSample(
-            {
-                **self.unwrap(),
-                ESAXSSampleKeys.METADATA.value: metadata_dict,
-            },
-        )
-
-    def set_new_sample(
-        self,
-        _new_sample_dict: SAXSSampleDict,
-    ) -> "SAXSSample":
-        return SAXSSample(
-            {
-                **_new_sample_dict,
-            },
-        )
-
-    def update_new_sample(
-        self,
-        _sample_dict_to_append: SAXSSampleDict,
-    ) -> "SAXSSample":
-        return SAXSSample(
-            {
-                **self.unwrap(),
-                **_sample_dict_to_append,
-            },
-        )
-
-    # --- Dict-style Access ---
+    Notes
+    -----
+    - Only array-like keys (q_values, intensity, intensity_err) are
+      directly gettable and settable using the dict-like interface.
+    - Metadata must be accessed via the 'metadata' key.
+    """
 
     def __getitem__(
         self,
         key: ESAXSSampleKeys,
-    ) -> dict[str, Any] | NDArray[np.float64] | None:
+    ) -> NDArray[np.float64]:
         """Allow dict-like access: sample['q_values']."""
         _sample: SAXSSampleDict = self.unwrap()
-        _value: SAXSSampleValue = _sample[key.value]
-        return _value.unwrap()
+        if (
+            key is ESAXSSampleKeys.Q_VALUES
+            or key is ESAXSSampleKeys.INTENSITY
+            or key is ESAXSSampleKeys.INTENSITY_ERROR
+        ):
+            return _sample[key.value].unwrap()
+
+        msg = f"Invalid SAXSSample key: {key}. Only array like keys \
+                    supported"
+        raise KeyError(msg)
 
     def __setitem__(self, key: ESAXSSampleKeys, _value: NDArray[np.float64]):
         """Setter dict for array like data in the sample.
@@ -208,11 +165,14 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
         """Iterate over keys."""
         return iter(self.unwrap())
 
-    def keys(self):
+    def keys(self) -> dict_keys[str, object]:
+        """Expose dict keys."""
         return self.unwrap().keys()
 
-    def values(self):
+    def values(self) -> dict_values[str, object]:
+        """Expose dict values."""
         return self.unwrap().values()
 
-    def items(self):
+    def items(self) -> dict_items[str, object]:
+        """Expose dict items."""
         return self.unwrap().items()
