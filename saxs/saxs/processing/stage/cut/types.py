@@ -21,19 +21,21 @@ CutStageMetadata : AbstractStageMetadata
 """
 
 from dataclasses import field
-from enum import Enum
-from typing import TypedDict
 
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.saxs.core.types.metadata import (
+    AbstractMetadata,
+    EMetadataSchemaKeys,
+    MetadataSchemaDict,
+)
 
 
-class ECutStageMetadataDictKeys(Enum):
+class ECutStageMetadataDictKeys(EMetadataSchemaKeys):
     """Enum of keys used in CutStageMetadataDict."""
 
     CUT_POINT = "cut_point"
 
 
-class CutStageMetadataDict(TypedDict, total=False):
+class CutStageMetadataDict(MetadataSchemaDict, total=False):
     """
     Schema for Cut stage metadata.
 
@@ -47,7 +49,7 @@ class CutStageMetadataDict(TypedDict, total=False):
     cut_point: int
 
 
-class CutStageMetadata(TAbstractStageMetadata[CutStageMetadataDict]):
+class CutStageMetadata(AbstractMetadata[CutStageMetadataDict]):
     """
     Metadata object representing the Cut stage configuration.
 
