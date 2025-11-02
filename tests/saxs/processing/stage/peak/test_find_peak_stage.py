@@ -20,7 +20,7 @@ from saxs.saxs.core.types.sample_objects import (
     IntensityError,
     QValues,
 )
-from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
+from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
 from saxs.saxs.processing.stage.peak.process_peak_stage import (
     AProcessPeakStage,
 )
@@ -68,7 +68,7 @@ def mock_chaining_stage():
 @pytest.fixture
 def find_peaks_stage(mock_chaining_stage, mock_condition):
     """Create FindAllPeaksStage instance for testing."""
-    return FindAllPeaksStage(
+    return FindPeakStage(
         chaining_stage=mock_chaining_stage,
         condition=mock_condition,
     )
@@ -77,7 +77,7 @@ def find_peaks_stage(mock_chaining_stage, mock_condition):
 @pytest.fixture
 def find_peaks_chaining_stage(mock_chaining_stage, mock_chaining_condition):
     """Create FindAllPeaksStage instance for testing."""
-    return FindAllPeaksStage(
+    return FindPeakStage(
         chaining_stage=AProcessPeakStage,
         condition=mock_chaining_condition,
     )
@@ -92,7 +92,7 @@ class TestFindAllPeaksStage:
         mock_condition,
     ) -> None:
         """Test creating FindAllPeaksStage."""
-        stage = FindAllPeaksStage(
+        stage = FindPeakStage(
             chaining_stage=mock_chaining_stage,
             condition=mock_condition,
         )
@@ -106,7 +106,7 @@ class TestFindAllPeaksStage:
         mock_condition,
     ) -> None:
         """Test that FindAllPeaksStage inherits from AbstractConditionalStage."""
-        stage = FindAllPeaksStage(
+        stage = FindPeakStage(
             chaining_stage=mock_chaining_stage,
             condition=mock_condition,
         )

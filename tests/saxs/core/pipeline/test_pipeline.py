@@ -20,7 +20,7 @@ from saxs.saxs.core.pipeline.scheduler.scheduler import BaseScheduler
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.stage.filter.background_stage import BackgroundStage
 from saxs.saxs.processing.stage.filter.cut_stage import CutStage
-from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
+from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
 
 # ------------------------
 # Fixtures
@@ -116,7 +116,7 @@ def init_stage():
     cut_point = 1
     init_stage = CutStage(cut_point=cut_point)
     bg_stage = BackgroundStage()
-    find_peak_stage = FindAllPeaksStage(
+    find_peak_stage = FindPeakStage(
         condition=ChainingPeakCondition("peaks"),
     )
     return [init_stage, bg_stage, find_peak_stage]

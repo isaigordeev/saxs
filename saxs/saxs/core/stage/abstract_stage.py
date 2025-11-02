@@ -15,7 +15,7 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, TypedDict, TypeVar
+from typing import TYPE_CHECKING, Generic, TypedDict, TypeVar
 
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
@@ -27,17 +27,17 @@ if TYPE_CHECKING:
     )
 
 
-class AstractStageSchemaDict(TypedDict, total=False):
+class AstractStageMetadataDict(TypedDict, total=False):
     """Abstract dictionary schema."""
 
 
 TAbstractStageMetadataDict = TypeVar(
     "TAbstractStageMetadataDict",
-    bound=AstractStageSchemaDict,
+    bound=AstractStageMetadataDict,
 )
 
 
-class IAbstractStage(ABC):
+class IAbstractStage(ABC, Generic[TAbstractStageMetadataDict]):
     """
     Base class for a processing stage in a SAXS data pipeline.
 

@@ -19,6 +19,7 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.saxs.processing.stage.peak.types import PeakFindStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
@@ -26,11 +27,11 @@ if TYPE_CHECKING:
     )
 
 
-class FindAllPeaksStage(IAbstractRequestingStage):
+class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     def __init__(
         self,
-        metadata,
-        policy: SingleStageChainingPolicy | None = None,
+        metadata: PeakFindStageMetadata,
+        policy: SingleStageChainingPolicy,
     ):
         super().__init__(metadata, policy)
 

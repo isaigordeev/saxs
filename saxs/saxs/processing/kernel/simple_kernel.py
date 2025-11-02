@@ -40,7 +40,7 @@ from saxs.saxs.processing.stage.background.background import (
 )
 from saxs.saxs.processing.stage.cut.cut import CutStage
 from saxs.saxs.processing.stage.filter.filter import FilterStage
-from saxs.saxs.processing.stage.peak.find_peak_stage import FindAllPeaksStage
+from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
 from saxs.saxs.processing.stage.peak.process_peak_stage import (
     ProcessFitPeakStage,
 )
@@ -129,7 +129,7 @@ class SimpleKernel(BaseKernel):
         _kernel_registry.register_stage(
             StageSpec(
                 id_="find_peaks",
-                stage_cls=FindAllPeaksStage,
+                stage_cls=FindPeakStage,
                 policy_id="peaks_policy",
             ),
         )

@@ -38,13 +38,13 @@ class ProcessFitPeakStage(AProcessPeakStage):
     def default_policy(cls) -> "ChainingPolicy":
         # This default policy will automatically inject NextStage if
         #  Condition is true
-        from saxs.saxs.processing.stage.peak.find_peak_stage import (
-            FindAllPeaksStage,
+        from saxs.saxs.processing.stage.peak.find_peak import (
+            FindPeakStage,
         )
 
         return SingleStageChainingPolicy(
             condition=TrueCondition(),
-            pending_stages=FindAllPeaksStage,
+            pending_stages=FindPeakStage,
         )
 
     def _process(self, sample_data: SAXSSample):
