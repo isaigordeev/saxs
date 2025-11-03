@@ -35,6 +35,7 @@ milestones
 - o unwire TStageMetadata from Condition class
 - o new Metadata type for eval in the condition
 - o new Metadata type for approval in the scheduler
+- o policy fallback saxs/saxs/core/stage/abstract_cond_stage.py:84
 
 - ± shoud we encapsulate generic metadata type into a stage?
 
