@@ -1,7 +1,9 @@
 # Created by Isai Gordeev on 20/09/2025.
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+import numpy as np
+from numpy.typing import NDArray
 from scipy.signal import (  # pyright: ignore[reportMissingTypeStubs]
     find_peaks,  # # pyright: ignore[reportUnknownVariableType]
 )
@@ -22,8 +24,9 @@ from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.stage.peak.types import (
+    EPeakFindMetadataKeys,
     PeakFindStageMetadata,
-    PeakProcessStageMetadata,
+    ProcessPeakStageMetadata,
 )
 
 if TYPE_CHECKING:
@@ -40,27 +43,11 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     ):
         super().__init__(metadata, policy)
 
-    @classmethod
-    def default_policy(cls) -> "ChainingPolicy":
-        from saxs.saxs.processing.stage.peak.process_peak_stage import (  # noqa: PLC0415
-            ProcessFitPeakStage,
-        )
-
-        return SingleStageChainingPolicy(
-            condition=ChainingPeakCondition("peaks"),
-            pending_stages=ProcessFitPeakStage,
-        )
-
     def _process(self, sample: SAXSSample) -> SAXSSample:
         intensity = sample[ESAXSSampleKeys.INTENSITY]
 
         # Find peaks
-        peaks_indices, _peaks_properties = find_peaks(
-            intensity,
-            height=0.5,
-            prominence=0.3,
-            distance=10,
-        )
+        peak_indices, peak_properties = self.find_peaks(intensity)
 
         # Log peaks info in readable format
         logger.info(
@@ -90,3 +77,13 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         eval_metadata = self.metadata
         scheduler_metadata = AbstractSchedulerMetadata()
         return StageRequest(eval_metadata, pass_metadata, scheduler_metadata)
+
+    def find_peaks(self, intensity: NDArray[np.float64]):
+        peaks_indices, peaks_properties = find_peaks(
+            x=intensity,
+            height=self.metadata[EPeakFindMetadataKeys.HEIGHT],
+            prominence=self.metadata[EPeakFindMetadataKeys.PROMINENCE],
+            distance=self.metadata[EPeakFindMetadataKeys.DISTANCE],
+        )
+
+        return peaks_indices, peaks_properties

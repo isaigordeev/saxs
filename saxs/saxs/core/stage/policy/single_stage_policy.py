@@ -21,6 +21,7 @@ from saxs.saxs.core.stage.request.abst_request import (
     StageRequest,
     TEvalMetadataDict,
 )
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.condition.abstract_condition import (
@@ -84,7 +85,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
 
     def request(
         self,
-        stage_metadata: StageRequest[TEvalMetadataDict],
+        request_metadata: StageRequest[TEvalMetadataDict],
     ) -> list[StageApprovalRequest[TStageMetadata]]:
         """
         Evaluate the condition and return a stage request.
@@ -108,7 +109,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
             )
             return []
 
-        _eval_metadata = stage_metadata.condition_eval_metadata
+        _eval_metadata = request_metadata.condition_eval_metadata
 
         logger.info(
             f"\n{'=' * 30}\n[{self.__class__.__name__}] Evaluating condition '{self.condition.__class__.__name__}' "
@@ -116,10 +117,13 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
         )
 
         if self.condition.evaluate(eval_metadata=_eval_metadata):
-            _pass_metadata = stage_metadata.sample_metadata
-            _scheduler_metadata = stage_metadata.scheduler_metadata
+            _pass_metadata = request_metadata.flow_metadata
+            _approval_metadata = TAbstractStageMetadata(value={})
+            _scheduler_metadata = request_metadata.scheduler_metadata
 
-            _pending_stage: IAbstractStage = self.pending_stages[-1]
+            _pending_stage: IAbstractStage[TStageMetadata] = (
+                self.pending_stages[-1]
+            )
 
             logger.info(
                 f"\n{'=' * 30}\n[{self.__class__.__name__}] "
@@ -131,7 +135,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
             return [
                 StageApprovalRequest(
                     stage=_pending_stage,
-                    approval_metadata=_pass_metadata,
+                    approval_metadata=_approval_metadata,
                 ),
             ]
 

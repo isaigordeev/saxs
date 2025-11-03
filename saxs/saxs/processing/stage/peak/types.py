@@ -69,7 +69,7 @@ class PeakProcessStageMetadataDict(MetadataSchemaDict, total=False):
     """
 
 
-class PeakProcessStageMetadata(
+class ProcessPeakStageMetadata(
     TAbstractStageMetadata[PeakFindStageMetadataDict],
 ):
     """

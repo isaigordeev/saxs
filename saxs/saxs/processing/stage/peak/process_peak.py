@@ -20,6 +20,7 @@ from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.functions import gauss, parabole
+from saxs.saxs.processing.stage.peak.types import ProcessPeakStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
@@ -27,7 +28,7 @@ if TYPE_CHECKING:
     )
 
 
-class ProcessFitPeakStage(IAbstractRequestingStage):
+class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):  # noqa: F821
     fit_range = 2
 
     @classmethod
@@ -40,7 +41,7 @@ class ProcessFitPeakStage(IAbstractRequestingStage):
 
         return SingleStageChainingPolicy(
             condition=TrueCondition(),
-            pending_stages=FindPeakStage,
+            pending_stages=FindPeakStage[FindPeakStageMetadata],
         )
 
     def _process(self, sample_data: SAXSSample):

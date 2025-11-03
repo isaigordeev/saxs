@@ -6,6 +6,7 @@ from typing import Any, Generic, TypeVar
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
 from saxs.saxs.core.types.metadata import TAbstractMetadata
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 @dataclass(frozen=True)
@@ -47,4 +48,6 @@ class StageApprovalRequest(
     """
 
     stage: IAbstractStage[TStageMetadata]
-    approval_metadata: TStageMetadata  # approval must have different type
+    approval_metadata: TAbstractStageMetadata[
+        Any
+    ]  # approval must have different type

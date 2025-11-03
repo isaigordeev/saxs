@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
@@ -16,7 +17,7 @@ class SampleCondition(ABC):
 
 class StageCondition(ABC):
     @abstractmethod
-    def evaluate(self, eval_metadata: TAbstractStageMetadata) -> bool:
+    def evaluate(self, eval_metadata: TAbstractStageMetadata[Any]) -> bool:
         """Predicat for stage approval.
 
         Return True if the condition passes for the

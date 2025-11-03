@@ -57,7 +57,7 @@ from saxs.saxs.processing.stage.cut.cut import CutStage
 from saxs.saxs.processing.stage.filter.filter import FilterStage
 from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
 from saxs.saxs.processing.stage.peak.process_peak import (
-    ProcessFitPeakStage,
+    ProcessPeakStage,
 )
 
 
@@ -74,7 +74,7 @@ stage_registry.register("CutStage", CutStage)
 stage_registry.register("FilterStage", FilterStage)
 stage_registry.register("BackgroundStage", BackgroundStage)
 stage_registry.register("FindAllPeaksStage", FindPeakStage)
-stage_registry.register("ProcessFitPeakStage", ProcessFitPeakStage)
+stage_registry.register("ProcessFitPeakStage", ProcessPeakStage)
 
 policy_registry: PolicyRegistry[Any] = make_policy_registry()
 policy_registry.register(

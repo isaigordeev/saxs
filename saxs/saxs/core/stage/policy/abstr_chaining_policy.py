@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generic, TypedDict
+from typing import TYPE_CHECKING, Any, Generic, TypedDict
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
 from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.saxs.core.pipeline.condition.abstract_condition import (
@@ -32,7 +33,7 @@ class ChainingPolicy(ABC, Generic[TStageMetadata]):
     def request(
         self,
         request_metadata: StageRequest[EvalSchemaDict],
-    ) -> list["StageApprovalRequest"]:
+    ) -> list["StageApprovalRequest[TAbstractStageMetadata[Any]]"]:
         """Stage request method.
 
         Decide which stages to chain based on stage metadata.
