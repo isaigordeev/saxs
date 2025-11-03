@@ -12,12 +12,12 @@ between processing components.
 """
 
 from saxs.saxs.core.types.metadata import (
-    AbstractMetadata,
+    TAbstractMetadata,
     TMetadataSchemaDict,
 )
 
 
-class TAbstractStageMetadata(AbstractMetadata[TMetadataSchemaDict]):
+class TAbstractStageMetadata(TAbstractMetadata[TMetadataSchemaDict]):
     """
     Represents metadata associated with a SAXS pipeline stage.
 

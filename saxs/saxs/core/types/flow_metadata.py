@@ -1,4 +1,4 @@
-from saxs.saxs.core.types.metadata import AbstractMetadata, MetadataSchemaDict
+from saxs.saxs.core.types.metadata import TAbstractMetadata, MetadataSchemaDict
 
 
 class FlowMetadataDict(MetadataSchemaDict, total=False):
@@ -14,7 +14,7 @@ class FlowMetadataDict(MetadataSchemaDict, total=False):
     sample_name: str
 
 
-class FlowMetadata(AbstractMetadata[FlowMetadataDict]):
+class FlowMetadata(TAbstractMetadata[FlowMetadataDict]):
     """
     Immutable container for flow experiment metadata.
 

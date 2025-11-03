@@ -26,7 +26,7 @@ MetadataValueType = Any
 TMetadataSchemaDict = TypeVar("TMetadataSchemaDict", bound=MetadataSchemaDict)
 
 
-class AbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
+class TAbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
     """Set a value for a specific metadata key.
 
     This allows dict-like assignment on the sample:

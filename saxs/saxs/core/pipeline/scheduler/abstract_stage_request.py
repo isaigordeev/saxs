@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
-from saxs.saxs.core.types.metadata import AbstractMetadata
+from saxs.saxs.core.types.metadata import TAbstractMetadata
 
 
 @dataclass(frozen=True)
@@ -18,7 +18,7 @@ class AbstractStageApprovalRequest:
 
 TApprovalStageMetadata = TypeVar(
     "TApprovalStageMetadata",
-    bound=AbstractMetadata[Any],  # put a good schema
+    bound=TAbstractMetadata[Any],  # put a good schema
 )
 
 

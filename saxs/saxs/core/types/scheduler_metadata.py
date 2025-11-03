@@ -22,7 +22,7 @@ interfaces for access and assignment.
 from dataclasses import field
 
 from saxs.saxs.core.types.metadata import (
-    AbstractMetadata,
+    TAbstractMetadata,
     EMetadataSchemaKeys,
     MetadataSchemaDict,
 )
@@ -62,7 +62,7 @@ class SchedulerMetadataDict(MetadataSchemaDict, total=False):
     peaks: set[int]
 
 
-class AbstractSchedulerMetadata(AbstractMetadata[SchedulerMetadataDict]):
+class AbstractSchedulerMetadata(TAbstractMetadata[SchedulerMetadataDict]):
     """
     Metadata container for stage scheduler operations.
 
