@@ -131,7 +131,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
             return [
                 StageApprovalRequest(
                     stage=_pending_stage,
-                    metadata=_pass_metadata,
+                    approval_metadata=_pass_metadata,
                 ),
             ]
 

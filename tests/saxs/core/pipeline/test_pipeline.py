@@ -240,7 +240,7 @@ class TestPipeline:
         additional_stage = Mock()
         stage_request = StageApprovalRequest(
             stage=additional_stage,
-            metadata=TAbstractStageMetadata({"type": "additional"}),
+            approval_metadata=TAbstractStageMetadata({"type": "additional"}),
         )
         stage1.request_stage.return_value = [stage_request]
 

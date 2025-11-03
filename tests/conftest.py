@@ -110,7 +110,9 @@ def mock_stage():
 @pytest.fixture
 def stage_request(mock_stage, stage_metadata):
     """Create a StageRequest for testing."""
-    return StageApprovalRequest(stage=mock_stage, metadata=stage_metadata)
+    return StageApprovalRequest(
+        stage=mock_stage, approval_metadata=stage_metadata
+    )
 
 
 @pytest.fixture

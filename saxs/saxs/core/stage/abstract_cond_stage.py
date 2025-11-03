@@ -19,6 +19,9 @@ Key Classes:
 from abc import abstractmethod
 from typing import TYPE_CHECKING, TypedDict
 
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    TApprovalStageMetadata,
+)
 from saxs.saxs.core.stage.abstract_stage import (
     IAbstractStage,
     TStageMetadata,
@@ -63,7 +66,9 @@ class IAbstractRequestingStage(
         self.policy = policy
         super().__init__(metadata)
 
-    def request_stage(self) -> list["StageApprovalRequest"]:
+    def request_stage(
+        self,
+    ) -> list["StageApprovalRequest[TStageMetadata, TApprovalStageMetadata]"]:
         """
         Generate stage approval requests according to the policy.
 

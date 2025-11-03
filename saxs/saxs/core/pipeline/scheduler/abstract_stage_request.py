@@ -47,4 +47,4 @@ class StageApprovalRequest(
     """
 
     stage: IAbstractStage[TStageMetadata]
-    metadata: TStageMetadata  # approval must have different type
+    approval_metadata: TStageMetadata  # approval must have different type

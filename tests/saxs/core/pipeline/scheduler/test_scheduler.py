@@ -192,7 +192,7 @@ class TestBaseScheduler:
         stage_metadata = TAbstractStageMetadata({"type": "additional"})
         stage_request = StageApprovalRequest(
             stage=additional_stage,
-            metadata=stage_metadata,
+            approval_metadata=stage_metadata,
         )
 
         stage1.request_stage.return_value = [stage_request]
@@ -226,7 +226,7 @@ class TestBaseScheduler:
         stage_metadata = TAbstractStageMetadata({"type": "additional"})
         stage_request = StageApprovalRequest(
             stage=additional_stage,
-            metadata=stage_metadata,
+            approval_metadata=stage_metadata,
         )
 
         stage1.request_stage.return_value = [stage_request]
@@ -259,11 +259,11 @@ class TestBaseScheduler:
         stage_metadata2 = TAbstractStageMetadata({"type": "additional2"})
         stage_request1 = StageApprovalRequest(
             stage=additional_stage1,
-            metadata=stage_metadata1,
+            approval_metadata=stage_metadata1,
         )
         stage_request2 = StageApprovalRequest(
             stage=additional_stage2,
-            metadata=stage_metadata2,
+            approval_metadata=stage_metadata2,
         )
 
         stage1.request_stage.return_value = [stage_request1, stage_request2]
@@ -299,11 +299,11 @@ class TestBaseScheduler:
         stage_metadata2 = TAbstractStageMetadata({"type": "additional2"})
         stage_request1 = StageApprovalRequest(
             stage=additional_stage1,
-            metadata=stage_metadata1,
+            approval_metadata=stage_metadata1,
         )
         stage_request2 = StageApprovalRequest(
             stage=additional_stage2,
-            metadata=stage_metadata2,
+            approval_metadata=stage_metadata2,
         )
 
         stage1.request_stage.return_value = [stage_request1]
@@ -379,7 +379,7 @@ class TestBaseScheduler:
         stage_metadata = TAbstractStageMetadata({"type": "additional"})
         stage_request = StageApprovalRequest(
             stage=additional_stage,
-            metadata=stage_metadata,
+            approval_metadata=stage_metadata,
         )
 
         stage1.request_stage.return_value = [stage_request]
