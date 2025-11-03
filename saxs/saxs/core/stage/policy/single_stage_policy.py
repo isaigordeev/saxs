@@ -7,7 +7,7 @@ This policy allows a stage to request the injection of at most one
 next stage based on a condition. If the condition passes, the
 requested stage is instantiated and wrapped in a StageApprovalRequest
 with associated scheduler metadata.
-"""
+"""  # noqa: W505
 
 from typing import TYPE_CHECKING
 

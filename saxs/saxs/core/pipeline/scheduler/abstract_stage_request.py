@@ -2,9 +2,10 @@
 
 
 from dataclasses import dataclass
-from typing import Generic
+from typing import Any, Generic, TypeVar
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
+from saxs.saxs.core.types.metadata import AbstractMetadata
 
 
 @dataclass(frozen=True)
@@ -13,6 +14,12 @@ class AbstractStageApprovalRequest:
 
     The position (next/end) is determined by the Scheduler/Pipeline.
     """
+
+
+TApprovalStageMetadata = TypeVar(
+    "TApprovalStageMetadata",
+    bound=AbstractMetadata[Any],  # put a good schema
+)
 
 
 @dataclass(frozen=True)

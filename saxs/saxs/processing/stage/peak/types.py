@@ -1,3 +1,5 @@
+from dataclasses import field
+
 from saxs.saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
@@ -9,6 +11,10 @@ from saxs.saxs.core.types.stage_metadata import (
 
 class EPeakFindMetadataKeys(EMetadataSchemaKeys):
     """Enum of keys used in PeakFindStageMetadataDict."""
+
+    HEIGHT = "height"
+    PROMINENCE = "prominence"
+    DISTANCE = "distance"
 
 
 class PeakFindStageMetadataDict(MetadataSchemaDict, total=False):
@@ -22,14 +28,14 @@ class PeakFindStageMetadataDict(MetadataSchemaDict, total=False):
         in the SAXS data array.
     """
 
+    height: float
+    prominence: float
+    distance: int
+
 
 class PeakFindStageMetadata(TAbstractStageMetadata[PeakFindStageMetadataDict]):
     """
-    Metadata object representing the Cut stage configuration.
-
-    Provides a builder-style, type-safe interface around
-    a `CutStageMetadataDict` dictionary, with convenient
-    accessors and default initialization.
+    Metadata object representing the PeakFind stage configuration.
 
     Attributes
     ----------
@@ -40,7 +46,9 @@ class PeakFindStageMetadata(TAbstractStageMetadata[PeakFindStageMetadataDict]):
 
     value: PeakFindStageMetadataDict = field(
         default_factory=lambda: {
-            EBackMetadataKeys.PeakFind_COEF.value: 0.3,
+            EPeakFindMetadataKeys.PROMINENCE.value: 0.3,
+            EPeakFindMetadataKeys.HEIGHT.value: 0.5,
+            EPeakFindMetadataKeys.DISTANCE.value: 10,
         },
     )
 

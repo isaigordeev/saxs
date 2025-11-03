@@ -39,10 +39,14 @@ policy_registry
 >>> policy_instance = policy_cls()
 """
 
+from typing import Any
+
 from saxs.saxs.core.kernel.core.registry import (
+    ClassRegistry,
     PolicyRegistry,
     StageRegistry,
 )
+from saxs.saxs.core.stage.abstract_stage import TStageMetadata
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
@@ -52,18 +56,27 @@ from saxs.saxs.processing.stage.background.background import (
 from saxs.saxs.processing.stage.cut.cut import CutStage
 from saxs.saxs.processing.stage.filter.filter import FilterStage
 from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
-from saxs.saxs.processing.stage.peak.process_peak_stage import (
+from saxs.saxs.processing.stage.peak.process_peak import (
     ProcessFitPeakStage,
 )
 
-stage_registry = StageRegistry()
+
+def make_stage_registry() -> StageRegistry[TStageMetadata]:
+    return ClassRegistry()
+
+
+def make_policy_registry() -> PolicyRegistry[TStageMetadata]:
+    return ClassRegistry()
+
+
+stage_registry: StageRegistry[Any] = make_stage_registry()
 stage_registry.register("CutStage", CutStage)
 stage_registry.register("FilterStage", FilterStage)
 stage_registry.register("BackgroundStage", BackgroundStage)
 stage_registry.register("FindAllPeaksStage", FindPeakStage)
 stage_registry.register("ProcessFitPeakStage", ProcessFitPeakStage)
 
-policy_registry: PolicyRegistry = PolicyRegistry()
+policy_registry: PolicyRegistry[Any] = make_policy_registry()
 policy_registry.register(
     "SingleStageChainingPolicy",
     SingleStageChainingPolicy,

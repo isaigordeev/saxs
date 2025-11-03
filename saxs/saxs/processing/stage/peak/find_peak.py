@@ -18,7 +18,7 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
-from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.stage.peak.types import (
@@ -51,8 +51,8 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             pending_stages=ProcessFitPeakStage,
         )
 
-    def _process(self, sample_data):
-        intensity = sample_data.get_intensity_array()
+    def _process(self, sample: SAXSSample) -> SAXSSample:
+        intensity = sample[ESAXSSampleKeys.INTENSITY]
 
         # Find peaks
         peaks_indices, _peaks_properties = find_peaks(

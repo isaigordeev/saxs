@@ -41,7 +41,7 @@ from saxs.saxs.processing.stage.background.background import (
 from saxs.saxs.processing.stage.cut.cut import CutStage
 from saxs.saxs.processing.stage.filter.filter import FilterStage
 from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
-from saxs.saxs.processing.stage.peak.process_peak_stage import (
+from saxs.saxs.processing.stage.peak.process_peak import (
     ProcessFitPeakStage,
 )
 
