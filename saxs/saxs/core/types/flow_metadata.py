@@ -23,14 +23,16 @@ class FlowMetadataDict(MetadataSchemaDict, total=False):
     sample: str
     processed_peaks: list[int]
     unprocessed_peaks: list[int]
+    current: int
 
 
 class FlowMetadataKeys(EMetadataSchemaKeys):
-    """Flow metadata keys which are passed."""
+    """Flow metadata keys which are possibly passed."""
 
     SAMPLE = "sample"
     PROCESSED = "processed_peaks"
     UNPROCESSED = "unprocessed_peaks"
+    CURRENT = "current"
 
 
 class FlowMetadata(TAbstractMetadata[FlowMetadataDict, FlowMetadataKeys]):

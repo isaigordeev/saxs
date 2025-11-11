@@ -37,7 +37,7 @@ from saxs.saxs.processing.stage.peak.types import (
 class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     def __init__(
         self,
-        policy: SingleStageChainingPolicy[PeakFindStageMetadata],
+        policy: SingleStageChainingPolicy,
         metadata: PeakFindStageMetadata = DEFAULT_PEAK_FIND_META,
     ):
         super().__init__(metadata, policy)
@@ -78,12 +78,15 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         return sample
 
     def create_request(self, metadata: FlowMetadata) -> AbstractStageRequest:
+        """Create a request for peak processing."""
+        _current_peaks = metadata[FlowMetadataKeys.UNPROCESSED]
+
+        _current_peak = _current_peaks[0] if len(_current_peaks) > 0 else -1
+
+        metadata[FlowMetadata.Keys.CURRENT] = _current_peak
+
         eval_metadata = EvalMetadata(
-            {
-                FlowMetadataKeys.UNPROCESSED.value: metadata[
-                    FlowMetadataKeys.UNPROCESSED
-                ],
-            },
+            {FlowMetadataKeys.CURRENT.value: _current_peak},
         )
 
         scheduler_metadata = SchedulerMetadata({})

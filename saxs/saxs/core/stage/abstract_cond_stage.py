@@ -59,7 +59,7 @@ class IAbstractRequestingStage(
     def __init__(
         self,
         metadata: TStageMetadata,
-        policy: ChainingPolicy[TStageMetadata] | None,
+        policy: ChainingPolicy | None,
     ):
         self.policy = policy
         super().__init__(metadata)
@@ -96,7 +96,7 @@ class IAbstractRequestingStage(
 
     def default_policy(
         self,
-    ) -> ChainingPolicy[TAbstractStageMetadata[Any, Any]] | None:
+    ) -> ChainingPolicy | None:
         """
         Provide the default chaining policy for this stage.
 
