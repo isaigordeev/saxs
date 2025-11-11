@@ -51,6 +51,9 @@ class EvalMetadata(FlowMetadata):
     It is a child of Flow meta because we pass from flow metadata.
     """
 
+    Keys = FlowMetadata.Keys
+    Dict = FlowMetadata.Dict
+
 
 @dataclass(frozen=False)
 class StageRequest(AbstractStageRequest):

@@ -25,6 +25,7 @@ from saxs.saxs.core.types.flow_metadata import (
     FlowMetadataKeys,
 )
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
+from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
 from saxs.saxs.core.types.scheduler_metadata import SchedulerMetadata
 from saxs.saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_FIND_META,
@@ -46,7 +47,12 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         _sample: SAXSSample,
         _flow_metadata: FlowMetadata,
     ) -> FlowMetadata:
-        _flow_metadata[FlowMetadataKeys.UNPROCESSED] = _sample
+        """Pass metadata from sample to flow metadata."""
+        _flow_metadata[FlowMetadataKeys.UNPROCESSED] = _sample.get_metadata()[
+            FlowMetadataKeys.UNPROCESSED
+        ]
+
+        return _flow_metadata
 
     def _process(
         self,
@@ -66,6 +72,8 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             f"Intensity range:       [{min(intensity)}, {max(intensity)}]\n"
             f"===========================",
         )
+
+        sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, peak_indices)
 
         return sample
 

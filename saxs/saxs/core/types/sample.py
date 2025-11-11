@@ -21,10 +21,10 @@ from numpy.typing import NDArray
 from saxs.saxs.core.types.abstract_data import TBaseDataType
 from saxs.saxs.core.types.sample_objects import (
     ESampleMetadataKeys,
-    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
+    SampleMetadata,
 )
 
 

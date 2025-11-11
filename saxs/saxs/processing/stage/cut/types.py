@@ -27,7 +27,8 @@ from saxs.saxs.core.types.metadata import (
     MetadataSchemaDict,
 )
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
-from saxs.saxs.processing.stage.cut.cut import DEFAULT_CUT_POINT
+
+DEFAULT_CUT_POINT = 100
 
 
 class ECutStageMetadataKeys(EMetadataSchemaKeys):

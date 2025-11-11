@@ -5,30 +5,23 @@ Implements a single-stage chaining policy for SAXS pipelines.
 
 This policy allows a stage to request the injection of at most one
 next stage based on a condition. If the condition passes, the
-requested stage is instantiated and wrapped in a StageApprovalRequest
-with associated scheduler metadata.
-"""  # noqa: W505
-
-from typing import TYPE_CHECKING
+requested stage is instantiated and wrapped in a
+StageApprovalRequest with associated scheduler metadata.
+"""
 
 from saxs.logging.logger import logger
+from saxs.saxs.core.pipeline.condition.abstract_condition import (
+    StageCondition,
+)
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import (
     StageRequest,
-    TEvalMetadataDict,
 )
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
-
-if TYPE_CHECKING:
-    from saxs.saxs.core.pipeline.condition.abstract_condition import (
-        StageCondition,
-    )
-
-from saxs.saxs.core.stage.abstract_stage import TStageMetadata
 
 #  probably there we need to unwire
 #  TStageMetadata from TStageMetadata
@@ -85,7 +78,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
 
     def request(
         self,
-        request_metadata: StageRequest[TEvalMetadataDict],
+        request_metadata: StageRequest,
     ) -> list[StageApprovalRequest]:
         """
         Evaluate the condition and return a stage request.

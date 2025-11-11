@@ -23,11 +23,11 @@ from saxs.saxs.core.types.sample import (
     SAXSSample,
 )
 from saxs.saxs.processing.stage.cut.types import (
+    DEFAULT_CUT_POINT,
     CutStageMetadata,
     ECutStageMetadataKeys,
 )
 
-DEFAULT_CUT_POINT = 100
 DEFAULT_CUT_META = CutStageMetadata(
     {
         ECutStageMetadataKeys.CUT_POINT.value: DEFAULT_CUT_POINT,

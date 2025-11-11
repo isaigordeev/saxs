@@ -30,6 +30,7 @@ from saxs.saxs.core.types.abstract_data import TBaseDataType
 from saxs.saxs.core.types.flow_metadata import FlowMetadataKeys
 from saxs.saxs.core.types.metadata import (
     EMetadataSchemaKeys,
+    MetadataSchemaDict,
     TAbstractMetadata,
 )
 
@@ -74,11 +75,16 @@ class IntensityError(TBaseDataType[NDArray[np.float64]]):
 class ESampleMetadataKeys(EMetadataSchemaKeys):
     """Sample metadata keys."""
 
-    PROCESSED = FlowMetadataKeys.PROCESSED.value
+    UNPROCESSED = FlowMetadataKeys.UNPROCESSED.value
 
 
 @dataclass(frozen=False)
-class SampleMetadata(TAbstractMetadata[Any, ESampleMetadataKeys]):
+class SampleMetadata(
+    TAbstractMetadata[
+        MetadataSchemaDict,
+        ESampleMetadataKeys,
+    ],
+):
     """
     Represents metadata associated with a SAXS sample.
 
@@ -88,3 +94,6 @@ class SampleMetadata(TAbstractMetadata[Any, ESampleMetadataKeys]):
         entries such as sample name, concentration, temperature, or
         comments.
     """
+
+    Keys = ESampleMetadataKeys
+    Dict = MetadataSchemaDict
