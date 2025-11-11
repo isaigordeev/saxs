@@ -89,7 +89,7 @@ class CutStage(IAbstractStage[CutStageMetadata]):
         logger.info(
             f"\n=== CutStage Processing ===\n"
             f"Cut point:        {cut_point}\n"
-            f"Input points:     {len(sample[ESAXSSampleKeys.Q_VALUES])}\n"
+            # f"Input points:     {len(sample[ESAXSSampleKeys.Q_VALUES])}\n"
             f"Output points:    {len(q_values_cut)}\n"
             f"Q range (after):  [{min(q_values_cut)}, {max(q_values_cut)}]\n"
             f"Intensity range:  [{min(intensity_cut)}, {max(intensity_cut)}]\n"

@@ -1,6 +1,6 @@
 # Created by Isai Gordeev on 20/09/2025.
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -38,14 +38,14 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         intensity = sample[ESAXSSampleKeys.INTENSITY]
 
         # Find peaks
-        peak_indices, peak_properties = self.find_peaks(intensity)
+        peak_indices, _ = self.find_peaks(intensity)
 
         # Log peaks info in readable format
         logger.info(
             f"\n=== FindAllPeaksStage ===\n"
             f"Number of points:      {len(intensity)}\n"
-            f"Number of peaks found: {len(peaks_indices)}\n"
-            f"Peaks indices:         {list(peaks_indices)}\n"
+            f"Number of peaks found: {len(peak_indices)}\n"
+            f"Peaks indices:         {list(peak_indices)}\n"
             f"Intensity range:       [{min(intensity)}, {max(intensity)}]\n"
             f"===========================",
         )
@@ -55,7 +55,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     def create_request(self) -> StageRequest:
         _current_peak_index = (
             self.metadata
-            if len(self.metadata.unwrap().get("peaks")) > 0
+            if len(self.metadata[]) > 0
             else -1
         )
 
@@ -69,12 +69,16 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         scheduler_metadata = AbstractSchedulerMetadata()
         return StageRequest(eval_metadata, pass_metadata, scheduler_metadata)
 
-    def find_peaks(self, intensity: NDArray[np.float64]):
-        peaks_indices, peaks_properties = find_peaks(
+    def find_peaks(
+        self,
+        intensity: NDArray[np.float64],
+    ) -> tuple[list[int], dict[str, Any]]:
+        """Find peak func."""
+        peaks_indices, peaks_properties = find_peaks(  # type: ignore  # noqa: PGH003
             x=intensity,
             height=self.metadata[EPeakFindMetadataKeys.HEIGHT],
             prominence=self.metadata[EPeakFindMetadataKeys.PROMINENCE],
             distance=self.metadata[EPeakFindMetadataKeys.DISTANCE],
         )
 
-        return peaks_indices, peaks_properties
+        return peaks_indices, peaks_properties  # pyright: ignore[reportUnknownVariableType]

@@ -27,6 +27,7 @@ from saxs.saxs.core.types.metadata import (
     MetadataSchemaDict,
 )
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.saxs.processing.stage.cut.cut import DEFAULT_CUT_POINT
 
 
 class ECutStageMetadataKeys(EMetadataSchemaKeys):
@@ -86,4 +87,7 @@ class CutStageMetadata(
             The cut point index from metadata, defaulting to 0
             if not set.
         """
-        return self.unwrap().get(ECutStageMetadataKeys.CUT_POINT.value, 0)
+        return self.unwrap().get(
+            ECutStageMetadataKeys.CUT_POINT.value,
+            DEFAULT_CUT_POINT,
+        )

@@ -143,7 +143,7 @@ class DefaultKernel(BaseKernel):
                 id_="process_fit_peak",
                 stage_cls=ProcessPeakStage,
                 policy_id="fit_policy",
-                metadata=DEFAULT_PEAK_PROCESS_META,
+                metadata=DEFAULT_PEAK_FIND_META,
             ),
         )
 

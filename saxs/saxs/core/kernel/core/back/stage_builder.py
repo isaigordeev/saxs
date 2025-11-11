@@ -19,12 +19,12 @@ class StageBuilder:
         stage_instances: Buffer[IAbstractStage] = Buffer[IAbstractStage]()
 
         for stage_spec in stage_specs.values():
-            kwargs = stage_spec.kwargs or {}
+            metadata = stage_spec.metadata
 
             if issubclass(stage_spec.stage_cls, IAbstractRequestingStage):
-                instance = stage_spec.stage_cls(metadata=kwargs, policy=None)
+                instance = stage_spec.stage_cls(metadata=metadata, policy=None)
             else:
-                instance = stage_spec.stage_cls(**kwargs)
+                instance = stage_spec.stage_cls(metadata=metadata)
 
             stage_instances.register(stage_spec.id_, instance)
 
