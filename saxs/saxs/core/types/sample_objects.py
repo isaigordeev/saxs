@@ -76,6 +76,7 @@ class ESampleMetadataKeys(EMetadataSchemaKeys):
     """Sample metadata keys."""
 
     UNPROCESSED = FlowMetadataKeys.UNPROCESSED.value
+    CURRENT = "current_peak"
 
 
 @dataclass(frozen=False)

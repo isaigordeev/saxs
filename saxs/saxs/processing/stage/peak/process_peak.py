@@ -3,12 +3,10 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.pipeline.condition.constant_true_condition import (
-    TrueCondition,
-)
 from saxs.saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
@@ -17,42 +15,67 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.core.types.sample import SAXSSample
+from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
 from saxs.saxs.core.types.scheduler_metadata import SchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.functions import gauss, parabole
-from saxs.saxs.processing.stage.peak.types import ProcessPeakStageMetadata
-
-if TYPE_CHECKING:
-    from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-        ChainingPolicy,
-    )
+from saxs.saxs.processing.stage.peak.types import (
+    DEFAULT_PEAK_PROCESS_META,
+    ProcessPeakStageMetadata,
+)
 
 
 class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):  # noqa: F821
     fit_range = 2
 
-    def _process(self, sample_data: SAXSSample):
-        current_peak_index = self.metadata.unwrap().get("current_peak_index")
+    def __init__(
+        self,
+        policy: SingleStageChainingPolicy,
+        metadata: ProcessPeakStageMetadata = DEFAULT_PEAK_PROCESS_META,
+    ):
+        super().__init__(metadata, policy)
 
-        delta_q = sample_data.metadata.unwrap().get("delta_q")
-        max_intensity = sample_data.metadata.unwrap().get("max_intensity")
+    def handle_flow_metadata(
+        self,
+        _sample: SAXSSample,
+        _flow_metadata: FlowMetadata,
+    ) -> FlowMetadata:
+        """Pass metadata from sample to flow metadata."""
+        _flow_metadata[FlowMetadataKeys.UNPROCESSED] = _sample.get_metadata()[
+            FlowMetadataKeys.UNPROCESSED
+        ]
 
-        current_q_state = sample_data.get_q_values_array()
-        current_intensity_state = sample_data.get_intensity_array()
-        current_intensity_errors_state = (
-            sample_data.get_intensity_error_array()
-        )
+        return _flow_metadata
 
-        def current_peak_parabole(x, sigma, ampl):
+    def _process(self, sample: SAXSSample):
+        q_state = sample[SAXSSample.Keys.Q_VALUES]
+        _current_peak_index: int = sample.get_metadata()[
+            ESampleMetadataKeys.CURRENT
+        ]
+
+        def _current_peak_parabole(
+            x: NDArray[np.float64],
+            sigma: float,
+            ampl: float,
+        ):
             return parabole(
                 x,
-                current_q_state[current_peak_index],
+                mu=q_state[_current_peak_index],
+                sigma=sigma,
+                ampl=ampl,
+            )
+
+        def _current_peak_gauss(
+            x: NDArray[np.float64],
+            sigma: float,
+            ampl: float,
+        ):
+            return gauss(
+                x,
+                q_state[_current_peak_index],
                 sigma,
                 ampl,
             )
-
-        def current_peak_gauss(x, sigma, ampl):
-            return gauss(x, current_q_state[current_peak_index], sigma, ampl)
 
         # --- First parabola fit ---
         left_range = max(current_peak_index - self.fit_range, 0)
@@ -74,7 +97,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):  # n
         logger.info(f"print left r {left_range}  {right_range}")
 
         popt, pcov = curve_fit(
-            f=current_peak_parabole,
+            f=_current_peak_parabole,
             xdata=current_q_state[left_range:right_range],
             ydata=current_intensity_state[left_range:right_range],
             bounds=([delta_q**2, 1], [0.05, 4 * max_intensity]),
@@ -98,7 +121,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):  # n
         right_range = current_peak_index + gauss_range
 
         popt, _pcov = curve_fit(
-            f=current_peak_gauss,
+            f=_current_peak_gauss,
             xdata=current_q_state[left_range:right_range],
             ydata=current_intensity_state[left_range:right_range],
             bounds=([delta_q**2, 1], [0.05, 4 * max_intensity]),
@@ -113,7 +136,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):  # n
             "=========================================",
         )
 
-        _current_gauss_approximation = current_peak_gauss(
+        _current_gauss_approximation = _current_peak_gauss(
             current_q_state,
             popt[0],
             popt[1],
@@ -125,7 +148,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):  # n
 
         new_intensity_state = np.maximum(new_intensity_state, 0)
 
-        new_sample_data = sample_data.set_intensity(new_intensity_state)
+        new_sample_data = sample.set_intensity(new_intensity_state)
 
         logger.info(
             "\n+++ ProcessFitPeakStage Completed +++\n"

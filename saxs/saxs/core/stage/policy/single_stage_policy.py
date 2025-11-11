@@ -9,6 +9,8 @@ requested stage is instantiated and wrapped in a
 StageApprovalRequest with associated scheduler metadata.
 """
 
+from typing import Any
+
 from saxs.logging.logger import logger
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
@@ -27,7 +29,7 @@ from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 #  TStageMetadata from TStageMetadata
 
 
-class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
+class SingleStageChainingPolicy(ChainingPolicy):
     """
     Single-stage chaining policy.
 
@@ -48,7 +50,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
     def __new__(
         cls,
         condition: StageCondition,  # noqa: ARG004
-        pending_stages: list[IAbstractStage[TStageMetadata]],
+        pending_stages: list[IAbstractStage[Any]],
     ):
         """
         Allocate a new instance and validate input.
@@ -105,18 +107,19 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
         _eval_metadata = request_metadata.condition_eval_metadata
 
         if self.condition.evaluate(eval_metadata=_eval_metadata):
-            _pass_metadata = request_metadata.flow_metadata
+            _flow_metadata = request_metadata.flow_metadata
             _approval_metadata = TAbstractStageMetadata(value={})
             _scheduler_metadata = request_metadata.scheduler_metadata
 
-            _pending_stage: IAbstractStage[TStageMetadata] = (
-                self.pending_stages[-1]
-            )
+            _pending_stage: IAbstractStage[Any] = self.pending_stages[
+                0
+            ]  # there is only one stage
 
             logger.info(
                 f"\n{'=' * 30}\n[{self.__class__.__name__}] "
                 "Condition passed -> Injecting stage "
-                f"'{_pending_stage.__class__.__name__}' with metadata:",
+                f"'{_pending_stage.__class__.__name__}' with metadata:"
+                f"{_flow_metadata}",
             )
 
             return [

@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
-from saxs.saxs.core.types.metadata import TAbstractMetadata
+from saxs.saxs.core.types.metadata import MetadataSchemaDict, TAbstractMetadata
+from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
@@ -24,6 +25,12 @@ TApprovalStageMetadata = TypeVar(
         Any,  # keys
     ],
 )
+
+
+class ApprovalMetadata(
+    TAbstractMetadata[MetadataSchemaDict, ESampleMetadataKeys],
+):
+    """Approval meta."""
 
 
 @dataclass(frozen=True)
@@ -50,7 +57,4 @@ class StageApprovalRequest(
     """
 
     stage: IAbstractStage[TAbstractStageMetadata[Any, Any]]
-    approval_metadata: TAbstractStageMetadata[
-        Any,
-        Any,
-    ]  # approval must have different type
+    approval_metadata: ApprovalMetadata

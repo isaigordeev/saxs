@@ -69,7 +69,7 @@ DEFAULT_PEAK_FIND_META = PeakFindStageMetadata(DEFAULT_PEAK_FIND_DICT)
 class EPeakProcessMetadataKeys(EMetadataSchemaKeys):
     """Enum of keys used in PeakFindStageMetadataDict."""
 
-    CURRENT_PEAK = "current_peak"
+    FIT_RANGE = "fit_range"
 
 
 class PeakProcessStageMetadataDict(MetadataSchemaDict, total=False):
@@ -83,7 +83,7 @@ class PeakProcessStageMetadataDict(MetadataSchemaDict, total=False):
         in the SAXS data array.
     """
 
-    current_peak: int
+    fit_range: int
 
 
 class ProcessPeakStageMetadata(
@@ -108,3 +108,12 @@ class ProcessPeakStageMetadata(
 
     Keys = EPeakProcessMetadataKeys
     Dict = PeakProcessStageMetadataDict
+
+
+DEFAULT_PEAK_PROCESS_DICT = PeakProcessStageMetadataDict(
+    {
+        EPeakProcessMetadataKeys.FIT_RANGE.value: 2,
+    },
+)
+
+DEFAULT_PEAK_PROCESS_META = ProcessPeakStageMetadata(DEFAULT_PEAK_PROCESS_DICT)

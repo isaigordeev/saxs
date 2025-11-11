@@ -116,6 +116,8 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
     - Metadata must be accessed via the 'metadata' key.
     """
 
+    Keys: type[ESAXSSampleKeys] = ESAXSSampleKeys
+
     def __getitem__(
         self,
         key: ESAXSSampleKeys,
@@ -126,6 +128,7 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
             key is ESAXSSampleKeys.Q_VALUES
             or key is ESAXSSampleKeys.INTENSITY
             or key is ESAXSSampleKeys.INTENSITY_ERROR
+            # or key is ESAXSSampleKeys.METADATA
         ):
             return _sample[key.value].unwrap()
 
