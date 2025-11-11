@@ -3,7 +3,7 @@
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
     SampleCondition,
 )
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.sample_objects import SampleMetadata
 
 
 class MetadataCondition(SampleCondition):
@@ -11,5 +11,5 @@ class MetadataCondition(SampleCondition):
         self.key = key
         self.expected_value = expected_value
 
-    def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+    def evaluate(self, metadata: SampleMetadata) -> bool:
         return metadata.unwrap().get(self.key) == self.expected_value

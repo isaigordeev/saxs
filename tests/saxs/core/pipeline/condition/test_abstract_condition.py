@@ -6,7 +6,7 @@ import pytest
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
     SampleCondition,
 )
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.sample_objects import SampleMetadata
 
 
 class TestSampleCondition:
@@ -29,17 +29,17 @@ class TestSampleCondition:
             def __init__(self, threshold: float):
                 self.threshold = threshold
 
-            def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+            def evaluate(self, metadata: SampleMetadata) -> bool:
                 return metadata.unwrap().get("value", 0) > self.threshold
 
         condition = ConcreteCondition(threshold=10.0)
 
         # Test with sample that passes condition
-        sample_pass = AbstractSampleMetadata({"value": 15.0})
+        sample_pass = SampleMetadata({"value": 15.0})
         assert condition.evaluate(sample_pass) is True
 
         # Test with sample that fails condition
-        sample_fail = AbstractSampleMetadata({"value": 5.0})
+        sample_fail = SampleMetadata({"value": 5.0})
         assert condition.evaluate(sample_fail) is False
 
     def test_concrete_implementation_without_evaluate_fails(self) -> None:
@@ -68,7 +68,7 @@ class TestSampleCondition:
                 self.max_value = max_value
                 self.required_keys = required_keys
 
-            def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+            def evaluate(self, metadata: SampleMetadata) -> bool:
                 metadata_raw = metadata.unwrap()
 
                 # Check if all required keys are present
@@ -86,17 +86,17 @@ class TestSampleCondition:
         )
 
         # Test with valid sample
-        valid_sample = AbstractSampleMetadata(
+        valid_sample = SampleMetadata(
             {"value": 50.0, "type": "protein", "quality": "high"},
         )
         assert condition.evaluate(valid_sample) is True
 
         # Test with sample missing required keys
-        invalid_sample1 = AbstractSampleMetadata({"value": 50.0})
+        invalid_sample1 = SampleMetadata({"value": 50.0})
         assert condition.evaluate(invalid_sample1) is False
 
         # Test with sample outside value range
-        invalid_sample2 = AbstractSampleMetadata(
+        invalid_sample2 = SampleMetadata(
             {"value": 150.0, "type": "protein", "quality": "high"},
         )
         assert condition.evaluate(invalid_sample2) is False
@@ -105,11 +105,11 @@ class TestSampleCondition:
         """Test condition evaluation with empty metadata."""
 
         class SimpleCondition(SampleCondition):
-            def evaluate(self, metadata: AbstractSampleMetadata) -> bool:
+            def evaluate(self, metadata: SampleMetadata) -> bool:
                 return "test_key" in metadata.unwrap()
 
         condition = SimpleCondition()
-        empty_sample = AbstractSampleMetadata()
+        empty_sample = SampleMetadata()
 
         assert condition.evaluate(empty_sample) is False
 
@@ -122,7 +122,7 @@ class TestSampleCondition:
 
             def evaluate(
                 self,
-                sample_metadata: AbstractSampleMetadata,
+                sample_metadata: SampleMetadata,
             ) -> bool:
                 return (
                     sample_metadata.unwrap().get("base_value", 0)
@@ -138,7 +138,7 @@ class TestSampleCondition:
                 super().__init__(base_threshold)
                 self.extended_threshold = extended_threshold
 
-            def evaluate(self, sample: AbstractSampleMetadata) -> bool:
+            def evaluate(self, sample: SampleMetadata) -> bool:
                 # Check base condition
                 base_result = super().evaluate(sample)
                 if not base_result:
@@ -156,19 +156,19 @@ class TestSampleCondition:
         )
 
         # Test with sample that passes both conditions
-        valid_sample = AbstractSampleMetadata(
+        valid_sample = SampleMetadata(
             {"base_value": 15.0, "extended_value": 25.0},
         )
         assert condition.evaluate(valid_sample) is True
 
         # Test with sample that fails base condition
-        invalid_sample1 = AbstractSampleMetadata(
+        invalid_sample1 = SampleMetadata(
             {"base_value": 5.0, "extended_value": 25.0},
         )
         assert condition.evaluate(invalid_sample1) is False
 
         # Test with sample that fails extended condition
-        invalid_sample2 = AbstractSampleMetadata(
+        invalid_sample2 = SampleMetadata(
             {"base_value": 15.0, "extended_value": 10.0},
         )
         assert condition.evaluate(invalid_sample2) is False

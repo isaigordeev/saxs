@@ -20,7 +20,7 @@ from saxs.saxs.core.pipeline.scheduler.scheduler import (
 )
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
-    AbstractSampleMetadata,
+    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
@@ -37,7 +37,7 @@ def saxs_sample():
     q = QValues(np.array([0.1, 0.2, 0.3]))
     i = Intensity(np.array([1.0, 2.0, 3.0]))
     err = IntensityError(np.array([0.01, 0.02, 0.03]))
-    meta = AbstractSampleMetadata({"source": "test"})
+    meta = SampleMetadata({"source": "test"})
     return SAXSSample(
         q_values=q,
         intensity=i,

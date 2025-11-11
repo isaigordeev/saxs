@@ -11,7 +11,7 @@ from saxs.saxs.core.pipeline.condition.abstract_condition import (
 )
 from saxs.saxs.core.stage.abstract_cond_stage import AbstractConditionalStage
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.sample_objects import SampleMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
@@ -28,7 +28,7 @@ def saxs_sample():
     q = QValues(np.array([0.1, 0.2, 0.3]))
     i = Intensity(np.array([1.0, 2.0, 3.0]))
     err = IntensityError(np.array([0.01, 0.02, 0.03]))
-    meta = AbstractSampleMetadata({"source": "test"})
+    meta = SampleMetadata({"source": "test"})
     return SAXSSample(
         q_values=q,
         intensity=i,

@@ -12,7 +12,7 @@ from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
-    AbstractSampleMetadata,
+    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
@@ -65,7 +65,7 @@ def intensity_error(sample_intensity_error):
 @pytest.fixture
 def metadata(sample_metadata):
     """Create AbstractSampleMetadata object for testing."""
-    return AbstractSampleMetadata(sample_metadata)
+    return SampleMetadata(sample_metadata)
 
 
 @pytest.fixture
@@ -118,13 +118,13 @@ def stage_request(mock_stage, stage_metadata):
 @pytest.fixture
 def empty_metadata():
     """Create empty metadata for testing."""
-    return AbstractSampleMetadata({})
+    return SampleMetadata({})
 
 
 @pytest.fixture
 def complex_metadata():
     """Create complex metadata for testing."""
-    return AbstractSampleMetadata(
+    return SampleMetadata(
         {
             "temperature": 25.0,
             "pressure": 1.0,

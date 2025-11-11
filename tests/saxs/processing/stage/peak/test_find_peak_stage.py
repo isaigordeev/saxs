@@ -15,7 +15,7 @@ from saxs.saxs.core.pipeline.condition.chaining_condition import (
 )
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
-    AbstractSampleMetadata,
+    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
@@ -41,7 +41,7 @@ def sample_data():
         q_values=QValues(q_values),
         intensity=Intensity(intensity),
         intensity_error=IntensityError(intensity_error),
-        metadata=AbstractSampleMetadata({"source": "test"}),
+        metadata=SampleMetadata({"source": "test"}),
     )
 
 

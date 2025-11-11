@@ -38,7 +38,7 @@ def read_data(data_dir_file):
 def real_sample():
     from saxs.saxs.core.types.sample import SAXSSample
     from saxs.saxs.core.types.sample_objects import (
-        AbstractSampleMetadata,
+        SampleMetadata,
         Intensity,
         IntensityError,
         QValues,
@@ -52,11 +52,14 @@ def real_sample():
     i = Intensity(i)
     err = IntensityError(err)
 
-    meta = AbstractSampleMetadata(
+    meta = SampleMetadata(
         {"delta_q": delta_q, "max_intensity": max(i.unwrap())},
     )
     return SAXSSample(
-        q_values=q, intensity=i, intensity_error=err, metadata=meta,
+        q_values=q,
+        intensity=i,
+        intensity_error=err,
+        metadata=meta,
     )
 
 
@@ -64,7 +67,7 @@ def real_sample():
 def init_sample():
     from saxs.saxs.core.types.sample import SAXSSample
     from saxs.saxs.core.types.sample_objects import (
-        AbstractSampleMetadata,
+        SampleMetadata,
         Intensity,
         IntensityError,
         QValues,
@@ -76,14 +79,15 @@ def init_sample():
         [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1],
     )
 
-    meta = AbstractSampleMetadata(
+    meta = SampleMetadata(
         {"delta_q": 0.01, "max_intensity": max(i.unwrap())},
     )
     return SAXSSample(
-        q_values=q, intensity=i, intensity_error=err, metadata=meta,
+        q_values=q,
+        intensity=i,
+        intensity_error=err,
+        metadata=meta,
     )
-
-
 
 
 class TestSimpleKernel:

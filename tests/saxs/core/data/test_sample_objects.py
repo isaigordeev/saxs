@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 from saxs.saxs.core.types.abstract_data import TBaseDataType
 from saxs.saxs.core.types.sample_objects import (
-    AbstractSampleMetadata,
+    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
@@ -178,14 +178,14 @@ class TestAbstractSampleMetadata:
     def test_metadata_creation_with_dict(self) -> None:
         """Test creating AbstractSampleMetadata with dictionary."""
         metadata_dict = {"temperature": 25.0, "pressure": 1.0}
-        metadata = AbstractSampleMetadata(value=metadata_dict)
+        metadata = SampleMetadata(value=metadata_dict)
 
         assert metadata.value == metadata_dict
         assert len(metadata.value) == 2
 
     def test_metadata_creation_empty(self) -> None:
         """Test creating AbstractSampleMetadata with empty dictionary."""
-        metadata = AbstractSampleMetadata()
+        metadata = SampleMetadata()
         assert metadata.value == {}
         assert len(metadata.value) == 0
 
@@ -195,20 +195,20 @@ class TestAbstractSampleMetadata:
             "experiment": {"temperature": 25.0, "pressure": 1.0},
             "sample": {"id": "test_001", "type": "protein"},
         }
-        metadata = AbstractSampleMetadata(value=nested_dict)
+        metadata = SampleMetadata(value=nested_dict)
         assert metadata.value == nested_dict
 
     def test_metadata_unwrap(self) -> None:
         """Test AbstractSampleMetadata unwrap method."""
         metadata_dict = {"key1": "value1", "key2": 42}
-        metadata = AbstractSampleMetadata(value=metadata_dict)
+        metadata = SampleMetadata(value=metadata_dict)
 
         unwrapped = metadata.unwrap()
         assert unwrapped == metadata_dict
 
     def test_metadata_immutable(self) -> None:
         """Test that AbstractSampleMetadata is immutable."""
-        metadata = AbstractSampleMetadata(value={"key": "value"})
+        metadata = SampleMetadata(value={"key": "value"})
 
         with pytest.raises(FrozenInstanceError):
             metadata.value = {"new_key": "new_value"}
@@ -224,10 +224,10 @@ class TestAbstractSampleMetadata:
             "nested_dict": {"inner": "value"},
             "none": None,
         }
-        metadata = AbstractSampleMetadata(value=complex_dict)
+        metadata = SampleMetadata(value=complex_dict)
         assert metadata.value == complex_dict
 
     def test_metadata_inheritance(self) -> None:
         """Test that AbstractSampleMetadata inherits from BaseArrayWrapper."""
-        metadata = AbstractSampleMetadata(value={"key": "value"})
+        metadata = SampleMetadata(value={"key": "value"})
         assert isinstance(metadata, TBaseDataType)

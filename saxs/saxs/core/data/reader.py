@@ -32,7 +32,7 @@ from saxs.saxs.core.types.sample import (
     SAXSSampleDict,
 )
 from saxs.saxs.core.types.sample_objects import (
-    AbstractSampleMetadata,
+    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
@@ -139,7 +139,7 @@ class DataReader:
                 ESAXSSampleKeys.Q_VALUES.value: _q,
                 ESAXSSampleKeys.INTENSITY.value: _i,
                 ESAXSSampleKeys.INTENSITY_ERROR.value: _di,
-                ESAXSSampleKeys.METADATA.value: AbstractSampleMetadata(
+                ESAXSSampleKeys.METADATA.value: SampleMetadata(
                     {},
                 ),  # optional if metadata needed
             },

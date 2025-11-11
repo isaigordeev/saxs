@@ -32,7 +32,7 @@ def saxs_sample():
     """Minimal SAXSSample for testing."""
     from saxs.saxs.core.types.sample import SAXSSample
     from saxs.saxs.core.types.sample_objects import (
-        AbstractSampleMetadata,
+        SampleMetadata,
         Intensity,
         IntensityError,
         QValues,
@@ -41,7 +41,7 @@ def saxs_sample():
     q = QValues([0.1, 0.2, 0.3])
     i = Intensity([1.0, 2.0, 3.0])
     err = IntensityError([0.01, 0.02, 0.03])
-    meta = AbstractSampleMetadata({"source": "test"})
+    meta = SampleMetadata({"source": "test"})
     return SAXSSample(
         q_values=q,
         intensity=i,
@@ -90,7 +90,7 @@ def multi_mock_stages():
 def init_sample():
     from saxs.saxs.core.types.sample import SAXSSample
     from saxs.saxs.core.types.sample_objects import (
-        AbstractSampleMetadata,
+        SampleMetadata,
         Intensity,
         IntensityError,
         QValues,
@@ -102,7 +102,7 @@ def init_sample():
         [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1],
     )
 
-    meta = AbstractSampleMetadata({"source": "test"})
+    meta = SampleMetadata({"source": "test"})
     return SAXSSample(
         q_values=q,
         intensity=i,

@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
 from saxs.saxs.core.stage.request.abst_request import EvalMetadata
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.sample_objects import SampleMetadata
 
 
 class SampleCondition(ABC):
     @abstractmethod
-    def evaluate(self, eval_metadata: AbstractSampleMetadata) -> bool:
+    def evaluate(self, eval_metadata: SampleMetadata) -> bool:
         """Predicat for sample approval.
 
         Return True if the condition passes for

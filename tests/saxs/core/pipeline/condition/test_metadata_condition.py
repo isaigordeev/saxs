@@ -6,7 +6,7 @@ import pytest
 from saxs.saxs.core.pipeline.condition.metadata_condition import (
     MetadataCondition,
 )
-from saxs.saxs.core.types.sample_objects import AbstractSampleMetadata
+from saxs.saxs.core.types.sample_objects import SampleMetadata
 
 
 class TestMetadataCondition:
@@ -24,11 +24,11 @@ class TestMetadataCondition:
         condition = MetadataCondition(key="temperature", expected_value=25.0)
 
         # Test with exact match
-        sample_match = AbstractSampleMetadata({"temperature": 25.0})
+        sample_match = SampleMetadata({"temperature": 25.0})
         assert condition.evaluate(sample_match) is True
 
         # Test with different value
-        sample_no_match = AbstractSampleMetadata({"temperature": 30.0})
+        sample_no_match = SampleMetadata({"temperature": 30.0})
         assert condition.evaluate(sample_no_match) is False
 
     def test_metadata_condition_evaluate_missing_key(self) -> None:
@@ -36,37 +36,37 @@ class TestMetadataCondition:
         condition = MetadataCondition(key="pressure", expected_value=1.0)
 
         # Test with missing key
-        sample_no_key = AbstractSampleMetadata({"temperature": 25.0})
+        sample_no_key = SampleMetadata({"temperature": 25.0})
         assert condition.evaluate(sample_no_key) is False
 
         # Test with empty metadata
-        sample_empty = AbstractSampleMetadata()
+        sample_empty = SampleMetadata()
         assert condition.evaluate(sample_empty) is False
 
     def test_metadata_condition_evaluate_with_different_types(self) -> None:
         """Test evaluate method with different value types."""
         # Test with string values
         condition_str = MetadataCondition(key="type", expected_value="protein")
-        sample_str = AbstractSampleMetadata({"type": "protein"})
+        sample_str = SampleMetadata({"type": "protein"})
         assert condition_str.evaluate(sample_str) is True
 
-        sample_str_different = AbstractSampleMetadata({"type": "dna"})
+        sample_str_different = SampleMetadata({"type": "dna"})
         assert condition_str.evaluate(sample_str_different) is False
 
         # Test with integer values
         condition_int = MetadataCondition(key="count", expected_value=42)
-        sample_int = AbstractSampleMetadata({"count": 42})
+        sample_int = SampleMetadata({"count": 42})
         assert condition_int.evaluate(sample_int) is True
 
-        sample_int_different = AbstractSampleMetadata({"count": 100})
+        sample_int_different = SampleMetadata({"count": 100})
         assert condition_int.evaluate(sample_int_different) is False
 
         # Test with boolean values
         condition_bool = MetadataCondition(key="enabled", expected_value=True)
-        sample_bool = AbstractSampleMetadata({"enabled": True})
+        sample_bool = SampleMetadata({"enabled": True})
         assert condition_bool.evaluate(sample_bool) is True
 
-        sample_bool_different = AbstractSampleMetadata({"enabled": False})
+        sample_bool_different = SampleMetadata({"enabled": False})
         assert condition_bool.evaluate(sample_bool_different) is False
 
     def test_metadata_condition_evaluate_with_none_values(self) -> None:
@@ -77,15 +77,15 @@ class TestMetadataCondition:
         )
 
         # Test with None value
-        sample_none = AbstractSampleMetadata({"optional_field": None})
+        sample_none = SampleMetadata({"optional_field": None})
         assert condition.evaluate(sample_none) is True
 
         # Test with missing key (should return None from get)
-        sample_missing = AbstractSampleMetadata({"other_field": "value"})
+        sample_missing = SampleMetadata({"other_field": "value"})
         assert condition.evaluate(sample_missing) is True  # None == None
 
         # Test with non-None value
-        sample_value = AbstractSampleMetadata({"optional_field": "some_value"})
+        sample_value = SampleMetadata({"optional_field": "some_value"})
         assert condition.evaluate(sample_value) is False
 
     def test_metadata_condition_evaluate_with_complex_values(self) -> None:
@@ -96,10 +96,10 @@ class TestMetadataCondition:
             key="values",
             expected_value=expected_list,
         )
-        sample_list = AbstractSampleMetadata({"values": [1, 2, 3]})
+        sample_list = SampleMetadata({"values": [1, 2, 3]})
         assert condition_list.evaluate(sample_list) is True
 
-        sample_list_different = AbstractSampleMetadata({"values": [4, 5, 6]})
+        sample_list_different = SampleMetadata({"values": [4, 5, 6]})
         assert condition_list.evaluate(sample_list_different) is False
 
         # Test with dictionary values
@@ -108,12 +108,12 @@ class TestMetadataCondition:
             key="config",
             expected_value=expected_dict,
         )
-        sample_dict = AbstractSampleMetadata(
+        sample_dict = SampleMetadata(
             {"config": {"inner": "value", "number": 42}},
         )
         assert condition_dict.evaluate(sample_dict) is True
 
-        sample_dict_different = AbstractSampleMetadata(
+        sample_dict_different = SampleMetadata(
             {"config": {"different": "value"}},
         )
         assert condition_dict.evaluate(sample_dict_different) is False
@@ -127,7 +127,7 @@ class TestMetadataCondition:
 
         # Note: This test assumes the metadata structure supports nested access
         # If the actual implementation doesn't support this, this test should be adjusted
-        sample_nested = AbstractSampleMetadata(
+        sample_nested = SampleMetadata(
             {"experiment": {"temperature": 25.0, "pressure": 1.0}},
         )
 
@@ -147,11 +147,11 @@ class TestMetadataCondition:
         condition = MetadataCondition(key="type", expected_value="Protein")
 
         # Test with exact case match
-        sample_exact = AbstractSampleMetadata({"type": "Protein"})
+        sample_exact = SampleMetadata({"type": "Protein"})
         assert condition.evaluate(sample_exact) is True
 
         # Test with different case
-        sample_different_case = AbstractSampleMetadata({"type": "protein"})
+        sample_different_case = SampleMetadata({"type": "protein"})
         assert condition.evaluate(sample_different_case) is False
 
     def test_metadata_condition_evaluate_float_precision(self) -> None:
@@ -159,11 +159,11 @@ class TestMetadataCondition:
         condition = MetadataCondition(key="value", expected_value=0.1)
 
         # Test with exact match
-        sample_exact = AbstractSampleMetadata({"value": 0.1})
+        sample_exact = SampleMetadata({"value": 0.1})
         assert condition.evaluate(sample_exact) is True
 
         # Test with very close but not exact match
-        sample_close = AbstractSampleMetadata({"value": 0.1000000001})
+        sample_close = SampleMetadata({"value": 0.1000000001})
         # This might fail due to floating point precision
         # The behavior depends on the implementation
         result = condition.evaluate(sample_close)
@@ -185,7 +185,7 @@ class TestMetadataCondition:
         )
 
         # Test with sample that matches all conditions
-        sample_all_match = AbstractSampleMetadata(
+        sample_all_match = SampleMetadata(
             {"temperature": 25.0, "pressure": 1.0, "type": "protein"},
         )
         assert condition_temp.evaluate(sample_all_match) is True
@@ -193,7 +193,7 @@ class TestMetadataCondition:
         assert condition_type.evaluate(sample_all_match) is True
 
         # Test with sample that matches some conditions
-        sample_partial_match = AbstractSampleMetadata(
+        sample_partial_match = SampleMetadata(
             {
                 "temperature": 25.0,
                 "pressure": 2.0,  # Different value
