@@ -37,6 +37,7 @@ milestones
 - o policy fallback saxs/saxs/core/stage/abstract_cond_stage.py:84
 - o policy for peak choice in peak find
 - o scheduler requesting and not stage requesting 
+- o recheck immutability of all data structures
 
 
 
