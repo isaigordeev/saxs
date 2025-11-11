@@ -9,6 +9,7 @@ from saxs.saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
 )
 from saxs.saxs.core.stage.request.abst_request import EvalMetadata
+from saxs.saxs.core.types.scheduler_metadata import ESchedulerRuntime
 
 
 class ChainingPeakCondition(StageCondition):
@@ -38,4 +39,7 @@ class ChainingPeakCondition(StageCondition):
             `True` if there are unprocessed peaks remaining,
             otherwise `False`.
         """
-        return len(eval_metadata[EvalMetadata.Keys.UNPROCESSED]) > 0
+        return (
+            eval_metadata[EvalMetadata.Keys.CURRENT]
+            != ESchedulerRuntime.UNDEFINED_PEAK.value
+        )

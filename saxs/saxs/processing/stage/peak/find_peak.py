@@ -26,7 +26,10 @@ from saxs.saxs.core.types.flow_metadata import (
 )
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
-from saxs.saxs.core.types.scheduler_metadata import SchedulerMetadata
+from saxs.saxs.core.types.scheduler_metadata import (
+    ESchedulerRuntime,
+    SchedulerMetadata,
+)
 from saxs.saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_FIND_META,
     EPeakFindMetadataKeys,
@@ -81,7 +84,11 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         """Create a request for peak processing."""
         _current_peaks = metadata[FlowMetadataKeys.UNPROCESSED]
 
-        _current_peak = _current_peaks[0] if len(_current_peaks) > 0 else -1
+        _current_peak = (
+            _current_peaks[0]
+            if len(_current_peaks) > 0
+            else ESchedulerRuntime.UNDEFINED_PEAK.value
+        )
 
         metadata[FlowMetadata.Keys.CURRENT] = _current_peak
 

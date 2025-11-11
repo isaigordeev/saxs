@@ -20,12 +20,19 @@ interfaces for access and assignment.
 # Created by Isai Gordeev on 22/09/2025.
 
 from dataclasses import field
+from enum import Enum
 
 from saxs.saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
     TAbstractMetadata,
 )
+
+
+class ESchedulerRuntime(Enum):
+    """Enum for runtime constants."""
+
+    UNDEFINED_PEAK = -1
 
 
 class ESchedulerMetadataDictKeys(EMetadataSchemaKeys):
