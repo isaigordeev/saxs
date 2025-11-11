@@ -17,7 +17,9 @@ class SampleCondition(ABC):
 
 class StageCondition(ABC):
     @abstractmethod
-    def evaluate(self, eval_metadata: TAbstractStageMetadata[Any]) -> bool:
+    def evaluate(
+        self, eval_metadata: TAbstractStageMetadata[Any, Any]
+    ) -> bool:
         """Predicat for stage approval.
 
         Return True if the condition passes for the
