@@ -21,8 +21,7 @@ milestones
     process releases gil
 - o request handler for scheduler
 - o allow None for I errors
-- ! lambda for state factory in injections?
-    (or inject from cache)
+- o lambda and inject from cache (keeping all stages stateless)
 - o metaclass for logging
 - o replace python function calculation in processing
     by c++ ones (~.)
@@ -36,8 +35,10 @@ milestones
 - o new Metadata type for eval in the condition
 - o new Metadata type for approval in the scheduler
 - o policy fallback saxs/saxs/core/stage/abstract_cond_stage.py:84
+- o policy for peak choice in peak find
+- o scheduler requesting and not stage requesting 
 
-- ± shoud we encapsulate generic metadata type into a stage?
+
 
 closed
 ======
@@ -51,3 +52,7 @@ Sun 02 Nov 2025 at 16:46:44
 - x parser verifier 
 - x new backend with declaration specs
 - x in-place operations?
+
+Tue 11 Nov 2025 at 19:45:33
+
+- x shoud we encapsulate generic metadata type into a stage?
