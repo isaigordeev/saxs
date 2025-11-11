@@ -9,13 +9,9 @@ from scipy.signal import (  # pyright: ignore[reportMissingTypeStubs]
 )
 
 from saxs.logging.logger import logger
-from saxs.saxs.core.pipeline.condition.chaining_condition import (
-    ChainingPeakCondition,
-)
 from saxs.saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
-from saxs.saxs.core.stage.abstract_stage import TStageMetadata
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
@@ -24,22 +20,17 @@ from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.stage.peak.types import (
+    DEFAULT_PEAK_FIND_META,
     EPeakFindMetadataKeys,
     PeakFindStageMetadata,
-    ProcessPeakStageMetadata,
 )
-
-if TYPE_CHECKING:
-    from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-        ChainingPolicy,
-    )
 
 
 class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     def __init__(
         self,
-        metadata: PeakFindStageMetadata,
         policy: SingleStageChainingPolicy[PeakFindStageMetadata],
+        metadata: PeakFindStageMetadata = DEFAULT_PEAK_FIND_META,
     ):
         super().__init__(metadata, policy)
 
@@ -63,7 +54,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
 
     def create_request(self) -> StageRequest:
         _current_peak_index = (
-            self.metadata.unwrap().get("peaks")[0]
+            self.metadata
             if len(self.metadata.unwrap().get("peaks")) > 0
             else -1
         )

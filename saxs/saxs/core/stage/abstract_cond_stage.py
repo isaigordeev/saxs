@@ -17,21 +17,18 @@ Key Classes:
 """
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import Any, TypedDict
 
+from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    StageApprovalRequest,
+)
 from saxs.saxs.core.stage.abstract_stage import (
     IAbstractStage,
     TStageMetadata,
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import StageRequest
-from saxs.saxs.core.types.metadata import TMetadataSchemaDict
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
-
-if TYPE_CHECKING:
-    from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
-        StageApprovalRequest,
-    )
 
 
 class EvalSchemaDict(TypedDict, total=False):  # must be generic
@@ -57,7 +54,7 @@ class IAbstractRequestingStage(
 
     def __init__(
         self,
-        metadata: TAbstractStageMetadata[TMetadataSchemaDict],
+        metadata: TStageMetadata,
         policy: ChainingPolicy[TStageMetadata] | None,
     ):
         self.policy = policy
@@ -65,7 +62,7 @@ class IAbstractRequestingStage(
 
     def request_stage(
         self,
-    ) -> list["StageApprovalRequest[TAbstractStageMetadata[Any]]"]:
+    ) -> list[StageApprovalRequest[TAbstractStageMetadata[Any, Any]]]:
         """
         Generate stage approval requests according to the policy.
 
@@ -92,8 +89,9 @@ class IAbstractRequestingStage(
 
         return self.policy.request(_request)
 
-    @abstractmethod
-    def default_policy(self) -> "ChainingPolicy[TAbstractStageMetadata[Any]]":
+    def default_policy(
+        self,
+    ) -> ChainingPolicy[TAbstractStageMetadata[Any, Any]] | None:
         """
         Provide the default chaining policy for this stage.
 

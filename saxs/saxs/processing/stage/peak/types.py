@@ -33,7 +33,18 @@ class PeakFindStageMetadataDict(MetadataSchemaDict, total=False):
     distance: int
 
 
-class PeakFindStageMetadata(TAbstractStageMetadata[PeakFindStageMetadataDict]):
+DEFAULT_PEAK_FIND_DICT = PeakFindStageMetadataDict(
+    {
+        EPeakFindMetadataKeys.PROMINENCE.value: 0.3,
+        EPeakFindMetadataKeys.HEIGHT.value: 0.5,
+        EPeakFindMetadataKeys.DISTANCE.value: 10,
+    },
+)
+
+
+class PeakFindStageMetadata(
+    TAbstractStageMetadata[PeakFindStageMetadataDict, EPeakFindMetadataKeys],
+):
     """
     Metadata object representing the PeakFind stage configuration.
 
@@ -44,17 +55,21 @@ class PeakFindStageMetadata(TAbstractStageMetadata[PeakFindStageMetadataDict]):
         `{"cut_point": 0}`.
     """
 
+    Keys = EPeakFindMetadataKeys
+    Dict = PeakFindStageMetadataDict
+
     value: PeakFindStageMetadataDict = field(
-        default_factory=lambda: {
-            EPeakFindMetadataKeys.PROMINENCE.value: 0.3,
-            EPeakFindMetadataKeys.HEIGHT.value: 0.5,
-            EPeakFindMetadataKeys.DISTANCE.value: 10,
-        },
+        default_factory=lambda: DEFAULT_PEAK_FIND_DICT,
     )
+
+
+DEFAULT_PEAK_FIND_META = PeakFindStageMetadata(DEFAULT_PEAK_FIND_DICT)
 
 
 class EPeakProcessMetadataKeys(EMetadataSchemaKeys):
     """Enum of keys used in PeakFindStageMetadataDict."""
+
+    CURRENT_PEAK = "current_peak"
 
 
 class PeakProcessStageMetadataDict(MetadataSchemaDict, total=False):
@@ -68,9 +83,14 @@ class PeakProcessStageMetadataDict(MetadataSchemaDict, total=False):
         in the SAXS data array.
     """
 
+    current_peak: int
+
 
 class ProcessPeakStageMetadata(
-    TAbstractStageMetadata[PeakFindStageMetadataDict],
+    TAbstractStageMetadata[
+        PeakProcessStageMetadataDict,
+        EPeakProcessMetadataKeys,
+    ],
 ):
     """
     Metadata object representing the Cut stage configuration.
@@ -86,8 +106,5 @@ class ProcessPeakStageMetadata(
         `{"cut_point": 0}`.
     """
 
-    value: PeakFindStageMetadataDict = field(
-        default_factory=lambda: {
-            EBackMetadataKeys.PeakFind_COEF.value: 0.3,
-        },
-    )
+    Keys = EPeakProcessMetadataKeys
+    Dict = PeakProcessStageMetadataDict

@@ -31,19 +31,6 @@ if TYPE_CHECKING:
 class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):  # noqa: F821
     fit_range = 2
 
-    @classmethod
-    def default_policy(cls) -> "ChainingPolicy":
-        # This default policy will automatically inject NextStage if
-        #  Condition is true
-        from saxs.saxs.processing.stage.peak.find_peak import (
-            FindPeakStage,
-        )
-
-        return SingleStageChainingPolicy(
-            condition=TrueCondition(),
-            pending_stages=FindPeakStage[FindPeakStageMetadata],
-        )
-
     def _process(self, sample_data: SAXSSample):
         current_peak_index = self.metadata.unwrap().get("current_peak_index")
 

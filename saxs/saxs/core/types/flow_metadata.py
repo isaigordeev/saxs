@@ -1,4 +1,13 @@
-from saxs.saxs.core.types.metadata import TAbstractMetadata, MetadataSchemaDict
+"""flow_metadata.py.
+
+Module for flowing metadata.
+"""
+
+from saxs.saxs.core.types.metadata import (
+    EMetadataSchemaKeys,
+    MetadataSchemaDict,
+    TAbstractMetadata,
+)
 
 
 class FlowMetadataDict(MetadataSchemaDict, total=False):
@@ -14,7 +23,13 @@ class FlowMetadataDict(MetadataSchemaDict, total=False):
     sample_name: str
 
 
-class FlowMetadata(TAbstractMetadata[FlowMetadataDict]):
+class FlowMetadataKeys(EMetadataSchemaKeys):
+    """Flow metadata keys which are passed."""
+
+    P = "dd"
+
+
+class FlowMetadata(TAbstractMetadata[FlowMetadataDict, FlowMetadataKeys]):
     """
     Immutable container for flow experiment metadata.
 
@@ -24,3 +39,6 @@ class FlowMetadata(TAbstractMetadata[FlowMetadataDict]):
         experiment. Uses a TypedDict to provide type hints and
         optional keys.
     """
+
+    Keys: type[FlowMetadataKeys] = FlowMetadataKeys
+    Dict: type[FlowMetadataDict] = FlowMetadataDict

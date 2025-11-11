@@ -29,7 +29,7 @@ from saxs.saxs.core.types.metadata import (
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
-class ECutStageMetadataDictKeys(EMetadataSchemaKeys):
+class ECutStageMetadataKeys(EMetadataSchemaKeys):
     """Enum of keys used in CutStageMetadataDict."""
 
     CUT_POINT = "cut_point"
@@ -49,7 +49,12 @@ class CutStageMetadataDict(MetadataSchemaDict, total=False):
     cut_point: int
 
 
-class CutStageMetadata(TAbstractStageMetadata[CutStageMetadataDict]):
+class CutStageMetadata(
+    TAbstractStageMetadata[
+        CutStageMetadataDict,
+        ECutStageMetadataKeys,
+    ],
+):
     """
     Metadata object representing the Cut stage configuration.
 
@@ -64,8 +69,11 @@ class CutStageMetadata(TAbstractStageMetadata[CutStageMetadataDict]):
         `{"cut_point": 0}`.
     """
 
+    Keys = ECutStageMetadataKeys
+    Dict = CutStageMetadataDict
+
     value: CutStageMetadataDict = field(
-        default_factory=lambda: {ECutStageMetadataDictKeys.CUT_POINT.value: 0},
+        default_factory=lambda: {ECutStageMetadataKeys.CUT_POINT.value: 0},
     )
 
     def get_cut_point(self) -> int:
@@ -78,4 +86,4 @@ class CutStageMetadata(TAbstractStageMetadata[CutStageMetadataDict]):
             The cut point index from metadata, defaulting to 0
             if not set.
         """
-        return self.unwrap().get(ECutStageMetadataDictKeys.CUT_POINT.value, 0)
+        return self.unwrap().get(ECutStageMetadataKeys.CUT_POINT.value, 0)

@@ -22,9 +22,9 @@ interfaces for access and assignment.
 from dataclasses import field
 
 from saxs.saxs.core.types.metadata import (
-    TAbstractMetadata,
     EMetadataSchemaKeys,
     MetadataSchemaDict,
+    TAbstractMetadata,
 )
 
 
@@ -62,7 +62,12 @@ class SchedulerMetadataDict(MetadataSchemaDict, total=False):
     peaks: set[int]
 
 
-class AbstractSchedulerMetadata(TAbstractMetadata[SchedulerMetadataDict]):
+class AbstractSchedulerMetadata(
+    TAbstractMetadata[
+        SchedulerMetadataDict,
+        ESchedulerMetadataDictKeys,
+    ],
+):
     """
     Metadata container for stage scheduler operations.
 
@@ -80,6 +85,9 @@ class AbstractSchedulerMetadata(TAbstractMetadata[SchedulerMetadataDict]):
     describe()
         Return a human-readable string describing the metadata keys.
     """
+
+    Keys = ESchedulerMetadataDictKeys
+    Dict = SchedulerMetadataDict
 
     value: SchedulerMetadataDict = field(
         default_factory=lambda: {

@@ -28,6 +28,13 @@ from saxs.saxs.processing.stage.background.types import (
     EBackMetadataKeys,
 )
 
+DEFAULT_BACKG_META = BackgroundStageMetadata(
+    value={
+        EBackMetadataKeys.BACKGROUND_FUNC.value: background_hyperbole,
+        EBackMetadataKeys.BACKGROUND_COEF.value: BACKGROUND_COEF,
+    },
+)
+
 
 class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
     """
@@ -52,17 +59,11 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
 
     def __init__(
         self,
-        _background_func: Callable[
-            ...,
-            NDArray[np.float64],
-        ] = background_hyperbole,
+        metadata: BackgroundStageMetadata | None,
     ):
-        self.metadata = BackgroundStageMetadata(
-            value={
-                EBackMetadataKeys.BACKGROUND_FUNC.value: _background_func,
-                EBackMetadataKeys.BACKGROUND_COEF.value: BACKGROUND_COEF,
-            },
-        )
+        metadata = metadata or DEFAULT_BACKG_META
+
+        super().__init__(metadata=metadata)
 
     def _process(self, sample: SAXSSample) -> SAXSSample:
         """

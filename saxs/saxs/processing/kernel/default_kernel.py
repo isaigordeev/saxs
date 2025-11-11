@@ -36,17 +36,19 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.processing.stage.background.background import (
+    DEFAULT_BACKG_META,
     BackgroundStage,
 )
-from saxs.saxs.processing.stage.cut.cut import CutStage
+from saxs.saxs.processing.stage.cut.cut import DEFAULT_CUT_META, CutStage
 from saxs.saxs.processing.stage.filter.filter import FilterStage
 from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
 from saxs.saxs.processing.stage.peak.process_peak import (
     ProcessPeakStage,
 )
+from saxs.saxs.processing.stage.peak.types import DEFAULT_PEAK_FIND_META
 
 
-class SimpleKernel(BaseKernel):
+class DefaultKernel(BaseKernel):
     """
     Concrete kernel defining a simple SAXS processing pipeline.
 
@@ -111,19 +113,21 @@ class SimpleKernel(BaseKernel):
             StageSpec(
                 id_="cut",
                 stage_cls=CutStage,
-                kwargs={"cut_point": 200},
+                metadata=DEFAULT_CUT_META,
             ),
         )
         _kernel_registry.register_stage(
             StageSpec(
                 id_="filter",
                 stage_cls=FilterStage,
+                metadata=None,
             ),
         )
         _kernel_registry.register_stage(
             StageSpec(
                 id_="background",
                 stage_cls=BackgroundStage,
+                metadata=DEFAULT_BACKG_META,
             ),
         )
         _kernel_registry.register_stage(
@@ -131,6 +135,7 @@ class SimpleKernel(BaseKernel):
                 id_="find_peaks",
                 stage_cls=FindPeakStage,
                 policy_id="peaks_policy",
+                metadata=DEFAULT_PEAK_FIND_META,
             ),
         )
         _kernel_registry.register_stage(
@@ -138,6 +143,7 @@ class SimpleKernel(BaseKernel):
                 id_="process_fit_peak",
                 stage_cls=ProcessPeakStage,
                 policy_id="fit_policy",
+                metadata=DEFAULT_PEAK_PROCESS_META,
             ),
         )
 

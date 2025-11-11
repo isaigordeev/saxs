@@ -19,7 +19,10 @@ class AbstractStageApprovalRequest:
 
 TApprovalStageMetadata = TypeVar(
     "TApprovalStageMetadata",
-    bound=TAbstractMetadata[Any],  # put a good schema
+    bound=TAbstractMetadata[
+        Any,  # dict
+        Any,  # keys
+    ],
 )
 
 
@@ -49,5 +52,6 @@ class StageApprovalRequest(
 
     stage: IAbstractStage[TStageMetadata]
     approval_metadata: TAbstractStageMetadata[
-        Any
+        Any,
+        Any,
     ]  # approval must have different type

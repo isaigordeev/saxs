@@ -11,13 +11,22 @@ timestamps) and are designed for safe, type-consistent propagation
 between processing components.
 """
 
+from typing import Generic
+
 from saxs.saxs.core.types.metadata import (
     TAbstractMetadata,
+    TMetadataKeys,
     TMetadataSchemaDict,
 )
 
 
-class TAbstractStageMetadata(TAbstractMetadata[TMetadataSchemaDict]):
+class TAbstractStageMetadata(
+    TAbstractMetadata[
+        TMetadataSchemaDict,
+        TMetadataKeys,
+    ],
+    Generic[TMetadataSchemaDict, TMetadataKeys],
+):
     """
     Represents metadata associated with a SAXS pipeline stage.
 

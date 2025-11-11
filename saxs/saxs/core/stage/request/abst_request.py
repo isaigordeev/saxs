@@ -22,7 +22,7 @@ StageRequest
 """
 
 from dataclasses import dataclass
-from typing import Generic, TypedDict, TypeVar
+from typing import Any, Generic, TypedDict, TypeVar
 
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
@@ -76,6 +76,6 @@ class StageRequest(AbstractStageRequest, Generic[TEvalMetadataDict]):
         policies.
     """
 
-    condition_eval_metadata: TAbstractStageMetadata[TEvalMetadataDict]
+    condition_eval_metadata: TAbstractStageMetadata[TEvalMetadataDict, Any]
     flow_metadata: FlowMetadata
     scheduler_metadata: AbstractSchedulerMetadata

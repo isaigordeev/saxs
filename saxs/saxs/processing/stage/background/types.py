@@ -35,7 +35,7 @@ class BackgroundStageMetadataDict(MetadataSchemaDict, total=False):
 
 
 class BackgroundStageMetadata(
-    TAbstractStageMetadata[BackgroundStageMetadataDict],
+    TAbstractStageMetadata[BackgroundStageMetadataDict, EBackMetadataKeys],
 ):
     """
     Metadata object representing the Cut stage configuration.
@@ -50,6 +50,9 @@ class BackgroundStageMetadata(
         Underlying metadata dictionary, defaulting to
         `{"cut_point": 0}`.
     """
+
+    Keys = EBackMetadataKeys
+    Dict = BackgroundStageMetadataDict
 
     value: BackgroundStageMetadataDict = field(
         default_factory=lambda: {

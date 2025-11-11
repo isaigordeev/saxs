@@ -24,7 +24,14 @@ from saxs.saxs.core.types.sample import (
 )
 from saxs.saxs.processing.stage.cut.types import (
     CutStageMetadata,
-    ECutStageMetadataDictKeys,
+    ECutStageMetadataKeys,
+)
+
+DEFAULT_CUT_POINT = 100
+DEFAULT_CUT_META = CutStageMetadata(
+    {
+        ECutStageMetadataKeys.CUT_POINT.value: DEFAULT_CUT_POINT,
+    },
 )
 
 
@@ -55,16 +62,17 @@ class CutStage(IAbstractStage[CutStageMetadata]):
     >>> new_sample, _ = stage._process(sample, flow_metadata)
     """
 
-    def __init__(self, cut_point: int = 100):
-        self.metadata = CutStageMetadata(
-            value={ECutStageMetadataDictKeys.CUT_POINT.value: cut_point},
-        )
+    def __init__(self, metadata: CutStageMetadata | None):
+        metadata = metadata or DEFAULT_CUT_META
+
+        super().__init__(metadata=metadata)
 
     def _process(
         self,
         sample: SAXSSample,
     ) -> "SAXSSample":
-        cut_point = self.metadata.get_cut_point()
+        metadata: CutStageMetadata = self.get_metadata()
+        cut_point = metadata.get_cut_point()
 
         # Cut the data
         q_values_cut = sample[ESAXSSampleKeys.Q_VALUES][cut_point:]

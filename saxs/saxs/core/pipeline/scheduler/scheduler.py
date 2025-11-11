@@ -19,7 +19,7 @@ BaseScheduler
 
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from saxs.logging.logger import logger
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
@@ -28,6 +28,7 @@ from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
+from saxs.saxs.core.types.metadata import TMetadataKeys, TMetadataSchemaDict
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import (
     AbstractSchedulerMetadata,
@@ -206,7 +207,7 @@ class BaseScheduler(AbstractScheduler):
 
     def handle_metadata_request(
         self,
-        _metadata: TAbstractStageMetadata[dict[str, Any]],
+        _metadata: TAbstractStageMetadata[TMetadataSchemaDict, TMetadataKeys],
     ) -> None:
         """Update scheduler metadata based on new stage metadata.
 
