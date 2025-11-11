@@ -25,7 +25,7 @@ from saxs.saxs.core.types.flow_metadata import (
     FlowMetadataKeys,
 )
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
-from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
+from saxs.saxs.core.types.scheduler_metadata import SchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_FIND_META,
@@ -82,7 +82,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             },
         )
 
-        scheduler_metadata = AbstractSchedulerMetadata()
+        scheduler_metadata = SchedulerMetadata()
         return StageRequest(
             eval_metadata=eval_metadata,
             flow_metadata=pass_metadata,

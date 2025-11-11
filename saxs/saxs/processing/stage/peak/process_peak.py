@@ -17,7 +17,7 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 )
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
+from saxs.saxs.core.types.scheduler_metadata import SchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.functions import gauss, parabole
 from saxs.saxs.processing.stage.peak.types import ProcessPeakStageMetadata
@@ -144,5 +144,5 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):  # n
     def create_request(self):
         eval_metadata = TAbstractStageMetadata()
         pass_metadata = TAbstractStageMetadata()
-        scheduler_metadata = AbstractSchedulerMetadata(self.metadata.unwrap())
+        scheduler_metadata = SchedulerMetadata(self.metadata.unwrap())
         return StageRequest(eval_metadata, pass_metadata, scheduler_metadata)

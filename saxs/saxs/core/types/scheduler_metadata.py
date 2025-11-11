@@ -40,7 +40,7 @@ class ESchedulerMetadataDictKeys(EMetadataSchemaKeys):
         Set of detected peaks.
     """
 
-    PROCESSED = "processed"
+    PROCESSED = "processed_peaks"
     PEAKS = "peaks"
 
 
@@ -58,11 +58,11 @@ class SchedulerMetadataDict(MetadataSchemaDict, total=False):
         Set of detected peak indices.
     """
 
-    processed: int
+    processed_peaks: int
     peaks: set[int]
 
 
-class AbstractSchedulerMetadata(
+class SchedulerMetadata(
     TAbstractMetadata[
         SchedulerMetadataDict,
         ESchedulerMetadataDictKeys,

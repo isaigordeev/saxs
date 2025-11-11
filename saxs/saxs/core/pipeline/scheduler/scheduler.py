@@ -31,7 +31,7 @@ from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.metadata import TMetadataKeys, TMetadataSchemaDict
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import (
-    AbstractSchedulerMetadata,
+    SchedulerMetadata,
     ESchedulerMetadataDictKeys,
 )
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
@@ -60,7 +60,7 @@ class AbstractScheduler(ABC):
         Policy controlling how new stages are added to the queue.
     """
 
-    _metadata: AbstractSchedulerMetadata
+    _metadata: SchedulerMetadata
 
     def __init__(
         self,
@@ -235,7 +235,7 @@ class BaseScheduler(AbstractScheduler):
             return
 
         if not self._metadata.unwrap():
-            self._metadata = AbstractSchedulerMetadata(
+            self._metadata = SchedulerMetadata(
                 {
                     ESchedulerMetadataDictKeys.PROCESSED.value: 1,
                 },
