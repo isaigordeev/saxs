@@ -1,14 +1,14 @@
 """
-Module: flow_metadata.
+Module: metadata.
 
-This module defines the data structures used to store metadata for
-flow experiments. It includes a TypedDict for type-safe metadata
-keys and a frozen dataclass to wrap the metadata in an immutable
+This module defines the data structures used to store metadata. It
+includes a TypedDict for type-safe metadata keys and a frozen
+dataclass to wrap the metadata in an immutable
 container.
 """
 
 from enum import Enum
-from typing import Any, TypedDict, TypeVar
+from typing import Any, Generic, TypedDict, TypeVar
 
 from saxs.saxs.core.types.abstract_data import TBaseDataType
 
@@ -24,9 +24,87 @@ class MetadataSchemaDict(TypedDict, total=False):
 MetadataValueType = Any
 
 TMetadataSchemaDict = TypeVar("TMetadataSchemaDict", bound=MetadataSchemaDict)
+TMetadataKeys = TypeVar("TMetadataKeys", bound=EMetadataSchemaKeys)
 
 
-class TAbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
+class Metadata(type):
+    """Define metadata metaclass."""
+
+    def __new__(
+        mcls: type["Metadata"],
+        name: str,
+        bases: tuple[type, ...],
+        namespace: dict[str, Any],
+    ):
+        """
+        Create a new class with metadata schema enforcement.
+
+        Parameters
+        ----------
+        mcls : Type[MetadataMeta]
+            The metaclass itself — typically not used directly, but
+            needed for calling `super().__new__`.
+
+        name : str
+            The name of the class being defined. For example:
+            - "AbstractMetadata"
+            - "SampleMetadata"
+
+        bases : tuple[type, ...]
+            The base classes that the new class inherits from.
+            Used to check inheritance hierarchies or propagate
+            behavior.
+
+        namespace : Dict[str, Any]
+            A mapping of all class-level definitions (methods,
+            nested classes, attributes) that appear in the class
+            body before the class object
+            is actually created. For example:
+            ```python
+            {
+                '__module__': 'flow_metadata',
+                '__doc__': '...',
+                'Keys': <enum 'Keys'>,
+                'Schema': <class 'Schema'>,
+                '__getitem__': <function ...>,
+                ...
+            }
+            ```
+
+        Returns
+        -------
+        MetadataMeta
+            The newly created class object (not an instance — but
+            the class itself).
+        """
+        cls = super().__new__(mcls, name, bases, namespace)
+
+        if name not in {
+            "AbstractMetadata",
+            "TAbstractMetadata",
+            "TAbstractStageMetadata",
+        }:
+            keys_cls = namespace.get("Keys")
+            schema_cls = namespace.get("Dict")
+
+            if keys_cls is None or not issubclass(
+                keys_cls,
+                EMetadataSchemaKeys,
+            ):
+                msg = f"{name} must define nested Enum class 'Keys'."
+                raise TypeError(msg)
+
+            if schema_cls is None or not issubclass(schema_cls, dict):
+                msg = f"{name} must define nested TypedDict class 'Schema'."
+                raise TypeError(msg)
+        return cls
+
+
+class TAbstractMetadata(
+    TBaseDataType[TMetadataSchemaDict],
+    Generic[TMetadataSchemaDict, TMetadataKeys],
+    metaclass=Metadata,
+):
     """Set a value for a specific metadata key.
 
     This allows dict-like assignment on the sample:
@@ -55,6 +133,9 @@ class TAbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
         metadata value type.
     """
 
+    Keys: type[TMetadataKeys]
+    Dict: type[TMetadataSchemaDict]
+
     def __getitem__(self, key: EMetadataSchemaKeys) -> MetadataValueType:
         """Get a metadata value by key."""
         _value = self.unwrap()  # may raise AttributeError
@@ -81,7 +162,6 @@ class TAbstractMetadata(TBaseDataType[TMetadataSchemaDict]):
             )
             raise RuntimeError(msg) from e
 
-        # Attempt to set the value
         try:
             _value[key.value] = value
         except KeyError:
