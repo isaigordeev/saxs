@@ -13,14 +13,15 @@ of the sample while keeping the original data intact.
 
 from collections.abc import ItemsView, KeysView, ValuesView
 from enum import Enum
-from typing import TypedDict, Union
+from typing import Any, TypedDict, Union
 
 import numpy as np
 from numpy.typing import NDArray
 
 from saxs.saxs.core.types.abstract_data import TBaseDataType
 from saxs.saxs.core.types.sample_objects import (
-    AbstractSampleMetadata,
+    ESampleMetadataKeys,
+    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
@@ -66,7 +67,7 @@ class SAXSSampleDict(TypedDict):
     q_values: QValues
     intensity: Intensity
     intensity_err: IntensityError
-    metadata: AbstractSampleMetadata
+    metadata: SampleMetadata
 
 
 SAXSSampleArrayValue = Union[
@@ -75,7 +76,7 @@ SAXSSampleArrayValue = Union[
     IntensityError,
 ]
 
-SAXSSampleValue = Union[AbstractSampleMetadata, SAXSSampleArrayValue]
+SAXSSampleValue = Union[SampleMetadata, SAXSSampleArrayValue]
 
 
 class SAXSSample(TBaseDataType[SAXSSampleDict]):
@@ -150,6 +151,18 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
             msg = f"Invalid SAXSSample key: {key}. Only array like keys \
                     supported"
             raise KeyError(msg)
+
+    def get_metadata(self) -> SampleMetadata:
+        """Getter for metadata."""
+        _sample: SAXSSampleDict = self.unwrap()
+
+        return _sample[ESAXSSampleKeys.METADATA.value]
+
+    def set_metadata(self, key: ESampleMetadataKeys, _value: Any) -> None:  # noqa: ANN401
+        """Setter for metadata."""
+        _sample: SAXSSampleDict = self.unwrap()
+
+        _sample[ESAXSSampleKeys.METADATA.value][key] = _value
 
     def __contains__(self, key: str) -> bool:
         """Support `'key' in sample` syntax."""

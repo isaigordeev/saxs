@@ -27,6 +27,11 @@ import numpy as np
 from numpy.typing import NDArray
 
 from saxs.saxs.core.types.abstract_data import TBaseDataType
+from saxs.saxs.core.types.flow_metadata import FlowMetadataKeys
+from saxs.saxs.core.types.metadata import (
+    EMetadataSchemaKeys,
+    TAbstractMetadata,
+)
 
 
 @dataclass(frozen=False)
@@ -66,8 +71,14 @@ class IntensityError(TBaseDataType[NDArray[np.float64]]):
     """
 
 
+class ESampleMetadataKeys(EMetadataSchemaKeys):
+    """Sample metadata keys."""
+
+    PROCESSED = FlowMetadataKeys.PROCESSED.value
+
+
 @dataclass(frozen=False)
-class AbstractSampleMetadata(TBaseDataType[dict[str, Any]]):
+class SampleMetadata(TAbstractMetadata[Any, ESampleMetadataKeys]):
     """
     Represents metadata associated with a SAXS sample.
 
