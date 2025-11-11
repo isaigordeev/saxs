@@ -38,6 +38,8 @@ milestones
 - o policy for peak choice in peak find
 - o scheduler requesting and not stage requesting 
 - o recheck immutability of all data structures
+- o many copies of the same object in the sample object
+    (deprecate flow)
 
 
 
