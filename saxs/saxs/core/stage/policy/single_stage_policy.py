@@ -97,7 +97,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
         """
         if not self.condition:
             logger.info(
-                f"\n{'=' * 30}\n[{self.__class__.__name__}]",
+                f"\n{'=' * 30}\n[{self.__class__.__name__}]"
                 f"No condition set, skipping injection.\n{'=' * 30}",
             )
             return []
@@ -116,8 +116,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
             logger.info(
                 f"\n{'=' * 30}\n[{self.__class__.__name__}] "
                 "Condition passed -> Injecting stage "
-                f"'{_pending_stage.__class__.__name__}' with metadata:"
-                " {_pass_metadata.values}\n{'=' * 30}",
+                f"'{_pending_stage.__class__.__name__}' with metadata:",
             )
 
             return [

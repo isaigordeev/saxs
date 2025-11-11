@@ -152,7 +152,7 @@ class BaseScheduler(AbstractScheduler):
             stage_name = stage.__class__.__name__
 
             logger.info(
-                f"\n{'=' * 30}\n[Scheduler] Step {step}:",
+                f"\n{'=' * 30}\n[Scheduler] Step {step}:"
                 f" Running stage {stage.__class__}"
                 f" on sample '{_sample.__class__}'\n{'=' * 30}",
             )
@@ -164,7 +164,7 @@ class BaseScheduler(AbstractScheduler):
             )
 
             logger.info(
-                f"\n[Scheduler] Stage '{stage_name}' completed.",
+                f"\n[Scheduler] Stage '{stage_name}' completed."
                 f"Sample metadata: {_sample.__class__}\n",
             )
 
@@ -175,12 +175,12 @@ class BaseScheduler(AbstractScheduler):
 
             if requests:
                 logger.info(
-                    f"\n[Scheduler] Stage '{stage_name}' generated",
+                    f"\n[Scheduler] Stage '{stage_name}' generated"
                     f" {len(requests)} request(s).",
                 )
             else:
                 logger.info(
-                    f"\n[Scheduler] Stage '{stage_name}' generated",
+                    f"\n[Scheduler] Stage '{stage_name}' generated"
                     " no requests.\n",
                 )
 
@@ -189,20 +189,20 @@ class BaseScheduler(AbstractScheduler):
                 if self._insertion_policy(req):  # scheduler policy decides
                     queue.append(req.stage)
                     logger.info(
-                        f"\n[Scheduler] Request {req} approved → Stage '",
+                        f"\n[Scheduler] Request {req} approved → Stage '"
                         f"{req_stage_name}' appended to queue.",
                     )
                 else:
                     logger.info(
-                        f"\n[Scheduler] Request {req} rejected → Stage':",
+                        f"\n[Scheduler] Request {req} rejected → Stage':"
                         f"{req_stage_name}' not appended.",
                     )
 
             step += 1
 
         logger.info(
-            f"\n{'=' * 30}\n[Scheduler] Pipeline completed.",
-            f"Final sample metadata: {_sample.__dict__}",
+            f"\n{'=' * 30}\n[Scheduler] Pipeline completed."
+            f"Final sample metadata: {_sample.__dict__}"
             f"Final scheduler, metadata: {self._metadata}\n{'=' * 30}",
         )
         return _sample

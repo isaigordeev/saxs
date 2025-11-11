@@ -117,7 +117,7 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
             f"Background coefficient: {_background_coef}\n"
             f"Number of points:       {len(q_vals)}\n"
             f"Q range:               [{min(q_vals)}, {max(q_vals)}]\n"
-            f"Intensity range:       [{min(_subtracted_intensity)},",
+            f"Intensity range:       [{min(_subtracted_intensity)},"
             f"{max(_subtracted_intensity)}]\n"
             f"Background values:     [{min(background)}, {max(background)}]\n"
             f"=============================",
