@@ -28,11 +28,8 @@ milestones
 - o pipeline scheduler for peaks in order (map-reduce-like) for
       multiprocessing (~.)
 - o composite stage (~.)
-- o pydantic for gluing metadata between stages
 - o compatible with windows? 
-- o keep one instance of eval schema and create a simple base one 
 - o unwire TStageMetadata from Condition class
-- o new Metadata type for eval in the condition
 - o new Metadata type for approval in the scheduler
 - o policy fallback saxs/saxs/core/stage/abstract_cond_stage.py:84
 - o policy for peak choice in peak find
@@ -40,6 +37,8 @@ milestones
 - o recheck immutability of all data structures
 - o many copies of the same object in the sample object
     (deprecate flow)
+- o create a general registry of Enums for all keys which will be
+    delegated to concrete ones
 
 
 
@@ -59,3 +58,6 @@ Sun 02 Nov 2025 at 16:46:44
 Tue 11 Nov 2025 at 19:45:33
 
 - x shoud we encapsulate generic metadata type into a stage?
+- x new Metadata type for eval in the condition
+- x pydantic for gluing metadata between stages
+- x keep one instance of eval schema and create a simple base one 
