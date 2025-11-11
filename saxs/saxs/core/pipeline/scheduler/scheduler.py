@@ -19,7 +19,7 @@ BaseScheduler
 
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from saxs.logging.logger import logger
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
@@ -64,7 +64,7 @@ class AbstractScheduler(ABC):
 
     def __init__(
         self,
-        init_stages: list[IAbstractStage] | None = None,
+        init_stages: list[IAbstractStage[Any]] | None = None,
         insertion_policy: InsertionPolicy | None = None,
     ):
         logger.info(
@@ -148,7 +148,7 @@ class BaseScheduler(AbstractScheduler):
         logger.info(f"\n{'=' * 30}\n[Scheduler] Queue: {queue}'\n{'=' * 30}")
 
         while queue:
-            stage: IAbstractStage = queue.popleft()
+            stage: IAbstractStage[Any] = queue.popleft()
             stage_name = stage.__class__.__name__
 
             logger.info(
@@ -169,7 +169,9 @@ class BaseScheduler(AbstractScheduler):
             )
 
             # Collect new stage requests
-            requests: list[StageApprovalRequest] = stage.request_stage()
+            requests: list[StageApprovalRequest] = stage.request_stage(
+                _flow_metadata,
+            )  # now it is specific to a stage not to a scheduler
 
             if requests:
                 logger.info(

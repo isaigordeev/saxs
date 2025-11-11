@@ -20,13 +20,17 @@ class FlowMetadataDict(MetadataSchemaDict, total=False):
         in the experiment.
     """
 
-    sample_name: str
+    sample: str
+    processed_peaks: list[int]
+    unprocessed_peaks: list[int]
 
 
 class FlowMetadataKeys(EMetadataSchemaKeys):
     """Flow metadata keys which are passed."""
 
-    P = "dd"
+    SAMPLE = "sample"
+    PROCESSED = "processed_peaks"
+    UNPROCESSED = "unprocessed_peaks"
 
 
 class FlowMetadata(TAbstractMetadata[FlowMetadataDict, FlowMetadataKeys]):
@@ -42,3 +46,5 @@ class FlowMetadata(TAbstractMetadata[FlowMetadataDict, FlowMetadataKeys]):
 
     Keys: type[FlowMetadataKeys] = FlowMetadataKeys
     Dict: type[FlowMetadataDict] = FlowMetadataDict
+
+    value: FlowMetadataDict

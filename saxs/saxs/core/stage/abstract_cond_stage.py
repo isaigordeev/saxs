@@ -28,6 +28,7 @@ from saxs.saxs.core.stage.abstract_stage import (
 )
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
@@ -62,7 +63,8 @@ class IAbstractRequestingStage(
 
     def request_stage(
         self,
-    ) -> list[StageApprovalRequest[TAbstractStageMetadata[Any, Any]]]:
+        metadata: FlowMetadata,
+    ) -> list[StageApprovalRequest]:
         """
         Generate stage approval requests according to the policy.
 
@@ -79,10 +81,10 @@ class IAbstractRequestingStage(
             default = self.default_policy()
             self.policy = default
 
-        if not self.policy:
+        if not self.policy:  # fallback on policy absence
             return []
 
-        _request = self.create_request()
+        _request = self.create_request(metadata)
 
         if not _request:  # no request made
             return []
@@ -105,7 +107,10 @@ class IAbstractRequestingStage(
         """
 
     @abstractmethod
-    def create_request(self) -> StageRequest[EvalSchemaDict]:
+    def create_request(
+        self,
+        metadata: FlowMetadata,
+    ) -> StageRequest[EvalSchemaDict]:
         """
         Create a stage request for the current stage.
 

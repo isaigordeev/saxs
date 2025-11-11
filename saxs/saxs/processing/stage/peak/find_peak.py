@@ -15,7 +15,15 @@ from saxs.saxs.core.stage.abstract_cond_stage import (
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.core.stage.request.abst_request import StageRequest
+from saxs.saxs.core.stage.request.abst_request import (
+    EvalMetadata,
+    StageRequest,
+)
+from saxs.saxs.core.types.flow_metadata import (
+    FlowMetadata,
+    FlowMetadataDict,
+    FlowMetadataKeys,
+)
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import AbstractSchedulerMetadata
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
@@ -52,22 +60,34 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
 
         return sample, {"peaks": peaks_indices}
 
-    def create_request(self) -> StageRequest:
-        _current_peak_index = (
-            self.metadata
-            if len(self.metadata[]) > 0
+    def create_request(self, metadata: FlowMetadata) -> StageRequest:
+        _current_peak_index = (  # policy for peak choice in peak find
+            self.metadata[FlowMetadataKeys.UNPROCESSED][0]  # first peak choice
+            if len(metadata[FlowMetadataKeys.UNPROCESSED]) > 0
             else -1
         )
 
         if _current_peak_index == -1:
-            return None
+            return StageRequest()  # return empty request
 
         pass_metadata = TAbstractStageMetadata(
             {"current_peak_index": (_current_peak_index)},
         )  # first peak
-        eval_metadata = self.metadata
+
+        eval_metadata = FlowMetadata(
+            {
+                FlowMetadataKeys.UNPROCESSED.value: metadata[
+                    FlowMetadataKeys.UNPROCESSED
+                ],
+            },
+        )
+
         scheduler_metadata = AbstractSchedulerMetadata()
-        return StageRequest(eval_metadata, pass_metadata, scheduler_metadata)
+        return StageRequest(
+            eval_metadata=eval_metadata,
+            flow_metadata=pass_metadata,
+            scheduler_metadata=scheduler_metadata,
+        )
 
     def find_peaks(
         self,

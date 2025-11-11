@@ -29,7 +29,6 @@ TApprovalStageMetadata = TypeVar(
 @dataclass(frozen=True)
 class StageApprovalRequest(
     AbstractStageApprovalRequest,
-    Generic[TStageMetadata],
 ):
     """Concrete implementation of a stage approval request.
 
@@ -50,7 +49,7 @@ class StageApprovalRequest(
         interface.
     """
 
-    stage: IAbstractStage[TStageMetadata]
+    stage: IAbstractStage[TAbstractStageMetadata[Any, Any]]
     approval_metadata: TAbstractStageMetadata[
         Any,
         Any,

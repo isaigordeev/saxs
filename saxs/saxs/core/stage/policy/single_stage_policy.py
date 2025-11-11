@@ -54,7 +54,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
 
     def __new__(
         cls,
-        condition: "StageCondition",  # noqa: ARG004
+        condition: StageCondition,  # noqa: ARG004
         pending_stages: list[IAbstractStage[TStageMetadata]],
     ):
         """
@@ -86,7 +86,7 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
     def request(
         self,
         request_metadata: StageRequest[TEvalMetadataDict],
-    ) -> list[StageApprovalRequest[TStageMetadata]]:
+    ) -> list[StageApprovalRequest]:
         """
         Evaluate the condition and return a stage request.
 
@@ -110,11 +110,6 @@ class SingleStageChainingPolicy(ChainingPolicy[TStageMetadata]):
             return []
 
         _eval_metadata = request_metadata.condition_eval_metadata
-
-        logger.info(
-            f"\n{'=' * 30}\n[{self.__class__.__name__}] Evaluating condition '{self.condition.__class__.__name__}' "
-            f"for stage '{_eval_metadata}' with metadata: {_eval_metadata.value}\n{'=' * 30}",
-        )
 
         if self.condition.evaluate(eval_metadata=_eval_metadata):
             _pass_metadata = request_metadata.flow_metadata

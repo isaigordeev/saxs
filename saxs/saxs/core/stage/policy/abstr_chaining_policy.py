@@ -33,7 +33,7 @@ class ChainingPolicy(ABC, Generic[TStageMetadata]):
     def request(
         self,
         request_metadata: StageRequest[EvalSchemaDict],
-    ) -> list["StageApprovalRequest[TAbstractStageMetadata[Any]]"]:
+    ) -> list["StageApprovalRequest"]:
         """Stage request method.
 
         Decide which stages to chain based on stage metadata.

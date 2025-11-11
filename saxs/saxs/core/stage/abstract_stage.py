@@ -143,13 +143,19 @@ class IAbstractStage(ABC, Generic[TStageMetadata]):
         """Getter for metadata."""
         return self.metadata
 
-    def request_stage(self) -> list["StageApprovalRequest"]:
+    def request_stage(
+        self,
+        metadata: FlowMetadata,
+    ) -> list["StageApprovalRequest"]:
         """
         Optionally requests dependencies or other stages.
+
+        Bases on flow metadata.
 
         Returns
         -------
             list: Empty list by default. Override in subclasses if
             needed.
         """
+        _ = metadata
         return []
