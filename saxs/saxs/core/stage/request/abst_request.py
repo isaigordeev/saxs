@@ -27,7 +27,7 @@ from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.scheduler_metadata import SchedulerMetadata
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class AbstractStageRequest:
     """
     Base class for stage addition requests.
@@ -52,6 +52,7 @@ class EvalMetadata(FlowMetadata):
     """
 
 
+@dataclass(frozen=False)
 class StageRequest(AbstractStageRequest):
     """
     Concrete request for adding a new stage to the pipeline.

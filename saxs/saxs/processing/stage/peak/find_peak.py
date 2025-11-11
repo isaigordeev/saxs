@@ -16,17 +16,16 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import (
+    AbstractStageRequest,
     EvalMetadata,
     StageRequest,
 )
 from saxs.saxs.core.types.flow_metadata import (
     FlowMetadata,
-    FlowMetadataDict,
     FlowMetadataKeys,
 )
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import SchedulerMetadata
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 from saxs.saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_FIND_META,
     EPeakFindMetadataKeys,
@@ -42,7 +41,17 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     ):
         super().__init__(metadata, policy)
 
-    def _process(self, sample: SAXSSample) -> SAXSSample:
+    def handle_flow_metadata(
+        self,
+        _sample: SAXSSample,
+        _flow_metadata: FlowMetadata,
+    ) -> FlowMetadata:
+        _flow_metadata[FlowMetadataKeys.UNPROCESSED] = _sample
+
+    def _process(
+        self,
+        sample: SAXSSample,
+    ) -> SAXSSample:
         intensity = sample[ESAXSSampleKeys.INTENSITY]
 
         # Find peaks
@@ -58,23 +67,10 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             f"===========================",
         )
 
-        return sample, {"peaks": peaks_indices}
+        return sample
 
-    def create_request(self, metadata: FlowMetadata) -> StageRequest:
-        _current_peak_index = (  # policy for peak choice in peak find
-            self.metadata[FlowMetadataKeys.UNPROCESSED][0]  # first peak choice
-            if len(metadata[FlowMetadataKeys.UNPROCESSED]) > 0
-            else -1
-        )
-
-        if _current_peak_index == -1:
-            return StageRequest()  # return empty request
-
-        pass_metadata = TAbstractStageMetadata(
-            {"current_peak_index": (_current_peak_index)},
-        )  # first peak
-
-        eval_metadata = FlowMetadata(
+    def create_request(self, metadata: FlowMetadata) -> AbstractStageRequest:
+        eval_metadata = EvalMetadata(
             {
                 FlowMetadataKeys.UNPROCESSED.value: metadata[
                     FlowMetadataKeys.UNPROCESSED
@@ -82,11 +78,12 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             },
         )
 
-        scheduler_metadata = SchedulerMetadata()
+        scheduler_metadata = SchedulerMetadata({})
+
         return StageRequest(
-            eval_metadata=eval_metadata,
-            flow_metadata=pass_metadata,
+            condition_eval_metadata=eval_metadata,
             scheduler_metadata=scheduler_metadata,
+            flow_metadata=metadata,
         )
 
     def find_peaks(
