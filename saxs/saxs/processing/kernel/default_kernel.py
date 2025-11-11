@@ -45,7 +45,10 @@ from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
 from saxs.saxs.processing.stage.peak.process_peak import (
     ProcessPeakStage,
 )
-from saxs.saxs.processing.stage.peak.types import DEFAULT_PEAK_FIND_META
+from saxs.saxs.processing.stage.peak.types import (
+    DEFAULT_PEAK_FIND_META,
+    DEFAULT_PEAK_PROCESS_META,
+)
 
 
 class DefaultKernel(BaseKernel):
@@ -90,23 +93,21 @@ class DefaultKernel(BaseKernel):
         _kernel_registry = KernelRegistry()
 
         # ---- Define policies ----
-        peaks_policy = PolicySpec(
-            id_="peaks_policy",
+        find_peak_policy = PolicySpec(
+            id_="find_peak_policy",
             policy_cls=SingleStageChainingPolicy,
             condition=ChainingPeakCondition,
-            condition_kwargs={"key": "peaks"},
-            pending_stages=["process_fit_peak"],
+            pending_stages=["process_peak"],
         )
-        fit_policy = PolicySpec(
-            id_="fit_policy",
+        process_peak_policy = PolicySpec(
+            id_="process_peak_policy",
             policy_cls=SingleStageChainingPolicy,
             condition=TrueCondition,
-            condition_kwargs={},
             pending_stages=["find_peaks"],
         )
 
-        _kernel_registry.register_policy(peaks_policy)
-        _kernel_registry.register_policy(fit_policy)
+        _kernel_registry.register_policy(find_peak_policy)
+        _kernel_registry.register_policy(process_peak_policy)
 
         # ---- Define stages ----
         _kernel_registry.register_stage(
@@ -120,7 +121,6 @@ class DefaultKernel(BaseKernel):
             StageSpec(
                 id_="filter",
                 stage_cls=FilterStage,
-                metadata=None,
             ),
         )
         _kernel_registry.register_stage(
@@ -134,16 +134,16 @@ class DefaultKernel(BaseKernel):
             StageSpec(
                 id_="find_peaks",
                 stage_cls=FindPeakStage,
-                policy_id="peaks_policy",
+                policy_id="find_peak_policy",
                 metadata=DEFAULT_PEAK_FIND_META,
             ),
         )
         _kernel_registry.register_stage(
             StageSpec(
-                id_="process_fit_peak",
+                id_="process_peak",
                 stage_cls=ProcessPeakStage,
-                policy_id="fit_policy",
-                metadata=DEFAULT_PEAK_FIND_META,
+                policy_id="process_peak_policy",
+                metadata=DEFAULT_PEAK_PROCESS_META,
             ),
         )
 

@@ -1,13 +1,13 @@
 policies:
-  - id: peaks_policy
+  - id: find_peak_policy
     policy_cls: SingleStageChainingPolicy
     condition_cls: ChainingPeakCondition
     condition_kwargs:
       key: peaks
     next_stage_ids:
-      - process_fit_peak
+      - process_peak
 
-  - id: fit_policy
+  - id: process_peak_policy
     policy_cls: SingleStageChainingPolicy
     condition_cls: TrueCondition
     next_stage_ids:
@@ -27,11 +27,11 @@ stages:
 
   - id: find_peaks
     stage_cls: FindAllPeaksStage
-    policy_id: peaks_policy
+    policy_id: find_peak_policy
 
-  - id: process_fit_peak
+  - id: process_peak
     stage_cls: ProcessFitPeakStage
-    policy_id: fit_policy
+    policy_id: process_peak_policy
 
 execution_order:
   - cut
