@@ -48,9 +48,9 @@ class StageSpec:
     """
 
     id_: StageSpecId
-    stage_cls: type[IAbstractStage]
+    stage_cls: type[IAbstractStage[Any]]
+    metadata: TAbstractStageMetadata[Any, Any] | None = None
     kwargs: dict[str, Any] | None = None
-    metadata: TAbstractStageMetadata[dict[str, Any]] | None = None
     policy_id: PolicySpecId | None = None
     before: list[StageSpecId] | None = None
     after: list[StageSpecId] | None = None
@@ -71,7 +71,7 @@ class PolicySpec:
     """
 
     id_: PolicySpecId
-    policy_cls: type[ChainingPolicy]
+    policy_cls: type[ChainingPolicy[Any]]
     condition: type[StageCondition]
     condition_kwargs: dict[str, Any]
     pending_stages: list[StageSpecId] | None = (
