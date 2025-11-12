@@ -164,7 +164,7 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
 
     def set_metadata(self, key: ESampleMetadataKeys, _value: Any) -> None:  # noqa: ANN401
         """Setter for metadata."""
-        _sample: SAXSSampleDict = self.unwrap()
+        _sample_metadata: SampleMetadata = self.get_metadata()
 
         hints = get_type_hints(SAXSSampleDict)
 
@@ -182,7 +182,7 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
             msg = f"Invalid type for '{key}': expected {expected_type}, got {type(_value)}"
             raise TypeError(msg)
 
-        _sample[ESAXSSampleKeys.METADATA.value][key] = _value
+        _sample_metadata[key] = _value
 
     def __contains__(self, key: str) -> bool:
         """Support `'key' in sample` syntax."""
