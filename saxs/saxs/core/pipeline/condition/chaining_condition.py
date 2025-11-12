@@ -38,5 +38,5 @@ class ChainingPeakCondition(StageCondition):
         """
         return (
             eval_metadata[EvalMetadata.Keys.CURRENT]
-            != ERuntimeConstants.UNDEFINED_PEAK.value
+            is not ERuntimeConstants.UNDEFINED_PEAK
         )

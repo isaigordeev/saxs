@@ -89,7 +89,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         _current_peak = (
             _current_peaks.pop()
             if len(_current_peaks) > 0
-            else ERuntimeConstants.UNDEFINED_PEAK.value
+            else ERuntimeConstants.UNDEFINED_PEAK
         )  # more flexible peak choice
 
         metadata[FlowMetadata.Keys.CURRENT] = _current_peak

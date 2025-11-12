@@ -10,6 +10,7 @@ from saxs.saxs.core.types.metadata import (
     MetadataSchemaDict,
     TAbstractMetadata,
 )
+from saxs.saxs.core.types.scheduler_metadata import ERuntimeConstants
 
 
 class FlowMetadataDict(MetadataSchemaDict, total=False):
@@ -25,7 +26,7 @@ class FlowMetadataDict(MetadataSchemaDict, total=False):
     sample: str
     processed_peaks: set[np.int64]
     unprocessed_peaks: set[np.int64]
-    current: np.int64
+    current: np.int64 | ERuntimeConstants
 
 
 class FlowMetadataKeys(EMetadataSchemaKeys):
