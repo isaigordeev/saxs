@@ -33,6 +33,7 @@ from saxs.saxs.core.types.metadata import (
     MetadataSchemaDict,
     TAbstractMetadata,
 )
+from saxs.saxs.core.types.scheduler_metadata import ERuntimeConstants
 
 
 @dataclass(frozen=False)
@@ -76,13 +77,14 @@ class ESampleMetadataKeys(EMetadataSchemaKeys):
     """Sample metadata keys."""
 
     UNPROCESSED = FlowMetadataKeys.UNPROCESSED.value
+    PROCESSED = FlowMetadataKeys.PROCESSED.value
     CURRENT = "current_peak"
 
 
 class SampleMetadataDict(MetadataSchemaDict):
     """Dict for sample."""
 
-    current_peak: np.int64
+    current_peak: np.int64 | ERuntimeConstants
     unprocessed_peaks: list[np.int64]
 
 
