@@ -108,6 +108,7 @@ max-doc-length = 68
 
 [dependency-groups]
 dev = [
+    "graphviz>=0.21",
     "jupyter>=1.1.1",
     "matplotlib>=3.9.1",
     "mypy>=1.18.2",
@@ -125,10 +126,10 @@ dev = [
 [tool.pyright]
 typeCheckingMode = "strict"
 include = ["saxs/", "tests"]
-exclude = ["**/site-packages", "build", ".venv"]
+ignore = ["**/site-packages", "build", ".venv", "arch"]
 
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["saxs", "tests"]
-exclude = "|build|.venv"
+include = ["saxs", "tests"]
+exclude = "|build|.venv|arch"
