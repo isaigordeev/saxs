@@ -25,7 +25,7 @@ class Fitting:
         y_data: NDArray[np.float64],
         error: NDArray[np.float64],
         p0: tuple[float, ...] | None,
-        bounds: tuple[list[Any], ...] | None = None,
+        bounds: tuple[list[Any], ...] | tuple[Any, ...] = (-np.inf, np.inf),
     ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
         """
         Fit the background function to intensity data.

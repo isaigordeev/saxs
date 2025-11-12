@@ -15,9 +15,6 @@ from saxs.saxs.core.types.scheduler_metadata import ERuntimeConstants
 class ChainingPeakCondition(StageCondition):
     """Class predicat for evaluating chaining."""
 
-    def __init__(self, key: str):
-        self.key = key
-
     def evaluate(self, eval_metadata: EvalMetadata) -> bool:
         """
         Evaluate whether unprocessed peaks remain in metadata.

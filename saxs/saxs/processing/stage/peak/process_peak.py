@@ -176,7 +176,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
 
         logger.info(
             "\n+++ ProcessFitPeakStage Completed +++\n"
-            f"Subtracted Gaussian approx (σ={popt[0]:.5f}, A={popt[1]:.5f})\n"
+            f"Subtracted Gaussian approx (sigma={popt[0]:.5f}, A={popt[1]:.5f})\n"
             "+++++++++++++++++++++++++++++++++++++",
         )
 

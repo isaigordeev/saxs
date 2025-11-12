@@ -79,6 +79,13 @@ class ESampleMetadataKeys(EMetadataSchemaKeys):
     CURRENT = "current_peak"
 
 
+class SampleMetadataDict(MetadataSchemaDict):
+    """Dict for sample."""
+
+    current_peak: int
+    unprocessed_peaks: list[int]
+
+
 @dataclass(frozen=False)
 class SampleMetadata(
     TAbstractMetadata[

@@ -65,7 +65,7 @@ def make_stage_registry() -> StageRegistry[TStageMetadata]:
     return ClassRegistry()
 
 
-def make_policy_registry() -> PolicyRegistry[TStageMetadata]:
+def make_policy_registry() -> PolicyRegistry:
     return ClassRegistry()
 
 
@@ -76,7 +76,7 @@ stage_registry.register("BackgroundStage", BackgroundStage)
 stage_registry.register("FindAllPeaksStage", FindPeakStage)
 stage_registry.register("ProcessFitPeakStage", ProcessPeakStage)
 
-policy_registry: PolicyRegistry[Any] = make_policy_registry()
+policy_registry: PolicyRegistry = make_policy_registry()
 policy_registry.register(
     "SingleStageChainingPolicy",
     SingleStageChainingPolicy,

@@ -15,7 +15,7 @@ or schedulers to construct and organize SAXS processing
 workflows dynamically.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
@@ -73,7 +73,7 @@ class PolicySpec:
     id_: PolicySpecId
     policy_cls: type[ChainingPolicy]
     condition: type[StageCondition]
-    condition_kwargs: dict[str, Any] | None = None
+    condition_kwargs: dict[str, Any] = field(default_factory=dict[str, Any])
     pending_stages: list[StageSpecId] | None = (
         None  # or default types and not vars
     )
