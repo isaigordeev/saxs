@@ -136,6 +136,10 @@ class TAbstractMetadata(
     Keys: type[TMetadataKeys]
     Dict: type[TMetadataSchemaDict]
 
+    def __contains__(self, key: TMetadataKeys):
+        """Contains method."""
+        return key.value in self.unwrap()
+
     def __getitem__(self, key: EMetadataSchemaKeys) -> MetadataValueType:
         """Get a metadata value by key."""
         _value = self.unwrap()  # may raise AttributeError
