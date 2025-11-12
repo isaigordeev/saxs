@@ -2,6 +2,7 @@
 
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any, Generic, TypeVar
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
@@ -31,6 +32,9 @@ class ApprovalMetadata(
     TAbstractMetadata[MetadataSchemaDict, ESampleMetadataKeys],
 ):
     """Approval meta."""
+
+    Keys = ESampleMetadataKeys
+    Dict = MetadataSchemaDict
 
 
 @dataclass(frozen=True)

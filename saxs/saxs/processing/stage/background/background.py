@@ -10,14 +10,6 @@ The module relies on `scipy.optimize.curve_fit` for fitting and
 supports logging of intermediate and final processing states.
 """
 
-from collections.abc import Callable
-
-import numpy as np
-from numpy.typing import NDArray
-from scipy.optimize import (  # pyright: ignore[reportMissingTypeStubs]
-    curve_fit,  # pyright: ignore[reportUnknownVariableType]
-)
-
 from saxs.application.settings_processing import BACKGROUND_COEF
 from saxs.logging.logger import logger
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
@@ -27,6 +19,7 @@ from saxs.saxs.processing.stage.background.types import (
     BackgroundStageMetadata,
     EBackMetadataKeys,
 )
+from saxs.saxs.processing.stage.common.fitting import Fitting
 
 DEFAULT_BACKG_META = BackgroundStageMetadata(
     value={
@@ -99,7 +92,13 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
         )
 
         # Fit background
-        popt, _ = self.curve_fit(_background_func, q_vals, intensity, error)
+        popt, _ = Fitting.curve_fit(
+            _background_func,
+            q_vals,
+            intensity,
+            error,
+            p0=(3.0, 2.0),
+        )
 
         # Log fitted parameters
         logger.info(
@@ -126,44 +125,3 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
         sample[ESAXSSampleKeys.INTENSITY] = _subtracted_intensity
 
         return sample
-
-    @staticmethod
-    def curve_fit(
-        _background_func: Callable[..., NDArray[np.float64]],
-        q_values: NDArray[np.float64],
-        intensity: NDArray[np.float64],
-        error: NDArray[np.float64],
-    ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-        """
-        Fit the background function to intensity data.
-
-        Created for typing scipy function.
-
-        Parameters
-        ----------
-        _background_func : Callable[..., NDArray[np.float64]]
-            The background function to fit.
-        q_values : NDArray[np.float64]
-            Array of scattering vector values.
-        intensity : NDArray[np.float64]
-            Array of measured intensities.
-        error : NDArray[np.float64]
-            Array of intensity measurement errors.
-
-        Returns
-        -------
-        tuple[NDArray[np.float64], NDArray[np.float64]]
-            popt : Optimal parameters for the background function.
-            pcov : Covariance of the fitted parameters.
-        """
-        res_: tuple[NDArray[np.float64], NDArray[np.float64]] = curve_fit(  # pyright: ignore[reportUnknownVariableType]
-            f=_background_func,
-            xdata=q_values,
-            ydata=intensity,
-            p0=(3, 2),
-            sigma=error,
-        )
-
-        popt, _pcov = res_  # pyright: ignore[reportUnknownVariableType]
-
-        return popt, _pcov  # pyright: ignore[reportUnknownVariableType]

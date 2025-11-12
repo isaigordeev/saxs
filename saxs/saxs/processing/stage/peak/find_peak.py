@@ -27,7 +27,7 @@ from saxs.saxs.core.types.flow_metadata import (
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
 from saxs.saxs.core.types.scheduler_metadata import (
-    ESchedulerRuntime,
+    ERuntimeConstants,
     SchedulerMetadata,
 )
 from saxs.saxs.processing.stage.peak.types import (
@@ -38,6 +38,8 @@ from saxs.saxs.processing.stage.peak.types import (
 
 
 class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
+    """Find peak stage."""
+
     def __init__(
         self,
         policy: SingleStageChainingPolicy,
@@ -87,8 +89,8 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         _current_peak = (
             _current_peaks[0]
             if len(_current_peaks) > 0
-            else ESchedulerRuntime.UNDEFINED_PEAK.value
-        )
+            else ERuntimeConstants.UNDEFINED_PEAK.value
+        )  # more flexible peak choice
 
         metadata[FlowMetadata.Keys.CURRENT] = _current_peak
 

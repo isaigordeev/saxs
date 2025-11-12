@@ -162,4 +162,4 @@ class ClassRegistry(Generic[T]):
 # Aliases for clarity
 # ------------------------
 StageRegistry = ClassRegistry[IAbstractStage[TStageMetadata]]
-PolicyRegistry = ClassRegistry[ChainingPolicy[TStageMetadata]]
+PolicyRegistry = ClassRegistry[ChainingPolicy]

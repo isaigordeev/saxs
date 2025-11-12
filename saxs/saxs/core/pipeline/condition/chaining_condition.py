@@ -9,7 +9,7 @@ from saxs.saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
 )
 from saxs.saxs.core.stage.request.abst_request import EvalMetadata
-from saxs.saxs.core.types.scheduler_metadata import ESchedulerRuntime
+from saxs.saxs.core.types.scheduler_metadata import ERuntimeConstants
 
 
 class ChainingPeakCondition(StageCondition):
@@ -41,5 +41,5 @@ class ChainingPeakCondition(StageCondition):
         """
         return (
             eval_metadata[EvalMetadata.Keys.CURRENT]
-            != ESchedulerRuntime.UNDEFINED_PEAK.value
+            != ERuntimeConstants.UNDEFINED_PEAK.value
         )

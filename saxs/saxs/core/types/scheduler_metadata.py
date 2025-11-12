@@ -29,10 +29,11 @@ from saxs.saxs.core.types.metadata import (
 )
 
 
-class ESchedulerRuntime(Enum):
+class ERuntimeConstants(Enum):
     """Enum for runtime constants."""
 
     UNDEFINED_PEAK = -1
+    PROCESSED_PEAK = -2
 
 
 class ESchedulerMetadataDictKeys(EMetadataSchemaKeys):

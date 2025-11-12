@@ -31,8 +31,8 @@ from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.metadata import TMetadataKeys, TMetadataSchemaDict
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.scheduler_metadata import (
-    SchedulerMetadata,
     ESchedulerMetadataDictKeys,
+    SchedulerMetadata,
 )
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 

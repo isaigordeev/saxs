@@ -21,8 +21,8 @@ class FlowMetadataDict(MetadataSchemaDict, total=False):
     """
 
     sample: str
-    processed_peaks: list[int]
-    unprocessed_peaks: list[int]
+    processed_peaks: set[int]
+    unprocessed_peaks: set[int]
     current: int
 
 
