@@ -15,7 +15,10 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
 from saxs.saxs.core.stage.request.abst_request import StageRequest
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
+from saxs.saxs.core.types.sample_objects import (
+    ESampleMetadataKeys,
+    SampleMetadata,
+)
 from saxs.saxs.core.types.scheduler_metadata import (
     ERuntimeConstants,
     SchedulerMetadata,
@@ -32,8 +35,6 @@ from saxs.saxs.processing.stage.peak.types import (
 class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
     """Process peak stage."""
 
-    fit_range = 2
-
     def __init__(
         self,
         policy: SingleStageChainingPolicy,
@@ -41,21 +42,33 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
     ):
         super().__init__(metadata, policy)
 
-    def posthandle_flow_metadata(
+    def _prehandle_flow_metadata(
+        self,
+        _sample: SAXSSample,
+        _flow_metadata: FlowMetadata,
+    ) -> SAXSSample:
+        _current: int = _flow_metadata[FlowMetadata.Keys.CURRENT]
+        _sample.set_metadata(ESampleMetadataKeys.CURRENT, _current)
+        return _sample
+
+    def _posthandle_flow_metadata(
         self,
         _sample: SAXSSample,
         _flow_metadata: FlowMetadata,
     ) -> FlowMetadata:
         """Pass metadata from sample to flow metadata."""
-        _unprocessed: set[int] = _flow_metadata[FlowMetadata.Keys.UNPROCESSED]
         _current: int = _flow_metadata[FlowMetadata.Keys.CURRENT]
-        _unprocessed.remove(_current)
 
         _processed = _flow_metadata[FlowMetadata.Keys.PROCESSED]
         _processed.add(_current)
 
         _flow_metadata[FlowMetadata.Keys.CURRENT] = (
             ERuntimeConstants.PROCESSED_PEAK.value
+        )
+
+        _sample.set_metadata(
+            ESampleMetadataKeys.CURRENT,
+            ERuntimeConstants.PROCESSED_PEAK.value,
         )
 
         return _flow_metadata

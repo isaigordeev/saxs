@@ -47,7 +47,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     ):
         super().__init__(metadata, policy)
 
-    def posthandle_flow_metadata(
+    def _posthandle_flow_metadata(
         self,
         _sample: SAXSSample,
         _flow_metadata: FlowMetadata,
@@ -78,16 +78,16 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             f"===========================",
         )
 
-        sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, peak_indices)
+        sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, set(peak_indices))
 
         return sample
 
     def create_request(self, metadata: FlowMetadata) -> AbstractStageRequest:
         """Create a request for peak processing."""
-        _current_peaks = metadata[FlowMetadataKeys.UNPROCESSED]
+        _current_peaks: set[np.int64] = metadata[FlowMetadataKeys.UNPROCESSED]
 
         _current_peak = (
-            _current_peaks[0]
+            _current_peaks.pop()
             if len(_current_peaks) > 0
             else ERuntimeConstants.UNDEFINED_PEAK.value
         )  # more flexible peak choice

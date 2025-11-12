@@ -82,8 +82,8 @@ class ESampleMetadataKeys(EMetadataSchemaKeys):
 class SampleMetadataDict(MetadataSchemaDict):
     """Dict for sample."""
 
-    current_peak: int
-    unprocessed_peaks: list[int]
+    current_peak: np.int64
+    unprocessed_peaks: list[np.int64]
 
 
 @dataclass(frozen=False)

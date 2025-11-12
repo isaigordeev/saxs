@@ -3,6 +3,8 @@
 Module for flowing metadata.
 """
 
+import numpy as np
+
 from saxs.saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
@@ -21,9 +23,9 @@ class FlowMetadataDict(MetadataSchemaDict, total=False):
     """
 
     sample: str
-    processed_peaks: set[int]
-    unprocessed_peaks: set[int]
-    current: int
+    processed_peaks: set[np.int64]
+    unprocessed_peaks: set[np.int64]
+    current: np.int64
 
 
 class FlowMetadataKeys(EMetadataSchemaKeys):
