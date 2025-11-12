@@ -68,8 +68,8 @@ class AbstractScheduler(ABC):
         insertion_policy: InsertionPolicy | None = None,
     ):
         logger.info(
-            f"\n{'=' * 30}\n[Scheduler] Init_stages:"
-            " {init_stages}'\n{'=' * 30}",
+            f"\n{'=' * 30}\n[Scheduler] Init_stages:\n"
+            f" {init_stages}'\n{'=' * 30}\n",
         )
         self._queue = deque(init_stages or [])
         self._insertion_policy = insertion_policy or AlwaysInsertPolicy()
@@ -95,7 +95,7 @@ class AbstractScheduler(ABC):
 
     def enqueue_initial_stages(
         self,
-        initial_stages: list[IAbstractStage],
+        initial_stages: list[IAbstractStage[Any]],
     ) -> None:
         """Add initial stages to the processing queue.
 
@@ -145,7 +145,7 @@ class BaseScheduler(AbstractScheduler):
         _flow_metadata = init_flow_metadata
         step = 1
 
-        logger.info(f"\n{'=' * 30}\n[Scheduler] Queue: {queue}'\n{'=' * 30}")
+        logger.info(f"\n{'=' * 30}\n[Scheduler] Queue: {queue}'\n{'=' * 30}\n")
 
         while queue:
             stage: IAbstractStage[Any] = queue.popleft()
@@ -154,7 +154,7 @@ class BaseScheduler(AbstractScheduler):
             logger.info(
                 f"\n{'=' * 30}\n[Scheduler] Step {step}:"
                 f" Running stage {stage.__class__}"
-                f" on sample '{_sample.__class__}'\n{'=' * 30}",
+                f" on sample '{_sample.__class__}'\n{'=' * 30}\n",
             )
 
             # Process stage
@@ -176,12 +176,12 @@ class BaseScheduler(AbstractScheduler):
             if requests:
                 logger.info(
                     f"\n[Scheduler] Stage '{stage_name}' generated"
-                    f" {len(requests)} request(s).",
+                    f" {len(requests)} request(s).\n",
                 )
             else:
                 logger.info(
                     f"\n[Scheduler] Stage '{stage_name}' generated"
-                    " no requests.\n",
+                    f" no requests.\n",
                 )
 
             for req in requests:
@@ -190,20 +190,20 @@ class BaseScheduler(AbstractScheduler):
                     queue.append(req.stage)
                     logger.info(
                         f"\n[Scheduler] Request {req} approved → Stage '"
-                        f"{req_stage_name}' appended to queue.",
+                        f"{req_stage_name}' appended to queue.\n",
                     )
                 else:
                     logger.info(
                         f"\n[Scheduler] Request {req} rejected → Stage':"
-                        f"{req_stage_name}' not appended.",
+                        f"{req_stage_name}' not appended.\n",
                     )
 
             step += 1
 
         logger.info(
-            f"\n{'=' * 30}\n[Scheduler] Pipeline completed."
-            f"Final sample metadata: {_sample.__dict__}"
-            f"Final scheduler, metadata: {self._metadata}\n{'=' * 30}",
+            f"\n{'=' * 30}\n[Scheduler] Pipeline completed.\n"
+            f"Final sample metadata: {_sample.__dict__}\n"
+            f"Final scheduler, metadata: {self._metadata}\n{'=' * 30}\n",
         )
         return _sample
 

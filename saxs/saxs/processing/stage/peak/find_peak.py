@@ -75,7 +75,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             f"Number of peaks found: {len(peak_indices)}\n"
             f"Peaks indices:         {list(peak_indices)}\n"
             f"Intensity range:       [{min(intensity)}, {max(intensity)}]\n"
-            f"===========================",
+            f"===========================\n",
         )
 
         sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, set(peak_indices))

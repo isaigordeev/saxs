@@ -63,12 +63,12 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         _processed.add(_current)
 
         _flow_metadata[FlowMetadata.Keys.CURRENT] = (
-            ERuntimeConstants.PROCESSED_PEAK.value
+            ERuntimeConstants.PROCESSED_PEAK
         )
 
         _sample.set_metadata(
             ESampleMetadataKeys.CURRENT,
-            ERuntimeConstants.PROCESSED_PEAK.value,
+            ERuntimeConstants.PROCESSED_PEAK,
         )
 
         return _flow_metadata
@@ -119,12 +119,12 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         right_range = min(_current_peak_index + _fit_range, len(q_state) - 1)
 
         logger.info(
-            "\n=== ProcessFitPeakStage: Initial Fit ===\n"
+            f"\n=== ProcessFitPeakStage: Initial Fit ===\n"
             f"Peak index: {_current_peak_index}\n"
             f"Fit range:  [{left_range}, {right_range}]\n"
             f"delta_q:    {_delta_q}\n"
             f"max_I:      {_max_intensity}\n"
-            "=========================================",
+            "=========================================\n",
         )
 
         left_range = max(_current_peak_index - _fit_range, 0)
@@ -145,11 +145,10 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         gauss_range = int(popt[0] / _delta_q)
 
         logger.info(
-            "\n--- First Fit Results ---\n"
+            f"\n--- First Fit Results ---\n"
             f"Sigma (σ):   {popt[0]:.5f}\n"  # noqa: RUF001
             f"Amplitude:   {popt[1]:.5f}\n"
-            f"Gauss range: {gauss_range}\n"
-            "--------------------------",
+            f"Gauss range: {gauss_range}\n",
         )
 
         logger.info(f"gauss_range {popt[0]} {gauss_range}")
@@ -172,7 +171,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
             f"Refined range: [{left_range}, {right_range}]\n"
             f"Refined σ:     {popt[0]:.5f}\n"
             f"Refined ampl:  {popt[1]:.5f}\n"
-            "=========================================",
+            f"=========================================\n",
         )
 
         _current_gauss_approximation = _current_peak_gauss(
@@ -190,7 +189,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         logger.info(
             "\n+++ ProcessFitPeakStage Completed +++\n"
             f"Subtracted Gaussian approx (sigma={popt[0]:.5f}, A={popt[1]:.5f})\n"
-            "+++++++++++++++++++++++++++++++++++++",
+            f"=====================================\n",
         )
 
         return sample

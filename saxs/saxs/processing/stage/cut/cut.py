@@ -93,7 +93,7 @@ class CutStage(IAbstractStage[CutStageMetadata]):
             f"Output points:    {len(q_values_cut)}\n"
             f"Q range (after):  [{min(q_values_cut)}, {max(q_values_cut)}]\n"
             f"Intensity range:  [{min(intensity_cut)}, {max(intensity_cut)}]\n"
-            f"=============================",
+            f"=============================\n",
         )
 
         return sample

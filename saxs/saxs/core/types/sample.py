@@ -69,8 +69,6 @@ class SAXSSampleDict(TypedDict):
     intensity: Intensity
     intensity_err: IntensityError
     metadata: SampleMetadata
-    current_peak: np.int64
-    unprocessed_peaks: set[np.int64]
 
 
 SAXSSampleArrayValue = Union[

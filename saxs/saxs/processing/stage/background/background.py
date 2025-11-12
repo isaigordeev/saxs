@@ -88,7 +88,7 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
             f"Q range:       [{min(q_vals)}, {max(q_vals)}]\n"
             f"Intensity:     [{min(intensity)}, {max(intensity)}]\n"
             f"Error:         [{min(error)}, {max(error)}]\n"
-            f"=============================",
+            f"=============================\n",
         )
 
         # Fit background
@@ -103,7 +103,7 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
         # Log fitted parameters
         logger.info(
             f"\nFitted background parameters:\n"
-            f"a = {popt[0]:.4f}, b = {popt[1]:.4f}",
+            f"a = {popt[0]:.4f}, b = {popt[1]:.4f}\n",
         )
 
         # Subtract background
@@ -119,7 +119,7 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
             f"Intensity range:       [{min(_subtracted_intensity)},"
             f"{max(_subtracted_intensity)}]\n"
             f"Background values:     [{min(background)}, {max(background)}]\n"
-            f"=============================",
+            f"=============================\n",
         )
 
         sample[ESAXSSampleKeys.INTENSITY] = _subtracted_intensity
