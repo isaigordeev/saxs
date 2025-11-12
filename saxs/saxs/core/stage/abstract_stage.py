@@ -84,10 +84,14 @@ class IAbstractStage(ABC, Generic[TStageMetadata]):
             tuple[SAXSSample, FlowMetadata]: Processed sample and
             updated metadata.
         """
-        _sample = self._process(sample)
+        # Put some flow metadata to sample needed for processing
+        _sample = self.prehandle_flow_metadata(sample, flow_metadata)
+
+        # Process a sample
+        _sample = self._process(_sample)
 
         # Delegate flow metadata management to hook
-        _flow_metadata = self.handle_flow_metadata(_sample, flow_metadata)
+        _flow_metadata = self.posthandle_flow_metadata(_sample, flow_metadata)
 
         return _sample, _flow_metadata
 
@@ -114,7 +118,7 @@ class IAbstractStage(ABC, Generic[TStageMetadata]):
         """
         raise NotImplementedError
 
-    def handle_flow_metadata(
+    def posthandle_flow_metadata(
         self,
         _sample: "SAXSSample",
         _flow_metadata: "FlowMetadata",
@@ -136,6 +140,29 @@ class IAbstractStage(ABC, Generic[TStageMetadata]):
         """
         _ = _sample
         return _flow_metadata
+
+    def prehandle_flow_metadata(
+        self,
+        _sample: SAXSSample,
+        _flow_metadata: FlowMetadata,
+    ) -> SAXSSample:
+        """Manage metadata updates before processing.
+
+        Default behavior: does nothing with metadata and returns
+        the sample. Can be overridden in subclasses to create
+        a metadata request for scheduler or future samples.
+
+        Args:
+            _sample (SAXSSample): Processed sample data.
+            _metadata (FlowMetadata): Metadata associated with the
+            sample.
+
+        Returns
+        -------
+            SAXSSample: Sample with updated metadata.
+        """
+        _ = _flow_metadata
+        return _sample
 
     def get_metadata(
         self,

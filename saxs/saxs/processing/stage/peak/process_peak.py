@@ -41,7 +41,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
     ):
         super().__init__(metadata, policy)
 
-    def handle_flow_metadata(
+    def posthandle_flow_metadata(
         self,
         _sample: SAXSSample,
         _flow_metadata: FlowMetadata,
