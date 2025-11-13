@@ -1,3 +1,20 @@
+"""Peak finding stage module.
+
+This module implements the FindPeakStage, which detects peaks in SAXS
+scattering data using scipy's find_peaks algorithm. The stage processes
+intensity data and identifies peak positions based on configurable
+parameters such as height, prominence, and distance.
+
+The stage uses a chaining policy to conditionally request the
+ProcessPeakStage when peaks are detected, enabling iterative peak
+processing workflows.
+
+Classes
+-------
+FindPeakStage
+    Stage implementation for detecting peaks in SAXS intensity data.
+"""
+
 # Created by Isai Gordeev on 20/09/2025.
 
 from typing import Any

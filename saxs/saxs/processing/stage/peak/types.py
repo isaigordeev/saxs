@@ -1,3 +1,32 @@
+"""Peak processing stage metadata types.
+
+This module defines the metadata types and default configurations
+for peak finding and processing stages in the SAXS pipeline.
+
+It provides:
+- Enumeration of metadata keys for peak finding (height, prominence,
+  distance)
+- Enumeration of metadata keys for peak processing (fit_range)
+- Typed dictionaries for stage metadata schemas
+- Default metadata instances for both peak finding and processing
+  stages
+
+Classes
+-------
+EPeakFindMetadataKeys
+    Enumeration of keys used in peak finding stage metadata.
+EPeakProcessMetadataKeys
+    Enumeration of keys used in peak processing stage metadata.
+PeakFindStageMetadataDict
+    Typed dictionary schema for peak finding stage metadata.
+PeakProcessStageMetadataDict
+    Typed dictionary schema for peak processing stage metadata.
+PeakFindStageMetadata
+    Metadata object for peak finding stage configuration.
+ProcessPeakStageMetadata
+    Metadata object for peak processing stage configuration.
+"""
+
 from dataclasses import field
 
 from saxs.saxs.core.types.metadata import (

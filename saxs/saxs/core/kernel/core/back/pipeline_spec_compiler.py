@@ -1,3 +1,21 @@
+"""Pipeline specification compiler module.
+
+This module provides the SpecCompiler class, which transforms
+declarative pipeline specifications (PolicyDeclSpec and StageDeclSpec)
+into runtime specifications (PolicySpec and StageSpec) that can be
+used to build and link actual stage and policy instances.
+
+The compiler resolves string references to classes using the stage
+and policy registries, and creates runtime specifications with
+properly instantiated condition objects.
+
+Classes
+-------
+SpecCompiler
+    Compiler class that builds runtime StageSpec and PolicySpec
+    objects from declarative specifications.
+"""
+
 from typing import TYPE_CHECKING
 
 from saxs.saxs.core.kernel.core._define_registry import (

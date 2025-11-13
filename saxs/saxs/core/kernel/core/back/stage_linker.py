@@ -1,3 +1,20 @@
+"""Stage linker module.
+
+This module provides the StageLinker class, which is responsible for
+linking ChainingPolicy instances to IAbstractRequestingStage
+instances during the kernel compilation process.
+
+The linker connects policies to stages based on the policy_id specified
+in each StageSpec, enabling stages to conditionally request additional
+stages during pipeline execution.
+
+Classes
+-------
+StageLinker
+    Static linker class for associating policies with requesting
+    stage instances.
+"""
+
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.runtime_spec import StageSpec
 from saxs.saxs.core.stage.abstract_cond_stage import (

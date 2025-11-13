@@ -1,3 +1,27 @@
+"""Logging configuration module for SAXS package.
+
+This module provides a custom logging setup for the SAXS project,
+including a PrettyLogger class that enhances log messages with
+formatting and a convenient get_logger function for obtaining
+configured logger instances.
+
+The module configures basic logging with:
+- INFO level by default
+- Formatted output with timestamps, level, module, function, and line
+- Stream handler for console output
+
+Classes
+-------
+PrettyLogger
+    Custom logger class that wraps messages with separators for
+    better readability, especially for scheduler-related logs.
+
+Functions
+---------
+get_logger(name: str) -> logging.Logger
+    Returns a configured logger instance with the specified name.
+"""
+
 import logging
 import sys
 

@@ -18,7 +18,7 @@ from saxs.saxs.core.pipeline.condition.abstract_condition import (
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import (
     StageRequest,

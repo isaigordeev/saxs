@@ -1,3 +1,20 @@
+"""Policy builder module.
+
+This module provides the PolicyBuilder class, which is responsible for
+instantiating ChainingPolicy objects from PolicySpec specifications
+during the kernel compilation process.
+
+The builder creates policy instances with their associated conditions
+and pending stage references, but does not perform the final linking
+of policies to stage instances (that is handled by PolicyLinker).
+
+Classes
+-------
+PolicyBuilder
+    Static builder class for creating policy instances from
+    PolicySpec objects.
+"""
+
 from typing import Any
 
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
