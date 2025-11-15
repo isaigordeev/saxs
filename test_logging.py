@@ -244,28 +244,17 @@ def main() -> None:
     # Configure logging with colors enabled
     setup_logging(level=logging.INFO, enable_colors=True)
 
-    print("\n" + "=" * 80)
-    print("ENHANCED LOGGING SYSTEM DEMONSTRATION".center(80))
-    print("=" * 80 + "\n")
 
     test_basic_logging()
-    print("\n")
 
     test_component_loggers()
-    print("\n")
 
     test_visual_elements()
-    print("\n")
 
     test_different_log_levels()
-    print("\n")
 
     test_realistic_workflow()
-    print("\n")
 
-    print("=" * 80)
-    print("TEST COMPLETED".center(80))
-    print("=" * 80)
 
 
 if __name__ == "__main__":

@@ -102,18 +102,34 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         sample: SAXSSample,
     ) -> SAXSSample:
         intensity = sample[ESAXSSampleKeys.INTENSITY]
+        q_values = sample[ESAXSSampleKeys.Q_VALUES]
 
-        # Find peaks
-        peak_indices, _ = self.find_peaks(intensity)
-
-        # Log peaks info in readable format
         logger.stage_info(
             "FindPeakStage",
-            "Peak detection completed",
+            "Starting peak detection",
             data_points=len(intensity),
-            peaks_found=len(peak_indices),
             intensity_range=f"[{min(intensity):.2f}, {max(intensity):.2f}]",
         )
+
+        # Find peaks
+        peak_indices, properties = self.find_peaks(intensity)
+
+        if len(peak_indices) > 0:
+            peak_positions = [q_values[i] for i in peak_indices]
+            peak_heights = [intensity[i] for i in peak_indices]
+            logger.stage_info(
+                "FindPeakStage",
+                "Peaks detected",
+                peaks_found=len(peak_indices),
+                peak_indices=str(peak_indices),
+                peak_positions=f"q={[f'{p:.4f}' for p in peak_positions[:3]]}{'...' if len(peak_positions) > 3 else ''}",
+                peak_heights=f"I={[f'{h:.2f}' for h in peak_heights[:3]]}{'...' if len(peak_heights) > 3 else ''}",
+            )
+        else:
+            logger.stage_info(
+                "FindPeakStage",
+                "No peaks detected",
+            )
 
         sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, set(peak_indices))
 
@@ -128,6 +144,14 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             if len(_current_peaks) > 0
             else ERuntimeConstants.UNDEFINED_PEAK
         )  # more flexible peak choice
+
+        if _current_peak != ERuntimeConstants.UNDEFINED_PEAK:
+            logger.stage_info(
+                "FindPeakStage",
+                "Requesting peak processing",
+                peak_index=int(_current_peak),
+                remaining_peaks=len(_current_peaks),
+            )
 
         metadata[FlowMetadata.Keys.CURRENT] = _current_peak
 

@@ -5,7 +5,6 @@ import numpy as np
 from numpy.typing import NDArray
 
 from saxs.saxs.core.types.metadata import (
-    TAbstractMetadata,
     EMetadataSchemaKeys,
     MetadataSchemaDict,
 )

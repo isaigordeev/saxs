@@ -76,6 +76,15 @@ class CutStage(IAbstractStage[CutStageMetadata]):
         metadata: CutStageMetadata = self.get_metadata()
         cut_point = metadata.get_cut_point()
 
+        # Log input state
+        original_size = len(sample[ESAXSSampleKeys.Q_VALUES])
+        logger.stage_info(
+            "CutStage",
+            "Starting data truncation",
+            input_points=original_size,
+            cut_point=cut_point,
+        )
+
         # Cut the data
         q_values_cut = sample[ESAXSSampleKeys.Q_VALUES][cut_point:]
         intensity_cut = sample[ESAXSSampleKeys.INTENSITY][cut_point:]
@@ -87,12 +96,12 @@ class CutStage(IAbstractStage[CutStageMetadata]):
         sample[ESAXSSampleKeys.INTENSITY] = intensity_cut
         sample[ESAXSSampleKeys.INTENSITY_ERROR] = error_cut
 
-        # Log input/output info
+        # Log output info
         logger.stage_info(
             "CutStage",
-            "Data truncated",
-            cut_point=cut_point,
-            output_points=len(q_values_cut),
+            "Truncation complete",
+            removed_points=original_size - len(q_values_cut),
+            remaining_points=len(q_values_cut),
             q_range=f"[{min(q_values_cut):.4f}, {max(q_values_cut):.4f}]",
             intensity_range=f"[{min(intensity_cut):.4f}, {max(intensity_cut):.4f}]",
         )

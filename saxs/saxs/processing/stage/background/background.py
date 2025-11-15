@@ -83,7 +83,21 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
         intensity = sample[ESAXSSampleKeys.INTENSITY]
         error = sample[ESAXSSampleKeys.INTENSITY_ERROR]
 
+        logger.stage_info(
+            "BackgroundStage",
+            "Starting background fitting",
+            data_points=len(q_vals),
+            q_range=f"[{min(q_vals):.4f}, {max(q_vals):.4f}]",
+            intensity_range=f"[{min(intensity):.4f}, {max(intensity):.4f}]",
+        )
+
         # Fit background
+        logger.stage_info(
+            "BackgroundStage",
+            "Fitting hyperbolic function",
+            function="I(q) = a/(q-b) + c",
+        )
+
         popt, _ = Fitting.curve_fit(
             _background_func,
             q_vals,
@@ -92,19 +106,23 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
             p0=(3.0, 2.0),
         )
 
+        logger.stage_info(
+            "BackgroundStage",
+            "Fit successful",
+            param_a=f"{popt[0]:.4f}",
+            param_b=f"{popt[1]:.4f}",
+        )
+
         # Subtract background
         background = _background_func(q_vals, *popt)
         _subtracted_intensity = intensity - _background_coef * background
 
-        # Log processing results
         logger.stage_info(
             "BackgroundStage",
-            "Background fitted and subtracted",
-            data_points=len(q_vals),
-            q_range=f"[{min(q_vals):.4f}, {max(q_vals):.4f}]",
-            fit_params=f"a={popt[0]:.4f}, b={popt[1]:.4f}",
-            bg_coef=_background_coef,
-            intensity_range=f"[{min(_subtracted_intensity):.4f}, {max(_subtracted_intensity):.4f}]",
+            "Background subtraction complete",
+            bg_coefficient=_background_coef,
+            bg_range=f"[{min(background):.4f}, {max(background):.4f}]",
+            final_intensity=f"[{min(_subtracted_intensity):.4f}, {max(_subtracted_intensity):.4f}]",
         )
 
         sample[ESAXSSampleKeys.INTENSITY] = _subtracted_intensity

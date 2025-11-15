@@ -121,10 +121,10 @@ class TestStageRequest:
         stage2 = MockStage2()
 
         request1 = StageApprovalRequest(
-            stage=stage1, approval_metadata=stage_metadata
+            stage=stage1, approval_metadata=stage_metadata,
         )
         request2 = StageApprovalRequest(
-            stage=stage2, approval_metadata=stage_metadata
+            stage=stage2, approval_metadata=stage_metadata,
         )
 
         # Different stage types should not be equal
@@ -136,10 +136,10 @@ class TestStageRequest:
         metadata2 = TAbstractStageMetadata({"key2": "value2"})
 
         request1 = StageApprovalRequest(
-            stage=mock_stage, approval_metadata=metadata1
+            stage=mock_stage, approval_metadata=metadata1,
         )
         request2 = StageApprovalRequest(
-            stage=mock_stage, approval_metadata=metadata2
+            stage=mock_stage, approval_metadata=metadata2,
         )
 
         # Different metadata should not be equal
@@ -201,7 +201,7 @@ class TestStageRequest:
         assert request.stage is None
         assert request.metadata is None
         assert request == StageApprovalRequest(
-            stage=None, approval_metadata=None
+            stage=None, approval_metadata=None,
         )
 
     def test_stage_request_serialization_compatibility(
@@ -224,7 +224,7 @@ class TestStageRequest:
 
         # Should be able to create new request with same data
         new_request = StageApprovalRequest(
-            stage=stage, approval_metadata=metadata
+            stage=stage, approval_metadata=metadata,
         )
         assert new_request == request
 
@@ -246,7 +246,7 @@ class TestStageRequest:
         )
 
         request = StageApprovalRequest(
-            stage=mock_stage, approval_metadata=metadata
+            stage=mock_stage, approval_metadata=metadata,
         )
 
         assert request.approval_metadata.value["string"] == "test"

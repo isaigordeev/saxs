@@ -8,10 +8,10 @@ import numpy as np
 import pytest
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
-    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
+    SampleMetadata,
 )
 from saxs.saxs.processing.functions import background_hyberbole
 from saxs.saxs.processing.stage.background.background import (

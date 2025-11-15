@@ -8,10 +8,10 @@ import numpy as np
 import pytest
 from saxs.saxs.core.types.abstract_data import TBaseDataType
 from saxs.saxs.core.types.sample_objects import (
-    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
+    SampleMetadata,
 )
 
 

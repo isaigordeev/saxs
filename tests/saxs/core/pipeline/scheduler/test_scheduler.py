@@ -20,10 +20,10 @@ from saxs.saxs.core.pipeline.scheduler.scheduler import (
 )
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
-    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
+    SampleMetadata,
 )
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 

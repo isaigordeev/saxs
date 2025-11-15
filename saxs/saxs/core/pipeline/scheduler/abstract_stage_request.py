@@ -2,10 +2,9 @@
 
 
 from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
+from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.metadata import MetadataSchemaDict, TAbstractMetadata
 from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata

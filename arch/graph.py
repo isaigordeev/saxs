@@ -32,8 +32,8 @@ dot.attr(splines="ortho", nodesep="0.8", ranksep="1.2")
 dot.attr(fontname="Helvetica", fontsize="11")
 
 # Node style defaults
-node_style = dict(shape="box", style="rounded,filled", fontname="Helvetica",
-                 fontsize="10", margin="0.2,0.1")
+node_style = {"shape": "box", "style": "rounded,filled", "fontname": "Helvetica",
+                 "fontsize": "10", "margin": "0.2,0.1"}
 
 # =====================
 # FRONTEND LAYER
@@ -149,4 +149,3 @@ dot.edge("ChainingPolicy", "ProcessPeakStage", color=COLOR_EDGE, style="dotted")
 # EXPORT
 # =====================
 dot.render("langgraph_clustered", view=True)
-print("Pipeline graph generated: langgraph_clustered.pdf")

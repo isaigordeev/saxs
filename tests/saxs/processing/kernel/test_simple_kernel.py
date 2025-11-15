@@ -38,10 +38,10 @@ def read_data(data_dir_file):
 def real_sample():
     from saxs.saxs.core.types.sample import SAXSSample
     from saxs.saxs.core.types.sample_objects import (
-        SampleMetadata,
         Intensity,
         IntensityError,
         QValues,
+        SampleMetadata,
     )
 
     q, i, err = read_data("tests/test_processing_data/075775_treated_xye.csv")
@@ -67,10 +67,10 @@ def real_sample():
 def init_sample():
     from saxs.saxs.core.types.sample import SAXSSample
     from saxs.saxs.core.types.sample_objects import (
-        SampleMetadata,
         Intensity,
         IntensityError,
         QValues,
+        SampleMetadata,
     )
 
     q = QValues([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])

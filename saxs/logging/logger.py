@@ -268,9 +268,8 @@ class LogFormatter(logging.Formatter):
         message = record.getMessage()
 
         # Build final message with content on new line
-        formatted = f"{timestamp} {level:9s} [{component_name:14s}] {message}"
+        return f"{timestamp} {level:9s} [{component_name:14s}] {message}"
 
-        return formatted
 
     def _format_plain(self, record: logging.LogRecord) -> str:
         """Format record without colors (plain text).
@@ -607,7 +606,7 @@ def get_logger(name: str, component: str = "default") -> ComponentLogger:
 
 
 def setup_logging(
-    level: int = logging.INFO, enable_colors: bool = True
+    level: int = logging.INFO, enable_colors: bool = True,
 ) -> None:
     """Configure global logging settings.
 

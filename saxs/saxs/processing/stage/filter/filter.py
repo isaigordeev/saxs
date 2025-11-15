@@ -48,14 +48,21 @@ class FilterStage(IAbstractStage):
         """
         _intensity = sample[ESAXSSampleKeys.INTENSITY]
 
+        logger.stage_info(
+            "FilterStage",
+            "Applying moving average filter",
+            window_size=10,
+            data_points=len(_intensity),
+            intensity_range=f"[{min(_intensity):.4f}, {max(_intensity):.4f}]",
+        )
+
         filtered_intensity = moving_average(_intensity, 10)
         sample[ESAXSSampleKeys.INTENSITY] = filtered_intensity
 
         logger.stage_info(
             "FilterStage",
-            "Moving average filter applied",
-            window_size=10,
-            data_points=len(sample[ESAXSSampleKeys.Q_VALUES]),
+            "Filtering complete",
+            smoothed_range=f"[{min(filtered_intensity):.4f}, {max(filtered_intensity):.4f}]",
         )
 
         return sample

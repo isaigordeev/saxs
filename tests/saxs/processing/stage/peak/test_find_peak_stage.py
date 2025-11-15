@@ -15,10 +15,10 @@ from saxs.saxs.core.pipeline.condition.chaining_condition import (
 )
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
-    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
+    SampleMetadata,
 )
 from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
 from saxs.saxs.processing.stage.peak.process_peak_stage import (
@@ -351,7 +351,7 @@ class TestFindAllPeaksStage:
             )
 
     def test_find_peaks_stage_process_with_none_error(
-        self, find_peaks_stage
+        self, find_peaks_stage,
     ) -> None:
         """Test FindAllPeaksStage with sample that has None intensity error."""
         q_values = np.array([0.1, 0.2, 0.3])
@@ -377,7 +377,7 @@ class TestFindAllPeaksStage:
             assert result.get_intensity_error() is None
 
     def test_find_peaks_stage_process_with_empty_data(
-        self, find_peaks_stage
+        self, find_peaks_stage,
     ) -> None:
         """Test FindAllPeaksStage with empty sample data."""
         sample = SAXSSample(
@@ -454,7 +454,7 @@ class TestFindAllPeaksStage:
             )
 
     def test_find_peaks_stage_process_with_inf_values(
-        self, find_peaks_stage
+        self, find_peaks_stage,
     ) -> None:
         """Test FindAllPeaksStage with infinite values."""
         q_values = np.array([0.1, 0.2, 0.3])

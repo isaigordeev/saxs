@@ -17,8 +17,6 @@ ProcessPeakStage
 
 # Created by Isai Gordeev on 20/09/2025.
 
-from typing import TYPE_CHECKING
-
 import numpy as np
 from numpy.typing import NDArray
 
@@ -39,7 +37,6 @@ from saxs.saxs.core.types.flow_metadata import FlowMetadata
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
     ESampleMetadataKeys,
-    SampleMetadata,
 )
 from saxs.saxs.core.types.scheduler_metadata import (
     ERuntimeConstants,
@@ -221,9 +218,18 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         q_state = sample[SAXSSample.Keys.Q_VALUES]
         i_state = sample[SAXSSample.Keys.INTENSITY]
         ierr_state = sample[SAXSSample.Keys.INTENSITY_ERROR]
-        _current_peak_index: int = sample.get_metadata()[
+        _current_peak_index = sample.get_metadata()[
             ESampleMetadataKeys.CURRENT
         ]
+
+        # Check if peak index is valid (not an enum constant)
+        if isinstance(_current_peak_index, ERuntimeConstants):
+            logger.stage_info(
+                "ProcessPeakStage",
+                "No valid peak to process",
+                peak_value=str(_current_peak_index),
+            )
+            return sample
 
         _fit_range: int = self.metadata[
             ProcessPeakStageMetadata.Keys.FIT_RANGE
@@ -258,9 +264,25 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
                 ampl,
             )
 
+        if _current_peak_index is not ERuntimeConstants:
+            logger.stage_info(
+                "ProcessPeakStage",
+                "Starting peak fitting",
+                peak_index=_current_peak_index,
+                peak_q=f"{q_state[_current_peak_index]:.4f}",
+                peak_I=f"{i_state[_current_peak_index]:.2f}",
+            )
+
         # --- First parabola fit ---
         left_range = max(_current_peak_index - _fit_range, 0)
         right_range = _current_peak_index + _fit_range
+
+        logger.stage_info(
+            "ProcessPeakStage",
+            "Parabolic fit",
+            window=f"[{left_range}:{right_range}]",
+            points=right_range - left_range,
+        )
 
         popt_parabola, _pcov = Fitting.curve_fit(
             _func=_current_peak_parabole,
@@ -273,9 +295,23 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
 
         gauss_range = int(popt_parabola[0] / _delta_q)
 
+        logger.stage_info(
+            "ProcessPeakStage",
+            "Parabola OK",
+            sigma=f"{popt_parabola[0]:.5f}",
+            ampl=f"{popt_parabola[1]:.2f}",
+        )
+
         # --- Refined Gaussian fit ---
         left_range = max(_current_peak_index - gauss_range, 0)
         right_range = min(_current_peak_index + gauss_range, len(i_state))
+
+        logger.stage_info(
+            "ProcessPeakStage",
+            "Gaussian fit",
+            window=f"[{left_range}:{right_range}]",
+            points=right_range - left_range,
+        )
 
         popt, _pcov = Fitting.curve_fit(
             _func=_current_peak_gauss,
@@ -284,6 +320,13 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
             bounds=([_delta_q**2, 1], [0.05, 4 * _max_intensity]),
             p0=None,
             error=ierr_state[left_range:right_range],
+        )
+
+        logger.stage_info(
+            "ProcessPeakStage",
+            "Gaussian OK",
+            sigma=f"{popt[0]:.5f}",
+            ampl=f"{popt[1]:.2f}",
         )
 
         # Subtract Gaussian approximation
@@ -297,15 +340,11 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         new_intensity_state = np.maximum(new_intensity_state, 0)
         sample[SAXSSample.Keys.INTENSITY] = new_intensity_state
 
-        # Log processing results
         logger.stage_info(
             "ProcessPeakStage",
-            "Peak fitted and subtracted",
-            peak_index=_current_peak_index,
-            fit_range=f"[{left_range}, {right_range}]",
-            parabola_sigma=f"{popt_parabola[0]:.5f}",
-            gauss_sigma=f"{popt[0]:.5f}",
-            amplitude=f"{popt[1]:.5f}",
+            "Peak subtracted",
+            max_removed=f"{max(_current_gauss_approximation):.2f}",
+            new_range=f"[{min(new_intensity_state):.2f}, {max(new_intensity_state):.2f}]",
         )
 
         return sample

@@ -12,10 +12,10 @@ from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.sample import SAXSSample
 from saxs.saxs.core.types.sample_objects import (
-    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
+    SampleMetadata,
 )
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
@@ -111,7 +111,7 @@ def mock_stage():
 def stage_request(mock_stage, stage_metadata):
     """Create a StageRequest for testing."""
     return StageApprovalRequest(
-        stage=mock_stage, approval_metadata=stage_metadata
+        stage=mock_stage, approval_metadata=stage_metadata,
     )
 
 

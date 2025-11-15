@@ -17,7 +17,7 @@ Key Classes:
 """
 
 from abc import abstractmethod
-from typing import Any, TypedDict
+from typing import TypedDict
 
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
@@ -29,10 +29,8 @@ from saxs.saxs.core.stage.abstract_stage import (
 from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import (
     AbstractStageRequest,
-    StageRequest,
 )
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 class EvalSchemaDict(TypedDict, total=False):  # must be generic

@@ -32,10 +32,10 @@ from saxs.saxs.core.types.sample import (
     SAXSSampleDict,
 )
 from saxs.saxs.core.types.sample_objects import (
-    SampleMetadata,
     Intensity,
     IntensityError,
     QValues,
+    SampleMetadata,
 )
 
 if TYPE_CHECKING:

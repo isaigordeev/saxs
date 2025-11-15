@@ -54,7 +54,7 @@ class TestAlwaysInsertPolicy:
         # Test with different request types
         metadata = TAbstractStageMetadata({"test": "value"})
         different_request = StageApprovalRequest(
-            stage=None, approval_metadata=metadata
+            stage=None, approval_metadata=metadata,
         )
         assert policy(different_request) is True
 
@@ -97,7 +97,7 @@ class TestNeverInsertPolicy:
         # Test with different request types
         metadata = TAbstractStageMetadata({"test": "value"})
         different_request = StageApprovalRequest(
-            stage=None, approval_metadata=metadata
+            stage=None, approval_metadata=metadata,
         )
         assert policy(different_request) is False
 
@@ -172,10 +172,10 @@ class TestSaturationInsertPolicy:
         metadata1 = TAbstractStageMetadata({"type": "filter"})
         metadata2 = TAbstractStageMetadata({"type": "peak"})
         request1 = StageApprovalRequest(
-            stage=None, approval_metadata=metadata1
+            stage=None, approval_metadata=metadata1,
         )
         request2 = StageApprovalRequest(
-            stage=None, approval_metadata=metadata2
+            stage=None, approval_metadata=metadata2,
         )
 
         # Both should count towards saturation
