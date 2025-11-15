@@ -171,8 +171,6 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
         # --- Runtime type safety ---
         expected_type = hints.get(key.value)
 
-        print(hints)
-
         if expected_type is not None and not isinstance(
             _value,
             expected_type.__origin__

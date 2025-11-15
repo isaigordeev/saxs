@@ -16,8 +16,10 @@ CutStage : AbstractStage
     according to the configured cut point.
 """
 
-from saxs.logging.logger import logger
+from saxs.logging.logger import get_stage_logger
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+
+logger = get_stage_logger(__name__)
 from saxs.saxs.core.types.sample import (
     ESAXSSampleKeys,
     SAXSSample,
@@ -86,14 +88,13 @@ class CutStage(IAbstractStage[CutStageMetadata]):
         sample[ESAXSSampleKeys.INTENSITY_ERROR] = error_cut
 
         # Log input/output info
-        logger.info(
-            f"\n=== CutStage Processing ===\n"
-            f"Cut point:        {cut_point}\n"
-            # f"Input points:     {len(sample[ESAXSSampleKeys.Q_VALUES])}\n"
-            f"Output points:    {len(q_values_cut)}\n"
-            f"Q range (after):  [{min(q_values_cut)}, {max(q_values_cut)}]\n"
-            f"Intensity range:  [{min(intensity_cut)}, {max(intensity_cut)}]\n"
-            f"=============================\n",
+        logger.stage_info(
+            "CutStage",
+            "Data truncated",
+            cut_point=cut_point,
+            output_points=len(q_values_cut),
+            q_range=f"[{min(q_values_cut):.4f}, {max(q_values_cut):.4f}]",
+            intensity_range=f"[{min(intensity_cut):.4f}, {max(intensity_cut):.4f}]",
         )
 
         return sample

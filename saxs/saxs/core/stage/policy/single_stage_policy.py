@@ -11,10 +11,12 @@ StageApprovalRequest with associated scheduler metadata.
 
 from typing import Any
 
-from saxs.logging.logger import logger
+from saxs.logging.logger import get_logger
 from saxs.saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
 )
+
+logger = get_logger(__name__, "policy")
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
@@ -98,10 +100,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
             condition passes, otherwise an empty list.
         """
         if not self.condition:
-            logger.info(
-                f"\n{'=' * 30}\n[{self.__class__.__name__}]"
-                f"No condition set, skipping injection.\n{'=' * 30}",
-            )
+            logger.info("No condition set, skipping injection")
             return []
 
         _eval_metadata = request_metadata.condition_eval_metadata
@@ -116,10 +115,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
             ]  # there is only one stage
 
             logger.info(
-                f"\n{'=' * 30}\n[{self.__class__.__name__}] "
-                "Condition passed -> Injecting stage "
-                f"'{_pending_stage.__class__.__name__}' with metadata:"
-                f"{_flow_metadata}",
+                f"Condition passed | Injecting stage: {_pending_stage.__class__.__name__}",
             )
 
             return [
@@ -129,7 +125,5 @@ class SingleStageChainingPolicy(ChainingPolicy):
                 ),
             ]
 
-        logger.info(
-            f"\n{'=' * 30}\n[{self.__class__.__name__}] Condition failed → No stage injected for '{self.pending_stages}'\n{'=' * 30}",
-        )
+        logger.info("Condition failed | No stage injected")
         return []

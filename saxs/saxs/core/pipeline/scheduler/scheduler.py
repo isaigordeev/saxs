@@ -21,7 +21,9 @@ from abc import ABC, abstractmethod
 from collections import deque
 from typing import TYPE_CHECKING, Any
 
-from saxs.logging.logger import logger
+from saxs.logging.logger import get_scheduler_logger
+
+logger = get_scheduler_logger(__name__)
 from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
@@ -67,9 +69,12 @@ class AbstractScheduler(ABC):
         init_stages: list[IAbstractStage[Any]] | None = None,
         insertion_policy: InsertionPolicy | None = None,
     ):
-        logger.info(
-            f"\n{'=' * 30}\n[Scheduler] Init_stages:\n"
-            f" {init_stages}'\n{'=' * 30}\n",
+        logger.scheduler_info(
+            "Initializing scheduler",
+            stages_count=len(init_stages) if init_stages else 0,
+            policy=insertion_policy.__class__.__name__
+            if insertion_policy
+            else "AlwaysInsertPolicy",
         )
         self._queue = deque(init_stages or [])
         self._insertion_policy = insertion_policy or AlwaysInsertPolicy()
@@ -145,16 +150,18 @@ class BaseScheduler(AbstractScheduler):
         _flow_metadata = init_flow_metadata
         step = 1
 
-        logger.info(f"\n{'=' * 30}\n[Scheduler] Queue: {queue}'\n{'=' * 30}\n")
+        logger.scheduler_info(
+            "Pipeline started",
+            queue_size=len(queue),
+        )
 
         while queue:
             stage: IAbstractStage[Any] = queue.popleft()
             stage_name = stage.__class__.__name__
 
-            logger.info(
-                f"\n{'=' * 30}\n[Scheduler] Step {step}:"
-                f" Running stage {stage.__class__}"
-                f" on sample '{_sample.__class__}'\n{'=' * 30}\n",
+            logger.scheduler_info(
+                f"Step {step}: Running {stage_name}",
+                queue_size=len(queue),
             )
 
             # Process stage
@@ -163,9 +170,8 @@ class BaseScheduler(AbstractScheduler):
                 flow_metadata=_flow_metadata,
             )
 
-            logger.info(
-                f"\n[Scheduler] Stage '{stage_name}' completed."
-                f"Sample metadata: {_sample.__class__}\n",
+            logger.scheduler_info(
+                f"{stage_name} completed",
             )
 
             # Collect new stage requests
@@ -174,36 +180,29 @@ class BaseScheduler(AbstractScheduler):
             )  # now it is specific to a stage not to a scheduler
 
             if requests:
-                logger.info(
-                    f"\n[Scheduler] Stage '{stage_name}' generated"
-                    f" {len(requests)} request(s).\n",
-                )
-            else:
-                logger.info(
-                    f"\n[Scheduler] Stage '{stage_name}' generated"
-                    f" no requests.\n",
+                logger.scheduler_info(
+                    f"{stage_name} requested {len(requests)} stage(s)",
                 )
 
             for req in requests:
                 req_stage_name = req.stage.__class__.__name__
                 if self._insertion_policy(req):  # scheduler policy decides
                     queue.append(req.stage)
-                    logger.info(
-                        f"\n[Scheduler] Request {req} approved → Stage '"
-                        f"{req_stage_name}' appended to queue.\n",
+                    logger.scheduler_info(
+                        f"Approved: {req_stage_name}",
+                        queue_size=len(queue),
                     )
                 else:
-                    logger.info(
-                        f"\n[Scheduler] Request {req} rejected → Stage':"
-                        f"{req_stage_name}' not appended.\n",
+                    logger.scheduler_info(
+                        f"Rejected: {req_stage_name}",
+                        queue_size=len(queue),
                     )
 
             step += 1
 
-        logger.info(
-            f"\n{'=' * 30}\n[Scheduler] Pipeline completed.\n"
-            f"Final sample metadata: {_sample.__dict__}\n"
-            f"Final scheduler, metadata: {self._metadata}\n{'=' * 30}\n",
+        logger.scheduler_info(
+            "Pipeline completed",
+            total_steps=step - 1,
         )
         return _sample
 

@@ -11,8 +11,10 @@ supports logging of intermediate and final processing states.
 """
 
 from saxs.application.settings_processing import BACKGROUND_COEF
-from saxs.logging.logger import logger
+from saxs.logging.logger import get_stage_logger
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+
+logger = get_stage_logger(__name__)
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.processing.functions import background_hyperbole
 from saxs.saxs.processing.stage.background.types import (
@@ -81,16 +83,6 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
         intensity = sample[ESAXSSampleKeys.INTENSITY]
         error = sample[ESAXSSampleKeys.INTENSITY_ERROR]
 
-        # Log input state
-        logger.info(
-            f"\n=== BackgroundStage Input ===\n"
-            f"Number of points: {len(q_vals)}\n"
-            f"Q range:       [{min(q_vals)}, {max(q_vals)}]\n"
-            f"Intensity:     [{min(intensity)}, {max(intensity)}]\n"
-            f"Error:         [{min(error)}, {max(error)}]\n"
-            f"=============================\n",
-        )
-
         # Fit background
         popt, _ = Fitting.curve_fit(
             _background_func,
@@ -100,26 +92,19 @@ class BackgroundStage(IAbstractStage[BackgroundStageMetadata]):
             p0=(3.0, 2.0),
         )
 
-        # Log fitted parameters
-        logger.info(
-            f"\nFitted background parameters:\n"
-            f"a = {popt[0]:.4f}, b = {popt[1]:.4f}\n",
-        )
-
         # Subtract background
         background = _background_func(q_vals, *popt)
         _subtracted_intensity = intensity - _background_coef * background
 
-        # Log post-processing state
-        logger.info(
-            f"\n=== BackgroundStage Output ===\n"
-            f"Background coefficient: {_background_coef}\n"
-            f"Number of points:       {len(q_vals)}\n"
-            f"Q range:               [{min(q_vals)}, {max(q_vals)}]\n"
-            f"Intensity range:       [{min(_subtracted_intensity)},"
-            f"{max(_subtracted_intensity)}]\n"
-            f"Background values:     [{min(background)}, {max(background)}]\n"
-            f"=============================\n",
+        # Log processing results
+        logger.stage_info(
+            "BackgroundStage",
+            "Background fitted and subtracted",
+            data_points=len(q_vals),
+            q_range=f"[{min(q_vals):.4f}, {max(q_vals):.4f}]",
+            fit_params=f"a={popt[0]:.4f}, b={popt[1]:.4f}",
+            bg_coef=_background_coef,
+            intensity_range=f"[{min(_subtracted_intensity):.4f}, {max(_subtracted_intensity):.4f}]",
         )
 
         sample[ESAXSSampleKeys.INTENSITY] = _subtracted_intensity

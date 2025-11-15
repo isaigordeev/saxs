@@ -25,7 +25,9 @@ from scipy.signal import (  # pyright: ignore[reportMissingTypeStubs]
     find_peaks,  # # pyright: ignore[reportUnknownVariableType]
 )
 
-from saxs.logging.logger import logger
+from saxs.logging.logger import get_stage_logger
+
+logger = get_stage_logger(__name__)
 from saxs.saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
@@ -105,13 +107,12 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         peak_indices, _ = self.find_peaks(intensity)
 
         # Log peaks info in readable format
-        logger.info(
-            f"\n=== FindAllPeaksStage ===\n"
-            f"Number of points:      {len(intensity)}\n"
-            f"Number of peaks found: {len(peak_indices)}\n"
-            f"Peaks indices:         {list(peak_indices)}\n"
-            f"Intensity range:       [{min(intensity)}, {max(intensity)}]\n"
-            f"===========================\n",
+        logger.stage_info(
+            "FindPeakStage",
+            "Peak detection completed",
+            data_points=len(intensity),
+            peaks_found=len(peak_indices),
+            intensity_range=f"[{min(intensity):.2f}, {max(intensity):.2f}]",
         )
 
         sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, set(peak_indices))

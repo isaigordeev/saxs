@@ -22,10 +22,12 @@ from typing import TYPE_CHECKING
 import numpy as np
 from numpy.typing import NDArray
 
-from saxs.logging.logger import logger
+from saxs.logging.logger import get_stage_logger
 from saxs.saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
+
+logger = get_stage_logger(__name__)
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
@@ -258,24 +260,9 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
 
         # --- First parabola fit ---
         left_range = max(_current_peak_index - _fit_range, 0)
-        right_range = min(_current_peak_index + _fit_range, len(q_state) - 1)
-
-        logger.info(
-            f"\n=== ProcessFitPeakStage: Initial Fit ===\n"
-            f"Peak index: {_current_peak_index}\n"
-            f"Fit range:  [{left_range}, {right_range}]\n"
-            f"delta_q:    {_delta_q}\n"
-            f"max_I:      {_max_intensity}\n"
-            "=========================================\n",
-        )
-
-        left_range = max(_current_peak_index - _fit_range, 0)
-
         right_range = _current_peak_index + _fit_range
 
-        logger.info(f"print left r {left_range}  {right_range}")
-
-        popt, _pcov = Fitting.curve_fit(
+        popt_parabola, _pcov = Fitting.curve_fit(
             _func=_current_peak_parabole,
             x_data=q_state[left_range:right_range],
             y_data=i_state[left_range:right_range],
@@ -284,19 +271,10 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
             error=ierr_state[left_range:right_range],
         )
 
-        gauss_range = int(popt[0] / _delta_q)
+        gauss_range = int(popt_parabola[0] / _delta_q)
 
-        logger.info(
-            f"\n--- First Fit Results ---\n"
-            f"Sigma (σ):   {popt[0]:.5f}\n"  # noqa: RUF001
-            f"Amplitude:   {popt[1]:.5f}\n"
-            f"Gauss range: {gauss_range}\n",
-        )
-
-        logger.info(f"gauss_range {popt[0]} {gauss_range}")
-
+        # --- Refined Gaussian fit ---
         left_range = max(_current_peak_index - gauss_range, 0)
-
         right_range = min(_current_peak_index + gauss_range, len(i_state))
 
         popt, _pcov = Fitting.curve_fit(
@@ -308,14 +286,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
             error=ierr_state[left_range:right_range],
         )
 
-        logger.info(
-            "\n=== ProcessFitPeakStage: Refined Fit ===\n"
-            f"Refined range: [{left_range}, {right_range}]\n"
-            f"Refined σ:     {popt[0]:.5f}\n"
-            f"Refined ampl:  {popt[1]:.5f}\n"
-            f"=========================================\n",
-        )
-
+        # Subtract Gaussian approximation
         _current_gauss_approximation = _current_peak_gauss(
             q_state,
             popt[0],
@@ -323,15 +294,18 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         )
 
         new_intensity_state = i_state - _current_gauss_approximation
-
         new_intensity_state = np.maximum(new_intensity_state, 0)
-
         sample[SAXSSample.Keys.INTENSITY] = new_intensity_state
 
-        logger.info(
-            "\n+++ ProcessFitPeakStage Completed +++\n"
-            f"Subtracted Gaussian approx (sigma={popt[0]:.5f}, A={popt[1]:.5f})\n"
-            f"=====================================\n",
+        # Log processing results
+        logger.stage_info(
+            "ProcessPeakStage",
+            "Peak fitted and subtracted",
+            peak_index=_current_peak_index,
+            fit_range=f"[{left_range}, {right_range}]",
+            parabola_sigma=f"{popt_parabola[0]:.5f}",
+            gauss_sigma=f"{popt[0]:.5f}",
+            amplitude=f"{popt[1]:.5f}",
         )
 
         return sample

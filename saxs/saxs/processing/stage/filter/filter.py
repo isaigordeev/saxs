@@ -10,8 +10,10 @@ FilterStage
     Applies a moving average filter to intensity data.
 """
 
-from saxs.logging.logger import logger
+from saxs.logging.logger import get_stage_logger
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+
+logger = get_stage_logger(__name__)
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.processing.functions import moving_average
 
@@ -49,10 +51,11 @@ class FilterStage(IAbstractStage):
         filtered_intensity = moving_average(_intensity, 10)
         sample[ESAXSSampleKeys.INTENSITY] = filtered_intensity
 
-        logger.info(
-            f"\n=== FilterStage Processing ===\n"
-            f"Input points:     {len(sample[ESAXSSampleKeys.Q_VALUES])}\n"
-            f"=============================",
+        logger.stage_info(
+            "FilterStage",
+            "Moving average filter applied",
+            window_size=10,
+            data_points=len(sample[ESAXSSampleKeys.Q_VALUES]),
         )
 
         return sample
