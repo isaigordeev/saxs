@@ -73,9 +73,6 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
     ) -> SAXSSample:
         _metadata = _sample.get_metadata()
 
-        if ESampleMetadataKeys.PROCESSED not in _metadata:
-            _sample.set_metadata(ESampleMetadataKeys.PROCESSED, set())
-
         if ESampleMetadataKeys.UNPROCESSED not in _metadata:
             _sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, set())
 
@@ -89,10 +86,6 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         """Pass metadata from sample to flow metadata."""
         _flow_metadata[FlowMetadataKeys.UNPROCESSED] = _sample.get_metadata()[
             FlowMetadataKeys.UNPROCESSED
-        ]
-
-        _flow_metadata[FlowMetadataKeys.PROCESSED] = _sample.get_metadata()[
-            FlowMetadataKeys.PROCESSED
         ]
 
         return _flow_metadata

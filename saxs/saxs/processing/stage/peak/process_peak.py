@@ -24,8 +24,6 @@ from saxs.logging.logger import get_stage_logger
 from saxs.saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
-
-logger = get_stage_logger(__name__)
 from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
@@ -48,6 +46,8 @@ from saxs.saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_PROCESS_META,
     ProcessPeakStageMetadata,
 )
+
+logger = get_stage_logger(__name__)
 
 
 class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
@@ -158,9 +158,13 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         Returns
         -------
         FlowMetadata
-            Updated flow metadata with current peak marked as processed.
+            Updated flow metadata with current peak marked as
+            processed.
         """
         _current: int = _flow_metadata[FlowMetadata.Keys.CURRENT]
+
+        if FlowMetadata.Keys.PROCESSED not in _flow_metadata:
+            _flow_metadata[FlowMetadata.Keys.PROCESSED] = set()
 
         _processed = _flow_metadata[FlowMetadata.Keys.PROCESSED]
         _processed.add(_current)
@@ -177,10 +181,10 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         return _flow_metadata
 
     def _process(self, sample: SAXSSample) -> SAXSSample:
-        """Process and subtract a single peak from SAXS intensity data.
+        """Process and subtract a peak from SAXS intensity arr.
 
-        Implements a two-step fitting approach to accurately characterize
-        and remove a peak:
+        Implements a two-step fitting approach to accurately
+        characterize and remove a peak:
 
         Step 1: Parabolic Fit
         - Fits a parabolic function around the peak using FIT_RANGE
@@ -218,7 +222,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         q_state = sample[SAXSSample.Keys.Q_VALUES]
         i_state = sample[SAXSSample.Keys.INTENSITY]
         ierr_state = sample[SAXSSample.Keys.INTENSITY_ERROR]
-        _current_peak_index = sample.get_metadata()[
+        _current_peak_index: int = sample.get_metadata()[
             ESampleMetadataKeys.CURRENT
         ]
 
