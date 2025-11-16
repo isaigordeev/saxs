@@ -270,7 +270,6 @@ class LogFormatter(logging.Formatter):
         # Build final message with content on new line
         return f"{timestamp} {level:9s} [{component_name:14s}] {message}"
 
-
     def _format_plain(self, record: logging.LogRecord) -> str:
         """Format record without colors (plain text).
 
@@ -422,10 +421,9 @@ class ComponentLogger(logging.Logger):
         **kwargs : Any
             Additional context information.
         """
-        context = " | ".join(f"{k}={v}" for k, v in kwargs.items())
-        msg = f"[{stage_name}] {action}"
-        if context:
-            msg += f" | {context}"
+        msg = f"[{stage_name}] {action} \n|"
+        if kwargs:
+            msg += "|".join(f"  {k}={v} \n" for k, v in kwargs.items())
         self.info(msg)
 
     def scheduler_info(
@@ -606,7 +604,8 @@ def get_logger(name: str, component: str = "default") -> ComponentLogger:
 
 
 def setup_logging(
-    level: int = logging.INFO, enable_colors: bool = True,
+    level: int = logging.INFO,
+    enable_colors: bool = True,
 ) -> None:
     """Configure global logging settings.
 

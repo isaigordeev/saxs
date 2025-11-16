@@ -59,8 +59,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
 
         Parameters
         ----------
-        condition : StageCondition
-            Condition used to determine stage injection.
+        condition : StageCondition Condition used to determine stage injection.
         next_stage_cls : list of AbstractStage
             List containing the next stage class. Must contain at
             most one element.
@@ -114,15 +113,13 @@ class SingleStageChainingPolicy(ChainingPolicy):
                 0
             ]  # there is only one stage
 
-            logger.info(
-                "Condition '%s' passed | "
-                "Injecting stage: %s | "
-                "Approval metadata: %s | "
-                "Scheduler metadata: %s",
-                self.condition.__class__.__name__,
+            logger.stage_info(
                 _pending_stage.__class__.__name__,
-                _approval_metadata,
-                _scheduler_metadata,
+                "Injecting stage",
+                condition=self.condition.__class__.__name__,
+                approval_metadata=_approval_metadata,
+                scheduler_metadata=_scheduler_metadata,
+                flow_metadata=_flow_metadata,
             )
 
             return [

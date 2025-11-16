@@ -120,10 +120,10 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             logger.stage_info(
                 "FindPeakStage",
                 "Peaks detected",
-                peaks_found=len(peak_indices),
-                peak_indices=str(peak_indices),
-                peak_positions=f"q={[f'{p:.4f}' for p in peak_positions[:3]]}{'...' if len(peak_positions) > 3 else ''}",
-                peak_heights=f"I={[f'{h:.2f}' for h in peak_heights[:3]]}{'...' if len(peak_heights) > 3 else ''}",
+                peaks_found=f"{len(peak_indices)}",
+                peak_indices=f"{peak_indices}",
+                peak_positions=f"q={[f'{p:.4f}' for p in peak_positions]}",
+                peak_heights=f"I={[f'{h:.2f}' for h in peak_heights]}",
             )
         else:
             logger.stage_info(
