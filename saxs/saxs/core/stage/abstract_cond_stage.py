@@ -26,7 +26,9 @@ from saxs.saxs.core.stage.abstract_stage import (
     IAbstractStage,
     TStageMetadata,
 )
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
+from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
+    AbstractChainingPolicy,
+)
 from saxs.saxs.core.stage.request.abst_request import (
     AbstractStageRequest,
 )
@@ -57,7 +59,7 @@ class IAbstractRequestingStage(
     def __init__(
         self,
         metadata: TStageMetadata,
-        policy: ChainingPolicy | None,
+        policy: AbstractChainingPolicy | None,
     ):
         self.policy = policy
         super().__init__(metadata)
@@ -94,7 +96,7 @@ class IAbstractRequestingStage(
 
     def default_policy(
         self,
-    ) -> ChainingPolicy | None:
+    ) -> AbstractChainingPolicy | None:
         """
         Provide the default chaining policy for this stage.
 

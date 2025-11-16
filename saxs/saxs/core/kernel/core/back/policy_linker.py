@@ -14,7 +14,9 @@ processing pipeline based on previously built stages.
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
+from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
+    AbstractChainingPolicy,
+)
 
 
 class PolicyLinker:
@@ -30,8 +32,8 @@ class PolicyLinker:
     def link(
         policy_specs: Buffer[PolicySpec],
         stage_instances: Buffer[IAbstractStage],
-        policy_instances: Buffer[ChainingPolicy],
-    ) -> Buffer[ChainingPolicy]:
+        policy_instances: Buffer[AbstractChainingPolicy],
+    ) -> Buffer[AbstractChainingPolicy]:
         """
         Populate `next_stage_cls` for each policy instance.
 
