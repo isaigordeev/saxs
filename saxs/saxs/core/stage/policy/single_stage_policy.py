@@ -18,6 +18,7 @@ from saxs.saxs.core.pipeline.condition.abstract_condition import (
 
 logger = get_logger(__name__, "policy")
 from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    ApprovalMetadata,
     StageApprovalRequest,
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
@@ -25,7 +26,6 @@ from saxs.saxs.core.stage.policy.abstr_chaining_policy import ChainingPolicy
 from saxs.saxs.core.stage.request.abst_request import (
     StageRequest,
 )
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 #  probably there we need to unwire
 #  TStageMetadata from TStageMetadata
@@ -107,7 +107,7 @@ class SingleStageChainingPolicy(ChainingPolicy):
 
         if self.condition.evaluate(eval_metadata=_eval_metadata):
             _flow_metadata = request_metadata.flow_metadata
-            _approval_metadata = TAbstractStageMetadata(value={})
+            _approval_metadata = ApprovalMetadata(value={})
             _scheduler_metadata = request_metadata.scheduler_metadata
 
             _pending_stage: IAbstractStage[Any] = self.pending_stages[
@@ -115,7 +115,14 @@ class SingleStageChainingPolicy(ChainingPolicy):
             ]  # there is only one stage
 
             logger.info(
-                f"Condition passed | Injecting stage: {_pending_stage.__class__.__name__}",
+                "Condition '%s' passed | "
+                "Injecting stage: %s | "
+                "Approval metadata: %s | "
+                "Scheduler metadata: %s",
+                self.condition.__class__.__name__,
+                _pending_stage.__class__.__name__,
+                _approval_metadata,
+                _scheduler_metadata,
             )
 
             return [
