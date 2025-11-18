@@ -1,0 +1,917 @@
+SAXS Code Style Guide
+=====================
+
+Version: 1.0
+Last Updated: 2025-11-18
+Applies To: All new code in the SAXS project
+
+This document defines the official code style and naming conventions for the SAXS codebase. These rules are derived from the current codebase patterns and enforce consistency going forward.
+
+Table of Contents
+-----------------
+
+1. Naming Conventions
+2. Type Annotations
+3. Docstring Style
+4. Code Organization
+5. Python Features
+6. Comments and Documentation
+7. Logging
+8. Common Patterns
+9. Tools and Linting
+
+1. Naming Conventions
+--------------------
+
+1.1 Class Names
+
+Use PascalCase for all class names.
+
+Abstract Classes and Interfaces
+
+Rule: Use IAbstract* prefix for abstract base classes and interfaces.
+
+    # CORRECT
+    class IAbstractStage(ABC):
+        """Abstract base class for stages."""
+
+    class IAbstractRequestingStage(IAbstractStage):
+        """Abstract class for stages that can request other stages."""
+
+    # INCORRECT (legacy pattern - do not use)
+    class AbstractStage(ABC):  # Old style
+    class AbstractChainingPolicy(ABC):  # Inconsistent
+
+Rationale: The IAbstract prefix makes it immediately clear that:
+- The class is abstract (cannot be instantiated)
+- It defines an interface/contract
+- Concrete implementations should not use this prefix
+
+Exception: Protocol classes (if used) should use Protocol suffix instead.
+
+Type Wrappers
+
+Rule: Use T* prefix for generic type wrapper classes.
+
+    # CORRECT
+    class TBaseDataType(Generic[T]):
+        """Base type wrapper for validated data."""
+
+    class TAbstractMetadata(Generic[TMetadataSchemaDict, TMetadataKeys]):
+        """Metadata type wrapper."""
+
+    # INCORRECT
+    class BaseDataType:  # Missing T prefix
+    class MetadataType:  # Missing T prefix
+
+Rationale: The T prefix indicates this is a type-level construct used for type safety, not a regular class.
+
+Enumerations
+
+Rule: Use E* prefix for enum classes.
+
+    # CORRECT
+    class ESAXSSampleKeys(Enum):
+        """Keys for SAXS sample dictionary."""
+        Q_VALUES = "q_values"
+        INTENSITY = "intensity"
+
+    class ERuntimeConstants(Enum):
+        """Runtime constants."""
+        UNDEFINED_PEAK = -1
+
+    # INCORRECT
+    class SAXSSampleKeys(Enum):  # Missing E prefix
+    class RuntimeConstants(Enum):  # Missing E prefix
+
+Rationale: Distinguishes enums from regular classes at a glance.
+
+TypedDict Schemas
+
+Rule: Suffix TypedDict classes with Dict.
+
+    # CORRECT
+    class SAXSSampleDict(TypedDict):
+        """Dictionary schema for SAXS samples."""
+        q_values: QValues
+        intensity: Intensity
+
+    class MetadataSchemaDict(TypedDict, total=False):
+        """Base metadata schema."""
+
+    # INCORRECT
+    class SAXSSampleSchema(TypedDict):  # Wrong suffix
+    class SAXSSample(TypedDict):  # Conflicts with actual class
+
+Rationale: Makes it clear this is a schema definition, not a runtime class.
+
+Domain-Specific Suffixes
+
+Rule: Use descriptive suffixes for domain objects.
+
+Suffix     | Purpose                    | Example
+-----------|----------------------------|------------------------------------------
+*Condition | Boolean evaluation logic   | ChainingPeakCondition, ThresholdCondition
+*Policy    | Behavioral strategy        | InsertionPolicy, SingleStageChainingPolicy
+*Stage     | Processing unit            | CutStage, BackgroundStage, FilterStage
+*Metadata  | Data container             | FlowMetadata, StageMetadata, SampleMetadata
+*Request   | Request object             | StageRequest, StageApprovalRequest
+*Scheduler | Scheduling logic           | BaseScheduler, FIFOScheduler
+*Kernel    | Top-level orchestrator     | BaseKernel, PeakKernel
+
+    # CORRECT
+    class ChainingPeakCondition(StageCondition):
+        """Condition for peak chaining."""
+
+    class AlwaysInsertPolicy(InsertionPolicy):
+        """Policy that always approves insertions."""
+
+    # INCORRECT
+    class ChainPeaks:  # Missing Condition suffix
+    class AlwaysInsert:  # Missing Policy suffix
+
+1.2 Module and File Names
+
+Rule: Use snake_case exclusively for all file and module names.
+
+    # CORRECT
+    abstract_stage.py
+    flow_metadata.py
+    chaining_condition.py
+    stage_approval_request.py
+
+    # INCORRECT
+    AbstractStage.py  # PascalCase
+    flowMetadata.py   # camelCase
+
+Abbreviations in File Names
+
+Rule: Avoid abbreviations unless they improve readability significantly. When abbreviating, be consistent.
+
+Standard Abbreviations (approved):
+- abst_ for "abstract" (e.g., abst_request.py)
+- util for "utility" (e.g., util_functions.py)
+
+    # CORRECT (prefer full words)
+    abstract_condition.py
+    abstract_stage.py
+
+    # ACCEPTABLE (if consistent across project)
+    abst_request.py
+    abst_chaining_policy.py
+
+    # INCORRECT (inconsistent)
+    abstract_condition.py  # Full word
+    abst_request.py        # Abbreviated
+    abs_stage.py           # Different abbreviation
+
+Decision: For SAXS project, prefer full words going forward. Existing abst_ files may remain but new files should use full abstract_.
+
+1.3 Function and Method Names
+
+Rule: Use snake_case for all functions and methods.
+
+    # CORRECT
+    def process_sample(sample: SAXSSample) -> SAXSSample:
+        """Process a SAXS sample."""
+
+    def create_metadata_from_dict(data: dict) -> Metadata:
+        """Create metadata from dictionary."""
+
+    # INCORRECT
+    def processSample():  # camelCase
+    def ProcessSample():  # PascalCase
+
+Private and Protected Methods
+
+Rule: Prefix private/protected methods with single underscore _.
+
+    # CORRECT
+    class Stage:
+        def process(self, sample):
+            """Public method."""
+            self._preprocess(sample)
+
+        def _preprocess(self, sample):
+            """Private helper method."""
+
+Do NOT use:
+- Double underscore __ (name mangling) - not needed
+- Single trailing underscore _ (reserved for avoiding keyword conflicts)
+
+Special Method Patterns
+
+Rule: Use consistent prefixes for common operations.
+
+Prefix   | Purpose                             | Example
+---------|-------------------------------------|------------------------------------
+get_*    | Retrieve value                      | get_metadata(), get_cut_point()
+set_*    | Set value (rare, prefer immutability) | set_metadata()
+create_* | Factory method                      | create_sample(), create_request()
+is_*     | Boolean check                       | is_valid(), is_processed()
+has_*    | Boolean check (possession)          | has_metadata(), has_peaks()
+*_from_* | Conversion                          | from_dict(), from_yaml()
+
+    # CORRECT
+    def get_intensity(self) -> Intensity:
+        """Get intensity values."""
+
+    def create_sample_from_dict(data: dict) -> SAXSSample:
+        """Create sample from dictionary."""
+
+    def is_valid(self) -> bool:
+        """Check if sample is valid."""
+
+    # INCORRECT
+    def intensity(self):  # Ambiguous
+    def make_sample(data):  # Use create_*
+    def valid(self):  # Use is_*
+
+1.4 Variable Names
+
+Rule: Use snake_case for all variables.
+
+    # CORRECT
+    sample_count = 10
+    intensity_values = np.array([1, 2, 3])
+    background_coefficient = 0.7
+
+    # INCORRECT
+    sampleCount = 10  # camelCase
+    IntensityValues = []  # PascalCase
+
+Temporary and Internal Variables
+
+Rule: Prefix temporary/internal variables with single underscore _.
+
+    # CORRECT
+    def process(self, sample: SAXSSample) -> SAXSSample:
+        _intensity = sample.get_intensity()
+        _background = self._calculate_background(_intensity)
+        return self._subtract(_intensity, _background)
+
+When to use _ prefix:
+- Temporary variables within a function
+- Variables used only for intermediate calculations
+- Variables not part of the public interface
+
+When NOT to use _ prefix:
+- Function parameters (already local scope)
+- Return values
+- Public attributes
+
+Variable Naming Best Practices
+
+    # CORRECT - Descriptive names
+    original_intensity = sample.get_intensity()
+    filtered_intensity = self.apply_filter(original_intensity)
+    peak_positions = self.find_peaks(filtered_intensity)
+
+    # INCORRECT - Too short
+    i = sample.get_intensity()
+    fi = self.apply_filter(i)
+    pp = self.find_peaks(fi)
+
+    # INCORRECT - Too verbose
+    original_intensity_values_from_saxs_sample = sample.get_intensity()
+
+Guidelines:
+- 2-3 words maximum for variable names
+- Use full words, not abbreviations (except standard ones like q, I, dI for SAXS data)
+- Be specific but concise
+
+1.5 Constants
+
+Rule: Use SCREAMING_SNAKE_CASE for module-level constants.
+
+    # CORRECT
+    DEFAULT_CUT_POINT = 100
+    BACKGROUND_COEF = 0.7
+    MAX_ITERATIONS = 1000
+    START_Q_VALUE = 0.02
+
+    # INCORRECT
+    default_cut_point = 100  # Looks like variable
+    DefaultCutPoint = 100    # Looks like class
+
+Default Value Constants
+
+Rule: Prefix default configuration values with DEFAULT_.
+
+    # CORRECT
+    DEFAULT_CUT_META = CutStageMetadata(value={"cut_point": 100})
+    DEFAULT_PROMINENCE = 0.6
+    DEFAULT_WINDOW_SIZE = 6
+
+    # ALSO CORRECT (domain-specific constants without DEFAULT_)
+    BACKGROUND_COEF = 0.7  # Well-known constant
+    SIGMA_FILTER = 1.5     # Scientific parameter
+    START_Q_VALUE = 0.02   # Physical threshold
+
+1.6 Type Variables and Generics
+
+Rule: Use single capital letters for generic type variables.
+
+    # CORRECT
+    T = TypeVar("T")
+    TMetadataSchemaDict = TypeVar("TMetadataSchemaDict", bound=MetadataSchemaDict)
+    TMetadataKeys = TypeVar("TMetadataKeys", bound=Enum)
+
+    # INCORRECT
+    MetadataType = TypeVar("MetadataType")  # Too verbose
+    T_Metadata = TypeVar("T_Metadata")      # Unnecessary underscore
+
+Approved prefixes:
+- T for generic type
+- TMetadata* for metadata-related types
+- TSample* for sample-related types
+
+2. Type Annotations
+------------------
+
+2.1 Always Use Type Annotations
+
+Rule: All public functions, methods, and class attributes must have type annotations.
+
+    # CORRECT
+    def process_sample(
+        sample: SAXSSample,
+        metadata: StageMetadata | None = None,
+    ) -> tuple[SAXSSample, FlowMetadata]:
+        """Process a sample."""
+
+    # INCORRECT
+    def process_sample(sample, metadata=None):  # Missing types
+        """Process a sample."""
+
+2.2 Modern Type Syntax
+
+Rule: Use Python 3.10+ type union syntax.
+
+    # CORRECT (Python 3.10+)
+    def get_value(key: str) -> int | None:
+        """Get integer value or None."""
+
+    # INCORRECT (old style)
+    from typing import Optional
+    def get_value(key: str) -> Optional[int]:
+        """Get integer value or None."""
+
+2.3 Forward References
+
+Rule: Use string quotes for forward references to avoid circular imports.
+
+    # CORRECT
+    from typing import TYPE_CHECKING
+
+    if TYPE_CHECKING:
+        from saxs.saxs.core.pipeline.scheduler import Scheduler
+
+    class Pipeline:
+        def __init__(self, scheduler: "Scheduler"):
+            """Initialize with scheduler."""
+
+2.4 Complex Types
+
+Rule: Break complex type annotations across multiple lines for readability.
+
+    # CORRECT
+    def create_pipeline(
+        stages: list[IAbstractStage[Any]],
+        metadata: dict[str, Any],
+        config: PipelineConfig | None = None,
+    ) -> tuple[Pipeline, FlowMetadata]:
+        """Create pipeline."""
+
+    # INCORRECT (too long)
+    def create_pipeline(stages: list[IAbstractStage[Any]], metadata: dict[str, Any], config: PipelineConfig | None = None) -> tuple[Pipeline, FlowMetadata]:
+        """Create pipeline."""
+
+2.5 TypedDict Usage
+
+Rule: Use TypedDict for structured dictionaries, especially for schemas.
+
+    # CORRECT
+    class SAXSSampleDict(TypedDict):
+        """SAXS sample dictionary schema."""
+        q_values: QValues
+        intensity: Intensity
+        intensity_err: IntensityError
+        metadata: SampleMetadata
+
+    # Use total=False for optional fields
+    class OptionalConfigDict(TypedDict, total=False):
+        """Optional configuration fields."""
+        cut_point: int
+        prominence: float
+
+3. Docstring Style
+------------------
+
+3.1 Format: NumPy/numpydoc Style
+
+Rule: Use NumPy-style docstrings exclusively.
+
+    """
+    Brief one-line summary ending with period.
+
+    Extended description explaining the purpose, behavior, and usage
+    of this module/class/function. Can span multiple paragraphs.
+
+    Parameters
+    ----------
+    param_name : Type
+        Description of parameter. Can span multiple lines with
+        proper indentation.
+    another_param : Type, optional
+        Description. Use "optional" for parameters with defaults.
+
+    Returns
+    -------
+    ReturnType
+        Description of return value.
+
+    Raises
+    ------
+    ValueError
+        When validation fails.
+    KeyError
+        When key not found.
+
+    Examples
+    --------
+    >>> function_name(param=value)
+    Expected output
+    """
+
+3.2 Module Docstrings
+
+Rule: Every module must have a docstring at the top.
+
+    """module_name module.
+
+    Brief description of what this module provides.
+
+    Longer description explaining the purpose, main concepts,
+    and how to use the components in this module.
+
+    Classes
+    -------
+    ClassName
+        Brief description.
+    AnotherClass
+        Brief description.
+
+    Functions
+    ---------
+    function_name
+        Brief description.
+    """
+
+3.3 Class Docstrings
+
+Rule: Include class purpose and attributes.
+
+    class ClassName:
+        """Brief one-line description.
+
+        Longer description explaining the class's purpose,
+        behavior, and usage patterns.
+
+        Attributes
+        ----------
+        attribute_name : Type
+            Description of attribute.
+        another_attribute : Type
+            Description of another attribute.
+        """
+
+3.4 Method Docstrings
+
+Rule: Document all public methods with Parameters, Returns, and Raises sections.
+
+    def method_name(
+        self,
+        param: Type,
+        optional_param: Type | None = None,
+    ) -> ReturnType:
+        """Brief description of what method does.
+
+        Extended description if needed.
+
+        Parameters
+        ----------
+        param : Type
+            Description of required parameter.
+        optional_param : Type, optional
+            Description of optional parameter.
+
+        Returns
+        -------
+        ReturnType
+            Description of return value.
+
+        Raises
+        ------
+        ValueError
+            When input validation fails.
+        """
+
+3.5 Docstring Completeness
+
+Requirements:
+- Module docstrings: Always required
+- Public class docstrings: Always required with Attributes section
+- Public method docstrings: Always required with Parameters/Returns
+- Private method docstrings: Optional, use for complex logic
+- Property docstrings: Not used (we don't use @property)
+
+4. Code Organization
+--------------------
+
+4.1 Import Ordering
+
+Rule: Group imports in the following order with blank lines between groups:
+
+    # 1. Future imports (if needed)
+    from __future__ import annotations
+
+    # 2. Standard library imports
+    from abc import ABC, abstractmethod
+    from typing import Any, Generic, TypeVar
+
+    # 3. Third-party imports
+    import numpy as np
+    from scipy.optimize import minimize
+
+    # 4. Local imports
+    from saxs.saxs.core.types.sample import SAXSSample
+    from saxs.saxs.core.types.flow_metadata import FlowMetadata
+
+    # 5. TYPE_CHECKING imports (at end)
+    from typing import TYPE_CHECKING
+
+    if TYPE_CHECKING:
+        from saxs.saxs.core.pipeline.scheduler import Scheduler
+
+Within each group: Sort alphabetically.
+
+4.2 Module Structure
+
+Rule: Organize module contents in this order:
+
+    # 1. Module docstring
+    """Module description."""
+
+    # 2. Imports (as above)
+
+    # 3. Constants and type variables
+    DEFAULT_VALUE = 10
+    T = TypeVar("T")
+
+    # 4. Type definitions (TypedDict, Enum)
+    class ConfigDict(TypedDict):
+        """Config schema."""
+
+    # 5. Classes (abstract first, then concrete)
+    class IAbstractBase(ABC):
+        """Abstract base."""
+
+    class ConcreteImplementation(IAbstractBase):
+        """Concrete implementation."""
+
+    # 6. Functions (if any)
+    def helper_function() -> None:
+        """Helper function."""
+
+4.3 File Organization Patterns
+
+Rule: Separate type definitions into companion types.py files.
+
+    stage/
+    ├── cut_stage.py          # Implementation
+    ├── background_stage.py   # Implementation
+    └── types.py              # Shared types for stages
+
+For complex modules:
+
+    stage/
+    ├── __init__.py
+    ├── abstract_stage.py     # Base classes
+    ├── cut/
+    │   ├── __init__.py
+    │   ├── cut_stage.py      # Implementation
+    │   └── types.py          # Cut-specific types
+    └── background/
+        ├── __init__.py
+        ├── background_stage.py
+        └── types.py
+
+5. Python Features
+------------------
+
+5.1 Dataclasses
+
+Rule: Use @dataclass for data containers.
+
+    from dataclasses import dataclass, field
+
+    # CORRECT - Mutable dataclass
+    @dataclass(frozen=False)
+    class SampleData:
+        """Container for sample data."""
+        intensity: np.ndarray
+        metadata: dict[str, Any] = field(default_factory=dict)
+
+    # CORRECT - Immutable dataclass
+    @dataclass(frozen=True)
+    class Config:
+        """Immutable configuration."""
+        cut_point: int
+        prominence: float
+
+When to use frozen=True:
+- Configuration objects
+- Value objects (should not change after creation)
+- Objects that will be used as dict keys
+
+When to use frozen=False:
+- Working data containers
+- Objects that accumulate state
+- Default choice
+
+5.2 Abstract Base Classes
+
+Rule: Use ABC and @abstractmethod for all abstract classes.
+
+    from abc import ABC, abstractmethod
+
+    class IAbstractStage(ABC):
+        """Abstract base class for stages."""
+
+        @abstractmethod
+        def process(self, sample: SAXSSample) -> SAXSSample:
+            """Process a sample."""
+
+Do NOT:
+- Use NotImplementedError without @abstractmethod
+- Create abstract classes without inheriting from ABC
+
+5.3 Features NOT Used
+
+Do NOT use in SAXS codebase:
+- __slots__ (not used for optimization)
+- @property decorators (use explicit get_* methods)
+- typing.Protocol (not used yet)
+- Name mangling with __ (use single _ for private)
+
+6. Comments and Documentation
+-----------------------------
+
+6.1 Inline Comments
+
+Rule: Use inline comments sparingly to explain "why", not "what".
+
+    # CORRECT
+    # SAXS data below q=0.02 is unreliable due to beamstop artifacts
+    cutoff_index = np.argmax(q > 0.02)
+
+    # Use BFGS optimizer for better convergence on smooth functions
+    result = minimize(loss, params, method="BFGS")
+
+    # INCORRECT (states the obvious)
+    # Set cutoff index
+    cutoff_index = np.argmax(q > 0.02)
+
+    # Call minimize function
+    result = minimize(loss, params, method="BFGS")
+
+6.2 Section Separators
+
+Rule: Use comment separators for logical sections within long functions/classes.
+
+    def complex_function():
+        # --- Data preprocessing ---
+        cleaned_data = preprocess(raw_data)
+
+        # --- Feature extraction ---
+        features = extract_features(cleaned_data)
+
+        # --- Model fitting ---
+        model = fit_model(features)
+
+        return model
+
+Format: # --- Section Name ---
+
+6.3 TODO/FIXME Comments
+
+Rule: Use TODO comments with context and attribution.
+
+    # TODO(username): Add support for custom prominence values
+    # TODO: Implement adaptive filtering for noisy regions
+    # FIXME: This fails for empty arrays - add validation
+
+Do NOT:
+- Leave TODOs without explanation
+- Leave TODOs without indication of priority
+
+7. Logging
+----------
+
+7.1 Logger Creation
+
+Rule: Use component-specific loggers via factory functions.
+
+    from saxs.logging.logger import get_logger
+
+    # For general modules
+    logger = get_logger(__name__, "component_name")
+
+    # For specific components (preferred)
+    from saxs.logging.logger import get_stage_logger
+    logger = get_stage_logger(__name__)
+
+Component types:
+- get_stage_logger() for stage implementations
+- get_scheduler_logger() for scheduler code
+- get_kernel_logger() for kernel code
+- get_pipeline_logger() for pipeline code
+- get_logger(__name__, "policy") for policies
+
+7.2 Logging Format
+
+Rule: Use placeholder format, NOT f-strings.
+
+    # CORRECT
+    logger.info("Processing sample %s with %d peaks", sample_id, peak_count)
+    logger.debug("Metadata: %s", metadata)
+
+    # INCORRECT
+    logger.info(f"Processing sample {sample_id} with {peak_count} peaks")
+
+Rationale: Lazy evaluation - string formatting only happens if log level is enabled.
+
+7.3 Component-Specific Logging
+
+Rule: Use specialized logging methods for structured output.
+
+    # For stages
+    logger.stage_info(
+        stage_name=self.__class__.__name__,
+        action="Processing sample",
+        sample_id=sample.id,
+        metadata=metadata,
+    )
+
+    # For scheduler
+    logger.scheduler_info(
+        action="Enqueuing stage",
+        queue_size=self.queue_size(),
+        stage_name=stage.__class__.__name__,
+    )
+
+8. Common Patterns
+------------------
+
+8.1 Error Handling
+
+Rule: Create message variable before raising.
+
+    # CORRECT
+    if value < 0:
+        msg = f"Value must be non-negative, got {value}"
+        raise ValueError(msg)
+
+    # INCORRECT (inline f-string in raise)
+    if value < 0:
+        raise ValueError(f"Value must be non-negative, got {value}")
+
+Rationale: Easier to debug; message variable visible in stack trace.
+
+8.2 String Formatting
+
+Rule: Use f-strings exclusively for string formatting.
+
+    # CORRECT
+    message = f"Processing {sample_id} with {peak_count} peaks"
+    path = f"{directory}/{filename}.dat"
+
+    # INCORRECT
+    message = "Processing {} with {} peaks".format(sample_id, peak_count)
+    message = "Processing %s with %d peaks" % (sample_id, peak_count)
+
+Exception: Logging uses %s placeholders (see Section 7.2).
+
+8.3 Builder Pattern
+
+Rule: Use with_* method naming for builders.
+
+    class Pipeline:
+        @classmethod
+        def with_stages(cls, stages: list[IAbstractStage]) -> "Pipeline":
+            """Create pipeline with stages."""
+
+        @classmethod
+        def with_config(cls, config: dict) -> "Pipeline":
+            """Create pipeline from config."""
+
+8.4 Factory Methods
+
+Rule: Use create_* or from_* for factory methods.
+
+    class SAXSSample:
+        @classmethod
+        def from_dict(cls, data: SAXSSampleDict) -> "SAXSSample":
+            """Create sample from dictionary."""
+
+        @classmethod
+        def create_empty(cls) -> "SAXSSample":
+            """Create empty sample."""
+
+9. Tools and Linting
+--------------------
+
+9.1 Required Tools
+
+- Ruff: Primary linter and formatter
+- mypy: Static type checking
+- pytest: Testing framework
+
+9.2 Line Length
+
+Rule: Maximum 88 characters per line (Black/Ruff default).
+
+    # CORRECT
+    def process_sample(
+        sample: SAXSSample,
+        metadata: StageMetadata | None = None,
+    ) -> tuple[SAXSSample, FlowMetadata]:
+        """Process sample."""
+
+    # INCORRECT (>88 chars)
+    def process_sample(sample: SAXSSample, metadata: StageMetadata | None = None) -> tuple[SAXSSample, FlowMetadata]:
+
+9.3 Ruff Configuration
+
+Disable these warnings (as currently configured):
+- Boolean-typed positional arguments (when necessary)
+- Dynamically typed expressions in **kwargs
+- F-string usage in logging (handled separately)
+
+10. Migration Guide
+-------------------
+
+10.1 Fixing Naming Inconsistencies
+
+Action Items:
+
+1. Standardize abstract class prefixes to IAbstract*:
+   - AbstractChainingPolicy → IAbstractChainingPolicy
+   - AbstractScheduler → IAbstractScheduler
+   - AbstractKernel → IAbstractKernel
+
+2. Standardize file naming (prefer full words):
+   - abstr_chaining_policy.py → abstract_chaining_policy.py
+   - Existing abst_request.py can remain (grandfather clause)
+
+3. Add missing enum prefixes:
+   - Verify all enum classes start with E*
+
+4. Standardize logger usage:
+   - Replace logger.info(f"...") with logger.info("...", args)
+
+10.2 Backward Compatibility
+
+Legacy patterns that may remain:
+- Existing abst_* file names (don't rename unless necessary)
+- Old Abstract* classes (rename when refactoring)
+
+New code must follow this guide completely.
+
+Summary Checklist
+-----------------
+
+When writing new code, verify:
+
+- [ ] Class names follow prefix/suffix conventions
+- [ ] Files are snake_case with consistent abbreviations
+- [ ] All public functions have type annotations
+- [ ] Docstrings use NumPy style with all sections
+- [ ] Imports are ordered correctly
+- [ ] Using @dataclass for data containers
+- [ ] Using ABC and @abstractmethod for abstract classes
+- [ ] Logging uses placeholders, not f-strings
+- [ ] Error messages use msg variable before raising
+- [ ] Constants are SCREAMING_SNAKE_CASE
+- [ ] Private methods/variables use single _ prefix
+
+Questions or Suggestions?
+-------------------------
+
+This is a living document. Propose changes via:
+1. Discussion with team
+2. Update this document
+3. Apply changes project-wide
+
+Last Reviewed: 2025-11-18
