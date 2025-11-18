@@ -10,6 +10,12 @@ from saxs.saxs.core.types.metadata import (
 )
 from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
+# Background subtraction coefficient
+# NOTE: Value of 0.7 (not 1.0) is empirically determined to prevent
+# over-subtraction that would create negative intensities.
+# See TECHNICAL_INSIGHTS_LEGACY_PEAK.md section 1.3 for details.
+BACKGROUND_COEF = 0.7
+
 
 class EBackMetadataKeys(EMetadataSchemaKeys):
     """Enum of keys used in BackgroundStageMetadataDict."""

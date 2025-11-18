@@ -10,18 +10,18 @@ The module relies on `scipy.optimize.curve_fit` for fitting and
 supports logging of intermediate and final processing states.
 """
 
-from saxs.application.settings_processing import BACKGROUND_COEF
 from saxs.logging.logger import get_stage_logger
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-
-logger = get_stage_logger(__name__)
 from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.processing.functions import background_hyperbole
 from saxs.saxs.processing.stage.background.types import (
+    BACKGROUND_COEF,
     BackgroundStageMetadata,
     EBackMetadataKeys,
 )
 from saxs.saxs.processing.stage.common.fitting import Fitting
+
+logger = get_stage_logger(__name__)
 
 DEFAULT_BACKG_META = BackgroundStageMetadata(
     value={

@@ -12,7 +12,7 @@ insert and execute new stages in the pipeline.
 
 Classes
 -------
-AbstractStageRequest
+IAbstractStageRequest
     Abstract base class representing a generic stage addition
     request in the pipeline.
 
