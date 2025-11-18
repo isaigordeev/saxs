@@ -8,7 +8,7 @@ container.
 """
 
 from enum import Enum
-from typing import Any, Generic, TypedDict, TypeVar
+from typing import Any, Generic, TypedDict, TypeVar, get_type_hints
 
 from saxs.saxs.core.types.abstract_data import TBaseDataType
 
@@ -165,6 +165,20 @@ class TAbstractMetadata(
                 "Ensure the object is properly initialized."
             )
             raise RuntimeError(msg) from e
+
+        hints = get_type_hints(self.Dict)
+
+        # --- Runtime type safety ---
+        expected_type = hints.get(key.value)
+
+        if expected_type is not None and not isinstance(
+            _value,
+            expected_type.__origin__
+            if hasattr(expected_type, "__origin__")
+            else expected_type,
+        ):
+            msg = f"Invalid type for '{key}': expected {expected_type}, got {type(_value)}"
+            raise TypeError(msg)
 
         try:
             _value[key.value] = value
