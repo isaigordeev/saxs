@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING, Any, TypedDict
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.stage.request.abst_request import (
-    AbstractStageRequest,
     StageRequest,
 )
 
@@ -35,7 +34,7 @@ class EvalSchemaDict(TypedDict, total=False):
     """
 
 
-class AbstractChainingPolicy(ABC):
+class IAbstractChainingPolicy(ABC):
     """Abstract base class for stage chaining policies.
 
     A chaining policy determines how stages are connected in a pipeline

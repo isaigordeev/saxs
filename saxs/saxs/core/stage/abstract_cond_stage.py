@@ -26,11 +26,11 @@ from saxs.saxs.core.stage.abstract_stage import (
     IAbstractStage,
     TStageMetadata,
 )
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-    AbstractChainingPolicy,
+from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+    IAbstractChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import (
-    AbstractStageRequest,
+   IAbstractStageRequest,
 )
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
 
@@ -59,7 +59,7 @@ class IAbstractRequestingStage(
     def __init__(
         self,
         metadata: TStageMetadata,
-        policy: AbstractChainingPolicy | None,
+        policy: IAbstractChainingPolicy | None,
     ):
         self.policy = policy
         super().__init__(metadata)
@@ -96,7 +96,7 @@ class IAbstractRequestingStage(
 
     def default_policy(
         self,
-    ) -> AbstractChainingPolicy | None:
+    ) -> IAbstractChainingPolicy | None:
         """
         Provide the default chaining policy for this stage.
 
@@ -113,7 +113,7 @@ class IAbstractRequestingStage(
     def create_request(
         self,
         metadata: FlowMetadata,
-    ) -> AbstractStageRequest:
+    ) -> IAbstractStageRequest:
         """
         Create a stage request for the current stage.
 

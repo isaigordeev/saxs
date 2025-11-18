@@ -1,10 +1,10 @@
 """Abstract base class for SAXS kernels.
 
-This module defines the `AbstractKernel` class, which provides
+This module defines the `IAbstractKernel` class, which provides
 an abstract interface for SAXS (Small-Angle X-ray Scattering)
 kernel implementations.
 
-Classes derived from `AbstractKernel` are responsible for:
+Classes derived from `IAbstractKernel` are responsible for:
 - Creating a `SAXSSample` instance.
 - Defining the pipeline stages and policies.
 - Building and submitting the pipeline to a scheduler.
@@ -16,7 +16,7 @@ from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
 
 
-class AbstractKernel(ABC):
+class IAbstractKernel(ABC):
     """Abstract kernel class for SAXS pipeline.
 
     Defines the core interface that all SAXS kernel

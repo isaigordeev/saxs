@@ -33,7 +33,7 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import (
-    AbstractStageRequest,
+    IAbstractStageRequest,
     EvalMetadata,
     StageRequest,
 )
@@ -129,7 +129,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
 
         return sample
 
-    def create_request(self, metadata: FlowMetadata) -> AbstractStageRequest:
+    def create_request(self, metadata: FlowMetadata) -> IAbstractStageRequest:
         """Create a request for peak processing."""
         _current_peaks: dict[int, np.float64] = metadata[
             FlowMetadataKeys.UNPROCESSED

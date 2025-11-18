@@ -14,7 +14,7 @@ Pipeline
 """
 
 from saxs.saxs.core.pipeline.scheduler.scheduler import (
-    AbstractScheduler,
+    IAbstractScheduler,
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
@@ -26,7 +26,7 @@ class Pipeline:
     Manages the dynamic execution of SAXS processing stages.
 
     A `Pipeline` coordinates a list of `AbstractStage` instances and
-    executes them using a given `AbstractScheduler`. The scheduler
+    executes them using a given `IAbstractScheduler`. The scheduler
     determines the execution order and decides whether new stages
     requested by existing stages should be added to the queue based
     on its insertion policy.
@@ -35,7 +35,7 @@ class Pipeline:
     ----------
     init_stages : list of AbstractStage
         List of initial stages to execute in the pipeline.
-    scheduler : AbstractScheduler
+    scheduler : IAbstractScheduler
         Scheduler responsible for controlling stage execution and
         handling insertion policies.
     """
@@ -43,7 +43,7 @@ class Pipeline:
     def __init__(
         self,
         init_stages: list[IAbstractStage],
-        scheduler: AbstractScheduler,
+        scheduler: IAbstractScheduler,
     ):
         """Initialize the pipeline with stages and a scheduler.
 
@@ -51,7 +51,7 @@ class Pipeline:
         ----------
         init_stages : list of AbstractStage
             Initial list of stages to include in the pipeline.
-        scheduler : AbstractScheduler
+        scheduler : IAbstractScheduler
             Scheduler instance that manages stage execution and
             insertion logic.
         """
@@ -62,7 +62,7 @@ class Pipeline:
     def with_stages(
         cls,
         stages: list[IAbstractStage],
-        scheduler: AbstractScheduler,
+        scheduler: IAbstractScheduler,
     ) -> "Pipeline":
         """Class method to create a pipeline with initial stages.
 
@@ -73,7 +73,7 @@ class Pipeline:
         ----------
         stages : list of AbstractStage
             List of stages to initialize the pipeline with.
-        scheduler : AbstractScheduler
+        scheduler : IAbstractScheduler
             Scheduler that will manage execution and insertion
             of stages.
 

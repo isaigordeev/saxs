@@ -22,8 +22,8 @@ from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-    AbstractChainingPolicy,
+from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+    IAbstractChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import (
     StageRequest,
@@ -33,7 +33,7 @@ from saxs.saxs.core.stage.request.abst_request import (
 #  TStageMetadata from TStageMetadata
 
 
-class SingleStageChainingPolicy(AbstractChainingPolicy):
+class SingleStageChainingPolicy(IAbstractChainingPolicy):
     """
     Single-stage chaining policy.
 

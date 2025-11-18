@@ -11,7 +11,7 @@ from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 @dataclass(frozen=True)
-class AbstractStageApprovalRequest:
+class IAbstractStageApprovalRequest:
     """Base class for stage addition requests.
 
     The position (next/end) is determined by the Scheduler/Pipeline.
@@ -38,7 +38,7 @@ class ApprovalMetadata(
 
 @dataclass(frozen=True)
 class StageApprovalRequest(
-    AbstractStageApprovalRequest,
+    IAbstractStageApprovalRequest,
 ):
     """Concrete implementation of a stage approval request.
 

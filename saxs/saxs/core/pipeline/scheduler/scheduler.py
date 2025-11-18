@@ -10,7 +10,7 @@ adjust the execution order based on stage-generated requests.
 
 Classes
 --------
-AbstractScheduler
+IAbstractScheduler
     Base class defining the scheduler interface.
 BaseScheduler
     Concrete scheduler that executes stages sequentially and manages
@@ -44,7 +44,7 @@ if TYPE_CHECKING:
     )
 
 
-class AbstractScheduler(ABC):
+class IAbstractScheduler(ABC):
     """Abstract base class for all schedulers.
 
     A scheduler manages the execution of a queue of processing
@@ -54,7 +54,7 @@ class AbstractScheduler(ABC):
 
     Attributes
     ----------
-    _metadata : AbstractSchedulerMetadata
+    _metadata : IAbstractSchedulerMetadata
         Stores scheduler-level metadata.
     _queue : collections.deque
         Queue holding pending stages to execute.
@@ -112,7 +112,7 @@ class AbstractScheduler(ABC):
         self._queue.extend(initial_stages)
 
 
-class BaseScheduler(AbstractScheduler):
+class BaseScheduler(IAbstractScheduler):
     """Concrete scheduler that executes stages sequentially.
 
     The `BaseScheduler` processes each stage in the queue in FIFO
@@ -218,7 +218,7 @@ class BaseScheduler(AbstractScheduler):
 
         Parameters
         ----------
-        new_scheduler_metadata : AbstractSchedulerMetadata
+        new_scheduler_metadata : IAbstractSchedulerMetadata
             Metadata produced by a stage to update the scheduler
             state.
         """

@@ -23,8 +23,8 @@ from saxs.saxs.core.stage.abstract_stage import (
     IAbstractStage,
     TAbstractStageMetadata,
 )
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-    AbstractChainingPolicy,
+from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+    IAbstractChainingPolicy,
 )
 
 StageSpecId = str
@@ -73,7 +73,7 @@ class PolicySpec:
     """
 
     id_: PolicySpecId
-    policy_cls: type[AbstractChainingPolicy]
+    policy_cls: type[IAbstractChainingPolicy]
     condition: type[StageCondition]
     condition_kwargs: dict[str, Any] = field(default_factory=dict[str, Any])
     pending_stages: list[StageSpecId] | None = (

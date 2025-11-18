@@ -21,7 +21,7 @@ BaseKernel
 from typing import TYPE_CHECKING
 
 from saxs.saxs.core.kernel.core.abstract_kernel import (
-    AbstractKernel,
+    IAbstractKernel,
 )
 from saxs.saxs.core.kernel.core.back.kernel_compiler import BaseCompiler
 from saxs.saxs.core.pipeline.pipeline import Pipeline
@@ -30,13 +30,13 @@ from saxs.saxs.core.types.sample import SAXSSample
 
 if TYPE_CHECKING:
     from saxs.saxs.core.kernel.core.back.buffer import Buffer
-    from saxs.saxs.core.pipeline.scheduler.scheduler import AbstractScheduler
-    from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-        AbstractChainingPolicy,
+    from saxs.saxs.core.pipeline.scheduler.scheduler import IAbstractScheduler
+    from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+        IAbstractChainingPolicy,
     )
 
 
-class BaseKernel(AbstractKernel):
+class BaseKernel(IAbstractKernel):
     """
     Base kernel class.
 
@@ -48,7 +48,7 @@ class BaseKernel(AbstractKernel):
 
     def __init__(
         self,
-        scheduler: "AbstractScheduler",
+        scheduler: "IAbstractScheduler",
     ):
         self.scheduler = scheduler
         self.execution_order: list[str] = []
@@ -62,7 +62,7 @@ class BaseKernel(AbstractKernel):
         _comp = BaseCompiler()
 
         self.stage_buffer: Buffer[IAbstractStage]
-        self.policy_buffer: Buffer[AbstractChainingPolicy]
+        self.policy_buffer: Buffer[IAbstractChainingPolicy]
 
         self.stage_buffer, self.policy_buffer = _comp.build(
             _stage_decl,

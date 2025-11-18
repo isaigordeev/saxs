@@ -40,8 +40,8 @@ type safety.
 from typing import Generic, TypeVar
 
 from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-    AbstractChainingPolicy,
+from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+    IAbstractChainingPolicy,
 )
 
 # Generic type variable for classes that can be registered.
@@ -164,4 +164,4 @@ class ClassRegistry(Generic[T]):
 # Aliases for clarity
 # ------------------------
 StageRegistry = ClassRegistry[IAbstractStage[TStageMetadata]]
-PolicyRegistry = ClassRegistry[AbstractChainingPolicy]
+PolicyRegistry = ClassRegistry[IAbstractChainingPolicy]

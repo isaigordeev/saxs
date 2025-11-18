@@ -4,8 +4,8 @@ if TYPE_CHECKING:
     from saxs.saxs.core.stage.abstract_cond_stage import (
         IAbstractRequestingStage,
     )
-    from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-        AbstractChainingPolicy,
+    from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+        IAbstractChainingPolicy,
     )
 
 
@@ -21,14 +21,14 @@ class PolicyRegistry:
     def register(
         self,
         stage_cls: type["IAbstractRequestingStage"],
-        policy: "AbstractChainingPolicy",
+        policy: "IAbstractChainingPolicy",
     ) -> None:
         self._policies[stage_cls] = policy
 
     def get_policy(
         self,
         stage_cls: type["IAbstractRequestingStage"],
-    ) -> "AbstractChainingPolicy":
+    ) -> "IAbstractChainingPolicy":
         if stage_cls not in self._policies:
             msg = f"No policy registered for {stage_cls.__name__}"
             raise ValueError(msg)

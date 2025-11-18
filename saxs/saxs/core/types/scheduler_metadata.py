@@ -7,7 +7,7 @@ associated with a stage scheduler in SAXS processing. It provides:
 - `ESchedulerMetadataDictKeys`: Enum for valid metadata keys in
    scheduler context.
 - `SchedulerMetadataDict`: Typed dictionary for scheduler metadata.
-- `AbstractSchedulerMetadata`: Dict-like container for scheduler
+- `IAbstractSchedulerMetadata`: Dict-like container for scheduler
    metadata
   supporting default values and human-readable descriptions.
 

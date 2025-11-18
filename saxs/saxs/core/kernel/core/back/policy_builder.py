@@ -20,8 +20,8 @@ from typing import Any
 from saxs.saxs.core.kernel.core.back.buffer import Buffer
 from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec
 from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
-from saxs.saxs.core.stage.policy.abstr_chaining_policy import (
-    AbstractChainingPolicy,
+from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+    IAbstractChainingPolicy,
 )
 
 
@@ -35,13 +35,13 @@ class PolicyBuilder:
     @staticmethod
     def build(
         policy_specs: Buffer[PolicySpec],
-    ) -> Buffer[AbstractChainingPolicy]:
+    ) -> Buffer[IAbstractChainingPolicy]:
         """Policy builder.
 
         Returns a dict: stage_id -> stage_instance.
         """
-        policy_instances: Buffer[AbstractChainingPolicy] = Buffer[
-            AbstractChainingPolicy
+        policy_instances: Buffer[IAbstractChainingPolicy] = Buffer[
+            IAbstractChainingPolicy
         ]()
 
         for policy_spec in policy_specs.values():
