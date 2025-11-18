@@ -24,9 +24,9 @@ class FlowMetadataDict(MetadataSchemaDict, total=False):
     """
 
     sample: str
-    processed_peaks: set[np.int64]
-    unprocessed_peaks: set[np.int64]
-    current: np.int64 | ERuntimeConstants
+    processed_peaks: dict[int, np.float64]
+    unprocessed_peaks: dict[int, np.float64] | ERuntimeConstants
+    current: dict[int, np.float64] | ERuntimeConstants  # simplify
 
 
 class FlowMetadataKeys(EMetadataSchemaKeys):

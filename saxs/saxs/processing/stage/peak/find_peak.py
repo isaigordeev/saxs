@@ -45,7 +45,6 @@ from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
 from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
 from saxs.saxs.core.types.scheduler_metadata import (
     ERuntimeConstants,
-    SchedulerMetadata,
 )
 from saxs.saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_FIND_META,
@@ -132,29 +131,44 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
 
     def create_request(self, metadata: FlowMetadata) -> AbstractStageRequest:
         """Create a request for peak processing."""
-        _current_peaks: set[np.int64] = metadata[FlowMetadataKeys.UNPROCESSED]
+        _current_peaks: dict[int, np.float64] = metadata[
+            FlowMetadataKeys.UNPROCESSED
+        ]
 
         # implement policy for peak choice
 
         _current_peak = (
-            max(_current_peaks)  # max peak
+            max(_current_peaks, key=lambda x: _current_peaks[x])  # max peak
             if len(_current_peaks) > 0
             else ERuntimeConstants.UNDEFINED_PEAK
         )
 
         if _current_peak != ERuntimeConstants.UNDEFINED_PEAK:
-            _current_peaks.remove(_current_peak)  # pop from the set
+            _current_peaks.pop(_current_peak)  # pop from the set
             logger.stage_info(
                 "FindPeakStage",
                 "Requesting peak processing",
                 peak_index=f"Current peak {int(_current_peak)}",
                 remaining_peaks="Remaining peaks len: {len(_current_peaks)}",
             )
+        else:
+            # if no peaks found create an empty request to finish
+            _undefined = ERuntimeConstants.UNDEFINED_PEAK
+            return StageRequest(
+                condition_eval_metadata=EvalMetadata(
+                    {FlowMetadataKeys.CURRENT.value: _undefined},
+                ),
+                flow_metadata=FlowMetadata({}),
+            )
 
-        metadata[FlowMetadata.Keys.CURRENT] = _current_peak
+        _current = {
+            _current_peak: _current_peaks[_current_peak],
+        }  # pair q:I
+
+        metadata[FlowMetadata.Keys.CURRENT] = _current
 
         eval_metadata = EvalMetadata(
-            {FlowMetadataKeys.CURRENT.value: _current_peak},
+            {FlowMetadataKeys.CURRENT.value: _current},
         )
 
         return StageRequest(

@@ -71,10 +71,6 @@ class StageRequest(AbstractStageRequest):
     flow_metadata : FlowMetadata
         Metadata passed forward to the next stage for contextual
         processing.
-    scheduler_metadata : AbstractSchedulerMetadata
-        Metadata containing scheduler-level information, such as
-        iteration counts or peak indices, relevant for insertion
-        policies.
     """
 
     condition_eval_metadata: EvalMetadata
