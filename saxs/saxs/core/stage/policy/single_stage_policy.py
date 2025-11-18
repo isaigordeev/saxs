@@ -109,7 +109,6 @@ class SingleStageChainingPolicy(AbstractChainingPolicy):
         if self.condition.evaluate(eval_metadata=_eval_metadata):
             _flow_metadata = request_metadata.flow_metadata
             _approval_metadata = ApprovalMetadata(value={})
-            _scheduler_metadata = request_metadata.scheduler_metadata
 
             _pending_stage: IAbstractStage[Any] = self.pending_stages[
                 0
@@ -120,7 +119,6 @@ class SingleStageChainingPolicy(AbstractChainingPolicy):
                 "Injecting stage",
                 condition=self.condition.__class__.__name__,
                 approval_metadata=_approval_metadata,
-                scheduler_metadata=_scheduler_metadata,
                 flow_metadata=_flow_metadata,
             )
 

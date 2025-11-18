@@ -26,8 +26,6 @@ from scipy.signal import (  # pyright: ignore[reportMissingTypeStubs]
 )
 
 from saxs.logging.logger import get_stage_logger
-
-logger = get_stage_logger(__name__)
 from saxs.saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
@@ -54,6 +52,8 @@ from saxs.saxs.processing.stage.peak.types import (
     EPeakFindMetadataKeys,
     PeakFindStageMetadata,
 )
+
+logger = get_stage_logger(__name__)
 
 
 class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
@@ -124,7 +124,9 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
                 "No peaks detected",
             )
 
-        sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, set(peak_indices))
+        _peak_dict = {index: intensity[index] for index in peak_indices}
+
+        sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, _peak_dict)
 
         return sample
 
@@ -132,18 +134,21 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         """Create a request for peak processing."""
         _current_peaks: set[np.int64] = metadata[FlowMetadataKeys.UNPROCESSED]
 
+        # implement policy for peak choice
+
         _current_peak = (
-            _current_peaks.pop()
+            max(_current_peaks)  # max peak
             if len(_current_peaks) > 0
             else ERuntimeConstants.UNDEFINED_PEAK
-        )  # more flexible peak choice
+        )
 
         if _current_peak != ERuntimeConstants.UNDEFINED_PEAK:
+            _current_peaks.remove(_current_peak)  # pop from the set
             logger.stage_info(
                 "FindPeakStage",
                 "Requesting peak processing",
-                peak_index=int(_current_peak),
-                remaining_peaks=len(_current_peaks),
+                peak_index=f"Current peak {int(_current_peak)}",
+                remaining_peaks="Remaining peaks len: {len(_current_peaks)}",
             )
 
         metadata[FlowMetadata.Keys.CURRENT] = _current_peak
@@ -152,11 +157,8 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             {FlowMetadataKeys.CURRENT.value: _current_peak},
         )
 
-        scheduler_metadata = SchedulerMetadata({})
-
         return StageRequest(
             condition_eval_metadata=eval_metadata,
-            scheduler_metadata=scheduler_metadata,
             flow_metadata=metadata,
         )
 

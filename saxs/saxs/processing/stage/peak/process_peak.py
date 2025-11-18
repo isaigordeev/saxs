@@ -1,9 +1,9 @@
 """Peak processing stage module.
 
-This module implements the ProcessPeakStage, which processes individual
-peaks detected in SAXS scattering data. The stage fits peak profiles
-(using Gaussian or parabolic functions) and extracts peak characteristics
-such as position, width, and amplitude.
+This module implements the ProcessPeakStage, which processes
+individual peaks detected in SAXS scattering data. The stage fits
+peak profiles (using Gaussian or parabolic functions) and extracts
+peak characteristics such as position, width, and amplitude.
 
 The stage works in conjunction with FindPeakStage in an iterative
 workflow, processing one peak at a time and updating flow metadata
@@ -12,7 +12,7 @@ to track processed and unprocessed peaks.
 Classes
 -------
 ProcessPeakStage
-    Stage implementation for processing individual peaks in SAXS data.
+    Stage implementation for processing individual peaks in data.
 """
 
 # Created by Isai Gordeev on 20/09/2025.
@@ -38,7 +38,6 @@ from saxs.saxs.core.types.sample_objects import (
 )
 from saxs.saxs.core.types.scheduler_metadata import (
     ERuntimeConstants,
-    SchedulerMetadata,
 )
 from saxs.saxs.processing.functions import gauss, parabole
 from saxs.saxs.processing.stage.common.fitting import Fitting
@@ -59,8 +58,8 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
     2. Refined Gaussian fit for accurate peak characterization
 
     After fitting, the Gaussian approximation is subtracted from the
-    intensity data, allowing subsequent iterations to detect and process
-    remaining peaks.
+    intensity data, allowing subsequent iterations to detect and
+    process remaining peaks.
 
     The stage works iteratively with FindPeakStage:
     - Receives peak index from flow metadata
@@ -166,9 +165,11 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         if FlowMetadata.Keys.PROCESSED not in _flow_metadata:
             _flow_metadata[FlowMetadata.Keys.PROCESSED] = set()
 
+        # delegate to scheduler the processed peak
         _processed = _flow_metadata[FlowMetadata.Keys.PROCESSED]
         _processed.add(_current)
 
+        # change state of current peak
         _flow_metadata[FlowMetadata.Keys.CURRENT] = (
             ERuntimeConstants.PROCESSED_PEAK
         )
@@ -216,8 +217,8 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
         - Sigma: [delta_q^2, 0.05]
         - Amplitude: [1, 4 * max_intensity]
 
-        The method logs detailed fitting information at each step for
-        debugging and analysis purposes.
+        The method logs detailed fitting information at each step
+        for debugging and analysis purposes.
         """
         q_state = sample[SAXSSample.Keys.Q_VALUES]
         i_state = sample[SAXSSample.Keys.INTENSITY]
@@ -380,13 +381,7 @@ class ProcessPeakStage(IAbstractRequestingStage[ProcessPeakStageMetadata]):
             {FlowMetadata.Keys.CURRENT.value: _current_peak},
         )
 
-        # Empty scheduler metadata (no scheduler-specific data
-        #                           needed)
-
-        scheduler_metadata = SchedulerMetadata({})
-
         return StageRequest(
             condition_eval_metadata=eval_metadata,
-            scheduler_metadata=scheduler_metadata,
             flow_metadata=metadata,
         )

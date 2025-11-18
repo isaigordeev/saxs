@@ -24,7 +24,6 @@ StageRequest
 from dataclasses import dataclass
 
 from saxs.saxs.core.types.flow_metadata import FlowMetadata
-from saxs.saxs.core.types.scheduler_metadata import SchedulerMetadata
 
 
 @dataclass(frozen=False)
@@ -80,4 +79,3 @@ class StageRequest(AbstractStageRequest):
 
     condition_eval_metadata: EvalMetadata
     flow_metadata: FlowMetadata
-    scheduler_metadata: SchedulerMetadata
