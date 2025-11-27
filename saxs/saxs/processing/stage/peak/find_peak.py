@@ -33,8 +33,8 @@ from saxs.saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.saxs.core.stage.request.abst_request import (
-    IAbstractStageRequest,
     EvalMetadata,
+    IAbstractStageRequest,
     StageRequest,
 )
 from saxs.saxs.core.types.flow_metadata import (
