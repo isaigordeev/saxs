@@ -1,0 +1,274 @@
+architecture improvements
+========================
+
+format
+------
+
+- o open task
+- ± uncertain task
+- (!) important
+- (~.) linked (with number of points)
+- x closed task
+
+---
+
+critical - type system simplification
+======================================
+
+- o (!) remove metaclass from metadata.py:30 → replace with
+    __init_subclass__ for validation (simpler, testable, no import-time
+    errors)
+- o (!) consolidate 6+ metadata types to 3 core types:
+    - StageConfig (configuration parameters)
+    - PipelineState (inter-stage flow data)
+    - SampleData (domain properties)
+- o (!) delete all wrapper classes (QValues, Intensity, IntensityError)
+    → use plain numpy arrays (saxs/saxs/core/types/sample_objects.py)
+- o (!) eliminate unwrap() pattern entirely from TBaseDataType
+    (saxs/saxs/core/types/abstract_data.py:39) - just use direct
+    access
+- o reduce 14+ TypeVars to <5 - remove generic params that bind to Any
+- o fix SAXSSample.__getitem__ type signature - currently returns
+    different types based on key (sample.py:122)
+
+critical - kernel system flattening
+====================================
+
+- o (!) delete entire compiler/linker backend system
+    (saxs/saxs/core/kernel/core/back/) - 6 files, ~500 lines for what
+    should be ~100 lines factory
+- o (!) replace with PipelineFactory pattern:
+    def create_pipeline(config: dict) -> Pipeline
+- o merge DeclSpec and RuntimeSpec into single PipelineConfig dataclass
+- o eliminate Buffer abstraction (kernel/core/back/buffer.py) - use
+    plain dicts
+- o remove separation of "builder" and "linker" phases - unnecessary
+    complexity from compiled language patterns
+
+critical - policy/condition consolidation
+==========================================
+
+- o (!) merge StageCondition classes into Policy classes directly
+    (saxs/saxs/core/pipeline/condition/*.py) - strategy pattern
+    applied twice
+- o delete empty abstract classes:
+    - IAbstractStageRequest (abst_request.py:30)
+    - IAbstractStageApprovalRequest
+- o combine duplicate policy evaluation:
+    - InsertionPolicy in scheduler (scheduler.py:189)
+    - ChainingPolicy in stages (single_stage_policy.py:84)
+- o simplify to single should_inject(metadata) -> bool method per
+    policy
+
+major - architecture pattern fixes
+===================================
+
+- o (!) merge Pipeline and BaseScheduler into single PipelineExecutor
+    class (pipeline.py is only 117 lines of delegation)
+- o fix circular import risks - reorganize to clean dependency layers:
+    types → stages → policies → pipeline → kernel
+- o remove 7 TYPE_CHECKING blocks (indicates tight coupling):
+    - abstract_stage.py:24
+    - scheduler.py
+    - abstract_chaining_policy.py
+    - base_kernel.py
+    - policy_registry.py
+    - data/reader.py
+    - pipeline_spec_compiler.py
+
+major - leaky abstraction fixes
+================================
+
+- o fix inconsistent metadata access patterns (3 different ways):
+    sample[ESAXSSampleKeys.Q_VALUES]  vs
+    sample.get_metadata()  vs
+    sample.metadata.unwrap()["key"]
+- o unify to single attribute-based access pattern
+- o fix __setitem__ only working for "array-like keys" - violates dict
+    interface contract (sample.py:140)
+- o simplify stage request flow (currently 4 steps across 4 types):
+    1. create_request → StageRequest
+    2. policy.request → evaluation
+    3. build_approval → StageApprovalRequest
+    4. scheduler approval
+    → replace with single request_next_stage() -> Stage | None
+
+major - error handling improvements
+====================================
+
+- o (!) add fail-fast in linker - no silent skips
+    (policy_linker.py:68, stage_linker.py:48)
+- o fix missing stage/policy errors - currently silent
+- o standardize error message format across all modules
+- o fix metadata.py:151 error message - shows empty [] for valid_keys
+    because EMetadataSchemaKeys is empty enum
+- o add validation in scheduler loop (scheduler.py:158) - no checks
+    for None or invalid stages
+- o add try/except around stage.process() for graceful error recovery
+
+major - code organization cleanup
+==================================
+
+- o flatten deep nesting: saxs/saxs/saxs/core/kernel/core/back/ (7
+    levels!) → saxs/kernel/, saxs/pipeline/
+- o rename inconsistent files:
+    - abst_request.py → abstract_request.py
+    - abstract_cond_stage.py → abstract_conditional_stage.py
+    - _define_registry.py → remove underscore prefix
+- o fix name collision: PolicyRegistry type alias vs PolicyRegistry
+    class → rename class to StagePolicyMapping
+    (saxs/saxs/core/stage/policy/policy_registry.py)
+- o remove hardcoded exclusions in metaclass (metadata.py:82) - use
+    marker attribute
+
+minor - testing improvements
+=============================
+
+- o add dependency injection to enable unit testing (currently
+    requires full stack)
+- o make SaturationInsertPolicy use instance variables not class
+    variables (insertion_policy.py:37) - currently not thread-safe
+- o create test fixtures for common metadata structures
+- o move metaclass validation to __init_subclass__ for testability
+- o add validation tests for all metadata types
+
+minor - performance optimizations
+==================================
+
+- o remove wrapper object creation in hot path (sample.py:148) - every
+    array assignment creates QValues/Intensity wrapper
+- o cache enum.value lookups to avoid enum → string → dict double
+    indirection
+- o ± consider batch processing samples if vectorization possible
+
+minor - documentation gaps
+===========================
+
+- o create architecture diagram showing:
+    - component relationships
+    - data flow through pipeline
+    - policy/condition interaction
+    - metadata lifecycle
+- o document when to use which metadata type (currently confusing even
+    for author - see abst_request.py:48 comment)
+- o add examples to kernel module:
+    - how to create custom kernel
+    - how to define custom stages
+    - how to configure policies
+- o expand abstract method docstrings with preconditions/postconditions
+    (abstract_stage.py:98 just says "Process sample")
+
+minor - technical debt cleanup
+===============================
+
+- o reconcile BACKGROUND_COEF constant (types.py:14 says 0.7, default
+    is 0.3 - which is correct?)
+- o resolve or remove TODO comment in single_stage_policy.py:32:
+    "probably there we need to unwire TStageMetadata from
+    TStageMetadata"
+- o check if legacy directories should be archived:
+    - /saxs/saxs/saxs/peak/
+    - /saxs/saxs/saxs/phase/
+    - /saxs/saxs/saxs/model/
+
+design philosophy questions
+============================
+
+- ± is current abstraction level appropriate for domain complexity?
+    (processing SAXS samples through stages vs building a compiler)
+- ± are we designing for a more complex future that may never
+    materialize?
+- ± should we prioritize simplicity over extensibility at this stage?
+- ± would dataclasses + simple functions be better than class
+    hierarchies?
+
+linked tasks from TODO.txt
+===========================
+
+- o (~.) replace python function calculation in processing by c++ ones
+    - relates to: performance optimizations, Go acceleration work
+- o (~.) pipeline scheduler for peaks in order (map-reduce-like) for
+    multiprocessing
+    - relates to: Go parallel peak fitting design
+- o (~.) composite stage
+    - relates to: stage hierarchy simplification
+
+refactoring priorities
+======================
+
+priority 1 (2-3 weeks) - type system
+- critical: remove metaclass
+- critical: consolidate metadata types
+- critical: remove wrappers
+- major: fix leaky abstractions
+expected impact: 40% reduction in type code, 2x easier onboarding
+
+priority 2 (1-2 weeks) - kernel system
+- critical: delete compiler/linker
+- critical: simple factory pattern
+- major: merge specs
+expected impact: 60% reduction in kernel code, 3x easier debugging
+
+priority 3 (1 week) - policy system
+- critical: merge condition into policy
+- major: single policy interface
+- major: delete empty abstracts
+expected impact: 50% fewer files, clearer control flow
+
+priority 4 (1 week) - abstractions
+- major: remove TBaseDataType wrapper
+- major: consistent metadata access
+- major: simplify request hierarchy
+expected impact: clearer APIs, easier testing
+
+priority 5 (3 days) - error handling
+- major: fail fast in linkers
+- major: standardize error messages
+- major: add scheduler validation
+expected impact: faster debugging, better error messages
+
+metrics
+=======
+
+current state:
+- core module: ~3600 lines across 38 files
+- types alone: ~600 lines
+- inheritance depth: up to 4 levels
+- generic type parameters: 14+ TypeVars
+- abstraction layers: 7 (too many)
+- test coverage: 13 test files (likely insufficient)
+
+after refactoring (estimated):
+- core module: ~2000 lines across 25 files
+- types: ~250 lines
+- inheritance depth: ≤ 2 levels
+- generic type parameters: ≤ 5 TypeVars
+- abstraction layers: 4 (appropriate)
+- test coverage: target 40+ test files
+
+positive aspects to preserve
+=============================
+
+- x clear separation of concerns (stages, policies, scheduler)
+- x extensibility for new stages
+- x comprehensive docstrings
+- x structured logging with stage_logger
+- x immutability intent (frozen dataclasses)
+- x type safety intent (preserve typing, just simplify)
+
+notes
+=====
+
+root cause: architecture designed for more complex future that may
+never materialize. system processes SAXS samples through stages -
+fundamentally a pipeline with conditional branching, not a compiler.
+
+estimated total refactoring effort: 6-8 weeks for critical issues
+
+risk of not addressing: maintenance burden increases exponentially,
+developer productivity decreases, future developers will rewrite
+rather than extend
+
+recommendation: aggressive simplification while preserving good ideas
+(logging, type hints, stage separation). focus on domain logic over
+infrastructure.
