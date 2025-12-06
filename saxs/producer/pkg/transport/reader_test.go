@@ -3,6 +3,10 @@ package transport
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/csv"
+	"os"
+	"path/filepath"
+	"strconv"
 	"testing"
 
 	"saxs/producer/internal/protocol"
@@ -173,4 +177,142 @@ func findSubstring(s, substr string) bool {
 		}
 	}
 	return false
+}
+
+func TestReader_ReadCSVFile(t *testing.T) {
+	// Determine the CSV path relative to the working directory
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("failed to get working directory: %v", err)
+	}
+
+	// Navigate from working directory to tests folder
+	csvPath := filepath.Join(wd, "..", "..", "..", "..", "tests", "test_processing_data", "075774_treated_xye.csv")
+	csvPath = filepath.Clean(csvPath)
+
+	t.Logf("Using CSV path: %s", csvPath)
+
+	// Open the CSV file
+	file, err := os.Open(csvPath)
+	if err != nil {
+		t.Fatalf("failed to open CSV file at %s: %v", csvPath, err)
+	}
+	defer file.Close()
+
+	// Create CSV reader
+	csvReader := csv.NewReader(file)
+	csvReader.FieldsPerRecord = 3 // Q, Intensity, IntensityErr
+
+	// Read all records
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		t.Fatalf("failed to read CSV: %v", err)
+	}
+
+	t.Logf("Read %d records from CSV file", len(records))
+
+	// Parse the CSV data into SAXSSample
+	qValues := make([]float64, 0, len(records))
+	intensity := make([]float64, 0, len(records))
+	intensityErr := make([]float64, 0, len(records))
+
+	for i, record := range records {
+		if len(record) != 3 {
+			t.Logf("Skipping row %d: expected 3 fields, got %d", i, len(record))
+			continue
+		}
+
+		// Parse Q value
+		q, err := strconv.ParseFloat(record[0], 64)
+		if err != nil {
+			t.Logf("Skipping row %d: invalid Q value: %v", i, err)
+			continue
+		}
+
+		// Parse Intensity (skip NaN values)
+		if record[1] == "NaN" {
+			t.Logf("Skipping row %d: NaN intensity value", i)
+			continue
+		}
+		intens, err := strconv.ParseFloat(record[1], 64)
+		if err != nil {
+			t.Logf("Skipping row %d: invalid intensity value: %v", i, err)
+			continue
+		}
+
+		// Parse Intensity Error (skip NaN values)
+		if record[2] == "NaN" {
+			t.Logf("Skipping row %d: NaN intensity error value", i)
+			continue
+		}
+		intensErr, err := strconv.ParseFloat(record[2], 64)
+		if err != nil {
+			t.Logf("Skipping row %d: invalid intensity error value: %v", i, err)
+			continue
+		}
+
+		qValues = append(qValues, q)
+		intensity = append(intensity, intens)
+		intensityErr = append(intensityErr, intensErr)
+	}
+
+	t.Logf("Successfully parsed %d valid records (skipped %d)", len(qValues), len(records)-len(qValues))
+
+	// Create SAXSSample from CSV data
+	sample := &types.SAXSSample{
+		QValues:      qValues,
+		Intensity:    intensity,
+		IntensityErr: intensityErr,
+		Metadata:     map[string]any{"source": "075774_treated_xye.csv"},
+		Shape:        len(qValues),
+	}
+
+	// Validate the sample
+	if err := sample.Validate(); err != nil {
+		t.Fatalf("invalid sample: %v", err)
+	}
+
+	// Check we got meaningful data
+	if len(qValues) == 0 {
+		t.Fatal("no valid data points parsed from CSV")
+	}
+
+	t.Logf("Sample shape: %d", sample.Shape)
+	t.Logf("First Q value: %f", sample.QValues[0])
+	t.Logf("First Intensity: %f", sample.Intensity[0])
+	t.Logf("First Intensity Error: %f", sample.IntensityErr[0])
+
+	// Now test that we can serialize this CSV data using the Writer and read it back
+	flow := &types.FlowMetadata{
+		Sample:           "075774_treated",
+		ProcessedPeaks:   map[int]float64{},
+		UnprocessedPeaks: map[int]float64{},
+		Current:          map[int]float64{},
+	}
+
+	// Write the CSV-derived data using the protocol writer
+	buf := new(bytes.Buffer)
+	writer := NewWriter(buf)
+	n, err := writer.WriteCombined(sample, flow)
+	if err != nil {
+		t.Fatalf("failed to write combined message: %v", err)
+	}
+	t.Logf("Wrote %d bytes using protocol writer", n)
+
+	// Read it back using the protocol reader
+	reader := NewReader(buf)
+	readSample, readFlow, err := reader.ReadCombined()
+	if err != nil {
+		t.Fatalf("failed to read combined message: %v", err)
+	}
+
+	// Verify the data round-tripped correctly
+	if len(readSample.QValues) != len(sample.QValues) {
+		t.Errorf("QValues length mismatch: got %d, want %d", len(readSample.QValues), len(sample.QValues))
+	}
+	if readFlow.Sample != flow.Sample {
+		t.Errorf("Sample name mismatch: got %q, want %q", readFlow.Sample, flow.Sample)
+	}
+
+	t.Log("Successfully round-tripped CSV data through protocol reader/writer")
 }
