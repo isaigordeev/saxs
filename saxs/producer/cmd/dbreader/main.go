@@ -19,7 +19,7 @@ type SAXSData struct {
 func main() {
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
-		dbURL = "postgres://saxs@localhost:5432/saxs"
+		dbURL = "postgres://postgres:postgres@localhost:5433/saxs?sslmode=disable"
 	}
 
 	ctx := context.Background()
