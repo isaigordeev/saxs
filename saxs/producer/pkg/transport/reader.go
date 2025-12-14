@@ -7,9 +7,10 @@ import (
 	"hash/crc32"
 	"io"
 
-	"github.com/vmihailenco/msgpack/v5"
 	"saxs/producer/internal/protocol"
 	"saxs/producer/pkg/types"
+
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 // Reader reads SAXS protocol messages from an io.Reader.
