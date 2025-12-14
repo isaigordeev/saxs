@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: saxs-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-saxs}
+      POSTGRES_USER: ${POSTGRES_USER:-saxs}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-saxs}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-saxs} -d ${POSTGRES_DB:-saxs}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
