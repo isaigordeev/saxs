@@ -2,6 +2,7 @@ package transport
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 )
@@ -14,19 +15,51 @@ type Connection interface {
 	Close() error
 }
 
+type nopCloserWriter struct {
+	io.Writer
+}
+
+func (nopCloserWriter) Close() error {
+	return nil
+}
+
 type ioConn struct{}
 
-func newIOConn(rwc io.ReadWriteCloser) *ioConn
+func newIOConn(rwc io.ReadWriteCloser) *ioConn {
+	return &ioConn{}
+}
 
 func (c *ioConn) Close() error {
 	return nil
 }
 func (c *ioConn) Write() {
-	return
 }
 
 func (c *ioConn) Read() {
-	return
+}
+
+type rwc struct {
+	rc io.ReadCloser
+	wc io.WriteCloser
+}
+
+func (r rwc) Read(p []byte) (n int, err error) {
+	return r.rc.Read(p)
+}
+
+func (r rwc) Write(p []byte) (n int, err error) {
+	return r.wc.Write(p)
+}
+
+func (r rwc) Close() error {
+	rcErr := r.rc.Close()
+
+	var wcErr error
+	if r.wc != nil { // we only allow a nil writer in unit tests
+		wcErr = r.wc.Close()
+	}
+
+	return errors.Join(rcErr, wcErr)
 }
 
 // Connect implements the [Transport] interface.
