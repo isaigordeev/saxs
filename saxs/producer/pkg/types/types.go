@@ -3,12 +3,12 @@ package types
 
 // SAXSSample represents a Small-Angle X-ray Scattering sample with
 // q-values (scattering vector), intensity measurements, and associated metadata.
+
 type SAXSSample struct {
-	QValues      []float64              `msgpack:"q_values"`
-	Intensity    []float64              `msgpack:"intensity"`
-	IntensityErr []float64              `msgpack:"intensity_err"`
-	Metadata     map[string]interface{} `msgpack:"metadata"`
-	Shape        int                    `msgpack:"shape"`
+	ID  string
+	Q   []float64
+	I   []float64
+	Err []float64
 }
 
 // FlowMetadata represents inter-stage metadata that flows through the pipeline.
@@ -27,30 +27,27 @@ type CombinedMessage struct {
 
 // Validate checks if the SAXSSample data is valid.
 func (s *SAXSSample) Validate() error {
-	if len(s.QValues) == 0 {
+	if len(s.Q) == 0 {
 		return ErrEmptyQValues
 	}
-	if len(s.Intensity) == 0 {
+	if len(s.I) == 0 {
 		return ErrEmptyIntensity
 	}
-	if len(s.QValues) != len(s.Intensity) {
+	if len(s.Q) != len(s.I) {
 		return ErrLengthMismatch
 	}
-	if len(s.IntensityErr) > 0 && len(s.IntensityErr) != len(s.QValues) {
+	if len(s.Err) > 0 && len(s.Err) != len(s.Q) {
 		return ErrLengthMismatch
-	}
-	if s.Shape > 0 && s.Shape != len(s.QValues) {
-		return ErrShapeMismatch
 	}
 	return nil
 }
 
 // Len returns the number of data points in the sample.
 func (s *SAXSSample) Len() int {
-	return len(s.QValues)
+	return len(s.Q)
 }
 
 // HasErrors returns true if the sample has intensity error data.
 func (s *SAXSSample) HasErrors() bool {
-	return len(s.IntensityErr) > 0
+	return len(s.I) > 0
 }

@@ -2,19 +2,13 @@ package stream
 
 import (
 	"context"
+	"saxs/producer/pkg/types"
 
 	"github.com/jackc/pgx/v5"
 )
 
-type SAXSSample struct {
-	ID  string
-	Q   []float64
-	I   []float64
-	Err []float64
-}
-
-func stream(ctx context.Context, conn *pgx.Conn) (<-chan SAXSSample, <-chan error) {
-	out := make(chan SAXSSample)
+func stream(ctx context.Context, conn *pgx.Conn) (<-chan types.SAXSSample, <-chan error) {
+	out := make(chan types.SAXSSample)
 	errors := make(chan error, 1)
 
 	go func() {
@@ -38,7 +32,7 @@ func stream(ctx context.Context, conn *pgx.Conn) (<-chan SAXSSample, <-chan erro
 				return
 			}
 
-			var sample = SAXSSample{ID: id}
+			var sample = types.SAXSSample{ID: id}
 
 			sample.Q = append(sample.Q, q)
 			sample.I = append(sample.I, intensity)
