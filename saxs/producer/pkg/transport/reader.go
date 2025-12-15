@@ -25,6 +25,8 @@ func (it *ChannelIterator) Next() bool {
 
 	sample, open := <-it.ch
 
+	// NOTE: validation + protocol
+
 	if !open {
 		it.closed = true
 		return false
