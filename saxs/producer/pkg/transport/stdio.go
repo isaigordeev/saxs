@@ -7,6 +7,10 @@ import (
 	"os"
 )
 
+type Transport interface {
+	Connect(ctx context.Context) (Connection, error)
+}
+
 type StdioTransport struct{}
 
 type Connection interface {
@@ -23,7 +27,16 @@ func (nopCloserWriter) Close() error {
 	return nil
 }
 
-type ioConn struct{}
+type ioConn struct {
+	protocolVersion string // protocol version for SAXS streams
+
+	rwc io.ReadWriteCloser // stream for data
+
+	incoming <-chan msgOrErr
+}
+
+type msgOrErr struct {
+}
 
 func newIOConn(rwc io.ReadWriteCloser) *ioConn {
 	return &ioConn{}
