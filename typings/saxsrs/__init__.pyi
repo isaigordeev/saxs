@@ -1,0 +1,23 @@
+import numpy as np
+from numpy.typing import NDArray
+
+class Peak:
+    @property
+    def index(self) -> int: ...
+    @property
+    def value(self) -> float: ...
+    @property
+    def prominence(self) -> float: ...
+
+def find_peaks(
+    data: NDArray[np.float64],
+    min_height: float | None = None,
+    min_prominence: float | None = None,
+) -> list[Peak]: ...
+def find_peaks_batch(
+    data: NDArray[np.float64],
+    min_height: float | None = None,
+    min_prominence: float | None = None,
+) -> list[list[Peak]]: ...
+def find_max(data: NDArray[np.float64]) -> tuple[float, int]: ...
+def diff(data: NDArray[np.float64]) -> NDArray[np.float64]: ...

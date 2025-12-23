@@ -1,0 +1,14 @@
+[package]
+name = "saxsrs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "saxsrs"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.22", features = ["extension-module"] }
+numpy = "0.22"
+ndarray = "0.16"
+rayon = "1.10"
