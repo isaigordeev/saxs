@@ -7,14 +7,14 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func stream(ctx context.Context, conn *pgx.Conn) (<-chan types.SAXSSample, <-chan error) {
+func Stream(ctx context.Context, conn *pgx.Conn) (<-chan types.SAXSSample, <-chan error) {
 	out := make(chan types.SAXSSample)
 	errors := make(chan error, 1)
 
 	go func() {
 		defer close(out)
 
-		rows, err := conn.Query(ctx, "SELECT id, q, intensity FROM saxs_data ORDER BY id, q")
+		rows, err := conn.Query(ctx, "SELECT id, q, intensity, error FROM saxs_data ORDER BY id, q")
 
 		if err != nil {
 			errors <- err
@@ -36,7 +36,7 @@ func stream(ctx context.Context, conn *pgx.Conn) (<-chan types.SAXSSample, <-cha
 
 			sample.Q = append(sample.Q, q)
 			sample.I = append(sample.I, intensity)
-			sample.Q = append(sample.Err, e)
+			sample.Err = append(sample.Err, e)
 
 			out <- sample
 

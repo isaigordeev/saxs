@@ -2,19 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/jackc/pgx/v5"
+	"saxs/producer/pkg/stream"
+	"saxs/producer/pkg/transport"
+	"saxs/producer/pkg/types"
 )
-
-type SAXSData struct {
-	ID        int64
-	Q         float64
-	Intensity float64
-	Error     float64
-}
 
 func main() {
 	dbURL := os.Getenv("DATABASE_URL")
@@ -29,33 +24,24 @@ func main() {
 	}
 	defer conn.Close(ctx)
 
-	rows, err := conn.Query(ctx, "SELECT id, q, intensity, error FROM saxs_data LIMIT 10")
-	if err != nil {
-		log.Fatalf("Query failed: %v", err)
-	}
-	defer rows.Close()
+	// Stream samples from PostgreSQL
+	samples, errs := stream.Stream(ctx, conn)
 
-	fmt.Println("SAXS Data (first 10 rows):")
-	fmt.Println("---------------------------")
+	// Write to stdout (pipe is created by parent Python process)
+	writer := transport.NewWriter(os.Stdout)
 
-	for rows.Next() {
-		var d SAXSData
-		err := rows.Scan(&d.ID, &d.Q, &d.Intensity, &d.Error)
-		if err != nil {
-			log.Fatalf("Scan failed: %v", err)
+	for sample := range samples {
+		flow := &types.FlowMetadata{
+			Sample: sample.ID,
 		}
-		fmt.Printf("id=%d q=%.6f I=%.4f err=%.4f\n", d.ID, d.Q, d.Intensity, d.Error)
+
+		if _, err := writer.WriteCombined(&sample, flow); err != nil {
+			log.Fatalf("Write failed: %v", err)
+		}
 	}
 
-	if err := rows.Err(); err != nil {
-		log.Fatalf("Rows error: %v", err)
+	// Check for any streaming errors
+	if err := <-errs; err != nil {
+		log.Fatalf("Stream error: %v", err)
 	}
-
-	// Count total
-	var count int64
-	err = conn.QueryRow(ctx, "SELECT COUNT(*) FROM saxs_data").Scan(&count)
-	if err != nil {
-		log.Fatalf("Count failed: %v", err)
-	}
-	fmt.Printf("\nTotal rows: %d\n", count)
 }
