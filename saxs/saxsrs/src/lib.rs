@@ -48,7 +48,11 @@ fn find_peaks(
     min_prominence: Option<f64>,
 ) -> Vec<Peak> {
     let slice = data.as_slice().expect("array must be contiguous");
-    find_peaks_impl(slice, min_height.unwrap_or(f64::NEG_INFINITY), min_prominence.unwrap_or(0.0))
+    find_peaks_impl(
+        slice,
+        min_height.unwrap_or(f64::NEG_INFINITY),
+        min_prominence.unwrap_or(0.0),
+    )
 }
 
 /// Find peaks in each row of 2D array (parallel)
@@ -94,7 +98,11 @@ fn find_peaks_batch(
 }
 
 /// Core peak finding implementation
-fn find_peaks_impl(data: &[f64], min_height: f64, min_prominence: f64) -> Vec<Peak> {
+fn find_peaks_impl(
+    data: &[f64],
+    min_height: f64,
+    min_prominence: f64,
+) -> Vec<Peak> {
     if data.len() < 3 {
         return Vec::new();
     }
@@ -103,7 +111,10 @@ fn find_peaks_impl(data: &[f64], min_height: f64, min_prominence: f64) -> Vec<Pe
 
     // Find local maxima
     for i in 1..data.len() - 1 {
-        if data[i] > data[i - 1] && data[i] > data[i + 1] && data[i] >= min_height {
+        if data[i] > data[i - 1]
+            && data[i] > data[i + 1]
+            && data[i] >= min_height
+        {
             let prominence = calc_prominence(data, i);
             if prominence >= min_prominence {
                 peaks.push(Peak {
@@ -160,7 +171,10 @@ fn find_max(data: PyReadonlyArray1<f64>) -> (f64, usize) {
 
 /// Compute differences between consecutive elements
 #[pyfunction]
-fn diff<'py>(py: Python<'py>, data: PyReadonlyArray1<f64>) -> Bound<'py, PyArray1<f64>> {
+fn diff<'py>(
+    py: Python<'py>,
+    data: PyReadonlyArray1<f64>,
+) -> Bound<'py, PyArray1<f64>> {
     let slice = data.as_slice().expect("array must be contiguous");
 
     let result: Vec<f64> = slice.windows(2).map(|w| w[1] - w[0]).collect();

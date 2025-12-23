@@ -1,0 +1,33 @@
+# Rust formatting config (mirrors Python ruff config)
+edition = "2021"
+
+# Line width: 79 (matching PEP8 style)
+max_width = 79
+
+# Use 4-space indentation
+tab_spaces = 4
+hard_tabs = false
+
+# Imports - reorder alphabetically
+reorder_imports = true
+reorder_modules = true
+
+# Use field init shorthand: Foo { x } instead of Foo { x: x }
+use_field_init_shorthand = true
+
+# Use try shorthand: ? instead of try!
+use_try_shorthand = true
+
+# Match arm blocks
+match_block_trailing_comma = true
+
+# Newlines
+newline_style = "Unix"
+
+## unstable options (with nightly rustfmt)
+# imports_granularity = "Module"
+# group_imports = "StdExternalCrate"
+# trailing_comma = "Vertical"
+# wrap_comments = true
+# comment_width = 68
+# normalize_comments = true
