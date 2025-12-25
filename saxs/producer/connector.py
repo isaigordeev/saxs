@@ -191,6 +191,64 @@ class GoStreamConnector:
             return zstandard.decompress(data)
         msg = f"Unknown compression type: {compression_type}"
         raise ValueError(msg)
+    
+    def handshake(self) -> bool:
+        """
+        Perform handshake with Go server to ensure it's ready.
+
+        Returns
+        -------
+        bool
+            True if handshake succeeded.
+
+        Raises
+        ------
+        RuntimeError
+            If handshake fails after retries.
+        """
+        for attempt in range(self.handshake_retries):
+            try:
+                # Отправляем команду инициализации
+                self.send_command({"cmd": "init", "version": 1})
+
+                # Ждём ответный заголовок
+                header = self._proc.stdout.read(HEADER_SIZE)
+                if not header or len(header) < HEADER_SIZE:
+                    raise RuntimeError("Handshake: incomplete header")
+
+                magic, version, msg_type, _, payload_len = struct.unpack("<IHBBQ", header)
+
+                if magic != MAGIC_NUMBER:
+                    raise RuntimeError(f"Handshake: invalid magic {magic:#x}")
+
+                # Читаем payload (должен быть ответ от сервера)
+                payload = self._proc.stdout.read(payload_len)
+                if len(payload) < payload_len:
+                    raise RuntimeError("Handshake: incomplete payload")
+
+                # Декодируем ответ
+                response = msgpack.unpackb(payload, raw=False)
+                if response.get("status") == "ok":
+                    return True  # Успешное рукопожатие
+
+            except Exception as e:
+                if attempt == self.handshake_retries - 1:
+                    raise RuntimeError(f!Handshake failed after {self.handshake_retries} attempts: {e}") from e
+                time.sleep(0.1)  # пауза перед повторной попыткой
+
+        return False
+
+    def send_command(self, command: dict) -> None:
+        """Send a command to the Go process via stdin."""
+        if not self._proc or not self._proc.stdin:
+            msg = "Process not started"
+            raise RuntimeError(msg)
+
+        data = msgpack.packb(command)
+        # Write length-prefixed message
+        self._proc.stdin.write(struct.pack("<I", len(data)))
+        self._proc.stdin.write(data)
+        self._proc.stdin.flush()
 
 
 if __name__ == "__main__":
