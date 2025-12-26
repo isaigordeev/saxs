@@ -39,6 +39,7 @@ milestones
     (deprecate flow)
 - o create a general registry of Enums for all keys which will be
     delegated to concrete ones
+- o stream sdio go python
 
 
 
