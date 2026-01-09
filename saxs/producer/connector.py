@@ -233,7 +233,7 @@ class GoStreamConnector:
 
             except Exception as e:
                 if attempt == self.handshake_retries - 1:
-                    raise RuntimeError(f!Handshake failed after {self.handshake_retries} attempts: {e}") from e
+                    raise RuntimeError("f!Handshake failed after {self.handshake_retries} attempts: {e}") from e
                 time.sleep(0.1)  # пауза перед повторной попыткой
 
         return False
