@@ -20,6 +20,6 @@ __all__ = [
     "Message",
     "PrintHandler",
     "ProtocolError",
-    "SampleHandler",
     "SAXSSample",
+    "SampleHandler",
 ]

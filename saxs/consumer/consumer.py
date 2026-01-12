@@ -8,11 +8,12 @@ import zlib
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterator
+from typing import TYPE_CHECKING
 
 import msgpack
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterator
     from types import TracebackType
 
 
@@ -260,15 +261,21 @@ class GoStreamConsumer:
             )
 
             if magic != MAGIC_NUMBER:
-                raise ProtocolError(f"Invalid magic number: {magic:#x}, expected {MAGIC_NUMBER:#x}")
+                raise ProtocolError(
+                    f"Invalid magic number: {magic:#x}, expected {MAGIC_NUMBER:#x}"
+                )
 
             if version != PROTOCOL_VERSION:
-                raise ProtocolError(f"Unsupported protocol version: {version:#x}")
+                raise ProtocolError(
+                    f"Unsupported protocol version: {version:#x}"
+                )
 
             # Read payload
             payload = self._read_exact(stdout, payload_len)
             if len(payload) < payload_len:
-                raise ProtocolError(f"Incomplete payload: {len(payload)}/{payload_len}")
+                raise ProtocolError(
+                    f"Incomplete payload: {len(payload)}/{payload_len}"
+                )
 
             # Read footer (CRC32)
             footer = self._read_exact(stdout, FOOTER_SIZE)
@@ -308,16 +315,22 @@ class GoStreamConsumer:
         if compression_type == COMPRESSION_LZ4:
             try:
                 import lz4.frame
+
                 return lz4.frame.decompress(data)
             except ImportError as e:
-                raise RuntimeError("lz4 package required for LZ4 decompression") from e
+                raise RuntimeError(
+                    "lz4 package required for LZ4 decompression"
+                ) from e
 
         if compression_type == COMPRESSION_ZSTD:
             try:
                 import zstandard
+
                 return zstandard.decompress(data)
             except ImportError as e:
-                raise RuntimeError("zstandard package required for Zstd decompression") from e
+                raise RuntimeError(
+                    "zstandard package required for Zstd decompression"
+                ) from e
 
         raise ProtocolError(f"Unknown compression type: {compression_type}")
 
@@ -337,19 +350,27 @@ class GoStreamConsumer:
         if msg_type == MSG_TYPE_COMBINED:
             # Combined message has both sample and flow_metadata
             sample_data = msg_data.get("Sample", msg_data.get("sample", {}))
-            flow_data = msg_data.get("FlowMetadata", msg_data.get("flow_metadata", {}))
+            flow_data = msg_data.get(
+                "FlowMetadata", msg_data.get("flow_metadata", {})
+            )
 
             msg.sample = SAXSSample(
                 id=sample_data.get("ID", sample_data.get("id", "")),
                 q=sample_data.get("Q", sample_data.get("q", [])),
-                intensity=sample_data.get("I", sample_data.get("intensity", [])),
+                intensity=sample_data.get(
+                    "I", sample_data.get("intensity", [])
+                ),
                 error=sample_data.get("Err", sample_data.get("error", [])),
             )
 
             msg.flow_metadata = FlowMetadata(
                 sample=flow_data.get("Sample", flow_data.get("sample", "")),
-                processed_peaks=flow_data.get("ProcessedPeaks", flow_data.get("processed_peaks", {})),
-                unprocessed_peaks=flow_data.get("UnprocessedPeaks", flow_data.get("unprocessed_peaks", {})),
+                processed_peaks=flow_data.get(
+                    "ProcessedPeaks", flow_data.get("processed_peaks", {})
+                ),
+                unprocessed_peaks=flow_data.get(
+                    "UnprocessedPeaks", flow_data.get("unprocessed_peaks", {})
+                ),
                 current=flow_data.get("Current", flow_data.get("current", {})),
             )
 
@@ -364,8 +385,12 @@ class GoStreamConsumer:
         elif msg_type == MSG_TYPE_FLOW_METADATA:
             msg.flow_metadata = FlowMetadata(
                 sample=msg_data.get("Sample", msg_data.get("sample", "")),
-                processed_peaks=msg_data.get("ProcessedPeaks", msg_data.get("processed_peaks", {})),
-                unprocessed_peaks=msg_data.get("UnprocessedPeaks", msg_data.get("unprocessed_peaks", {})),
+                processed_peaks=msg_data.get(
+                    "ProcessedPeaks", msg_data.get("processed_peaks", {})
+                ),
+                unprocessed_peaks=msg_data.get(
+                    "UnprocessedPeaks", msg_data.get("unprocessed_peaks", {})
+                ),
                 current=msg_data.get("Current", msg_data.get("current", {})),
             )
 
