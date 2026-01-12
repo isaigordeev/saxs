@@ -11,11 +11,11 @@ FilterStage
 """
 
 from saxs.logging.logger import get_stage_logger
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.stage.abstract_stage import IAbstractStage
 
 logger = get_stage_logger(__name__)
-from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
-from saxs.saxs.processing.functions import moving_average
+from saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
+from saxs.processing.functions import moving_average
 
 
 class FilterStage(IAbstractStage):

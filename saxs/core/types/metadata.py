@@ -10,7 +10,7 @@ container.
 from enum import Enum
 from typing import Any, Generic, TypedDict, TypeVar, get_type_hints
 
-from saxs.saxs.core.types.abstract_data import TBaseDataType
+from saxs.core.types.abstract_data import TBaseDataType
 
 
 class EMetadataSchemaKeys(Enum):

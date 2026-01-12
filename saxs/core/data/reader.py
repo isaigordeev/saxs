@@ -26,12 +26,12 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 
-from saxs.saxs.core.types.sample import (
+from saxs.core.types.sample import (
     ESAXSSampleKeys,
     SAXSSample,
     SAXSSampleDict,
 )
-from saxs.saxs.core.types.sample_objects import (
+from saxs.core.types.sample_objects import (
     Intensity,
     IntensityError,
     QValues,

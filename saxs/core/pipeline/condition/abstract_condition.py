@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from saxs.saxs.core.stage.request.abst_request import EvalMetadata
-from saxs.saxs.core.types.sample_objects import SampleMetadata
+from saxs.core.stage.request.abst_request import EvalMetadata
+from saxs.core.types.sample_objects import SampleMetadata
 
 
 class SampleCondition(ABC):

@@ -23,7 +23,7 @@ Optional listing of module-level functions.
 
 Examples
 --------
->>> from saxs.saxs.core.stage.registry import StageRegistry,
+>>> from saxs.core.stage.registry import StageRegistry,
 PolicyRegistry
 >>> stage_registry = StageRegistry()
 >>> stage_registry.register("MyStage", MyStage)
@@ -39,8 +39,8 @@ type safety.
 
 from typing import Generic, TypeVar
 
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
-from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+from saxs.core.stage.abstract_stage import IAbstractStage, TStageMetadata
+from saxs.core.stage.policy.abstract_chaining_policy import (
     IAbstractChainingPolicy,
 )
 

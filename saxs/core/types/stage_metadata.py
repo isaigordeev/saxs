@@ -13,7 +13,7 @@ between processing components.
 
 from typing import Generic
 
-from saxs.saxs.core.types.metadata import (
+from saxs.core.types.metadata import (
     TAbstractMetadata,
     TMetadataKeys,
     TMetadataSchemaDict,

@@ -31,7 +31,7 @@ policy_registry : PolicyRegistry
 
 Examples
 --------
->>> from saxs.saxs.core.registry import stage_registry,
+>>> from saxs.core.registry import stage_registry,
 policy_registry
 >>> stage_cls = stage_registry.get_class("FilterStage")
 >>> stage_instance = stage_cls()
@@ -41,22 +41,22 @@ policy_registry
 
 from typing import Any
 
-from saxs.saxs.core.kernel.core.registry import (
+from saxs.core.kernel.base_registry import (
     ClassRegistry,
     PolicyRegistry,
     StageRegistry,
 )
-from saxs.saxs.core.stage.abstract_stage import TStageMetadata
-from saxs.saxs.core.stage.policy.single_stage_policy import (
+from saxs.core.stage.abstract_stage import TStageMetadata
+from saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.processing.stage.background.background import (
+from saxs.processing.stage.background.background import (
     BackgroundStage,
 )
-from saxs.saxs.processing.stage.cut.cut import CutStage
-from saxs.saxs.processing.stage.filter.filter import FilterStage
-from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
-from saxs.saxs.processing.stage.peak.process_peak import (
+from saxs.processing.stage.cut.cut import CutStage
+from saxs.processing.stage.filter.filter import FilterStage
+from saxs.processing.stage.peak.find_peak import FindPeakStage
+from saxs.processing.stage.peak.process_peak import (
     ProcessPeakStage,
 )
 

@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+from saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
 

@@ -11,16 +11,16 @@ a given stage completes its processing.
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, TypedDict
 
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.stage.request.abst_request import (
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.stage.request.abst_request import (
     StageRequest,
 )
 
 if TYPE_CHECKING:
-    from saxs.saxs.core.pipeline.condition.abstract_condition import (
+    from saxs.core.pipeline.condition.abstract_condition import (
         StageCondition,
     )
-    from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    from saxs.core.pipeline.scheduler.abstract_stage_request import (
         StageApprovalRequest,
     )
 

@@ -26,27 +26,27 @@ from scipy.signal import (  # pyright: ignore[reportMissingTypeStubs]
 )
 
 from saxs.logging.logger import get_stage_logger
-from saxs.saxs.core.stage.abstract_cond_stage import (
+from saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
-from saxs.saxs.core.stage.policy.single_stage_policy import (
+from saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.core.stage.request.abst_request import (
+from saxs.core.stage.request.abst_request import (
     EvalMetadata,
     IAbstractStageRequest,
     StageRequest,
 )
-from saxs.saxs.core.types.flow_metadata import (
+from saxs.core.types.flow_metadata import (
     FlowMetadata,
     FlowMetadataKeys,
 )
-from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
-from saxs.saxs.core.types.sample_objects import ESampleMetadataKeys
-from saxs.saxs.core.types.scheduler_metadata import (
+from saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
+from saxs.core.types.sample_objects import ESampleMetadataKeys
+from saxs.core.types.scheduler_metadata import (
     ERuntimeConstants,
 )
-from saxs.saxs.processing.stage.peak.types import (
+from saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_FIND_META,
     EPeakFindMetadataKeys,
     PeakFindStageMetadata,

@@ -13,12 +13,12 @@ Pipeline
     Manages execution of a sequence of stages using a scheduler.
 """
 
-from saxs.saxs.core.pipeline.scheduler.scheduler import (
+from saxs.core.pipeline.scheduler.scheduler import (
     IAbstractScheduler,
 )
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.flow_metadata import FlowMetadata
-from saxs.saxs.core.types.sample import SAXSSample
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.types.flow_metadata import FlowMetadata
+from saxs.core.types.sample import SAXSSample
 
 
 class Pipeline:

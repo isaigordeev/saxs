@@ -5,11 +5,11 @@ Checks if there are remaining peaks.
 
 # Created by Isai Gordeev on 20/09/2025.
 
-from saxs.saxs.core.pipeline.condition.abstract_condition import (
+from saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
 )
-from saxs.saxs.core.stage.request.abst_request import EvalMetadata
-from saxs.saxs.core.types.scheduler_metadata import ERuntimeConstants
+from saxs.core.stage.request.abst_request import EvalMetadata
+from saxs.core.types.scheduler_metadata import ERuntimeConstants
 
 
 class ChainingPeakCondition(StageCondition):

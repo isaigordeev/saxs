@@ -26,7 +26,7 @@ YamlCompiler
 
 Examples
 --------
->>> from saxs.saxs.core.kernel.core.core.compiler import
+>>> from saxs.core.kernel.core.compiler import
 YamlCompiler
 >>> compiler = YamlCompiler()
 >>> stages, policies = compiler.compile()
@@ -47,25 +47,25 @@ stages and policies.
 definitions.
 """
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.pipeline_spec_compiler import (
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.back.pipeline_spec_compiler import (
     SpecCompiler,
 )
-from saxs.saxs.core.kernel.core.back.policy_builder import PolicyBuilder
-from saxs.saxs.core.kernel.core.back.policy_linker import PolicyLinker
-from saxs.saxs.core.kernel.core.back.runtime_spec import (
+from saxs.core.kernel.back.policy_builder import PolicyBuilder
+from saxs.core.kernel.back.policy_linker import PolicyLinker
+from saxs.core.kernel.back.runtime_spec import (
     PolicySpec,
     StageSpec,
 )
-from saxs.saxs.core.kernel.core.back.stage_builder import StageBuilder
-from saxs.saxs.core.kernel.core.back.stage_linker import StageLinker
-from saxs.saxs.core.kernel.core.front.declarative_specs import (
+from saxs.core.kernel.back.stage_builder import StageBuilder
+from saxs.core.kernel.back.stage_linker import StageLinker
+from saxs.core.kernel.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
-from saxs.saxs.core.kernel.core.front.parser import DeclarativePipeline
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+from saxs.core.kernel.front.parser import DeclarativePipeline
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.stage.policy.abstract_chaining_policy import (
     IAbstractChainingPolicy,
 )
 

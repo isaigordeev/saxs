@@ -19,20 +19,20 @@ Key Classes:
 from abc import abstractmethod
 from typing import TypedDict
 
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+from saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
-from saxs.saxs.core.stage.abstract_stage import (
+from saxs.core.stage.abstract_stage import (
     IAbstractStage,
     TStageMetadata,
 )
-from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+from saxs.core.stage.policy.abstract_chaining_policy import (
     IAbstractChainingPolicy,
 )
-from saxs.saxs.core.stage.request.abst_request import (
+from saxs.core.stage.request.abst_request import (
    IAbstractStageRequest,
 )
-from saxs.saxs.core.types.flow_metadata import FlowMetadata
+from saxs.core.types.flow_metadata import FlowMetadata
 
 
 class EvalSchemaDict(TypedDict, total=False):  # must be generic

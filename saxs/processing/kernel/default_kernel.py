@@ -22,30 +22,30 @@ SimpleKernel(BaseKernel)
     pipeline.
 """
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
-from saxs.saxs.core.kernel.core.base_kernel import BaseKernel
-from saxs.saxs.core.kernel.registry.kernel_registry import KernelRegistry
-from saxs.saxs.core.pipeline.condition.chaining_condition import (
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.back.runtime_spec import PolicySpec, StageSpec
+from saxs.core.kernel.base_kernel import BaseKernel
+from saxs.core.kernel.registry.kernel_registry import KernelRegistry
+from saxs.core.pipeline.condition.chaining_condition import (
     ChainingPeakCondition,
 )
-from saxs.saxs.core.pipeline.condition.constant_true_condition import (
+from saxs.core.pipeline.condition.constant_true_condition import (
     TrueCondition,
 )
-from saxs.saxs.core.stage.policy.single_stage_policy import (
+from saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
-from saxs.saxs.processing.stage.background.background import (
+from saxs.processing.stage.background.background import (
     DEFAULT_BACKG_META,
     BackgroundStage,
 )
-from saxs.saxs.processing.stage.cut.cut import DEFAULT_CUT_META, CutStage
-from saxs.saxs.processing.stage.filter.filter import FilterStage
-from saxs.saxs.processing.stage.peak.find_peak import FindPeakStage
-from saxs.saxs.processing.stage.peak.process_peak import (
+from saxs.processing.stage.cut.cut import DEFAULT_CUT_META, CutStage
+from saxs.processing.stage.filter.filter import FilterStage
+from saxs.processing.stage.peak.find_peak import FindPeakStage
+from saxs.processing.stage.peak.process_peak import (
     ProcessPeakStage,
 )
-from saxs.saxs.processing.stage.peak.types import (
+from saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_FIND_META,
     DEFAULT_PEAK_PROCESS_META,
 )

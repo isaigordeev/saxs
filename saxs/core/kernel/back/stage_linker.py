@@ -15,13 +15,13 @@ StageLinker
     stage instances.
 """
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.runtime_spec import StageSpec
-from saxs.saxs.core.stage.abstract_cond_stage import (
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.back.runtime_spec import StageSpec
+from saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
 )
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.stage.policy.abstract_chaining_policy import (
     IAbstractChainingPolicy,
 )
 

@@ -12,20 +12,20 @@ StageApprovalRequest with associated scheduler metadata.
 from typing import Any
 
 from saxs.logging.logger import get_logger
-from saxs.saxs.core.pipeline.condition.abstract_condition import (
+from saxs.core.pipeline.condition.abstract_condition import (
     StageCondition,
 )
 
 logger = get_logger(__name__, "policy")
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+from saxs.core.pipeline.scheduler.abstract_stage_request import (
     ApprovalMetadata,
     StageApprovalRequest,
 )
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.stage.policy.abstract_chaining_policy import (
     IAbstractChainingPolicy,
 )
-from saxs.saxs.core.stage.request.abst_request import (
+from saxs.core.stage.request.abst_request import (
     StageRequest,
 )
 

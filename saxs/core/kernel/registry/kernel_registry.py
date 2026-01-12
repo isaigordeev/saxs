@@ -1,7 +1,7 @@
 """Interface to manage Buffers."""
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.back.runtime_spec import PolicySpec, StageSpec
 
 
 class KernelRegistry:

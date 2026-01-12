@@ -24,22 +24,22 @@ from typing import TYPE_CHECKING, Any
 from saxs.logging.logger import get_scheduler_logger
 
 logger = get_scheduler_logger(__name__)
-from saxs.saxs.core.pipeline.scheduler.policy.insertion_policy import (
+from saxs.core.pipeline.scheduler.policy.insertion_policy import (
     AlwaysInsertPolicy,
     InsertionPolicy,
 )
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.flow_metadata import FlowMetadata
-from saxs.saxs.core.types.metadata import TMetadataKeys, TMetadataSchemaDict
-from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.scheduler_metadata import (
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.types.flow_metadata import FlowMetadata
+from saxs.core.types.metadata import TMetadataKeys, TMetadataSchemaDict
+from saxs.core.types.sample import SAXSSample
+from saxs.core.types.scheduler_metadata import (
     ESchedulerMetadataDictKeys,
     SchedulerMetadata,
 )
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
-    from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    from saxs.core.pipeline.scheduler.abstract_stage_request import (
         StageApprovalRequest,
     )
 

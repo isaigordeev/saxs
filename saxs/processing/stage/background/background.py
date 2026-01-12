@@ -11,15 +11,15 @@ supports logging of intermediate and final processing states.
 """
 
 from saxs.logging.logger import get_stage_logger
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
-from saxs.saxs.processing.functions import background_hyperbole
-from saxs.saxs.processing.stage.background.types import (
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
+from saxs.processing.functions import background_hyperbole
+from saxs.processing.stage.background.types import (
     BACKGROUND_COEF,
     BackgroundStageMetadata,
     EBackMetadataKeys,
 )
-from saxs.saxs.processing.stage.common.fitting import Fitting
+from saxs.processing.stage.common.fitting import Fitting
 
 logger = get_stage_logger(__name__)
 

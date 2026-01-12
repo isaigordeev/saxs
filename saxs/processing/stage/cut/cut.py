@@ -17,14 +17,14 @@ CutStage : AbstractStage
 """
 
 from saxs.logging.logger import get_stage_logger
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.stage.abstract_stage import IAbstractStage
 
 logger = get_stage_logger(__name__)
-from saxs.saxs.core.types.sample import (
+from saxs.core.types.sample import (
     ESAXSSampleKeys,
     SAXSSample,
 )
-from saxs.saxs.processing.stage.cut.types import (
+from saxs.processing.stage.cut.types import (
     DEFAULT_CUT_POINT,
     CutStageMetadata,
     ECutStageMetadataKeys,

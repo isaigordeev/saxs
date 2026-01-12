@@ -22,7 +22,7 @@ interfaces for access and assignment.
 from dataclasses import field
 from enum import Enum
 
-from saxs.saxs.core.types.metadata import (
+from saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
     TAbstractMetadata,

@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from saxs.saxs.core.stage.abstract_cond_stage import (
+    from saxs.core.stage.abstract_cond_stage import (
         IAbstractRequestingStage,
     )
-    from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+    from saxs.core.stage.policy.abstract_chaining_policy import (
         IAbstractChainingPolicy,
     )
 

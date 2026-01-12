@@ -29,11 +29,11 @@ ProcessPeakStageMetadata
 
 from dataclasses import field
 
-from saxs.saxs.core.types.metadata import (
+from saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
 )
-from saxs.saxs.core.types.stage_metadata import (
+from saxs.core.types.stage_metadata import (
     TAbstractStageMetadata,
 )
 

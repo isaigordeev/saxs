@@ -16,7 +16,7 @@ Classes:
 from collections.abc import ItemsView, ValuesView
 from typing import Generic, TypeVar
 
-from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
+from saxs.core.kernel.back.runtime_spec import PolicySpec, StageSpec
 
 T = TypeVar("T")
 

@@ -1,6 +1,6 @@
 import numpy as np
 
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.stage.abstract_stage import IAbstractStage
 
 
 class SmoothStage(IAbstractStage):

@@ -5,12 +5,12 @@ Module for flowing metadata.
 
 import numpy as np
 
-from saxs.saxs.core.types.metadata import (
+from saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
     TAbstractMetadata,
 )
-from saxs.saxs.core.types.scheduler_metadata import ERuntimeConstants
+from saxs.core.types.scheduler_metadata import ERuntimeConstants
 
 
 class FlowMetadataDict(MetadataSchemaDict, total=False):

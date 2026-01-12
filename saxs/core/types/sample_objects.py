@@ -25,14 +25,14 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import NDArray
 
-from saxs.saxs.core.types.abstract_data import TBaseDataType
-from saxs.saxs.core.types.flow_metadata import FlowMetadataKeys
-from saxs.saxs.core.types.metadata import (
+from saxs.core.types.abstract_data import TBaseDataType
+from saxs.core.types.flow_metadata import FlowMetadataKeys
+from saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
     TAbstractMetadata,
 )
-from saxs.saxs.core.types.scheduler_metadata import ERuntimeConstants
+from saxs.core.types.scheduler_metadata import ERuntimeConstants
 
 
 @dataclass(frozen=False)

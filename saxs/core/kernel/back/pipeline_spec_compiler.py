@@ -18,20 +18,20 @@ SpecCompiler
 
 from typing import TYPE_CHECKING
 
-from saxs.saxs.core.kernel.core._define_registry import (
+from saxs.core.kernel._define_registry import (
     policy_registry,
     stage_registry,
 )
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
-from saxs.saxs.core.kernel.core.front.declarative_specs import (
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.back.runtime_spec import PolicySpec, StageSpec
+from saxs.core.kernel.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
 
 if TYPE_CHECKING:
-    from saxs.saxs.core.kernel.core.front.parser import DeclarativePipeline
-    from saxs.saxs.core.kernel.core.registry import (
+    from saxs.core.kernel.front.parser import DeclarativePipeline
+    from saxs.core.kernel.base_registry import (
         PolicyRegistry,
         StageRegistry,
     )

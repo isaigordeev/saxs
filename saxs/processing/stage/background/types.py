@@ -4,11 +4,11 @@ from dataclasses import field
 import numpy as np
 from numpy.typing import NDArray
 
-from saxs.saxs.core.types.metadata import (
+from saxs.core.types.metadata import (
     EMetadataSchemaKeys,
     MetadataSchemaDict,
 )
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 # Background subtraction coefficient
 # NOTE: Value of 0.7 (not 1.0) is empirically determined to prevent

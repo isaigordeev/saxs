@@ -18,12 +18,12 @@ workflows dynamically.
 from dataclasses import dataclass, field
 from typing import Any
 
-from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
-from saxs.saxs.core.stage.abstract_stage import (
+from saxs.core.pipeline.condition.abstract_condition import StageCondition
+from saxs.core.stage.abstract_stage import (
     IAbstractStage,
     TAbstractStageMetadata,
 )
-from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+from saxs.core.stage.policy.abstract_chaining_policy import (
     IAbstractChainingPolicy,
 )
 

@@ -12,8 +12,8 @@ Classes derived from `IAbstractKernel` are responsible for:
 
 from abc import ABC, abstractmethod
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec, StageSpec
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.back.runtime_spec import PolicySpec, StageSpec
 
 
 class IAbstractKernel(ABC):

@@ -6,18 +6,18 @@ from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
-from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+from saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.sample_objects import (
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.types.sample import SAXSSample
+from saxs.core.types.sample_objects import (
     Intensity,
     IntensityError,
     QValues,
     SampleMetadata,
 )
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 
 @pytest.fixture

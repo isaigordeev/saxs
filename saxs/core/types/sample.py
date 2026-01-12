@@ -18,8 +18,8 @@ from typing import Any, TypedDict, Union, get_type_hints
 import numpy as np
 from numpy.typing import NDArray
 
-from saxs.saxs.core.types.abstract_data import TBaseDataType
-from saxs.saxs.core.types.sample_objects import (
+from saxs.core.types.abstract_data import TBaseDataType
+from saxs.core.types.sample_objects import (
     ESampleMetadataKeys,
     Intensity,
     IntensityError,

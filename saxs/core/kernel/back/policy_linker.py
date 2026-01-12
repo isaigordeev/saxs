@@ -11,10 +11,10 @@ This allows policies to be applied dynamically in the SAXS
 processing pipeline based on previously built stages.
 """
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.back.runtime_spec import PolicySpec
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.stage.policy.abstract_chaining_policy import (
     IAbstractChainingPolicy,
 )
 

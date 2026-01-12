@@ -23,7 +23,7 @@ StageRequest
 
 from dataclasses import dataclass
 
-from saxs.saxs.core.types.flow_metadata import FlowMetadata
+from saxs.core.types.flow_metadata import FlowMetadata
 
 
 @dataclass(frozen=False)

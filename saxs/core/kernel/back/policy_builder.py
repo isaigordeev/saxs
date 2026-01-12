@@ -17,10 +17,10 @@ PolicyBuilder
 
 from typing import Any
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.back.runtime_spec import PolicySpec
-from saxs.saxs.core.pipeline.condition.abstract_condition import StageCondition
-from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.back.runtime_spec import PolicySpec
+from saxs.core.pipeline.condition.abstract_condition import StageCondition
+from saxs.core.stage.policy.abstract_chaining_policy import (
     IAbstractChainingPolicy,
 )
 

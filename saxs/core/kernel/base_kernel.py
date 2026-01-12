@@ -20,18 +20,18 @@ BaseKernel
 
 from typing import TYPE_CHECKING
 
-from saxs.saxs.core.kernel.core.abstract_kernel import (
+from saxs.core.kernel.abstract_kernel import (
     IAbstractKernel,
 )
-from saxs.saxs.core.kernel.core.back.kernel_compiler import BaseCompiler
-from saxs.saxs.core.pipeline.pipeline import Pipeline
-from saxs.saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.saxs.core.types.sample import SAXSSample
+from saxs.core.kernel.back.kernel_compiler import BaseCompiler
+from saxs.core.pipeline.pipeline import Pipeline
+from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.types.sample import SAXSSample
 
 if TYPE_CHECKING:
-    from saxs.saxs.core.kernel.core.back.buffer import Buffer
-    from saxs.saxs.core.pipeline.scheduler.scheduler import IAbstractScheduler
-    from saxs.saxs.core.stage.policy.abstract_chaining_policy import (
+    from saxs.core.kernel.back.buffer import Buffer
+    from saxs.core.pipeline.scheduler.scheduler import IAbstractScheduler
+    from saxs.core.stage.policy.abstract_chaining_policy import (
         IAbstractChainingPolicy,
     )
 

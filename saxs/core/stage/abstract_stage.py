@@ -17,12 +17,12 @@ Classes:
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from saxs.saxs.core.types.flow_metadata import FlowMetadata
-from saxs.saxs.core.types.sample import SAXSSample
-from saxs.saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.core.types.flow_metadata import FlowMetadata
+from saxs.core.types.sample import SAXSSample
+from saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
-    from saxs.saxs.core.pipeline.scheduler.abstract_stage_request import (
+    from saxs.core.pipeline.scheduler.abstract_stage_request import (
         StageApprovalRequest,
     )
 

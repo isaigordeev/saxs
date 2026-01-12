@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 
 import yaml
 
-from saxs.saxs.core.kernel.core.back.buffer import Buffer
-from saxs.saxs.core.kernel.core.front.declarative_specs import (
+from saxs.core.kernel.back.buffer import Buffer
+from saxs.core.kernel.front.declarative_specs import (
     PolicyDeclSpec,
     StageDeclSpec,
 )
