@@ -328,8 +328,9 @@ class GoStreamConsumer:
 
                 return zstandard.decompress(data)
             except ImportError as e:
+                msg = "zstandard package required for Zstd decompression"
                 raise RuntimeError(
-                    "zstandard package required for Zstd decompression"
+                    msg,
                 ) from e
 
         raise ProtocolError(f"Unknown compression type: {compression_type}")
