@@ -1,0 +1,3 @@
+[submodule "saxs/saxsrs"]
+	path = saxs/saxsrs
+	url = https://github.com/isaigordeev/saxsrs.git
