@@ -232,3 +232,5 @@ results/
 
 **.ipynb
 test.py
+
+*.swp
