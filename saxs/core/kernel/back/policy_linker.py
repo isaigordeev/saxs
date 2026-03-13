@@ -1,15 +1,4 @@
-"""
-Module for linking policy instances to next-stage classes.
-
-This module defines the `PolicyLinker` class, responsible for
-resolving references between `ChainingPolicy` instances and the
-`AbstractStage` instances they operate on. Each policy's
-`next_stage_cls` attribute is populated with the correct stage
-objects.
-
-This allows policies to be applied dynamically in the SAXS
-processing pipeline based on previously built stages.
-"""
+"""Policy linker: connects stage instances to policies."""
 
 from saxs.core.kernel.back.buffer import Buffer
 from saxs.core.kernel.back.runtime_spec import PolicySpec
@@ -20,13 +9,7 @@ from saxs.core.stage.policy.abstract_chaining_policy import (
 
 
 class PolicyLinker:
-    """
-    Links policies with their next-stage references.
-
-    Provides a static method to link `ChainingPolicy` instances to
-    the corresponding `AbstractStage` instances based on
-    declarative pipeline specifications.
-    """
+    """Links policies with their pending stage references."""
 
     @staticmethod
     def link(
@@ -34,44 +17,11 @@ class PolicyLinker:
         stage_instances: Buffer[IAbstractStage],
         policy_instances: Buffer[IAbstractChainingPolicy],
     ) -> Buffer[IAbstractChainingPolicy]:
-        """
-        Populate `next_stage_cls` for each policy instance.
-
-        Iterates over all `PolicySpec` objects in `policy_specs`
-        and resolves the stages listed in `next_stage_ids`. Only
-        stages that exist in `stage_instances` are added. Each
-        policy's `next_stage_cls` is updated with the resulting
-        stage list.
-
-        Parameters
-        ----------
-        policy_specs : Buffer[PolicySpec]
-            Buffer containing policy specifications, including the
-            IDs of the next stages each policy should reference.
-        stage_instances : Buffer[AbstractStage]
-            Buffer of already instantiated stage objects.
-        policy_instances : Buffer[ChainingPolicy]
-            Buffer of already instantiated policy objects to be
-            linked to stages.
-
-        Returns
-        -------
-        Buffer[ChainingPolicy]
-            The buffer of policy instances, now with their
-            `next_stage_cls` attributes populated.
-
-        Notes
-        -----
-        - Policies with no valid next-stage references are skipped.
-        - Only stages that exist in `stage_instances` are linked.
-        """
         for id_, _policy_spec in policy_specs.items():
             if not _policy_spec.pending_stages:
                 continue
 
-            # Resolve next stages
             next_stages: list[IAbstractStage] = []
-
             for next_id in _policy_spec.pending_stages:
                 _stage = stage_instances.get(next_id)
                 if _stage:

@@ -1,52 +1,19 @@
-"""Filter Stage Module.
-
-This module defines the `FilterStage` class, which implements a SAXS
-data processing stage that applies a moving average filter to
-intensity values within a `SAXSSample`.
-
-Classes
--------
-FilterStage
-    Applies a moving average filter to intensity data.
-"""
+"""Filter stage: applies moving average smoothing."""
 
 from saxs.logging.logger import get_stage_logger
+
 from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.types.sample import SAXSSample
+from saxs.processing.functions import moving_average
 
 logger = get_stage_logger(__name__)
-from saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
-from saxs.processing.functions import moving_average
 
 
 class FilterStage(IAbstractStage):
-    """Stage that applies a moving average filter to intensity data.
-
-    This stage retrieves the intensity values from a `SAXSSample`,
-    applies a moving average filter with a fixed window size, and
-    updates the sample in place. The filtered intensity is stored
-    under the `ESAXSSampleKeys.INTENSITY` key.
-
-    The stage also logs the number of points processed.
-    """
+    """Applies a moving average filter to intensity data."""
 
     def _process(self, sample: SAXSSample) -> SAXSSample:
-        """Process a SAXSSample by applying a moving average filter.
-
-        Parameters
-        ----------
-        sample : SAXSSample
-            The SAXS sample containing q-values and intensity data.
-
-        Returns
-        -------
-        SAXSSample
-            The same sample object with filtered intensity values.
-
-        Notes
-        -----
-        The filtering uses a fixed window size of 10 points.
-        """
-        _intensity = sample[ESAXSSampleKeys.INTENSITY]
+        _intensity = sample.intensity
 
         logger.stage_info(
             "FilterStage",
@@ -57,7 +24,7 @@ class FilterStage(IAbstractStage):
         )
 
         filtered_intensity = moving_average(_intensity, 10)
-        sample[ESAXSSampleKeys.INTENSITY] = filtered_intensity
+        sample.intensity = filtered_intensity
 
         logger.stage_info(
             "FilterStage",

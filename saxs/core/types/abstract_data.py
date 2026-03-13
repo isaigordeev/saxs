@@ -1,48 +1,12 @@
-"""
-Module: base_data_type.
+"""Base data type aliases for SAXS pipeline.
 
-This module defines the `BaseDataType` generic class — a
-foundational data container used across the SAXS  processing
-pipeline.
-
-`BaseDataType` provides a minimal, immutable wrapper for any
- underlying data structure (e.g., NumPy arrays, dictionaries). It
- serves as a uniform interface for accessing and handling diverse
- types of scientific data through the `.unwrap()` method, promoting
- consistent API behavior across all derived types.
+Provides type aliases for SAXS array data.
 """
 
-from dataclasses import dataclass
-from typing import Generic, TypeVar
+import numpy as np
+from numpy.typing import NDArray
 
-T = TypeVar("T")
-
-
-@dataclass(frozen=False)
-class TBaseDataType(Generic[T]):
-    """
-    Generic, immutable data wrapper for scientific data objects.
-
-    This class provides a lightweight abstraction layer over raw
-    data containers such as NumPy arrays, dictionaries, or other
-    structured data objects. Subclasses typically specify a concrete
-    type parameter `T` to enforce type safety for the wrapped value.
-
-    Attributes
-    ----------
-        values (T | None): The underlying data structure. May be
-        None if the data object is uninitialized.
-    """
-
-    value: T
-
-    def unwrap(self) -> T:
-        """
-        Return the underlying data object.
-
-        Returns
-        -------
-            T | None: The wrapped data (e.g., NumPy array, dict) or
-            None if no data is present.
-        """
-        return self.value
+# Type aliases for SAXS array data
+QValues = NDArray[np.float64]
+Intensity = NDArray[np.float64]
+IntensityError = NDArray[np.float64]

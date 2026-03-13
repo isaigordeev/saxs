@@ -1,24 +1,22 @@
+"""Abstract condition classes."""
+
 from abc import ABC, abstractmethod
 
-from saxs.core.stage.request.abst_request import EvalMetadata
-from saxs.core.types.sample_objects import SampleMetadata
+from saxs.core.types.flow_metadata import FlowMetadata
+from saxs.core.types.sample import SampleMetadata
 
 
 class SampleCondition(ABC):
+    """Condition evaluated against sample metadata."""
+
     @abstractmethod
     def evaluate(self, eval_metadata: SampleMetadata) -> bool:
-        """Predicat for sample approval.
-
-        Return True if the condition passes for
-        the given sample.
-        """
+        """Return True if the condition passes."""
 
 
 class StageCondition(ABC):
-    @abstractmethod
-    def evaluate(self, eval_metadata: EvalMetadata) -> bool:
-        """Predicat for stage approval.
+    """Condition evaluated against flow metadata for stage chaining."""
 
-        Return True if the condition passes for the
-        given stage metadata.
-        """
+    @abstractmethod
+    def evaluate(self, eval_metadata: FlowMetadata) -> bool:
+        """Return True if the condition passes."""

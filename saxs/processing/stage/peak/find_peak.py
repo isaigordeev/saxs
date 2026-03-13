@@ -1,62 +1,38 @@
-"""Peak finding stage module.
+"""Peak finding stage.
 
-This module implements the FindPeakStage, which detects peaks in SAXS
-scattering data using scipy's find_peaks algorithm. The stage processes
-intensity data and identifies peak positions based on configurable
-parameters such as height, prominence, and distance.
-
-The stage uses a chaining policy to conditionally request the
-ProcessPeakStage when peaks are detected, enabling iterative peak
-processing workflows.
-
-Classes
--------
-FindPeakStage
-    Stage implementation for detecting peaks in SAXS intensity data.
+Detects peaks in SAXS intensity data using scipy's find_peaks.
 """
-
-# Created by Isai Gordeev on 20/09/2025.
 
 from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 from scipy.signal import (  # pyright: ignore[reportMissingTypeStubs]
-    find_peaks,  # # pyright: ignore[reportUnknownVariableType]
+    find_peaks,  # pyright: ignore[reportUnknownVariableType]
 )
 
 from saxs.logging.logger import get_stage_logger
-from saxs.core.stage.abstract_cond_stage import (
-    IAbstractRequestingStage,
-)
+
+from saxs.core.stage.abstract_cond_stage import IAbstractRequestingStage
 from saxs.core.stage.policy.single_stage_policy import (
     SingleStageChainingPolicy,
 )
 from saxs.core.stage.request.abst_request import (
-    EvalMetadata,
     IAbstractStageRequest,
     StageRequest,
 )
-from saxs.core.types.flow_metadata import (
-    FlowMetadata,
-    FlowMetadataKeys,
-)
-from saxs.core.types.sample import ESAXSSampleKeys, SAXSSample
-from saxs.core.types.sample_objects import ESampleMetadataKeys
-from saxs.core.types.scheduler_metadata import (
-    ERuntimeConstants,
-)
+from saxs.core.types.flow_metadata import FlowMetadata
+from saxs.core.types.sample import SAXSSample
 from saxs.processing.stage.peak.types import (
     DEFAULT_PEAK_FIND_META,
-    EPeakFindMetadataKeys,
     PeakFindStageMetadata,
 )
 
 logger = get_stage_logger(__name__)
 
 
-class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
-    """Find peak stage."""
+class FindPeakStage(IAbstractRequestingStage):
+    """Detects peaks in SAXS intensity data."""
 
     def __init__(
         self,
@@ -70,11 +46,8 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         _sample: SAXSSample,
         _flow_metadata: FlowMetadata,
     ) -> SAXSSample:
-        _metadata = _sample.get_metadata()
-
-        if ESampleMetadataKeys.UNPROCESSED not in _metadata:
-            _sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, set())
-
+        if not _sample.metadata.unprocessed_peaks:
+            _sample.metadata.unprocessed_peaks = {}
         return _sample
 
     def _posthandle_flow_metadata(
@@ -82,19 +55,13 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
         _sample: SAXSSample,
         _flow_metadata: FlowMetadata,
     ) -> FlowMetadata:
-        """Pass metadata from sample to flow metadata."""
-        _flow_metadata[FlowMetadataKeys.UNPROCESSED] = _sample.get_metadata()[
-            FlowMetadataKeys.UNPROCESSED
-        ]
-
+        """Pass unprocessed peaks from sample to flow metadata."""
+        _flow_metadata.unprocessed_peaks = _sample.metadata.unprocessed_peaks
         return _flow_metadata
 
-    def _process(
-        self,
-        sample: SAXSSample,
-    ) -> SAXSSample:
-        intensity = sample[ESAXSSampleKeys.INTENSITY]
-        q_values = sample[ESAXSSampleKeys.Q_VALUES]
+    def _process(self, sample: SAXSSample) -> SAXSSample:
+        intensity = sample.intensity
+        q_values = sample.q_values
 
         logger.stage_info(
             "FindPeakStage",
@@ -103,8 +70,7 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
             intensity_range=f"[{min(intensity):.2f}, {max(intensity):.2f}]",
         )
 
-        # Find peaks
-        peak_indices, properties = self.find_peaks(intensity)
+        peak_indices, properties = self._find_peaks(intensity)
 
         if len(peak_indices) > 0:
             peak_positions = [q_values[i] for i in peak_indices]
@@ -118,74 +84,59 @@ class FindPeakStage(IAbstractRequestingStage[PeakFindStageMetadata]):
                 peak_heights=f"I={[f'{h:.2f}' for h in peak_heights]}",
             )
         else:
-            logger.stage_info(
-                "FindPeakStage",
-                "No peaks detected",
-            )
+            logger.stage_info("FindPeakStage", "No peaks detected")
 
         _peak_dict = {index: intensity[index] for index in peak_indices}
-
-        sample.set_metadata(ESampleMetadataKeys.UNPROCESSED, _peak_dict)
+        sample.metadata.unprocessed_peaks = _peak_dict
 
         return sample
 
     def create_request(self, metadata: FlowMetadata) -> IAbstractStageRequest:
         """Create a request for peak processing."""
-        _current_peaks: dict[int, np.float64] = metadata[
-            FlowMetadataKeys.UNPROCESSED
-        ]
+        _current_peaks = metadata.unprocessed_peaks
 
-        # implement policy for peak choice
-
+        # Pick the tallest peak
         _current_peak = (
-            max(_current_peaks, key=lambda x: _current_peaks[x])  # max peak
+            max(_current_peaks, key=lambda x: _current_peaks[x])
             if len(_current_peaks) > 0
-            else ERuntimeConstants.UNDEFINED_PEAK
+            else None
         )
 
-        if _current_peak != ERuntimeConstants.UNDEFINED_PEAK:
-            _current_peaks.pop(_current_peak)  # pop from the set
-            logger.stage_info(
-                "FindPeakStage",
-                "Requesting peak processing",
-                peak_index=f"Current peak {int(_current_peak)}",
-                remaining_peaks="Remaining peaks len: {len(_current_peaks)}",
-            )
-        else:
-            # if no peaks found create an empty request to finish
-            _undefined = ERuntimeConstants.UNDEFINED_PEAK
+        if _current_peak is None:
+            # No peaks found — create empty request to finish
             return StageRequest(
-                condition_eval_metadata=EvalMetadata(
-                    {FlowMetadataKeys.CURRENT.value: _undefined},
-                ),
-                flow_metadata=FlowMetadata({}),
+                condition_eval_metadata=FlowMetadata(current_peak=None),
+                flow_metadata=FlowMetadata(),
             )
 
-        _current = {
-            _current_peak: _current_peaks[_current_peak],
-        }  # pair q:I
-
-        metadata[FlowMetadata.Keys.CURRENT] = _current
-
-        eval_metadata = EvalMetadata(
-            {FlowMetadataKeys.CURRENT.value: _current},
+        _current_peaks.pop(_current_peak)
+        logger.stage_info(
+            "FindPeakStage",
+            "Requesting peak processing",
+            peak_index=f"Current peak {int(_current_peak)}",
+            remaining_peaks=f"Remaining peaks len: {len(_current_peaks)}",
         )
+
+        _current = {_current_peak: _current_peaks.get(_current_peak, np.float64(0.0))}
+
+        metadata.current_peak = _current_peak
+
+        eval_metadata = FlowMetadata(current_peak=_current_peak)
 
         return StageRequest(
             condition_eval_metadata=eval_metadata,
             flow_metadata=metadata,
         )
 
-    def find_peaks(
+    def _find_peaks(
         self,
         intensity: NDArray[np.float64],
     ) -> tuple[list[int], dict[str, Any]]:
-        """Find peak func."""
+        """Find peaks using scipy."""
         peaks_indices, peaks_properties = find_peaks(  # type: ignore  # noqa: PGH003
             x=intensity,
-            height=self.metadata[EPeakFindMetadataKeys.HEIGHT],
-            prominence=self.metadata[EPeakFindMetadataKeys.PROMINENCE],
-            distance=self.metadata[EPeakFindMetadataKeys.DISTANCE],
+            height=self.metadata.height,
+            prominence=self.metadata.prominence,
+            distance=self.metadata.distance,
         )
-
         return peaks_indices, peaks_properties  # pyright: ignore[reportUnknownVariableType]

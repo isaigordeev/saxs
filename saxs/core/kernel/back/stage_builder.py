@@ -1,39 +1,20 @@
-"""Stage builder module.
-
-This module provides the StageBuilder class, which is responsible for
-instantiating AbstractStage objects from StageSpec specifications
-during the kernel compilation process.
-
-The builder creates stage instances with their associated metadata,
-but does not perform the final linking of policies to requesting stages
-(that is handled by StageLinker).
-
-Classes
--------
-StageBuilder
-    Static builder class for creating stage instances from
-    StageSpec objects.
-"""
+"""Stage builder: creates stage instances from StageSpec."""
 
 from saxs.core.kernel.back.buffer import Buffer
 from saxs.core.kernel.back.runtime_spec import StageSpec
 from saxs.core.stage.abstract_cond_stage import (
     IAbstractRequestingStage,
-    IAbstractStage,
 )
+from saxs.core.stage.abstract_stage import IAbstractStage
 
 
 class StageBuilder:
-    """Stage builder.
-
-    Builds stage instances from StageSpec objects without linking
-    policies.
-    """
+    """Builds stage instances from StageSpec objects."""
 
     @staticmethod
     def build(stage_specs: Buffer[StageSpec]) -> Buffer[IAbstractStage]:
-        """Return a dict: stage_id -> stage_instance."""
-        stage_instances: Buffer[IAbstractStage] = Buffer[IAbstractStage]()
+        """Create stage instances from specs."""
+        stage_instances: Buffer[IAbstractStage] = Buffer()
 
         for stage_spec in stage_specs.values():
             metadata = stage_spec.metadata

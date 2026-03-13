@@ -1,28 +1,8 @@
-"""
-base_kernel.py.
-
-This module defines the `BaseKernel` class, which implements the
-core execution orchestration for SAXS (Small-Angle X-ray Scattering)
-pipelines. The kernel coordinates the pipeline build process,
-scheduler integration, and initial sample processing.
-
-The `BaseKernel` serves as a high-level orchestrator, bridging
-between the compiler that generates stage and policy instances, and
-the pipeline that executes them sequentially under a scheduling
-strategy.
-
-Classes
---------
-BaseKernel
-    Core kernel responsible for pipeline construction, stage
-    assembly, and sample execution.
-"""
+"""Base kernel: orchestrates pipeline construction and execution."""
 
 from typing import TYPE_CHECKING
 
-from saxs.core.kernel.abstract_kernel import (
-    IAbstractKernel,
-)
+from saxs.core.kernel.abstract_kernel import IAbstractKernel
 from saxs.core.kernel.back.kernel_compiler import BaseCompiler
 from saxs.core.pipeline.pipeline import Pipeline
 from saxs.core.stage.abstract_stage import IAbstractStage
@@ -37,22 +17,11 @@ if TYPE_CHECKING:
 
 
 class BaseKernel(IAbstractKernel):
-    """
-    Base kernel class.
+    """Orchestrates pipeline building, scheduler wiring, and execution."""
 
-    Encapsulates orchestration of:
-    - pipeline building
-    - scheduler wiring
-    - sample creation.
-    """
-
-    def __init__(
-        self,
-        scheduler: "IAbstractScheduler",
-    ):
+    def __init__(self, scheduler: "IAbstractScheduler"):
         self.scheduler = scheduler
         self.execution_order: list[str] = []
-
         self.build()
 
     def build(self) -> None:
@@ -80,46 +49,14 @@ class BaseKernel(IAbstractKernel):
         self,
         _execution_order: list[str],
     ) -> list[IAbstractStage]:
-        """Get init stages ordered.
-
-        Retrieve the initial stages in order from the compiled stage
-        buffer.
-
-        Parameters
-        ----------
-        _execution_order : list of str
-            Ordered list of stage identifiers defining the execution
-            sequence.
-
-        Returns
-        -------
-        list of AbstractStage
-            A list of stage instances corresponding to the provided
-            execution order.
-        """
+        """Get initial stages in execution order."""
         _initial_stages: list[IAbstractStage] = []
-
         for _stage_id in _execution_order:
             _stage = self.stage_buffer.get(_stage_id)
             if _stage:
                 _initial_stages.append(_stage)
-
         return _initial_stages
 
     def run(self, init_sample: SAXSSample) -> SAXSSample:
-        """Run the kernel pipeline on the given sample.
-
-        This method executes the pipeline using the configured
-        scheduler until all stages have completed processing.
-
-        Parameters
-        ----------
-        init_sample : SAXSSample
-            The initial SAXS sample to process through the pipeline.
-
-        Returns
-        -------
-        SAXSSample
-            The final processed sample after pipeline completion.
-        """
+        """Run the kernel pipeline on the given sample."""
         return self.pipeline.run(init_sample)

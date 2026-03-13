@@ -1,42 +1,11 @@
-"""chaining_cond module.
+"""Chaining condition: checks if there are remaining peaks."""
 
-Checks if there are remaining peaks.
-"""
-
-# Created by Isai Gordeev on 20/09/2025.
-
-from saxs.core.pipeline.condition.abstract_condition import (
-    StageCondition,
-)
-from saxs.core.stage.request.abst_request import EvalMetadata
-from saxs.core.types.scheduler_metadata import ERuntimeConstants
+from saxs.core.pipeline.condition.abstract_condition import StageCondition
+from saxs.core.types.flow_metadata import FlowMetadata
 
 
 class ChainingPeakCondition(StageCondition):
-    """Class predicat for evaluating chaining."""
+    """True if there is a current peak to process."""
 
-    def evaluate(self, eval_metadata: EvalMetadata) -> bool:
-        """
-        Evaluate whether unprocessed peaks remain in metadata.
-
-        This method checks the `EvalMetadata` container for
-        entries in the `UNPROCESSED` field, which typically
-        tracks peaks that have not yet been analyzed or chained.
-
-        Parameters
-        ----------
-        eval_metadata : EvalMetadata
-            Evaluation metadata object containing analysis state
-            information, including lists of processed and
-            unprocessed peaks.
-
-        Returns
-        -------
-        bool
-            `True` if there are unprocessed peaks remaining,
-            otherwise `False`.
-        """
-        return (
-            eval_metadata[EvalMetadata.Keys.CURRENT]
-            is not ERuntimeConstants.UNDEFINED_PEAK
-        )
+    def evaluate(self, eval_metadata: FlowMetadata) -> bool:
+        return eval_metadata.current_peak is not None

@@ -1,25 +1,10 @@
-"""
-Module: abstract_stage.
-
-Defines the AbstractStage base class for SAXS data processing
-pipelines.
-
-This module provides an abstract interface for pipeline stages that
-process SAXSSample objects and manage associated FlowMetadata. It
-handles common metadata management, while requiring subclasses to
-implement the actual processing logic in `_process`.
-
-Classes:
-    AbstractStage: Base class for all pipeline stages with metadata
-    support.
-"""
+"""Abstract base class for pipeline stages."""
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any
 
 from saxs.core.types.flow_metadata import FlowMetadata
 from saxs.core.types.sample import SAXSSample
-from saxs.core.types.stage_metadata import TAbstractStageMetadata
 
 if TYPE_CHECKING:
     from saxs.core.pipeline.scheduler.abstract_stage_request import (
@@ -27,117 +12,40 @@ if TYPE_CHECKING:
     )
 
 
-TStageMetadata = TypeVar(
-    "TStageMetadata",
-    bound=TAbstractStageMetadata[Any, Any],  # kind of bottleneck in templates
-)
-
-
-class IAbstractStage(ABC, Generic[TStageMetadata]):
-    """
-    Base class for a processing stage in a SAXS data pipeline.
-
-    Stages are responsible for processing SAXSSample objects and
-    updating FlowMetadata. Provides hooks for metadata handling and
-    enforces a `_process` method for subclasses to implement the
-    actual processing logic.
+class IAbstractStage(ABC):
+    """Base class for a processing stage in a SAXS data pipeline.
 
     Attributes
     ----------
-        metadata (AbstractStageMetadata): Metadata specific to this
-        stage.
+    metadata : Any
+        Stage-specific configuration metadata.
     """
 
-    def __init__(
-        self,
-        metadata: TStageMetadata,
-    ):
-        """
-        Initialize the stage with optional metadata.
-
-        Args:
-            metadata (AbstractStageMetadata | None): Metadata for
-            this stage.
-                If None, an empty AbstractStageMetadata object is
-                created.
-        """
-        self.metadata = metadata  # no fallback on metadata in the abstr class
+    def __init__(self, metadata: Any = None):
+        self.metadata = metadata
 
     def process(
         self,
         sample: SAXSSample,
         flow_metadata: FlowMetadata,
-    ) -> tuple["SAXSSample", "FlowMetadata"]:
-        """
-        Public method to process sample data with metadata.
-
-        Handles the overall processing workflow:
-        1. Calls the stage-specific `_process` method.
-        2. Delegates metadata updates to `handle_metadata`.
-
-        Args:
-            sample_data (SAXSSample): The SAXS sample to process.
-            metadata (FlowMetadata): Associated flow metadata.
-
-        Returns
-        -------
-            tuple[SAXSSample, FlowMetadata]: Processed sample and
-            updated metadata.
-        """
-        # Put some flow metadata to sample needed for processing
+    ) -> tuple[SAXSSample, FlowMetadata]:
+        """Process sample data with metadata hooks."""
         _sample = self._prehandle_flow_metadata(sample, flow_metadata)
-
-        # Process a sample
         _sample = self._process(_sample)
-
-        # Delegate flow metadata management to hook
         _flow_metadata = self._posthandle_flow_metadata(_sample, flow_metadata)
-
         return _sample, _flow_metadata
 
     @abstractmethod
-    def _process(
-        self,
-        sample: SAXSSample,
-    ) -> "SAXSSample":
-        """
-        Abstract method to implement the processing logic.
-
-        Subclasses must override this method to perform
-        stage-specific processing.
-
-        Args:
-            sample_data (SAXSSample): The SAXS sample to process.
-            metadata (FlowMetadata): Metadata associated with the
-            sample.
-
-        Returns
-        -------
-            tuple[SAXSSample, FlowMetadata]: Updated sample and
-            metadata.
-        """
+    def _process(self, sample: SAXSSample) -> SAXSSample:
+        """Implement stage-specific processing logic."""
         raise NotImplementedError
 
     def _posthandle_flow_metadata(
         self,
-        _sample: "SAXSSample",
-        _flow_metadata: "FlowMetadata",
-    ) -> "FlowMetadata":
-        """Manage metadata updates after processing.
-
-        Default behavior: does nothing with metadata and returns
-        the sample. Can be overridden in subclasses to create
-        a metadata request for scheduler or future samples.
-
-        Args:
-            _sample (SAXSSample): Processed sample data.
-            _metadata (FlowMetadata): Metadata associated with the
-            sample.
-
-        Returns
-        -------
-            FlowMetadata: Flowmetadata data, potentially updated.
-        """
+        _sample: SAXSSample,
+        _flow_metadata: FlowMetadata,
+    ) -> FlowMetadata:
+        """Hook for updating flow metadata after processing."""
         _ = _sample
         return _flow_metadata
 
@@ -146,43 +54,14 @@ class IAbstractStage(ABC, Generic[TStageMetadata]):
         _sample: SAXSSample,
         _flow_metadata: FlowMetadata,
     ) -> SAXSSample:
-        """Manage metadata updates before processing.
-
-        Default behavior: does nothing with metadata and returns
-        the sample. Can be overridden in subclasses to create
-        a metadata request for scheduler or future samples.
-
-        Args:
-            _sample (SAXSSample): Processed sample data.
-            _metadata (FlowMetadata): Metadata associated with the
-            sample.
-
-        Returns
-        -------
-            SAXSSample: Sample with updated metadata.
-        """
+        """Hook for updating sample from flow metadata before processing."""
         _ = _flow_metadata
         return _sample
-
-    def get_metadata(
-        self,
-    ) -> TStageMetadata:
-        """Getter for metadata."""
-        return self.metadata
 
     def request_stage(
         self,
         metadata: FlowMetadata,
     ) -> list["StageApprovalRequest"]:
-        """
-        Optionally requests dependencies or other stages.
-
-        Bases on flow metadata.
-
-        Returns
-        -------
-            list: Empty list by default. Override in subclasses if
-            needed.
-        """
+        """Optionally request additional stages based on flow metadata."""
         _ = metadata
         return []

@@ -1,83 +1,26 @@
-"""
-Module: saxs.processing.stage.filter.cut.cut_stage.
-
-Defines the CutStage class for SAXS data preprocessing.
-
-This module implements a data-processing stage that trims SAXS
-sample arrays (q-values and intensity) starting from a specified
-cut point. It is typically used as part of a SAXS data processing
-pipeline, where only a subset of the scattering data beyond a
-given q-index is retained.
-
-Classes
--------
-CutStage : AbstractStage
-    A pipeline stage that slices q-values and intensity arrays
-    according to the configured cut point.
-"""
+"""Cut stage: truncates SAXS data at a specified index."""
 
 from saxs.logging.logger import get_stage_logger
+
 from saxs.core.stage.abstract_stage import IAbstractStage
+from saxs.core.types.sample import SAXSSample
+from saxs.processing.stage.cut.types import CutStageMetadata
 
 logger = get_stage_logger(__name__)
-from saxs.core.types.sample import (
-    ESAXSSampleKeys,
-    SAXSSample,
-)
-from saxs.processing.stage.cut.types import (
-    DEFAULT_CUT_POINT,
-    CutStageMetadata,
-    ECutStageMetadataKeys,
-)
 
-DEFAULT_CUT_META = CutStageMetadata(
-    {
-        ECutStageMetadataKeys.CUT_POINT.value: DEFAULT_CUT_POINT,
-    },
-)
+DEFAULT_CUT_META = CutStageMetadata()
 
 
-class CutStage(IAbstractStage[CutStageMetadata]):
-    """
-    SAXS processing stage that trims data arrays.
+class CutStage(IAbstractStage):
+    """Truncates q-values and intensity arrays from a cut point."""
 
-    This stage takes a SAXS sample and removes all data points
-    before the configured `cut_point`. It modifies the sample's
-    q-values and intensity arrays accordingly and logs basic
-    input/output statistics.
+    def __init__(self, metadata: CutStageMetadata | None = None):
+        super().__init__(metadata=metadata or DEFAULT_CUT_META)
 
-    Parameters
-    ----------
-    cut_point : int, optional
-        Index at which to start slicing q-values and intensity
-        arrays.
-        Defaults to 100.
+    def _process(self, sample: SAXSSample) -> SAXSSample:
+        cut_point = self.metadata.cut_point
 
-    Attributes
-    ----------
-    metadata : CutStageMetadata
-        Metadata object holding the cut point configuration.
-
-    Examples
-    --------
-    >>> stage = CutStage(cut_point=120)
-    >>> new_sample, _ = stage._process(sample, flow_metadata)
-    """
-
-    def __init__(self, metadata: CutStageMetadata | None):
-        metadata = metadata or DEFAULT_CUT_META
-
-        super().__init__(metadata=metadata)
-
-    def _process(
-        self,
-        sample: SAXSSample,
-    ) -> "SAXSSample":
-        metadata: CutStageMetadata = self.get_metadata()
-        cut_point = metadata.get_cut_point()
-
-        # Log input state
-        original_size = len(sample[ESAXSSampleKeys.Q_VALUES])
+        original_size = len(sample.q_values)
         logger.stage_info(
             "CutStage",
             "Starting data truncation",
@@ -85,18 +28,14 @@ class CutStage(IAbstractStage[CutStageMetadata]):
             cut_point=cut_point,
         )
 
-        # Cut the data
-        q_values_cut = sample[ESAXSSampleKeys.Q_VALUES][cut_point:]
-        intensity_cut = sample[ESAXSSampleKeys.INTENSITY][cut_point:]
-        error_cut = sample[ESAXSSampleKeys.INTENSITY_ERROR][cut_point:]
+        q_values_cut = sample.q_values[cut_point:]
+        intensity_cut = sample.intensity[cut_point:]
+        error_cut = sample.intensity_err[cut_point:]
 
-        # Assign
-        # (implement err intensity)
-        sample[ESAXSSampleKeys.Q_VALUES] = q_values_cut
-        sample[ESAXSSampleKeys.INTENSITY] = intensity_cut
-        sample[ESAXSSampleKeys.INTENSITY_ERROR] = error_cut
+        sample.q_values = q_values_cut
+        sample.intensity = intensity_cut
+        sample.intensity_err = error_cut
 
-        # Log output info
         logger.stage_info(
             "CutStage",
             "Truncation complete",

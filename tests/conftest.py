@@ -1,23 +1,15 @@
-# Created by Isai Gordeev on 20/09/2025.
-
 """Pytest configuration and shared fixtures for SAXS testing."""
 
 from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
+
 from saxs.core.pipeline.scheduler.abstract_stage_request import (
     StageApprovalRequest,
 )
 from saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.core.types.sample import SAXSSample
-from saxs.core.types.sample_objects import (
-    Intensity,
-    IntensityError,
-    QValues,
-    SampleMetadata,
-)
-from saxs.core.types.stage_metadata import TAbstractStageMetadata
+from saxs.core.types.sample import SAXSSample, SampleMetadata
 
 
 @pytest.fixture
@@ -39,102 +31,26 @@ def sample_intensity_error():
 
 
 @pytest.fixture
-def sample_metadata():
-    """Create sample metadata for testing."""
-    return {"temperature": 25.0, "pressure": 1.0, "wavelength": 1.54}
-
-
-@pytest.fixture
-def q_values(sample_q_values):
-    """Create QValues object for testing."""
-    return QValues(sample_q_values)
-
-
-@pytest.fixture
-def intensity(sample_intensity):
-    """Create Intensity object for testing."""
-    return Intensity(sample_intensity)
-
-
-@pytest.fixture
-def intensity_error(sample_intensity_error):
-    """Create IntensityError object for testing."""
-    return IntensityError(sample_intensity_error)
-
-
-@pytest.fixture
-def metadata(sample_metadata):
-    """Create AbstractSampleMetadata object for testing."""
-    return SampleMetadata(sample_metadata)
-
-
-@pytest.fixture
-def saxs_sample(q_values, intensity, intensity_error, metadata):
+def saxs_sample(sample_q_values, sample_intensity, sample_intensity_error):
     """Create a complete SAXSSample for testing."""
     return SAXSSample(
-        q_values=q_values,
-        intensity=intensity,
-        intensity_error=intensity_error,
-        metadata=metadata,
-    )
-
-
-@pytest.fixture
-def saxs_sample_minimal(q_values, intensity):
-    """Create a minimal SAXSSample for testing (no error or metadata)."""
-    return SAXSSample(q_values=q_values, intensity=intensity)
-
-
-@pytest.fixture
-def stage_metadata():
-    """Create AbstractStageMetadata for testing."""
-    return TAbstractStageMetadata(
-        {"stage_name": "test_stage", "version": "1.0"},
+        q_values=sample_q_values,
+        intensity=sample_intensity,
+        intensity_err=sample_intensity_error,
+        metadata=SampleMetadata(),
     )
 
 
 @pytest.fixture
 def mock_stage():
+    """Create a mock stage for testing."""
     stage = MagicMock(spec=IAbstractStage)
     stage.request_stage.return_value = []
-    intensity = Intensity()
-    q_values = QValues()
-    stage._process.return_value = SAXSSample(
-        q_values=q_values,
-        intensity=intensity,
-    )  # fake sample if needed
-    stage.metadata = TAbstractStageMetadata({"name": "mock_stage"})
+    stage.metadata = None
     return stage
 
 
 @pytest.fixture
-def stage_request(mock_stage, stage_metadata):
-    """Create a StageRequest for testing."""
-    return StageApprovalRequest(
-        stage=mock_stage, approval_metadata=stage_metadata,
-    )
-
-
-@pytest.fixture
-def empty_metadata():
-    """Create empty metadata for testing."""
-    return SampleMetadata({})
-
-
-@pytest.fixture
-def complex_metadata():
-    """Create complex metadata for testing."""
-    return SampleMetadata(
-        {
-            "temperature": 25.0,
-            "pressure": 1.0,
-            "wavelength": 1.54,
-            "sample_id": "test_001",
-            "measurement_time": 3600,
-            "detector_distance": 1000.0,
-            "beam_size": 0.5,
-            "exposure_time": 1.0,
-            "frames": 100,
-            "flux": 1e12,
-        },
-    )
+def stage_request(mock_stage):
+    """Create a StageApprovalRequest for testing."""
+    return StageApprovalRequest(stage=mock_stage)
