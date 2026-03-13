@@ -14,15 +14,25 @@ class KernelRegistry:
             str
         ] = []  # Explicit memorized order of stage IDs
 
-    def register_stage(self, stage: StageSpec) -> None:
-        """Register stage."""
+    def register_stage(
+        self, stage: StageSpec, *, initial: bool = True
+    ) -> None:
+        """Register stage.
+
+        Parameters
+        ----------
+        stage : StageSpec
+            The stage specification to register.
+        initial : bool
+            If True, add to execution_order (runs at pipeline start).
+            If False, stage is only available for dynamic injection.
+        """
         if self.stage_specs.contains(stage.id_):
             msg = f"Stage ID '{stage.id_}' is already registered."
             raise KeyError(msg)
         self.stage_specs.register(stage.id_, stage)
-        self.execution_order.append(
-            stage.id_,
-        )  # Memorize the order of registration
+        if initial:
+            self.execution_order.append(stage.id_)
 
     def register_policy(self, policy: PolicySpec) -> None:
         """Register policy."""

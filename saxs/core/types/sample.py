@@ -13,7 +13,7 @@ of the sample while keeping the original data intact.
 
 from collections.abc import ItemsView, KeysView, ValuesView
 from enum import Enum
-from typing import Any, TypedDict, Union, get_type_hints
+from typing import Any, TypedDict, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -165,21 +165,6 @@ class SAXSSample(TBaseDataType[SAXSSampleDict]):
     def set_metadata(self, key: ESampleMetadataKeys, _value: Any) -> None:  # noqa: ANN401
         """Setter for metadata."""
         _sample_metadata: SampleMetadata = self.get_metadata()
-
-        hints = get_type_hints(SAXSSampleDict)
-
-        # --- Runtime type safety ---
-        expected_type = hints.get(key.value)
-
-        if expected_type is not None and not isinstance(
-            _value,
-            expected_type.__origin__
-            if hasattr(expected_type, "__origin__")
-            else expected_type,
-        ):
-            msg = f"Invalid type for '{key}': expected {expected_type}, got {type(_value)}"
-            raise TypeError(msg)
-
         _sample_metadata[key] = _value
 
     def __contains__(self, key: str) -> bool:

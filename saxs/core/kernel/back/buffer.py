@@ -38,8 +38,8 @@ class Buffer(Generic[T]):
         Raises an error if the ID already exists and overwrite
         is False.
         """
-        if id in self._registry and not overwrite:
-            msg = f"ID '{id}' is already registered."
+        if id_ in self._registry and not overwrite:
+            msg = f"ID '{id_}' is already registered."
             raise KeyError(msg)
         self._registry[id_] = item
 
@@ -76,13 +76,13 @@ class Buffer(Generic[T]):
     def __str__(self) -> str:
         """Return a human-readable summary of the registry."""
         lines = [
-            f"{self.__class__.__name__} of {T.__name__} with"
-            "{len(self._registry)} items:",
+            f"{self.__class__.__name__} with"
+            f" {len(self._registry)} items:",
         ]
         for id_, item in self._registry.items():
             lines.append(
                 f"  {id_}: {item.__class__.__name__},"
-                "attributes: {item.__dict__}",
+                f" attributes: {item.__dict__}",
             )
         return "\n".join(lines)
 

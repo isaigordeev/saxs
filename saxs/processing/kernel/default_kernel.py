@@ -145,6 +145,7 @@ class DefaultKernel(BaseKernel):
                 policy_id="process_peak_policy",
                 metadata=DEFAULT_PEAK_PROCESS_META,
             ),
+            initial=False,  # dynamically injected by find_peak_policy
         )
 
         return (
