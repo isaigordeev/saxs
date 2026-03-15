@@ -5,11 +5,8 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
-from saxs.core.pipeline.scheduler.abstract_stage_request import (
-    StageApprovalRequest,
-)
-from saxs.core.stage.abstract_stage import IAbstractStage
-from saxs.core.types.sample import SAXSSample, SampleMetadata
+from saxs.core.stage import IAbstractStage, StageApprovalRequest
+from saxs.core.types import SAXSSample, SampleMetadata
 
 
 @pytest.fixture

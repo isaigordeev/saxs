@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 
-from saxs.core.types.sample import SAXSSample, SampleMetadata
+from saxs.core.types import SAXSSample, SampleMetadata
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray

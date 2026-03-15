@@ -3,28 +3,21 @@
 Defines a predefined pipeline: Cut -> Filter -> Background -> FindPeak -> ProcessPeak
 """
 
-from saxs.core.kernel.back.buffer import Buffer
-from saxs.core.kernel.back.runtime_spec import PolicySpec, StageSpec
-from saxs.core.kernel.base_kernel import BaseKernel
-from saxs.core.kernel.registry.kernel_registry import KernelRegistry
-from saxs.core.pipeline.condition.chaining_condition import (
-    ChainingPeakCondition,
-)
-from saxs.core.pipeline.condition.constant_true_condition import TrueCondition
-from saxs.core.stage.policy.single_stage_policy import (
-    SingleStageChainingPolicy,
-)
-from saxs.processing.stage.background.background import (
+from saxs.core.condition import ChainingPeakCondition, TrueCondition
+from saxs.core.kernel import BaseKernel
+from saxs.core.specs import Buffer, KernelRegistry, PolicySpec, StageSpec
+from saxs.core.stage import SingleStageChainingPolicy
+from saxs.processing.stages.background import (
     DEFAULT_BACKG_META,
     BackgroundStage,
 )
-from saxs.processing.stage.cut.cut import DEFAULT_CUT_META, CutStage
-from saxs.processing.stage.filter.filter import FilterStage
-from saxs.processing.stage.peak.find_peak import FindPeakStage
-from saxs.processing.stage.peak.process_peak import ProcessPeakStage
-from saxs.processing.stage.peak.types import (
+from saxs.processing.stages.cut import DEFAULT_CUT_META, CutStage
+from saxs.processing.stages.filter import FilterStage
+from saxs.processing.stages.peak import (
     DEFAULT_PEAK_FIND_META,
     DEFAULT_PEAK_PROCESS_META,
+    FindPeakStage,
+    ProcessPeakStage,
 )
 
 
